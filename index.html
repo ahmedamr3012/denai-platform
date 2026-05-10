@@ -1056,7 +1056,21 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <aside class="sidebar" id="sidebar" aria-label="Main navigation">
-    <div class="sidebar-logo" aria-label="denai"><span class="logo-text">den</span><span class="logo-ai" aria-label="AI product">ai</span></div>
+    <div class="sidebar-logo" aria-label="denai">
+  <svg width="28" height="28" viewBox="0 0 48 48" fill="none" aria-label="denai icon mark" style="flex-shrink: 0;">
+    <rect width="48" height="48" rx="10.5" fill="var(--c-brand-dark)"/>
+    <path fill-rule="evenodd" fill="white" d="M 7.8 7.6 L 17.8 7.6 A 15.2 16.4 0 0 1 17.8 40.4 L 7.8 40.4 Z M 17.8 14.4 A 9.2 9.8 0 0 1 17.8 33.6 Z"/>
+    <rect x="19.4" y="20.8" width="4.8" height="4.8" rx="1.4" fill="var(--c-brand-lite)"/>
+  </svg>
+  <svg viewBox="0 0 520 88" height="22" fill="none" aria-label="denai wordmark" style="margin-top: 2px;">
+    <path fill="white" d="M 8 4 L 8 68 L 30.2 68 C 46.8 68 59 56.8 59 43.4 C 59 30.0 46.8 19.6 30.2 19.6 L 30.2 27.2 C 42.4 27.2 51 34.4 51 43.4 C 51 52.4 42.4 60.4 30.2 60.4 L 16 60.4 L 16 26.0 C 16 22.2 12.6 19.6 8.8 20.4 L 8 20.6 Z"/>
+    <path fill="white" d="M 109 43.4 C 109 30.2 98.4 19.6 85.4 19.6 C 72.2 19.6 62 30.2 62 43.4 C 62 56.8 72.2 68 85.4 68 C 94.6 68 102.6 63.0 107.0 55.6 L 99.2 51.8 C 96.6 56.4 91.4 59.4 85.4 59.4 C 77.0 59.4 70.4 53.2 69.6 45.2 L 109 45.2 Z M 69.8 38.6 C 71.0 31.2 77.4 26.4 85.4 26.4 C 93.2 26.4 99.4 31.2 100.6 38.6 Z"/>
+    <path fill="white" d="M 113 68 L 113 20.0 L 121 20.0 L 121 26.4 C 124.6 22.0 130.2 19.6 136.8 19.6 C 148.6 19.6 157 27.8 157 40.2 L 157 68 L 149 68 L 149 41.4 C 149 32.6 144.0 27.2 136.2 27.2 C 128.2 27.2 121 33.0 121 43.0 L 121 68 Z"/>
+    <path fill="white" d="M 196.6 68 L 196.6 61.8 C 193.4 65.6 188.4 68 182.4 68 C 172.0 68 164.4 61.4 164.4 52.6 C 164.4 43.6 172.2 37.6 183.2 37.6 L 196.6 37.6 L 196.6 35.4 C 196.6 29.6 192.4 26.4 185.8 26.4 C 180.6 26.4 176.0 28.8 173.4 33.2 L 166.6 29.0 C 170.4 22.8 177.6 19.6 185.8 19.6 C 196.6 19.6 204.6 25.6 204.6 36.2 L 204.6 68 Z M 183.8 45.2 C 177.2 45.2 172.8 48.4 172.8 52.8 C 172.8 57.0 176.8 60.0 183.0 60.0 C 190.4 60.0 196.6 55.2 196.6 48.2 L 196.6 45.2 Z"/>
+    <rect x="212" y="20" width="8" height="48" fill="white"/>
+    <rect x="212.9" y="9.8" width="7.2" height="7.2" rx="1.8" fill="var(--c-brand-lite)"/>
+  </svg>
+</div>
     <nav class="sidebar-nav" id="sidebarNav" role="menubar">
       <button class="nav-item" type="button" role="menuitem"><i class="fa-solid fa-house" aria-hidden="true"></i> Dashboard</button>
       <button class="nav-item" type="button" role="menuitem"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i> Cases</button>
@@ -4832,7 +4846,7 @@ ${bodyHTML}
   <button class="print-btn" onclick="window.print()">🖨️ &nbsp;Save as PDF / Print</button>
   <p style="font-size:11px;color:#9CA3AF;margin-top:8px">Use browser's "Save as PDF" in the print dialog</p>
 </div>
-</div></body></html>`;
+</div>${'</'+'body></'+'html>'}` ;
   }
 
   // ── Patient grid section (shared by all case types) ──────────────
