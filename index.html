@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="denai — Clinical Insight Interface for dental professionals" />
   <!-- CSP: Restrictive but functional for single-file -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; script-src 'unsafe-inline' 'unsafe-eval'; connect-src https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; frame-src 'none'; base-uri 'none'; form-action 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; script-src 'unsafe-inline' 'unsafe-eval'; connect-src https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; frame-src 'none'; base-uri 'none'; form-action 'none';">
   <title>denai — Clinical Insight</title>
   <!-- PWA manifest & theme -->
   <meta name="theme-color" content="#1F7A4F" />
@@ -19,13 +19,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="src/styles/tokens/brand-tokens.css" />
   <style>
     /* ================================================================
        DESIGN TOKENS & VARIABLES
        ================================================================ */
     :root {
-      --c-brand: #1F7A4F; --c-brand-hover: #185f3e; --c-brand-lite: #2a9c67;
-      --c-brand-bg: #EDF6F1; --c-brand-bdr: #c5dfd0; --c-brand-dark: #0B2B1F;
       --c-n50: #F9FAFB; --c-n100: #F3F4F6; --c-n150: #ECEEF1;
       --c-n200: #E5E7EB; --c-n300: #D1D5DB; --c-n400: #9CA3AF;
       --c-n500: #6B7280; --c-n600: #4B5563; --c-n700: #374151;
@@ -51,8 +50,6 @@
       --transition-card: transform var(--t-base), box-shadow var(--t-base), opacity var(--t-base);
     }
     body.dark {
-      --c-brand-dark: #E0F2E9; --c-brand: #2a9c67; --c-brand-hover: #3bb77a;
-      --c-brand-lite: #2a9c67; --c-brand-bg: #1A2F24; --c-brand-bdr: #2a5a3a;
       --c-n50: #1a1d21; --c-n100: #212429; --c-n150: #2a2e35;
       --c-n200: #3a3f48; --c-n300: #4a505a; --c-n400: #8a909e;
       --c-n500: #9aa0ae; --c-n600: #bac0cc; --c-n700: #d0d5df;
