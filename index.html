@@ -33,6 +33,8 @@
   <link rel="stylesheet" href="src/styles/tokens/focus-tokens.css" />
   <link rel="stylesheet" href="src/styles/components/toast.css" />
   <link rel="stylesheet" href="src/styles/components/skeleton.css" />
+  <link rel="stylesheet" href="src/styles/components/history.css" />
+  <link rel="stylesheet" href="src/styles/utilities/print.css" />
   <style>
     /* ================================================================
        DESIGN TOKENS & VARIABLES
@@ -556,12 +558,6 @@ body.dark .feat-card { background: var(--c-n50); border-color: var(--c-n150); }
   font-size: 12px; letter-spacing: .01em;
 }
 
-/* ── Print: ensure polish translates to exports ─────────────────── */
-@media print {
-  .opt-card.active { background: #f0faf5 !important; border-color: #1F7A4F !important; }
-  .opt-score-fill { background: #1F7A4F !important; }
-}
-
 /* ================================================================
    BUG FIXES — v2.0.1
    ================================================================ */
@@ -804,14 +800,6 @@ body.dark .modal-box { background: var(--c-n100); }
 .modal-close-btn:focus-visible { outline: 2px solid var(--c-brand); box-shadow: var(--focus-ring); }
 
 /* ================================================================
-   CHANGE HISTORY
-   ================================================================ */
-.history-list { max-height: 200px; overflow-y: auto; font-size: 11px; color: var(--c-n600); }
-.history-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--c-n100); }
-.history-item:last-child { border-bottom: none; }
-.history-time { color: var(--c-n400); font-size: 10px; }
-
-/* ================================================================
    KEYBOARD SHORTCUTS MODAL
    ================================================================ */
 .kbd { display: inline-block; background: var(--c-n100); border: 1px solid var(--c-n200); border-radius: 4px; padding: 2px 6px; font-size: 11px; font-family: monospace; color: var(--c-n700); }
@@ -828,26 +816,6 @@ body.dark .kbd { background: var(--c-n150); border-color: var(--c-n300); color: 
 }
 :focus:not(:focus-visible) { outline: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-
-/* ================================================================
-   PRINT STYLES
-   ================================================================ */
-@media print {
-  .sidebar, .topbar, .workflow, .opt-grid, .slider-group, .preset-row, .slider-actions,
-  .btn, .hamburger, .dark-toggle, .save-indicator, .modal-ov, .toast-wrap,
-  .edit-actions, .edit-grid, #whatIfContainer, .features, .comparison-section,
-  .notes-area, .notes-meta, .history-list { display: none !important; }
-  body { background: white; color: black; height: auto; overflow: visible; }
-  main { overflow: visible; }
-  .page { padding: 20px; }
-  .card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
-  .grid3 { grid-template-columns: 1fr 1fr; }
-  .ai-card { border-top: 3px solid #1F7A4F; }
-  .rec-banner { background: #f5f5f5; border: 1px solid #ccc; }
-  .metric-big { color: #1F7A4F; }
-  .graph-container { page-break-inside: avoid; }
-}
-
 
 /* ================================================================
    CROWN TREATMENT OPTION

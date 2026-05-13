@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-05-12T12:33:56.356Z",
   "lifetime": {
-    "total_tokens_estimated": 1785501,
-    "total_reads": 77,
-    "total_writes": 163,
+    "total_tokens_estimated": 2194754,
+    "total_reads": 93,
+    "total_writes": 195,
     "total_sessions": 10,
-    "anatomy_hits": 24,
-    "anatomy_misses": 53,
-    "repeated_reads_blocked": 117,
-    "estimated_savings_vs_bare_cli": 7145204
+    "anatomy_hits": 28,
+    "anatomy_misses": 65,
+    "repeated_reads_blocked": 167,
+    "estimated_savings_vs_bare_cli": 11187801
   },
   "sessions": [
     {
@@ -1573,6 +1573,330 @@
         "reads_count": 4,
         "writes_count": 4,
         "repeated_reads_blocked": 7,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-05-13-1610",
+      "started": "2026-05-13T13:10:05.176Z",
+      "ended": "2026-05-13T13:21:37.468Z",
+      "reads": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 101081,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/components/skeleton.css",
+          "tokens_estimated": 800,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 42,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 52,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/components/history.css",
+          "tokens_estimated": 159,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 43,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 28,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 101081,
+        "output_tokens_estimated": 1146,
+        "reads_count": 4,
+        "writes_count": 7,
+        "repeated_reads_blocked": 11,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-05-13-1610",
+      "started": "2026-05-13T13:10:05.176Z",
+      "ended": "2026-05-13T13:24:13.629Z",
+      "reads": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 101081,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/components/skeleton.css",
+          "tokens_estimated": 800,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 42,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 52,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/components/history.css",
+          "tokens_estimated": 159,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 43,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 28,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 101081,
+        "output_tokens_estimated": 1146,
+        "reads_count": 4,
+        "writes_count": 7,
+        "repeated_reads_blocked": 11,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-05-13-1610",
+      "started": "2026-05-13T13:10:05.176Z",
+      "ended": "2026-05-13T13:26:44.608Z",
+      "reads": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 101081,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/components/skeleton.css",
+          "tokens_estimated": 800,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 42,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 52,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/components/history.css",
+          "tokens_estimated": 159,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 43,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 28,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 101081,
+        "output_tokens_estimated": 1146,
+        "reads_count": 4,
+        "writes_count": 7,
+        "repeated_reads_blocked": 11,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-05-13-1610",
+      "started": "2026-05-13T13:10:05.176Z",
+      "ended": "2026-05-13T13:30:02.210Z",
+      "reads": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 100970,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/components/skeleton.css",
+          "tokens_estimated": 800,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 42,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 22,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 52,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/components/history.css",
+          "tokens_estimated": 159,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 43,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 28,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/utilities/print.css",
+          "tokens_estimated": 361,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 42,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 26,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 27,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 100970,
+        "output_tokens_estimated": 1602,
+        "reads_count": 4,
+        "writes_count": 11,
+        "repeated_reads_blocked": 17,
         "anatomy_lookups": 1
       }
     }

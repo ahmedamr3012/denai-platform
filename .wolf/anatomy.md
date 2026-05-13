@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T13:15:32.160Z
-> Files: 23 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T13:29:13.397Z
+> Files: 25 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~101081 tok)
+- `index.html` — denai — Clinical Insight (~100669 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -26,6 +26,7 @@
 
 ## src/styles/components/
 
+- `history.css` — Wave-2 extraction: .history-list, .history-item, .history-item:last-child, .history-time (4 rules, no dark block — all token refs via neutral-tokens). Print override stays inline. (~80 tok)
 - `skeleton.css` — Wave-2 extraction: @keyframes skeleton-shimmer, .skeleton (canonical, --skeleton-base/shine tokens), skel-*/skeleton-wrap layout helpers, skeleton-text/circle/bar, card-skeleton-wrap, empty-state (+dark), card-error-fallback. Consolidated duplicate .skeleton — dead skeletonShimmer keyframe dropped. (~320 tok)
 - `toast.css` — Styles: 5 rules (~279 tok)
 
@@ -43,3 +44,7 @@
 - `state-tokens.css` — Wave-1 extraction: --c-success(#22c55e) / --c-warning(#f59e0b) / --c-danger(#ef4444) (3 tokens, mode-invariant, no body.dark block, no cross-refs to risk tokens) (~40 tok)
 - `surface-tokens.css` — Wave-1 extraction: --surface-page/card/sidebar (3 light + 3 dark). COUPLING: light --surface-sidebar refs var(--c-brand-dark); dark --surface-sidebar hardcoded #0d1114 — intentional asymmetry. (~60 tok)
 - `typography-tokens.css` — Wave-1 extraction: --font-body ('DM Sans' stack) + --font-display ('Sora') (2 tokens, mode-invariant). RISK: body{} hardcodes 'DM Sans' directly, not via token — pre-existing drift. (~45 tok)
+
+## src/styles/utilities/
+
+- `print.css` — Wave-2 extraction: 2 @media print blocks (Premium Polish opt-card.active override + main suppression/layout block, 14 rules total). All hardcoded values, no token deps. JS report template @media print (line ~4669) left untouched. (~200 tok)

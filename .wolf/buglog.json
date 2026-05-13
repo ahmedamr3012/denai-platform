@@ -240,6 +240,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-13T13:15:32.174Z"
+    },
+    {
+      "id": "bug-016",
+      "timestamp": "2026-05-13T13:20:44.780Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:20:44.780Z"
+    },
+    {
+      "id": "bug-017",
+      "timestamp": "2026-05-13T13:28:56.867Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:28:56.867Z"
     }
   ]
 }

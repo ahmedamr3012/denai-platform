@@ -122,3 +122,14 @@
 | 16:15 | Edited index.html | removed 19 lines | ~21 |
 | 16:15 | Edited index.html | removed 37 lines | ~49 |
 | 16:16 | Session end: 4 writes across 2 files (skeleton.css, index.html) | 4 reads | ~101997 tok |
+| 16:20 | Wave-2 history panel extraction — .history-list/item/time to history.css | src/styles/components/history.css, index.html | Created file, link inserted after skeleton.css, removed 4 inline rules + section comment, print override left in @media print | ~80 |
+| 16:20 | Edited index.html | removed 10 lines | ~26 |
+| 16:21 | Session end: 7 writes across 3 files (skeleton.css, index.html, history.css) | 4 reads | ~102227 tok |
+| 16:24 | Session end: 7 writes across 3 files (skeleton.css, index.html, history.css) | 4 reads | ~102227 tok |
+| 16:26 | Session end: 7 writes across 3 files (skeleton.css, index.html, history.css) | 4 reads | ~102227 tok |
+| 16:30 | Wave-2 print utilities extraction — 2 @media print blocks to utilities/print.css | src/styles/utilities/print.css, index.html | Created file + new utilities/ dir, link inserted after history.css, removed Premium Polish print block + PRINT STYLES section | ~200 |
+| 16:28 | Created src/styles/utilities/print.css | — | ~361 |
+| 16:28 | Edited index.html | 2→3 lines | ~39 |
+| 16:29 | Edited index.html | reduced (-6 lines) | ~24 |
+| 16:29 | Edited index.html | removed 22 lines | ~25 |
+| 16:30 | Session end: 11 writes across 4 files (skeleton.css, index.html, history.css, print.css) | 4 reads | ~102572 tok |
