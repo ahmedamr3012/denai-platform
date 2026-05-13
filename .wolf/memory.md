@@ -157,3 +157,11 @@
 | 16:54 | Edited index.html | 2→3 lines | ~54 |
 | 17:00 | Wave-2 cards extraction — .rec-banner/.rec-*, .opt-card/.opt-*, .feat-card/.features, .caseclass-strip, .crown-warning-banner, .opt-card.disabled to cards.css | src/styles/components/cards.css, index.html | Created file, link inserted after modal.css, removed 10 extraction groups (~200 inline lines) from AI RECOMMENDATION/TREATMENT OPTIONS/PREMIUM POLISH/BUG FIXES/FEATURES/CROWN sections | ~600 |
 | 16:56 | Session end: 16 writes across 3 files (modal.css, index.html, cards.css) | 5 reads | ~105903 tok |
+| 17:02 | Created src/styles/utilities/accessibility.css | — | ~751 |
+| 17:03 | Edited index.html | 2→3 lines | ~56 |
+| 17:03 | Edited index.html | removed 4 lines | ~9 |
+| 17:03 | Edited index.html | removed 11 lines | ~21 |
+| 17:03 | Edited index.html | removed 11 lines | ~5 |
+| 17:03 | Edited index.html | reduced (-20 lines) | ~175 |
+| 17:08 | Wave-2 accessibility utilities extraction — skip-link, reduced-motion overrides, focus management, ARIA utilities, keyboard-user to accessibility.css | src/styles/utilities/accessibility.css, index.html | Created file, link inserted after focus-tokens/before toast, removed 4 inline blocks (~30 lines) from RESET/base/ACCESSIBILITY&MOTION/WCAG sections, kept .risk-pill inline | ~180 |
+| 17:04 | Session end: 22 writes across 4 files (modal.css, index.html, cards.css, accessibility.css) | 5 reads | ~106940 tok |

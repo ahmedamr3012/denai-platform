@@ -352,6 +352,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-13T13:54:00.447Z"
+    },
+    {
+      "id": "bug-023",
+      "timestamp": "2026-05-13T14:03:19.142Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"src/styles/components/toast.css\"",
+      "fix": "Changed to \"src/styles/utilities/accessibility.css\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T14:03:19.143Z"
+    },
+    {
+      "id": "bug-024",
+      "timestamp": "2026-05-13T14:03:54.536Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "20 lines replaced/restructured",
+      "fix": "Rewrote 27→7 lines (20 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T14:03:54.536Z"
     }
   ]
 }

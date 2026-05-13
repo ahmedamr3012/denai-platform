@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T13:54:00.434Z
-> Files: 27 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T14:03:54.523Z
+> Files: 28 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~96595 tok)
+- `index.html` — denai — Clinical Insight (~96116 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -49,4 +49,5 @@
 
 ## src/styles/utilities/
 
+- `accessibility.css` — Wave-2 extraction: .skip-link (+:focus), 2× @media(prefers-reduced-motion:reduce) globals (+ .heartbeat-path override), :focus:not(:focus-visible), .sr-only (2 cascade layers), :focus-visible global, [aria-busy]/[aria-disabled] ARIA utilities, button/input:focus-visible high-contrast, .keyboard-user indicator. NOT extracted: .risk-pill.* (business-specific), component-owned :focus-visible rules. Loads after focus-tokens, before components. (~120 tok)
 - `print.css` — Wave-2 extraction: 2 @media print blocks (Premium Polish opt-card.active override + main suppression/layout block, 14 rules total). All hardcoded values, no token deps. JS report template @media print (line ~4669) left untouched. (~200 tok)

@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="src/styles/tokens/surface-tokens.css" />
   <link rel="stylesheet" href="src/styles/tokens/risk-tokens.css" />
   <link rel="stylesheet" href="src/styles/tokens/focus-tokens.css" />
+  <link rel="stylesheet" href="src/styles/utilities/accessibility.css" />
   <link rel="stylesheet" href="src/styles/components/toast.css" />
   <link rel="stylesheet" href="src/styles/components/skeleton.css" />
   <link rel="stylesheet" href="src/styles/components/history.css" />
@@ -60,9 +61,6 @@
   .sidebar { transition: background .4s, transform 0.3s cubic-bezier(.16,1,.3,1); }
   .card { will-change: transform; }
 }
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
-}
 html { scroll-behavior: smooth; }
 body {
   font-family: 'DM Sans', system-ui, sans-serif;
@@ -79,15 +77,6 @@ body::before {
 }
 body.dark::before { opacity: .5; }
 h1,h2,h3,h4,h5,h6 { font-family: 'Sora', sans-serif; }
-
-/* Skip Link */
-.skip-link {
-  position: absolute; top: -40px; left: 0; background: var(--c-brand); color: #fff;
-  padding: 8px 16px; z-index: 1000; font-weight: 700; font-size: 13px;
-  border-radius: 0 0 var(--r-sm) 0; text-decoration: none;
-  transition: top .2s ease;
-}
-.skip-link:focus { top: 0; outline: none; }
 
 /* ================================================================
    SIDEBAR
@@ -625,16 +614,6 @@ body.dark .kbd { background: var(--c-n150); border-color: var(--c-n300); color: 
 .shortcut-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--c-n100); font-size: 13px; }
 .shortcut-row:last-child { border-bottom: none; }
 
-/* ================================================================
-   ACCESSIBILITY & MOTION
-   ================================================================ */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
-  .heartbeat-path { animation: none; stroke-dashoffset: 0; }
-}
-:focus:not(:focus-visible) { outline: none; }
-.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-
 .preset-btn.crown { border-color: #c7d2fe; background: #eef2ff; color: #4338ca; }
 .preset-btn.crown:hover { background: #e0e7ff; }
 body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color: #a5b4fc; }
@@ -646,30 +625,10 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 /* ================================================================
    #14 WCAG 2.1 AA — Focus & Accessibility
    ================================================================ */
-:focus-visible {
-  outline: 3px solid var(--c-brand);
-  outline-offset: 2px;
-  border-radius: var(--r-sm);
-}
-:focus:not(:focus-visible) { outline: none; }
-.sr-only {
-  position: absolute; width: 1px; height: 1px; padding: 0;
-  margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
-  white-space: nowrap; border: 0;
-}
-[aria-busy="true"] { cursor: wait; }
-[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
-/* High contrast focus for interactive elements */
-button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:focus-visible {
-  box-shadow: var(--focus-ring);
-  outline: 2px solid var(--c-brand);
-}
 /* Ensure sufficient color contrast for risk labels */
 .risk-pill.low    { background: var(--c-risk-low-bg);  color: var(--c-risk-low);  font-weight: 700; border: 1px solid rgba(22,163,74,.2); }
 .risk-pill.medium { background: var(--c-risk-med-bg);  color: var(--c-risk-med);  font-weight: 700; border: 1px solid rgba(217,119,6,.2); }
 .risk-pill.high   { background: var(--c-risk-high-bg); color: var(--c-risk-high); font-weight: 700; border: 1px solid rgba(220,38,38,.2); }
-/* Keyboard navigation indicator */
-.keyboard-user *:focus { box-shadow: var(--focus-ring) !important; }
 
 /* ================================================================
    MULTI-TOOTH SELECTOR
