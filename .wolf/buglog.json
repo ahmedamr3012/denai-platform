@@ -272,6 +272,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-13T13:28:56.867Z"
+    },
+    {
+      "id": "bug-018",
+      "timestamp": "2026-05-13T13:42:34.027Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"src/styles/utilities/print.css\"",
+      "fix": "Changed to \"src/styles/components/modal.css\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:42:34.027Z"
+    },
+    {
+      "id": "bug-019",
+      "timestamp": "2026-05-13T13:42:52.092Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "13 lines replaced/restructured",
+      "fix": "Rewrote 19→3 lines (13 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:42:52.092Z"
     }
   ]
 }
