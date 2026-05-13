@@ -208,6 +208,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-13T12:55:00.668Z"
+    },
+    {
+      "id": "bug-014",
+      "timestamp": "2026-05-13T13:15:08.568Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:15:08.568Z"
+    },
+    {
+      "id": "bug-015",
+      "timestamp": "2026-05-13T13:15:32.174Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "30 lines replaced/restructured",
+      "fix": "Rewrote 37→4 lines (30 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:15:32.174Z"
     }
   ]
 }

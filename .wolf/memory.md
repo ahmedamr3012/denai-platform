@@ -111,3 +111,14 @@
 | 15:54 | Edited index.html | 2→3 lines | ~39 |
 | 15:55 | Edited index.html | 20→15 lines | ~335 |
 | 15:57 | Session end: 3 writes across 2 files (toast.css, index.html) | 8 reads | ~120821 tok |
+
+## Session: 2026-05-13 16:10
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:15 | Created src/styles/components/skeleton.css | — | ~800 |
+| 16:15 | Wave-2 skeleton extraction — consolidated 2 duplicate .skeleton blocks into skeleton.css | src/styles/components/skeleton.css, index.html | Created file, link inserted after toast.css, removed 13 inline rules (Section 1) + 16 inline rules (Section 2), dead skeletonShimmer keyframe dropped | ~220 |
+| 16:15 | Edited index.html | 2→3 lines | ~39 |
+| 16:15 | Edited index.html | removed 19 lines | ~21 |
+| 16:15 | Edited index.html | removed 37 lines | ~49 |
+| 16:16 | Session end: 4 writes across 2 files (skeleton.css, index.html) | 4 reads | ~101997 tok |
