@@ -90,3 +90,24 @@
 | 13:59 | Edited index.html | 7→5 lines | ~18 |
 | 14:00 | Edited index.html | removed 6 lines | ~1 |
 | 14:00 | Session end: 4 writes across 2 files (focus-tokens.css, index.html) | 5 reads | ~102334 tok |
+
+## Session: 2026-05-13 15:46
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:46 | Wave-2 recon — architectural analysis of post-Wave-1 state | index.html, notes/ | Read-only: mapped 36 CSS sections, ranked extraction risk, identified toast as safest first target | ~3200 |
+| 15:50 | Wave-2 toast CSS extraction | src/styles/components/toast.css, index.html | Created component file, link inserted after focus-tokens, removed 5 inline rules, renamed section comment | ~120 |
+
+## Session: 2026-05-13 15:46
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-13 15:46
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:54 | Created src/styles/components/toast.css | — | ~279 |
+| 15:54 | Edited index.html | 2→3 lines | ~39 |
+| 15:55 | Edited index.html | 20→15 lines | ~335 |
+| 15:57 | Session end: 3 writes across 2 files (toast.css, index.html) | 8 reads | ~120821 tok |

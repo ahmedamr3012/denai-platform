@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="src/styles/tokens/surface-tokens.css" />
   <link rel="stylesheet" href="src/styles/tokens/risk-tokens.css" />
   <link rel="stylesheet" href="src/styles/tokens/focus-tokens.css" />
+  <link rel="stylesheet" href="src/styles/components/toast.css" />
   <style>
     /* ================================================================
        DESIGN TOKENS & VARIABLES
@@ -803,7 +804,7 @@ body.dark .empty-state { background: var(--c-n50); border-color: var(--c-n150); 
 .empty-state p { font-size: 13px; color: var(--c-n500); max-width: 300px; line-height: 1.5; }
 
 /* ================================================================
-   MODALS & TOASTS
+   MODALS
    ================================================================ */
 .modal-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); backdrop-filter: blur(5px); align-items: center; justify-content: center; z-index: 300; animation: mFadeIn .2s ease; }
 @keyframes mFadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -817,11 +818,6 @@ body.dark .modal-box { background: var(--c-n100); }
 }
 .modal-close-btn:hover { color: var(--c-n700); background: var(--c-n100); }
 .modal-close-btn:focus-visible { outline: 2px solid var(--c-brand); box-shadow: var(--focus-ring); }
-.toast-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 400; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-.toast-item { background: var(--c-n900); color: white; padding: 11px 18px; border-radius: 12px; font-size: 13px; font-weight: 500; pointer-events: auto; box-shadow: 0 8px 32px rgba(0,0,0,.22); animation: tIn .4s cubic-bezier(.16,1,.3,1); display: flex; align-items: center; gap: 8px; }
-.toast-item.removing { animation: tOut .3s ease forwards; }
-@keyframes tIn { from { opacity:0; transform:translateY(14px) scale(.95); } to { opacity:1; transform:translateY(0) scale(1); } }
-@keyframes tOut { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(14px); } }
 
 /* ================================================================
    CHANGE HISTORY

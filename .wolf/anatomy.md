@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T11:00:00.932Z
-> Files: 21 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T12:55:00.652Z
+> Files: 22 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~102032 tok)
+- `index.html` — denai — Clinical Insight (~101852 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -23,6 +23,10 @@
 - `denai-architecture-risk-registry.md` (~5229 tok)
 - `denai-runtime-execution-chains.md` (~10202 tok)
 - `denai-state-architecture-audit.md` — Declares reads (~2858 tok)
+
+## src/styles/components/
+
+- `toast.css` — Styles: 5 rules (~279 tok)
 
 ## src/styles/tokens/
 

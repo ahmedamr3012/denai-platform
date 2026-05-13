@@ -1,66 +1,75 @@
 {
-  "session_id": "session-2026-05-13-1358",
-  "started": "2026-05-13T10:58:29.527Z",
+  "session_id": "session-2026-05-13-1546",
+  "started": "2026-05-13T12:46:33.564Z",
   "files_read": {
     "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md": {
       "count": 2,
       "tokens": 0,
-      "first_read": "2026-05-13T10:58:56.899Z"
+      "first_read": "2026-05-13T12:47:02.835Z"
     },
     "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-05-13T10:58:57.118Z"
+      "first_read": "2026-05-13T12:47:03.311Z"
     },
-    "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/tokens/skeleton-tokens.css": {
+    "c:/Users/Dr.Ahmed/Desktop/denai/notes/denai-architecture-risk-registry.md": {
       "count": 1,
-      "tokens": 50,
-      "first_read": "2026-05-13T10:59:08.494Z"
+      "tokens": 5229,
+      "first_read": "2026-05-13T12:47:11.601Z"
+    },
+    "c:/Users/Dr.Ahmed/Desktop/denai/notes/denai-state-architecture-audit.md": {
+      "count": 1,
+      "tokens": 2858,
+      "first_read": "2026-05-13T12:47:12.400Z"
+    },
+    "c:/Users/Dr.Ahmed/Desktop/denai/notes/denai-runtime-execution-chains.md": {
+      "count": 1,
+      "tokens": 10202,
+      "first_read": "2026-05-13T12:47:19.073Z"
     },
     "c:/Users/Dr.Ahmed/Desktop/denai/index.html": {
-      "count": 2,
-      "tokens": 102032,
-      "first_read": "2026-05-13T10:59:08.982Z"
+      "count": 13,
+      "tokens": 101852,
+      "first_read": "2026-05-13T12:47:19.542Z"
     },
-    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md": {
+    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/buglog.json": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-05-13T11:00:11.046Z"
+      "first_read": "2026-05-13T12:53:44.748Z"
+    },
+    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md": {
+      "count": 5,
+      "tokens": 0,
+      "first_read": "2026-05-13T12:55:36.128Z"
     }
   },
   "files_written": [
     {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/tokens/focus-tokens.css",
+      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/components/toast.css",
       "action": "create",
-      "tokens": 188,
-      "at": "2026-05-13T10:59:39.120Z"
+      "tokens": 279,
+      "at": "2026-05-13T12:54:38.174Z"
     },
     {
       "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
       "action": "edit",
-      "tokens": 43,
-      "at": "2026-05-13T10:59:44.053Z"
+      "tokens": 42,
+      "at": "2026-05-13T12:54:43.935Z"
     },
     {
       "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
       "action": "edit",
-      "tokens": 20,
-      "at": "2026-05-13T10:59:48.746Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 1,
-      "at": "2026-05-13T11:00:00.944Z"
+      "tokens": 359,
+      "at": "2026-05-13T12:55:00.666Z"
     }
   ],
   "edit_counts": {
-    "src/styles/tokens/focus-tokens.css": 1,
-    "index.html": 3
+    "src/styles/components/toast.css": 1,
+    "index.html": 2
   },
-  "anatomy_hits": 2,
-  "anatomy_misses": 3,
-  "repeated_reads_warned": 2,
+  "anatomy_hits": 4,
+  "anatomy_misses": 4,
+  "repeated_reads_warned": 17,
   "cerebrum_warnings": 0,
-  "stop_count": 1
+  "stop_count": 2
 }
