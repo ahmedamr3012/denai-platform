@@ -2,3 +2,33 @@
 
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
+
+## Session: 2026-05-13 11:24
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:24 | Governance analysis — identified safe brand token extraction subset | index.html | Analysis only, no edits | ~800 |
+| 11:24 | Wave-1 neutral extraction — --c-n* scale (11 light + 11 dark) to neutral-tokens.css | src/styles/tokens/neutral-tokens.css, index.html | Created token file, removed 8 inline declaration lines, added link tag | ~200 |
+| 11:24 | Wave-1 calibration extraction — brand tokens to dedicated CSS module | src/styles/tokens/brand-tokens.css, index.html | Created token file, removed 4 inline declarations, added link tag | ~400 |
+
+## Session: 2026-05-13 11:24
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-13 11:24
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:37 | Created src/styles/tokens/brand-tokens.css | — | ~180 |
+| 11:38 | Edited index.html | 2→3 lines | ~51 |
+| 11:38 | Edited index.html | removed 4 lines | ~10 |
+| 11:38 | Edited index.html | removed 4 lines | ~11 |
+| 11:43 | Session end: 4 writes across 2 files (brand-tokens.css, index.html) | 5 reads | ~102708 tok |
+| 11:48 | CSP fix — added 'self' to style-src for local modular CSS loading | index.html | One token inserted, all other directives untouched | ~25 |
+| 11:48 | Session end: 5 writes across 2 files (brand-tokens.css, index.html) | 5 reads | ~102736 tok |
+| 11:56 | Created src/styles/tokens/neutral-tokens.css | — | ~216 |
+| 11:56 | Edited index.html | 2→3 lines | ~41 |
+| 11:56 | Edited index.html | removed 6 lines | ~11 |
+| 11:56 | Edited index.html | removed 6 lines | ~13 |
+| 11:58 | Session end: 9 writes across 3 files (brand-tokens.css, index.html, neutral-tokens.css) | 5 reads | ~102916 tok |

@@ -1,0 +1,32 @@
+/* ================================================================
+   NEUTRAL GRAYSCALE TOKENS — Calibration Extraction Wave 1
+   Source of truth for --c-n* scale. Do not redeclare in index.html.
+   ================================================================ */
+
+:root {
+  --c-n50:  #F9FAFB;
+  --c-n100: #F3F4F6;
+  --c-n150: #ECEEF1;
+  --c-n200: #E5E7EB;
+  --c-n300: #D1D5DB;
+  --c-n400: #9CA3AF;
+  --c-n500: #6B7280;
+  --c-n600: #4B5563;
+  --c-n700: #374151;
+  --c-n800: #1F2937;
+  --c-n900: #111827;
+}
+
+body.dark {
+  --c-n50:  #1a1d21;
+  --c-n100: #212429;
+  --c-n150: #2a2e35;
+  --c-n200: #3a3f48;
+  --c-n300: #4a505a;
+  --c-n400: #8a909e;
+  --c-n500: #9aa0ae;
+  --c-n600: #bac0cc;
+  --c-n700: #d0d5df;
+  --c-n800: #e5e8ef;
+  --c-n900: #f5f7fc;
+}
