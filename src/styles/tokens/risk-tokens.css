@@ -1,0 +1,19 @@
+/* ================================================================
+   CLINICAL RISK TOKENS — Calibration Extraction Wave 1
+   Source of truth for --c-risk-* severity family. Do not redeclare in index.html.
+   NOTE: No body.dark overrides — all 6 tokens are mode-invariant.
+         --c-risk-*-bg values hardcode the same RGB channels as their solid counterparts
+         (not token references) — known drift risk, pre-existing, not introduced here.
+         Semantic separation: risk tokens are clinical severity indicators,
+         intentionally distinct from state tokens (--c-success/warning/danger).
+   ================================================================ */
+
+:root {
+  --c-risk-low:    #16a34a;
+  --c-risk-med:    #d97706;
+  --c-risk-high:   #dc2626;
+
+  --c-risk-low-bg:  rgba(22,163,74,.08);
+  --c-risk-med-bg:  rgba(217,119,6,.08);
+  --c-risk-high-bg: rgba(220,38,38,.08);
+}

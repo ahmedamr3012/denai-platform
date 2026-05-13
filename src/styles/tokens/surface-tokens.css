@@ -1,0 +1,19 @@
+/* ================================================================
+   SURFACE TOKENS — Calibration Extraction Wave 1
+   Source of truth for --surface-* background family. Do not redeclare in index.html.
+   NOTE: --surface-sidebar in :root references var(--c-brand-dark) from brand-tokens.css.
+         In body.dark, --surface-sidebar is hardcoded #0d1114 — NOT var(--c-brand-dark).
+         This asymmetry is intentional and pre-existing.
+   ================================================================ */
+
+:root {
+  --surface-page:    #EEF2EF;
+  --surface-card:    #ffffff;
+  --surface-sidebar: var(--c-brand-dark);
+}
+
+body.dark {
+  --surface-page:    #14181c;
+  --surface-card:    #1a1d21;
+  --surface-sidebar: #0d1114;
+}

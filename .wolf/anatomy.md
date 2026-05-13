@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T09:44:55.274Z
-> Files: 17 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T10:03:30.776Z
+> Files: 20 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~102125 tok)
+- `index.html` — denai — Clinical Insight (~102060 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -31,6 +31,9 @@
 - `layout-tokens.css` — Wave-1 extraction: --r-sm/md/lg/xl/2xl radius scale + --sidebar-w/--topbar-h layout dims (7 tokens, mode-invariant, no body.dark block) (~50 tok)
 - `motion-tokens.css` — Wave-1 extraction: --t-fast/base/spring timing primitives + --transition-card composite (4 tokens, mode-invariant). NOTE: --transition-card refs var(--t-base) — co-extracted. (~55 tok)
 - `neutral-tokens.css` — Wave-1 extraction: --c-n50 through --c-n900 scale (11 light + 11 dark-mode overrides) (~60 tok)
+- `risk-tokens.css` — Wave-1 extraction: --c-risk-low/med/high (hex) + --c-risk-*-bg (rgba at .08 opacity, 6 tokens, mode-invariant). DRIFT: bg values hardcode same RGB as solid counterparts, not token refs. (~65 tok)
 - `shadow-tokens.css` — Wave-1 extraction: --shadow-xs/sm/md/lg/brand (5 light + 5 dark). NOTE: --shadow-brand hardcodes brand rgba, not a token ref. (~60 tok)
 - `skeleton-tokens.css` — Wave-1 extraction: --skeleton-base/shine (2 light + 2 dark-mode overrides). Raw hex values, no cross-refs. (~50 tok)
+- `state-tokens.css` — Wave-1 extraction: --c-success(#22c55e) / --c-warning(#f59e0b) / --c-danger(#ef4444) (3 tokens, mode-invariant, no body.dark block, no cross-refs to risk tokens) (~40 tok)
+- `surface-tokens.css` — Wave-1 extraction: --surface-page/card/sidebar (3 light + 3 dark). COUPLING: light --surface-sidebar refs var(--c-brand-dark); dark --surface-sidebar hardcoded #0d1114 — intentional asymmetry. (~60 tok)
 - `typography-tokens.css` — Wave-1 extraction: --font-body ('DM Sans' stack) + --font-display ('Sora') (2 tokens, mode-invariant). RISK: body{} hardcodes 'DM Sans' directly, not via token — pre-existing drift. (~45 tok)
