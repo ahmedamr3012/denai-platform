@@ -1,0 +1,17 @@
+/* ================================================================
+   LAYOUT TOKENS — Calibration Extraction Wave 1
+   Source of truth for --r-* radius scale and --sidebar-w / --topbar-h layout dims.
+   Do not redeclare in index.html.
+   NOTE: None of these tokens have body.dark overrides — values are mode-invariant.
+   ================================================================ */
+
+:root {
+  --r-sm:  8px;
+  --r-md:  12px;
+  --r-lg:  16px;
+  --r-xl:  20px;
+  --r-2xl: 24px;
+
+  --sidebar-w: 238px;
+  --topbar-h:  68px;
+}

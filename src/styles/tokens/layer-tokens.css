@@ -1,0 +1,13 @@
+/* ================================================================
+   LAYER (Z-INDEX) TOKENS — Calibration Extraction Wave 1
+   Source of truth for --z-* stacking layer scale. Do not redeclare in index.html.
+   NOTE: Values are primitive integers. No body.dark overrides — mode-invariant.
+         Stacking order: sidebar (30) < overlay (100) < modal (200) < toast (300)
+   ================================================================ */
+
+:root {
+  --z-sidebar:  30;
+  --z-overlay:  100;
+  --z-modal:    200;
+  --z-toast:    300;
+}

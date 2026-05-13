@@ -22,6 +22,9 @@
   <link rel="stylesheet" href="src/styles/tokens/brand-tokens.css" />
   <link rel="stylesheet" href="src/styles/tokens/neutral-tokens.css" />
   <link rel="stylesheet" href="src/styles/tokens/shadow-tokens.css" />
+  <link rel="stylesheet" href="src/styles/tokens/layout-tokens.css" />
+  <link rel="stylesheet" href="src/styles/tokens/motion-tokens.css" />
+  <link rel="stylesheet" href="src/styles/tokens/layer-tokens.css" />
   <style>
     /* ================================================================
        DESIGN TOKENS & VARIABLES
@@ -29,18 +32,13 @@
     :root {
       --c-success: #22c55e; --c-warning: #f59e0b; --c-danger: #ef4444;
       --surface-page: #EEF2EF; --surface-card: #ffffff; --surface-sidebar: var(--c-brand-dark);
-      --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-2xl: 24px;
-      --t-fast: .15s ease; --t-base: .25s cubic-bezier(.4,0,.2,1); --t-spring: .5s cubic-bezier(.16,1,.3,1);
-      --sidebar-w: 238px; --topbar-h: 68px;
       --focus-ring: 0 0 0 3px rgba(31,122,79,.35);
       /* Extended tokens */
       --c-risk-low: #16a34a;  --c-risk-med: #d97706;  --c-risk-high: #dc2626;
       --c-risk-low-bg: rgba(22,163,74,.08); --c-risk-med-bg: rgba(217,119,6,.08); --c-risk-high-bg: rgba(220,38,38,.08);
       --font-body: 'DM Sans', system-ui, sans-serif;
       --font-display: 'Sora', sans-serif;
-      --z-sidebar: 30; --z-overlay: 100; --z-modal: 200; --z-toast: 300;
       --skeleton-base: #e5e7eb; --skeleton-shine: #f3f4f6;
-      --transition-card: transform var(--t-base), box-shadow var(--t-base), opacity var(--t-base);
     }
     body.dark {
       --surface-page: #14181c; --surface-card: #1a1d21; --surface-sidebar: #0d1114;

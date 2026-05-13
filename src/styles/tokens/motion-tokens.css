@@ -1,0 +1,15 @@
+/* ================================================================
+   MOTION TOKENS — Calibration Extraction Wave 1
+   Source of truth for --t-* timing primitives and --transition-card composite.
+   Do not redeclare in index.html.
+   NOTE: --transition-card references var(--t-base) — both must remain co-extracted.
+         None of these tokens have body.dark overrides; values are mode-invariant.
+   ================================================================ */
+
+:root {
+  --t-fast:   .15s ease;
+  --t-base:   .25s cubic-bezier(.4,0,.2,1);
+  --t-spring: .5s cubic-bezier(.16,1,.3,1);
+
+  --transition-card: transform var(--t-base), box-shadow var(--t-base), opacity var(--t-base);
+}

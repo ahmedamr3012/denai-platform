@@ -64,6 +64,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-13T09:02:59.111Z"
+    },
+    {
+      "id": "bug-005",
+      "timestamp": "2026-05-13T09:24:12.270Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-13T09:31:38.002Z"
     }
   ]
 }
