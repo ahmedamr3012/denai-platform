@@ -9,6 +9,7 @@
 |------|--------|---------|---------|--------|
 | 11:24 | Governance analysis — identified safe brand token extraction subset | index.html | Analysis only, no edits | ~800 |
 | 11:24 | Wave-1 neutral extraction — --c-n* scale (11 light + 11 dark) to neutral-tokens.css | src/styles/tokens/neutral-tokens.css, index.html | Created token file, removed 8 inline declaration lines, added link tag | ~200 |
+| 11:24 | Wave-1 shadow extraction — --shadow-* (5 light + 5 dark) to shadow-tokens.css | src/styles/tokens/shadow-tokens.css, index.html | Created token file, removed 10 inline declaration lines, added link tag | ~150 |
 | 11:24 | Wave-1 calibration extraction — brand tokens to dedicated CSS module | src/styles/tokens/brand-tokens.css, index.html | Created token file, removed 4 inline declarations, added link tag | ~400 |
 
 ## Session: 2026-05-13 11:24
@@ -32,3 +33,8 @@
 | 11:56 | Edited index.html | removed 6 lines | ~11 |
 | 11:56 | Edited index.html | removed 6 lines | ~13 |
 | 11:58 | Session end: 9 writes across 3 files (brand-tokens.css, index.html, neutral-tokens.css) | 5 reads | ~102916 tok |
+| 12:02 | Created src/styles/tokens/shadow-tokens.css | — | ~302 |
+| 12:02 | Edited index.html | 2→3 lines | ~41 |
+| 12:03 | Edited index.html | removed 6 lines | ~5 |
+| 12:03 | Edited index.html | removed 6 lines | ~14 |
+| 12:04 | Session end: 13 writes across 4 files (brand-tokens.css, index.html, neutral-tokens.css, shadow-tokens.css) | 5 reads | ~103129 tok |
