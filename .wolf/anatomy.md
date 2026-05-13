@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T10:03:30.776Z
-> Files: 20 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T11:00:00.932Z
+> Files: 21 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~102060 tok)
+- `index.html` — denai — Clinical Insight (~102032 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -27,6 +27,7 @@
 ## src/styles/tokens/
 
 - `brand-tokens.css` — Wave-1 extraction: --c-brand-* family only (6 light + 6 dark-mode overrides) (~40 tok)
+- `focus-tokens.css` — Wave-1 extraction: --focus-ring (1 light + 1 dark-mode override). COUPLING: rgba RGB channels hardcode brand color values (31,122,79 light / 42,156,103 dark) — will drift on palette change. (~45 tok)
 - `layer-tokens.css` — Wave-1 extraction: --z-sidebar(30)/overlay(100)/modal(200)/toast(300) stacking scale (4 tokens, mode-invariant, primitive integers, no body.dark block) (~45 tok)
 - `layout-tokens.css` — Wave-1 extraction: --r-sm/md/lg/xl/2xl radius scale + --sidebar-w/--topbar-h layout dims (7 tokens, mode-invariant, no body.dark block) (~50 tok)
 - `motion-tokens.css` — Wave-1 extraction: --t-fast/base/spring timing primitives + --transition-card composite (4 tokens, mode-invariant). NOTE: --transition-card refs var(--t-base) — co-extracted. (~55 tok)

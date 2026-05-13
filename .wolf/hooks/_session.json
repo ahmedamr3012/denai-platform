@@ -1,206 +1,66 @@
 {
-  "session_id": "session-2026-05-13-1221",
-  "started": "2026-05-13T09:21:48.401Z",
+  "session_id": "session-2026-05-13-1358",
+  "started": "2026-05-13T10:58:29.527Z",
   "files_read": {
+    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-05-13T10:58:56.899Z"
+    },
     "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-05-13T09:23:44.582Z"
+      "first_read": "2026-05-13T10:58:57.118Z"
+    },
+    "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/tokens/skeleton-tokens.css": {
+      "count": 1,
+      "tokens": 50,
+      "first_read": "2026-05-13T10:59:08.494Z"
     },
     "c:/Users/Dr.Ahmed/Desktop/denai/index.html": {
-      "count": 8,
-      "tokens": 102095,
-      "first_read": "2026-05-13T09:23:45.009Z"
-    },
-    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md": {
-      "count": 8,
-      "tokens": 0,
-      "first_read": "2026-05-13T09:24:23.187Z"
+      "count": 2,
+      "tokens": 102032,
+      "first_read": "2026-05-13T10:59:08.982Z"
     },
     "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-05-13T09:24:41.667Z"
+      "first_read": "2026-05-13T11:00:11.046Z"
     }
   },
   "files_written": [
     {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/tokens/layout-tokens.css",
+      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/tokens/focus-tokens.css",
       "action": "create",
-      "tokens": 152,
-      "at": "2026-05-13T09:24:07.535Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 44,
-      "at": "2026-05-13T09:24:12.259Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 31,
-      "at": "2026-05-13T09:24:18.133Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/tokens/motion-tokens.css",
-      "action": "create",
-      "tokens": 198,
-      "at": "2026-05-13T09:27:00.530Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 44,
-      "at": "2026-05-13T09:27:04.777Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 15,
-      "at": "2026-05-13T09:27:11.027Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 19,
-      "at": "2026-05-13T09:27:16.485Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/tokens/layer-tokens.css",
-      "action": "create",
-      "tokens": 154,
-      "at": "2026-05-13T09:31:33.022Z"
+      "tokens": 188,
+      "at": "2026-05-13T10:59:39.120Z"
     },
     {
       "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
       "action": "edit",
       "tokens": 43,
-      "at": "2026-05-13T09:31:37.999Z"
+      "at": "2026-05-13T10:59:44.053Z"
     },
     {
       "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
       "action": "edit",
-      "tokens": 29,
-      "at": "2026-05-13T09:31:44.004Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/tokens/typography-tokens.css",
-      "action": "create",
-      "tokens": 186,
-      "at": "2026-05-13T09:38:17.514Z"
+      "tokens": 20,
+      "at": "2026-05-13T10:59:48.746Z"
     },
     {
       "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
       "action": "edit",
-      "tokens": 44,
-      "at": "2026-05-13T09:38:22.372Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 17,
-      "at": "2026-05-13T09:38:27.748Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/tokens/skeleton-tokens.css",
-      "action": "create",
-      "tokens": 166,
-      "at": "2026-05-13T09:44:32.958Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 45,
-      "at": "2026-05-13T09:44:39.670Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 36,
-      "at": "2026-05-13T09:44:46.182Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 17,
-      "at": "2026-05-13T09:44:55.307Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/tokens/state-tokens.css",
-      "action": "create",
-      "tokens": 152,
-      "at": "2026-05-13T09:52:00.629Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 44,
-      "at": "2026-05-13T09:52:07.075Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 9,
-      "at": "2026-05-13T09:52:14.854Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/tokens/surface-tokens.css",
-      "action": "create",
-      "tokens": 209,
-      "at": "2026-05-13T09:55:37.260Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 44,
-      "at": "2026-05-13T09:55:44.881Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 15,
-      "at": "2026-05-13T09:55:54.826Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 15,
-      "at": "2026-05-13T09:56:00.464Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/styles/tokens/risk-tokens.css",
-      "action": "create",
-      "tokens": 256,
-      "at": "2026-05-13T10:03:17.207Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 43,
-      "at": "2026-05-13T10:03:23.000Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 10,
-      "at": "2026-05-13T10:03:30.815Z"
+      "tokens": 1,
+      "at": "2026-05-13T11:00:00.944Z"
     }
   ],
   "edit_counts": {
-    "src/styles/tokens/layout-tokens.css": 1,
-    "index.html": 19,
-    "src/styles/tokens/motion-tokens.css": 1,
-    "src/styles/tokens/layer-tokens.css": 1,
-    "src/styles/tokens/typography-tokens.css": 1,
-    "src/styles/tokens/skeleton-tokens.css": 1,
-    "src/styles/tokens/state-tokens.css": 1,
-    "src/styles/tokens/surface-tokens.css": 1,
-    "src/styles/tokens/risk-tokens.css": 1
+    "src/styles/tokens/focus-tokens.css": 1,
+    "index.html": 3
   },
-  "anatomy_hits": 1,
+  "anatomy_hits": 2,
   "anatomy_misses": 3,
-  "repeated_reads_warned": 14,
+  "repeated_reads_warned": 2,
   "cerebrum_warnings": 0,
-  "stop_count": 8
+  "stop_count": 1
 }

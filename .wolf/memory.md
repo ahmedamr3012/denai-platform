@@ -3,6 +3,8 @@
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
 
+| 11:05 | Wave-1 focus-ring extraction | src/styles/tokens/focus-tokens.css, index.html | created token file, added link, removed 2 declarations + empty rulesets | ~60 tok |
+
 ## Session: 2026-05-13 11:24
 
 | Time | Action | File(s) | Outcome | ~Tokens |
@@ -78,3 +80,13 @@
 | 13:03 | Edited index.html | 2→3 lines | ~40 |
 | 13:03 | Edited index.html | removed 4 lines | ~9 |
 | 13:04 | Session end: 27 writes across 9 files (layout-tokens.css, index.html, motion-tokens.css, layer-tokens.css, typography-tokens.css) | 4 reads | ~104132 tok |
+
+## Session: 2026-05-13 13:58
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:59 | Created src/styles/tokens/focus-tokens.css | — | ~188 |
+| 13:59 | Edited index.html | 2→3 lines | ~40 |
+| 13:59 | Edited index.html | 7→5 lines | ~18 |
+| 14:00 | Edited index.html | removed 6 lines | ~1 |
+| 14:00 | Session end: 4 writes across 2 files (focus-tokens.css, index.html) | 5 reads | ~102334 tok |
