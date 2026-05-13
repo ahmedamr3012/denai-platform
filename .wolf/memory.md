@@ -165,3 +165,21 @@
 | 17:03 | Edited index.html | reduced (-20 lines) | ~175 |
 | 17:08 | Wave-2 accessibility utilities extraction — skip-link, reduced-motion overrides, focus management, ARIA utilities, keyboard-user to accessibility.css | src/styles/utilities/accessibility.css, index.html | Created file, link inserted after focus-tokens/before toast, removed 4 inline blocks (~30 lines) from RESET/base/ACCESSIBILITY&MOTION/WCAG sections, kept .risk-pill inline | ~180 |
 | 17:04 | Session end: 22 writes across 4 files (modal.css, index.html, cards.css, accessibility.css) | 5 reads | ~106940 tok |
+
+## Session: 2026-05-13 17:11
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 17:31 | Created src/ai/calcAI.js | — | ~7058 |
+| 17:31 | Wave-3 Step A — created src/ai/calcAI.js with 6 pure functions (isPosteriorTooth, isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI) copied byte-for-byte from index.html lines 1577–2114 | src/ai/calcAI.js | File created, 538 lines, syntax OK, index.html untouched (5785 lines) | ~120 |
+| 17:33 | Session end: 1 writes across 1 files (calcAI.js) | 4 reads | ~103174 tok |
+
+## Session: 2026-05-13 17:37
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 17:37 | Wave-3 Step B — inserted <script src="src/ai/calcAI.js"></script> at line 41 of index.html (after print.css, before <style>) | index.html | Both copies of 6 functions now coexist; classic-script load order valid; inline code untouched | ~30 |
+| 17:38 | Session end: 1 writes across 1 files (index.html) | 2 reads | ~96162 tok |
+| 17:XX | Wave-3 Step C ROLLBACK — restored 538 inline lines (isPosteriorTooth/isMaxilla/isAdjacent/getAdjacentTeeth/calcAIMulti/calcAI) to index.html; dual-definition state re-established | index.html | 5249→5787 lines; all 6 functions at lines 1578/1582/1593/1603/1613/1770; script tag at line 41 intact | ~60 |
+| 17:49 | Session end: 1 writes across 1 files (index.html) | 2 reads | ~96162 tok |
+| 17:57 | Session end: 1 writes across 1 files (index.html) | 2 reads | ~96162 tok |

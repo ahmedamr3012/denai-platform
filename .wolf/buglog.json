@@ -384,6 +384,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-13T14:03:54.536Z"
+    },
+    {
+      "id": "bug-025",
+      "timestamp": "2026-05-13T14:37:52.582Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T14:37:52.582Z"
     }
   ]
 }

@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T14:03:54.523Z
-> Files: 28 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T14:37:52.565Z
+> Files: 29 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~96116 tok)
+- `index.html` — denai — Clinical Insight (~96128 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -23,6 +23,10 @@
 - `denai-architecture-risk-registry.md` (~5229 tok)
 - `denai-runtime-execution-chains.md` (~10202 tok)
 - `denai-state-architecture-audit.md` — Declares reads (~2858 tok)
+
+## src/ai/
+
+- `calcAI.js` — Wave-3 extraction: isPosteriorTooth, isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI. Pure functions — no DOM, no S, no localStorage. Globals exposed via classic-script top-level declarations. (~120 tok)
 
 ## src/styles/components/
 
