@@ -1,0 +1,206 @@
+/* ================================================================
+   FEATURE & RECOMMENDATION CARDS — Wave 2 extraction
+   Depends on: --c-brand/brand-lite/brand-bg/brand-bdr/brand-dark (brand-tokens),
+               --c-n50/n100/n150/n200/n300/n400/n500/n600/n700/n900 (neutral-tokens),
+               --shadow-xs/sm/md/brand (shadow-tokens), --r-lg/md (layout-tokens),
+               --t-fast/base/spring (motion-tokens), --focus-ring (focus-tokens)
+   Covers: .rec-banner/.rec-*, .opt-card/.opt-*, .feat-card/.features,
+           .sel-badge, .caseclass-strip, .crown-warning-banner
+   Cascade preserved from inline extraction order (groups 1–10)
+   ================================================================ */
+
+/* ── Group 1: Card/banner motion transitions (from base @media block) ── */
+@media (prefers-reduced-motion: no-preference) {
+  .opt-card   { transition: transform var(--t-fast), box-shadow var(--t-fast), border-color var(--t-fast), background var(--t-fast); }
+  .opt-card:hover:not(.disabled) { transform: translateY(-3px) scale(1.01); box-shadow: var(--shadow-md); }
+  .opt-card.active { transform: translateY(-3px); }
+  .rec-banner { transition: background var(--t-fast), transform var(--t-fast), box-shadow var(--t-fast); }
+  .rec-banner:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+}
+
+/* ================================================================
+   AI RECOMMENDATION
+   ================================================================ */
+.rec-banner { background: linear-gradient(135deg, #edfaf4 0%, #e3f5ec 100%); border: 1.5px solid var(--c-brand-bdr); border-radius: var(--r-lg); padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all var(--t-base); position: relative; overflow: hidden; flex-shrink: 0; }
+body.dark .rec-banner { background: linear-gradient(135deg, #1a3a2a 0%, #1a3024 100%); border-color: var(--c-brand-bdr); }
+.rec-banner::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(31,122,79,.05), transparent); background-size: 200% 100%; animation: recShimmer 3.5s ease infinite; }
+@keyframes recShimmer { 0% { background-position: -100% 0; } 100% { background-position: 300% 0; } }
+.rec-banner:hover { border-color: var(--c-brand); box-shadow: var(--shadow-brand); transform: translateY(-1px); }
+.rec-banner:active { transform: translateY(0); }
+.rec-banner:focus-visible { outline: 2px solid var(--c-brand); outline-offset: 2px; box-shadow: var(--focus-ring); }
+.rec-icon { width: 44px; height: 44px; border-radius: 13px; background: var(--c-brand); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: 0 4px 14px rgba(31,122,79,.32); }
+.rec-content { flex: 1; position: relative; z-index: 1; }
+.rec-label { font-size: 9.5px; font-weight: 700; color: var(--c-brand); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 3px; }
+.rec-text { font-size: 15px; font-weight: 700; color: var(--c-brand-dark); line-height: 1.2; min-height: 1.5em; }
+.typewriter-cursor::after { content: '|'; animation: blink 1s step-start infinite; margin-left: 2px; color: var(--c-brand); font-weight: 300; }
+@keyframes blink { 50% { opacity: 0; } }
+.rec-arrow { color: var(--c-brand); opacity: .55; font-size: 12px; transition: all var(--t-base); flex-shrink: 0; position: relative; z-index: 1; }
+.rec-banner:hover .rec-arrow { opacity: 1; transform: translateX(3px); }
+
+/* ================================================================
+   TREATMENT OPTIONS
+   ================================================================ */
+.opt-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+@media (max-width: 700px) { .opt-grid { grid-template-columns: 1fr; } }
+.opt-card { border: 2px solid var(--c-n200); border-radius: var(--r-lg); padding: 14px 10px; text-align: center; cursor: pointer; transition: all var(--t-spring); position: relative; background: var(--c-n50); overflow: visible; font-family: inherit; }
+.opt-card:hover { border-color: #b5d3c2; background: white; transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.opt-card.active { border-color: var(--c-brand); background: white; box-shadow: 0 0 0 4px rgba(31,122,79,.09), var(--shadow-md); transform: translateY(-1px); }
+.opt-card:not(.active) { opacity: .62; }
+.opt-card:not(.active):hover { opacity: .85; }
+.opt-card:focus-visible { outline: 2px solid var(--c-brand); outline-offset: 2px; box-shadow: var(--focus-ring); }
+body.dark .opt-card { background: var(--c-n50); }
+body.dark .opt-card:hover { background: var(--c-n100); }
+body.dark .opt-card.active { background: var(--c-n100); }
+body.dark .opt-card:not(.active) { opacity: .75; }
+.sel-badge { display: none; position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: var(--c-brand); color: white; font-size: 8.5px; font-weight: 700; padding: 2px 9px; border-radius: 20px; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; box-shadow: 0 2px 8px rgba(31,122,79,.3); animation: badgePop .35s cubic-bezier(.16,1,.3,1); }
+@keyframes badgePop { 0% { transform: translateX(-50%) scale(.5); opacity: 0; } 70% { transform: translateX(-50%) scale(1.06); } 100% { transform: translateX(-50%) scale(1); opacity: 1; } }
+.opt-card.active .sel-badge { display: block; }
+.opt-icon { font-size: 27px; margin-bottom: 6px; line-height: 1; display: flex; justify-content: center; align-items: center; gap: 4px; color: var(--c-n400); transition: color .3s; }
+.opt-card:hover .opt-icon { color: var(--c-brand); }
+.opt-card:not(.active):hover .opt-icon { color: var(--c-n600); }
+.opt-name { font-size: 14px; font-weight: 700; color: var(--c-n900); margin-bottom: 2px; }
+.opt-sub { font-size: 10px; color: var(--c-n400); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+.opt-rec { display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.opt-rec-g { background: var(--c-brand-bg); color: var(--c-brand); }
+.opt-rec-b { background: #eff6ff; color: #2563eb; }
+.opt-rec-gold { background: #fefce8; color: #b45309; border: 1px solid #fde68a; }
+
+/* ── PREMIUM POLISH: Treatment cards active state depth ────────── */
+.opt-card.active {
+  background: linear-gradient(175deg, rgba(31,122,79,.05) 0%, white 55%);
+  border-color: var(--c-brand);
+  box-shadow: 0 0 0 4px rgba(31,122,79,.08), 0 4px 18px rgba(31,122,79,.14);
+  transform: translateY(-2px);
+}
+body.dark .opt-card.active {
+  background: linear-gradient(175deg, rgba(42,156,103,.1) 0%, var(--c-n100) 55%);
+}
+.opt-card:not(.active) { opacity: .78; }
+.opt-card:not(.active):hover { opacity: .96; }
+body.dark .opt-card:not(.active) { opacity: .82; }
+
+/* ── PREMIUM POLISH: Score bars ────────────────────────────────── */
+.opt-score-bar { margin: 7px 0 0; padding-top: 6px; border-top: 1px solid rgba(0,0,0,.05); }
+.opt-card.active .opt-score-bar { border-top-color: rgba(31,122,79,.15); }
+.opt-score-fill { background: linear-gradient(90deg, var(--c-brand), var(--c-brand-lite)); }
+.opt-card.active .opt-score-fill { background: linear-gradient(90deg, rgba(255,255,255,.75), rgba(255,255,255,.95)); }
+@media (prefers-reduced-motion: no-preference) {
+  .opt-score-fill { transition: width .65s cubic-bezier(.16,1,.3,1), background .3s ease; }
+  .opt-score-val { transition: color .2s ease; }
+}
+
+/* ── PREMIUM POLISH: Inline top reason ─────────────────────────── */
+.rec-top-reason {
+  font-size: 11.5px; color: var(--c-n600); line-height: 1.5;
+  background: var(--c-brand-bg); border-left: 3px solid var(--c-brand);
+  border-radius: 0 6px 6px 0; padding: 6px 10px; margin-top: 7px;
+}
+body.dark .rec-top-reason { background: rgba(31,122,79,.12); color: var(--c-n600); }
+
+/* ── PREMIUM POLISH: Case class badge entrance animation ────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .caseclass-strip { animation: classStripIn .3s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes classStripIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
+}
+.caseclass-strip { font-size: 11.5px; letter-spacing: .01em; padding: 7px 13px; }
+
+/* ── PREMIUM POLISH: Feature cards lighter surface ──────────────── */
+.features { gap: 10px; }
+.feat-card {
+  background: white; border: 1px solid var(--c-n100);
+  border-radius: var(--r-lg); padding: 14px 16px;
+  box-shadow: var(--shadow-xs); transition: box-shadow var(--t-base);
+}
+.feat-card:hover { box-shadow: var(--shadow-sm); }
+body.dark .feat-card { background: var(--c-n50); border-color: var(--c-n150); }
+
+/* ================================================================
+   BUG FIXES — v2.0.1
+   ================================================================ */
+
+/* FIX 1: Active card score visibility
+   The active card background is now mostly white (gradient to white at 55%).
+   The previous white score text was designed for a fully-green active state.
+   Override with brand color so the score is readable on the white gradient. */
+.opt-card.active .opt-score-val   { color: var(--c-brand) !important; }
+.opt-card.active .opt-score-track { background: rgba(31,122,79,.12) !important; }
+.opt-card.active .opt-score-fill  { background: linear-gradient(90deg, var(--c-brand), var(--c-brand-lite)) !important; }
+/* Dark mode: background is dark grey — brand green remains visible */
+body.dark .opt-card.active .opt-score-val   { color: var(--c-brand); }
+body.dark .opt-card.active .opt-score-track { background: rgba(42,156,103,.15); }
+body.dark .opt-card.active .opt-score-fill  { background: linear-gradient(90deg, var(--c-brand), var(--c-brand-lite)); }
+
+/* FIX 2: Tooltip stacking context
+   .card has will-change:transform (motion query) → creates a stacking context.
+   Card 3 (DOM order after Card 2) paints over Card 2's stacking context,
+   hiding the tooltip. Give .ai-card an explicit z-index so its stacking
+   context is asserted above sibling cards.
+   .ai-card already has position:relative so z-index takes effect. */
+.ai-card { z-index: 1; }
+.ai-card:hover { z-index: 2; } /* keep on top when card itself is hovered */
+
+/* Ensure the tooltip popup can escape any ancestor overflow boundary */
+.ai-card .tt     { position: relative; isolation: isolate; }
+.ai-card .tt-pop { z-index: 9999; position: absolute; }
+
+/* END BUG FIXES */
+.opt-score-bar { margin:5px 0 2px; }
+.opt-score-val { font-family:'Sora',sans-serif; font-size:17px; font-weight:800; color:var(--c-brand); line-height:1; }
+.opt-score-track { height:4px; background:var(--c-n100); border-radius:2px; margin-top:4px; }
+.opt-score-fill  { height:4px; border-radius:2px; background:var(--c-brand); transition:width .4s ease; }
+.opt-card.active .opt-score-val { color:white; }
+.opt-card.active .opt-score-track { background:rgba(255,255,255,.25); }
+.opt-card.active .opt-score-fill  { background:rgba(255,255,255,.85); }
+.opt-card.disabled .opt-score-val { color:var(--c-n300); }
+
+/* ── Post-bugfix: case class strip and rec-top-reason base definitions ── */
+.caseclass-strip { display:flex; align-items:center; gap:8px; padding:7px 12px; border-radius:var(--r-md); margin-bottom:8px; font-size:11px; font-weight:700; letter-spacing:.04em; }
+.caseclass-strip.viable      { background:#EDF6F1; border:1px solid #BBE0CD; color:#1F7A4F; }
+.caseclass-strip.compromised { background:#FFFBEB; border:1px solid #FDE68A; color:#92400E; }
+.caseclass-strip.hopeless    { background:#FEF2F2; border:1px solid #FECACA; color:#991B1B; }
+.caseclass-icon { font-size:13px; }
+.caseclass-note { font-size:10px; font-weight:400; opacity:.75; margin-left:auto; }
+.rec-top-reason { margin-top:6px; font-size:11px; color:var(--c-n500); line-height:1.45; padding:5px 8px; background:var(--c-n50); border-radius:6px; border-left:2px solid var(--c-brand); display:none; }
+body.dark .caseclass-strip.viable      { background:rgba(31,122,79,.15); border-color:rgba(31,122,79,.3); }
+body.dark .caseclass-strip.compromised { background:rgba(217,119,6,.12); border-color:rgba(217,119,6,.3); }
+body.dark .caseclass-strip.hopeless    { background:rgba(220,38,38,.12); border-color:rgba(220,38,38,.3); }
+body.dark .rec-top-reason { background:var(--c-n100); }
+
+/* ================================================================
+   FEATURES
+   ================================================================ */
+.features { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+@media (max-width: 900px) { .features { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 500px) { .features { grid-template-columns: repeat(2,1fr); } }
+.feat-card { background: white; border: 1px solid var(--c-n100); border-radius: var(--r-lg); padding: 14px; display: flex; align-items: flex-start; gap: 10px; box-shadow: var(--shadow-xs); transition: box-shadow var(--t-base), background .4s; }
+.feat-card:hover { box-shadow: var(--shadow-md); }
+body.dark .feat-card { background: var(--c-n100); border-color: var(--c-n150); }
+.feat-icon { font-size: 22px; flex-shrink: 0; line-height: 1; }
+.feat-title { font-size: 12.5px; font-weight: 700; color: var(--c-n900); margin-bottom: 3px; }
+.feat-desc { font-size: 11px; color: var(--c-n400); line-height: 1.4; }
+
+/* ================================================================
+   CROWN TREATMENT OPTION
+   ================================================================ */
+.opt-card.disabled {
+  opacity: 0.38; cursor: not-allowed; pointer-events: none;
+  border-color: var(--c-n200); background: var(--c-n100); position: relative;
+  transition: all var(--t-fast);
+}
+.opt-card.disabled::after {
+  content: '🔒'; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%); font-size: 22px; opacity: 0.45;
+}
+.opt-card.disabled .opt-name { color: var(--c-n400); }
+.opt-card.disabled .opt-sub  { color: var(--c-n300); }
+.crown-warning-banner {
+  display: none; align-items: center; gap: 8px; padding: 10px 14px;
+  background: rgba(245,158,11,.1); border: 1.5px solid rgba(245,158,11,.38);
+  border-radius: var(--r-md); margin-bottom: 8px;
+}
+.crown-warning-banner i  { color: #d97706; font-size: 13px; flex-shrink: 0; }
+.crown-warning-banner span{ font-size: 11.5px; color: #92400e; font-weight: 600; line-height: 1.4; }
+body.dark .crown-warning-banner { background: rgba(245,158,11,.08); }
+.crown-conditional { transition: opacity .3s ease; }
+.crown-conditional.hidden { display: none !important; }
+.parafunction-note { font-size: 10px; color: var(--c-warning); margin-top: 2px; }

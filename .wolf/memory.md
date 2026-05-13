@@ -143,3 +143,17 @@
 | 16:42 | Edited index.html | 2→1 lines | ~23 |
 | 16:42 | Edited index.html | removed 19 lines | ~45 |
 | 16:43 | Session end: 4 writes across 2 files (modal.css, index.html) | 4 reads | ~101291 tok |
+| 16:50 | Created src/styles/components/cards.css | — | ~4080 |
+| 16:51 | Edited index.html | 7→2 lines | ~57 |
+| 16:51 | Edited index.html | removed 21 lines | ~21 |
+| 16:51 | Edited index.html | removed 30 lines | ~23 |
+| 16:52 | Edited index.html | removed 29 lines | ~19 |
+| 16:52 | Edited index.html | removed 16 lines | ~19 |
+| 16:52 | Edited index.html | removed 11 lines | ~19 |
+| 16:52 | Edited index.html | removed 54 lines | ~107 |
+| 16:53 | Edited index.html | removed 15 lines | ~23 |
+| 16:53 | Edited src/styles/components/cards.css | 2→6 lines | ~126 |
+| 16:53 | Edited index.html | removed 26 lines | ~22 |
+| 16:54 | Edited index.html | 2→3 lines | ~54 |
+| 17:00 | Wave-2 cards extraction — .rec-banner/.rec-*, .opt-card/.opt-*, .feat-card/.features, .caseclass-strip, .crown-warning-banner, .opt-card.disabled to cards.css | src/styles/components/cards.css, index.html | Created file, link inserted after modal.css, removed 10 extraction groups (~200 inline lines) from AI RECOMMENDATION/TREATMENT OPTIONS/PREMIUM POLISH/BUG FIXES/FEATURES/CROWN sections | ~600 |
+| 16:56 | Session end: 16 writes across 3 files (modal.css, index.html, cards.css) | 5 reads | ~105903 tok |

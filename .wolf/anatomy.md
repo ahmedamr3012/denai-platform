@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T13:42:52.077Z
-> Files: 26 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-13T13:54:00.434Z
+> Files: 27 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~100321 tok)
+- `index.html` — denai — Clinical Insight (~96595 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -26,6 +26,7 @@
 
 ## src/styles/components/
 
+- `cards.css` — Wave-2 extraction: .rec-banner/.rec-* (AI recommendation banner + sub-elements + recShimmer), .opt-card/.opt-* (treatment option cards + opt-grid + sel-badge + score bars), .feat-card/.features (feature cards + responsive breakpoints), .caseclass-strip, .crown-warning-banner, .opt-card.disabled, .crown-conditional, .parafunction-note. Preserves PREMIUM POLISH and BUG FIXES cascade layers in order. NOT extracted: .risk-nominal-strip, .preset-btn.crown, JS template-literal .opt-card styles. (~420 tok)
 - `history.css` — Wave-2 extraction: .history-list, .history-item, .history-item:last-child, .history-time (4 rules, no dark block — all token refs via neutral-tokens). Print override stays inline. (~80 tok)
 - `modal.css` — Wave-2 extraction: .modal-ov (overlay/backdrop, z-index:300, mFadeIn), .modal-box (white bg, --r-2xl, mSlide), body.dark .modal-box, .modal-close-btn (+hover+focus-visible), @keyframes mFadeIn/mSlide, @media(prefers-reduced-motion:no-preference) transition rule. 5 modal DOM instances: #newPatientModal, #deletePatientModal, #saveModal, #resetModal, #shortcutsModal. (~120 tok)
 - `skeleton.css` — Wave-2 extraction: @keyframes skeleton-shimmer, .skeleton (canonical, --skeleton-base/shine tokens), skel-*/skeleton-wrap layout helpers, skeleton-text/circle/bar, card-skeleton-wrap, empty-state (+dark), card-error-fallback. Consolidated duplicate .skeleton — dead skeletonShimmer keyframe dropped. (~320 tok)

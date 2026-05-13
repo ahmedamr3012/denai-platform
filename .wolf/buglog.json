@@ -304,6 +304,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-13T13:42:52.092Z"
+    },
+    {
+      "id": "bug-020",
+      "timestamp": "2026-05-13T13:52:55.961Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "44 lines replaced/restructured",
+      "fix": "Rewrote 54→5 lines (44 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:52:55.962Z"
+    },
+    {
+      "id": "bug-021",
+      "timestamp": "2026-05-13T13:53:43.819Z",
+      "error_message": "CSS fix: color, font-size",
+      "file": "src/styles/components/cards.css",
+      "root_cause": "color: #92400e → var(--c-warning); font-size: 11.5px → 10px",
+      "fix": "Changed color: #92400e → var(--c-warning); font-size: 11.5px → 10px",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "css"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:53:43.819Z"
+    },
+    {
+      "id": "bug-022",
+      "timestamp": "2026-05-13T13:54:00.447Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"src/styles/utilities/print.css\"",
+      "fix": "Changed to \"src/styles/components/cards.css\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:54:00.447Z"
     }
   ]
 }
