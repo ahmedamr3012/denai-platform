@@ -1,0 +1,16 @@
+/* ================================================================
+   SKELETON / LOADING TOKENS — Calibration Extraction Wave 1
+   Source of truth for --skeleton-* shimmer family. Do not redeclare in index.html.
+   NOTE: Dark mode overrides present — both blocks are co-extracted as an atomic unit.
+         Values are raw hex colors with no token cross-references.
+   ================================================================ */
+
+:root {
+  --skeleton-base:  #e5e7eb;
+  --skeleton-shine: #f3f4f6;
+}
+
+body.dark {
+  --skeleton-base:  #2a2e35;
+  --skeleton-shine: #3a3f48;
+}

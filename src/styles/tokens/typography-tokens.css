@@ -1,0 +1,13 @@
+/* ================================================================
+   TYPOGRAPHY TOKENS — Calibration Extraction Wave 1
+   Source of truth for --font-* family stacks. Do not redeclare in index.html.
+   NOTE: None of these tokens have body.dark overrides — mode-invariant.
+         Both fonts are loaded via Google Fonts <link> in <head>.
+         body { font-family } hardcodes 'DM Sans' directly — known drift risk,
+         pre-existing, not introduced by this extraction.
+   ================================================================ */
+
+:root {
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-display: 'Sora', sans-serif;
+}
