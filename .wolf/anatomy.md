@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T21:03:24.099Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T21:16:59.000Z
 > Files: 38 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~65118 tok)
+- `index.html` — denai — Clinical Insight (~65129 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/

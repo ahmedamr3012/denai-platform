@@ -355,3 +355,14 @@
 | 00:03 | Wave-4C.2 Steps B+C complete: <script src='src/render/riskPanel.js'> inserted at L50 (after patientPanel.js); renderRisk(state,ai)+_applyRiskCompact() block (orig L1916-L2020, 105 lines) removed from index.html. Zero inline definitions remain. Two call sites intact (renderMainPanels L2154, whatIfApply L2466). riskPanel.js is sole source of truth. | index.html, .wolf/anatomy.md | complete | ~250 tok |
 | 00:04 | Session end: 11 writes across 2 files (index.html, riskPanel.js) | 3 reads | ~67221 tok |
 | 00:09 | Session end: 11 writes across 2 files (index.html, riskPanel.js) | 4 reads | ~67221 tok |
+
+## Session: 2026-05-14 00:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:16 | Edited index.html | modified renderTxCards() | ~83 |
+| 00:16 | Edited index.html | 3→3 lines | ~34 |
+| 00:16 | Edited index.html | modified renderRestorativeTxCards() | ~80 |
+| 00:16 | Edited index.html | inline fix | ~15 |
+| 00:18 | Pre-Work C: renderTxCards(ai)->renderTxCards(state,ai), renderRestorativeTxCards(ai)->renderRestorativeTxCards(state,ai); 4 S.tx reads replaced; 2 call sites updated (L1938 internal dispatch, L2147 renderMainPanels) | index.html | complete | ~60 tok |
+| 00:18 | Session end: 4 writes across 1 files (index.html) | 1 reads | ~65345 tok |

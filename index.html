@@ -1931,11 +1931,11 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   // ================================================================
   // RENDER: TREATMENT CARDS
   // ================================================================
-  function renderTxCards(ai) {
+  function renderTxCards(state, ai) {
     // Multi-tooth: relabel and redirect
     if (ai?.isMultiTooth) { renderMultiTxCards(ai); return; }
     // Restorative: relabel via ClinicalEngine-determined treatment universe
-    if (ai?.treatmentMode === 'restorative') { renderRestorativeTxCards(ai); return; }
+    if (ai?.treatmentMode === 'restorative') { renderRestorativeTxCards(state, ai); return; }
 
     // RESTORE single-tooth labels — renderMultiTxCards and renderRestorativeTxCards
     // mutate .opt-name/.opt-sub directly in the DOM. Switching back to single-tooth
@@ -1957,9 +1957,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       if (s && s.textContent !== 'Single Crown')  s.textContent = 'Single Crown';
     }
 
-    const isImp  = S.tx === 'implant';
-    const isBri  = S.tx === 'bridge';
-    const isCrn  = S.tx === 'crown';
+    const isImp  = state.tx === 'implant';
+    const isBri  = state.tx === 'bridge';
+    const isCrn  = state.tx === 'crown';
     // Update score bars — primary scanability improvement
     setCardScore('Implant', ai?.implant,                   !!ai);
     setCardScore('Bridge',  ai?.bridge,                    !!ai);
@@ -2023,11 +2023,11 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     valEl.textContent = typeof score === 'number' ? score.toFixed(1) + '%' : '–';
     fillEl.style.width = pct + '%';
   }
-  function renderRestorativeTxCards(ai) {
+  function renderRestorativeTxCards(state, ai) {
     if (!ai?.restorativeLabels) return;
     const TX_TO_SLOT = { implant: 'slot1', bridge: 'slot2', crown: 'slot3' };
     const SLOT_TO_TX = { slot1: 'implant', slot2: 'bridge', slot3: 'crown' };
-    const activeSlot = TX_TO_SLOT[S.tx] || 'slot2';
+    const activeSlot = TX_TO_SLOT[state.tx] || 'slot2';
     // Score bars — show the scored % for each restorative option
     setCardScore('Implant', ai.implant, true);
     setCardScore('Bridge',  ai.bridge,  true);
@@ -2144,7 +2144,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   function renderMainPanels(state, ai) {
     withErrorBoundary(() => renderPatientDisplay(state),                'infoDisplay',         'Patient Card');
     withErrorBoundary(() => {
-      renderTxCards(ai); buildAICardStructure();
+      renderTxCards(state, ai); buildAICardStructure();
       // FIX: route to the correct AI card updater based on mode
       // updateAICardMulti was previously dead code — never called from render()
       // Multi-tooth ai has no .implant/.bridge/.crown — updateAICard's fallback
