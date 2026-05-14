@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T15:45:58.096Z
-> Files: 37 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T21:03:24.099Z
+> Files: 38 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~66624 tok)
+- `index.html` — denai — Clinical Insight (~65118 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -35,6 +35,7 @@
 - `costGraphPanel.js` — Wave-4B.1 complete: renderCost + renderGraph. renderCost: 3-path router (restorative/multi-tooth/single-tooth), innerHTML replacement, calls computeCosts twice in single-tooth path. renderGraph: persistent SVG reuse pattern (PERF#2). Deps: escapeHtml, computeCosts, $, 7 cost constants — all costEngine globals. No S reads. Sole source of truth — inline copies removed from index.html. (~530 tok)
 - `materialPanel.js` — Wave-4B.2 complete: _matFadeTimer (let, global lexical env) + renderMaterial + getCrownMaterial. renderMaterial: 4-branch selector (crown/implant/bridge-highOcc/bridge-default), 160ms fade, FIX#6 timer-cancel. getCrownMaterial: pure crown material selector. Deps: isPosteriorTooth, $. No S reads. beforeunload handler in inline script refs _matFadeTimer — valid (classic-script shared global scope). Sole source of truth. (~270 tok)
 - `patientPanel.js` — Wave-4C.1 complete: BONE_LBL/OCC_LBL/HYG_LBL constants (dot-class lookup maps for bone/occlusion/hygiene) + renderPatientDisplay(state) (29 lines, writes #infoDisplay grid, 12 state fields: bone/smoking/name/gender/age/multiTooth/tooth/tooth2/condition/occlusion/hygiene/diabetes). Deps: escapeHtml, isMaxilla, $. No S reads. Sole source of truth — inline copies removed from index.html. (~300 tok)
+- `riskPanel.js` — Wave-4C.2 complete: renderRisk(state, ai) (3-path: restorative/multi-tooth/single-tooth, RISK_STYLES + setRisk inner helper, section visibility, diabetes row toggle) + _applyRiskCompact() (compact nominal state: textContent scan, strip create/show, row collapse). Deps: $. No S reads. Co-resident pair — _applyRiskCompact called only from renderRisk single-tooth tail. Sole source of truth — inline copies removed from index.html. (~420 tok)
 
 ## src/reports/
 
