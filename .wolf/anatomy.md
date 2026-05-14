@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T14:42:52.911Z
-> Files: 35 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T15:04:33.600Z
+> Files: 36 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~73756 tok)
+- `index.html` — denai — Clinical Insight (~67462 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -31,6 +31,7 @@
 
 ## src/render/
 
+- `comparisonPanel.js` — Wave-4B.3 complete: renderComparison (3-path: multi-tooth/restorative/single-tooth, writes 15 c* metric cells + inline column headers) + _compTableObserver (let, global lexical env) + lazyRenderComparisonTable (sync bypass via getBoundingClientRect + IntersectionObserver) + renderComparisonTable (3-path: restorative/multi-tooth/single-tooth, deterministic header reset). LONGEVITY onlay inconsistency preserved (renderComparison: '10–15 yrs' / renderComparisonTable: '8–15 yrs'). Deps: computeCosts (single-tooth path), escapeHtml, $. No S reads. Sole source of truth — inline copies removed from index.html. (~700 tok)
 - `costGraphPanel.js` — Wave-4B.1 complete: renderCost + renderGraph. renderCost: 3-path router (restorative/multi-tooth/single-tooth), innerHTML replacement, calls computeCosts twice in single-tooth path. renderGraph: persistent SVG reuse pattern (PERF#2). Deps: escapeHtml, computeCosts, $, 7 cost constants — all costEngine globals. No S reads. Sole source of truth — inline copies removed from index.html. (~530 tok)
 - `materialPanel.js` — Wave-4B.2 complete: _matFadeTimer (let, global lexical env) + renderMaterial + getCrownMaterial. renderMaterial: 4-branch selector (crown/implant/bridge-highOcc/bridge-default), 160ms fade, FIX#6 timer-cancel. getCrownMaterial: pure crown material selector. Deps: isPosteriorTooth, $. No S reads. beforeunload handler in inline script refs _matFadeTimer — valid (classic-script shared global scope). Sole source of truth. (~270 tok)
 

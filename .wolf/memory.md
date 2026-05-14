@@ -267,16 +267,16 @@
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 17:11 | Created src/reports/reportTemplates.js | â€” | ~2224 |
-| 17:11 | Wave-4A Step-A: created src/reports/reportTemplates.js — 5 rpt* functions copied from index.html L3441–3561 | src/reports/reportTemplates.js | copy-only complete, index.html untouched, all 5 functions validated | ~310 |
+| 17:11 | Wave-4A Step-A: created src/reports/reportTemplates.js ï¿½ 5 rpt* functions copied from index.html L3441ï¿½3561 | src/reports/reportTemplates.js | copy-only complete, index.html untouched, all 5 functions validated | ~310 |
 | 17:12 | Session end: 1 writes across 1 files (reportTemplates.js) | 2 reads | ~84113 tok |
 | 17:14 | Edited index.html | 2â†’3 lines | ~32 |
 | 17:15 | Edited index.html | removed 123 lines | ~1 |
-| 17:15 | Wave-4A Steps B+C: inserted reportTemplates.js script tag (L45 index.html), removed inline rpt* cluster (L3440–3561) | index.html | all 5 functions removed, generateReport/REPORT_CSS/BRAND/exportCaseData intact, module load order verified | ~1800 |
+| 17:15 | Wave-4A Steps B+C: inserted reportTemplates.js script tag (L45 index.html), removed inline rpt* cluster (L3440ï¿½3561) | index.html | all 5 functions removed, generateReport/REPORT_CSS/BRAND/exportCaseData intact, module load order verified | ~1800 |
 | 17:16 | Session end: 3 writes across 2 files (reportTemplates.js, index.html) | 2 reads | ~84148 tok |
 | 17:23 | Session end: 3 writes across 2 files (reportTemplates.js, index.html) | 2 reads | ~82056 tok |
 | 17:26 | Created src/render/costGraphPanel.js | â€” | ~5226 |
 | 17:26 | Edited src/render/costGraphPanel.js | "http://www.w3.org/2020/sv" â†’ "http://www.w3.org/2000/sv" | ~26 |
-| 17:27 | Wave-4B.1 Step-A: created src/render/costGraphPanel.js — renderCost + renderGraph copied from index.html L2459–2574 + L2579–2703 | src/render/costGraphPanel.js | copy-only complete, index.html untouched, both functions + all deps validated | ~530 |
+| 17:27 | Wave-4B.1 Step-A: created src/render/costGraphPanel.js ï¿½ renderCost + renderGraph copied from index.html L2459ï¿½2574 + L2579ï¿½2703 | src/render/costGraphPanel.js | copy-only complete, index.html untouched, both functions + all deps validated | ~530 |
 | 17:28 | Session end: 5 writes across 3 files (reportTemplates.js, index.html, costGraphPanel.js) | 2 reads | ~87308 tok |
 
 ## Session: 2026-05-14 17:31
@@ -295,3 +295,15 @@
 | 17:42 | Edited index.html | â€” | ~0 |
 
 | 15:05 | Wave-4B.2 Steps B+C: inserted materialPanel.js script tag (L47) + removed Hunk1 (MATERIAL header+_matFadeTimer+renderMaterial, L2234-2284) + Hunk2 (getCrownMaterial, L2440-2451) from index.html. beforeunload cleanup ref at L4225 confirmed valid (classic-script shared scope). | index.html, .wolf/anatomy.md | complete â€” materialPanel.js sole source of truth, 4361 lines | ~270 || 17:45 | Session end: 6 writes across 2 files (index.html, materialPanel.js) | 2 reads | ~74970 tok |
+| 17:52 | Session end: 6 writes across 2 files (index.html, materialPanel.js) | 2 reads | ~74970 tok |
+| 17:55 | Created src/render/comparisonPanel.js | â€” | ~6657 |
+
+## Session: 2026-05-14 17:58
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 18:01 | Edited index.html | 2â†’3 lines | ~32 |
+| 18:02 | Edited index.html | removed 168 lines | ~1 |
+| 18:04 | Edited index.html | â€” | ~0 |
+| 18:05 | Wave-4B.3 Steps B+C complete: comparisonPanel.js sole source of truth â€” Hunk1 (renderComparison ~167 lines) + Hunk2 (_compTableObserver+lazyRenderComparisonTable+renderComparisonTable ~196 lines) removed from index.html | index.html, .wolf/anatomy.md | complete | ~700 tok |
+| 18:05 | Session end: 3 writes across 1 files (index.html) | 3 reads | ~67497 tok |

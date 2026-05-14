@@ -1,63 +1,49 @@
 {
-  "session_id": "session-2026-05-14-1731",
-  "started": "2026-05-14T14:31:18.663Z",
+  "session_id": "session-2026-05-14-1758",
+  "started": "2026-05-14T14:58:16.724Z",
   "files_read": {
-    "c:/Users/Dr.Ahmed/Desktop/denai/index.html": {
-      "count": 8,
-      "tokens": 73756,
-      "first_read": "2026-05-14T14:31:35.170Z"
-    },
     "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-05-14T14:58:21.847Z"
+    },
+    "c:/Users/Dr.Ahmed/Desktop/denai/index.html": {
+      "count": 6,
+      "tokens": 67462,
+      "first_read": "2026-05-14T14:58:22.103Z"
+    },
+    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md": {
       "count": 2,
       "tokens": 0,
-      "first_read": "2026-05-14T14:36:03.638Z"
+      "first_read": "2026-05-14T15:02:14.151Z"
     }
   },
   "files_written": [
     {
       "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
       "action": "edit",
-      "tokens": 35,
-      "at": "2026-05-14T14:34:07.222Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 1,
-      "at": "2026-05-14T14:35:09.131Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/render/materialPanel.js",
-      "action": "create",
-      "tokens": 1143,
-      "at": "2026-05-14T14:39:08.444Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
       "tokens": 34,
-      "at": "2026-05-14T14:42:22.451Z"
+      "at": "2026-05-14T15:01:59.684Z"
     },
     {
       "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
       "action": "edit",
       "tokens": 1,
-      "at": "2026-05-14T14:42:43.294Z"
+      "at": "2026-05-14T15:02:53.069Z"
     },
     {
       "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
       "action": "edit",
       "tokens": 0,
-      "at": "2026-05-14T14:42:52.923Z"
+      "at": "2026-05-14T15:04:33.609Z"
     }
   ],
   "edit_counts": {
-    "index.html": 5,
-    "src/render/materialPanel.js": 1
+    "index.html": 3
   },
   "anatomy_hits": 1,
-  "anatomy_misses": 1,
-  "repeated_reads_warned": 8,
+  "anatomy_misses": 2,
+  "repeated_reads_warned": 6,
   "cerebrum_warnings": 0,
-  "stop_count": 3
+  "stop_count": 1
 }
