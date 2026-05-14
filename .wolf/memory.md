@@ -183,3 +183,13 @@
 | 17:XX | Wave-3 Step C ROLLBACK — restored 538 inline lines (isPosteriorTooth/isMaxilla/isAdjacent/getAdjacentTeeth/calcAIMulti/calcAI) to index.html; dual-definition state re-established | index.html | 5249→5787 lines; all 6 functions at lines 1578/1582/1593/1603/1613/1770; script tag at line 41 intact | ~60 |
 | 17:49 | Session end: 1 writes across 1 files (index.html) | 2 reads | ~96162 tok |
 | 17:57 | Session end: 1 writes across 1 files (index.html) | 2 reads | ~96162 tok |
+
+## Session: 2026-05-14 12:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:20 | Edited index.html | inline fix | ~122 |
+| 12:23 | Wave 3.2: add 'self' to script-src CSP directive | index.html:10 | CSP now permits same-origin external scripts | ~8 tok |
+| 12:23 | Session end: 1 writes across 1 files (index.html) | 7 reads | ~112250 tok |
+| 12:46 | Wave 3.2 Step C: remove 539-line inline calcAI duplicate block (lines 1577-2115) | index.html | calcAI.js is now sole executable source | ~540 tok |
+| 12:46 | Session end: 1 writes across 1 files (index.html) | 7 reads | ~112253 tok |

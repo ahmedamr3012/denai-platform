@@ -400,6 +400,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-13T14:37:52.582Z"
+    },
+    {
+      "id": "bug-026",
+      "timestamp": "2026-05-14T09:20:34.773Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had 'unsafe-inline'",
+      "fix": "Changed to 'self'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T09:20:34.773Z"
     }
   ]
 }
