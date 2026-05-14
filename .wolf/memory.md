@@ -260,3 +260,4 @@
 | 15:09 | Edited index.html | saveState() → setState() | ~16 |
 | 15:09 | Wave-3.8.1 Tier-1 setState migration: applyAIRec, selectTx multiTooth branch, whatIfApply, _handleNotesInput | index.html | 4 bypass paths replaced with setState(); validation + diff logging now covers all clinical mutations except RED ZONE | ~80 tok |
 | 15:13 | Session end: 4 writes across 1 files (index.html) | 2 reads | ~82059 tok |
+| 15:27 | Session end: 4 writes across 1 files (index.html) | 2 reads | ~82059 tok |

@@ -3,7 +3,7 @@
   "started": "2026-05-14T11:58:31.310Z",
   "files_read": {
     "c:/Users/Dr.Ahmed/Desktop/denai/index.html": {
-      "count": 16,
+      "count": 33,
       "tokens": 81889,
       "first_read": "2026-05-14T11:59:37.596Z"
     },
@@ -44,7 +44,7 @@
   },
   "anatomy_hits": 1,
   "anatomy_misses": 1,
-  "repeated_reads_warned": 16,
+  "repeated_reads_warned": 33,
   "cerebrum_warnings": 0,
-  "stop_count": 2
+  "stop_count": 3
 }

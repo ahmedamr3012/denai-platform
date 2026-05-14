@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-05-12T12:33:56.356Z",
   "lifetime": {
-    "total_tokens_estimated": 5016334,
-    "total_reads": 194,
-    "total_writes": 288,
+    "total_tokens_estimated": 5098393,
+    "total_reads": 196,
+    "total_writes": 292,
     "total_sessions": 18,
-    "anatomy_hits": 72,
-    "anatomy_misses": 122,
-    "repeated_reads_blocked": 561,
-    "estimated_savings_vs_bare_cli": 43325068
+    "anatomy_hits": 73,
+    "anatomy_misses": 123,
+    "repeated_reads_blocked": 594,
+    "estimated_savings_vs_bare_cli": 45945716
   },
   "sessions": [
     {
@@ -3471,6 +3471,55 @@
         "reads_count": 2,
         "writes_count": 4,
         "repeated_reads_blocked": 16,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-05-14-1458",
+      "started": "2026-05-14T11:58:31.310Z",
+      "ended": "2026-05-14T12:27:01.894Z",
+      "reads": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 81889,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 13,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 10,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 129,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 18,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 81889,
+        "output_tokens_estimated": 170,
+        "reads_count": 2,
+        "writes_count": 4,
+        "repeated_reads_blocked": 33,
         "anatomy_lookups": 1
       }
     }
