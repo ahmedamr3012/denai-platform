@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T10:19:37.731Z
-> Files: 30 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T10:32:57.156Z
+> Files: 31 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~89365 tok)
+- `index.html` — denai — Clinical Insight (~89379 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -58,4 +58,5 @@
 
 ## src/utils/
 
+- `costEngine.js` — Wave-3.4 extraction: 7 cost constants (ANNUAL_CHECKUP, CROWN_REPLACE_PROB, CROWN_COST_RATIO, BRIDGE_REPLACE_PROB, BRIDGE_REPLACE_RATIO, STANDALONE_CROWN_REPLACE_PROB, STANDALONE_CROWN_REPLACE_RATIO) + computeCosts(state, ai). Pure function — no DOM, no S, no localStorage. Classic-script globals. Dual-definition active (Step A only). (~180 tok)
 - `formatting.js` — Declares escapeHtml (~50 tok)

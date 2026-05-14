@@ -212,3 +212,10 @@
 | 13:19 | Edited index.html | reduced (-8 lines) | ~28 |
 | 13:20 | Wave 3.3 Step C — removed inline escapeHtml declaration (8 lines) from index.html | index.html | formatting.js is now sole source of truth; 81 call sites verified; script tags intact; 5250->5242 lines |~30 |
 | 13:26 | Session end: 1 writes across 1 files (index.html) | 2 reads | ~89395 tok |
+| 13:22 | Wave 3.4 Step A — created src/utils/costEngine.js with 7 cost constants + computeCosts copied byte-for-byte from index.html lines 2855-2900 | src/utils/costEngine.js | File created, 46 lines, CRLF preserved, index.html untouched (5242 lines), dual-definition active | ~80 |
+| 13:32 | Session end: 1 writes across 1 files (index.html) | 3 reads | ~89395 tok |
+| 13:32 | Edited index.html | 2→3 lines | ~30 |
+| 13:25 | Wave 3.4 Step B — inserted <script src="src/utils/costEngine.js"></script> at line 43 of index.html (after formatting.js, before <style>) | index.html | Dual-definition state active; external loads first, inline declarations at lines 2856-2862+2864 preserved; 5242->5243 lines | ~30 |
+| 13:35 | Session end: 2 writes across 1 files (index.html) | 3 reads | ~89441 tok |
+| 13:30 | Wave 3.4 Step C — removed 46 inline lines (2856-2901): 7 const declarations + computeCosts from index.html | index.html | costEngine.js is sole source; 5243->5197 lines; shadow at line 2889 intact; 5 call sites preserved | ~35 |
+| 13:48 | Session end: 2 writes across 1 files (index.html) | 5 reads | ~89441 tok |
