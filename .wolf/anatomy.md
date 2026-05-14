@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T14:15:11.781Z
-> Files: 34 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T14:42:52.911Z
+> Files: 35 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~79797 tok)
+- `index.html` — denai — Clinical Insight (~73756 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -28,6 +28,11 @@
 
 - `calcAI.js` — Wave-3 extraction: isPosteriorTooth, isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI. Pure functions — no DOM, no S, no localStorage. Globals exposed via classic-script top-level declarations. (~120 tok)
 - `clinicalEngine.js` — Wave-3.5 extraction: full ClinicalEngine IIFE (415 lines). Stages: CT constants, normalize, classify, generateTreatments, scoreRestorative, recommend, explain, buildRestorativeResult, process, processCompound. Zero DOM, zero S, zero escapeHtml, zero computeCosts. Outbound deps: calcAI/calcAIMulti/isPosteriorTooth/isMaxilla (runtime only). Public API: Object.freeze({ process, processCompound, normalize, classify, CT }). Extraction complete — clinicalEngine.js is sole source of truth. (~1200 tok)
+
+## src/render/
+
+- `costGraphPanel.js` — Wave-4B.1 complete: renderCost + renderGraph. renderCost: 3-path router (restorative/multi-tooth/single-tooth), innerHTML replacement, calls computeCosts twice in single-tooth path. renderGraph: persistent SVG reuse pattern (PERF#2). Deps: escapeHtml, computeCosts, $, 7 cost constants — all costEngine globals. No S reads. Sole source of truth — inline copies removed from index.html. (~530 tok)
+- `materialPanel.js` — Wave-4B.2 complete: _matFadeTimer (let, global lexical env) + renderMaterial + getCrownMaterial. renderMaterial: 4-branch selector (crown/implant/bridge-highOcc/bridge-default), 160ms fade, FIX#6 timer-cancel. getCrownMaterial: pure crown material selector. Deps: isPosteriorTooth, $. No S reads. beforeunload handler in inline script refs _matFadeTimer — valid (classic-script shared global scope). Sole source of truth. (~270 tok)
 
 ## src/reports/
 

@@ -514,6 +514,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-14T14:14:54.210Z"
+    },
+    {
+      "id": "bug-033",
+      "timestamp": "2026-05-14T14:26:37.329Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/render/costGraphPanel.js",
+      "root_cause": "Had 'http://www.w3.org/2020/svg'",
+      "fix": "Changed to 'http://www.w3.org/2000/svg'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T14:26:37.330Z"
+    },
+    {
+      "id": "bug-034",
+      "timestamp": "2026-05-14T14:34:07.226Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T14:34:07.226Z"
+    },
+    {
+      "id": "bug-035",
+      "timestamp": "2026-05-14T14:42:22.454Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T14:42:22.454Z"
     }
   ]
 }

@@ -273,3 +273,25 @@
 | 17:15 | Edited index.html | removed 123 lines | ~1 |
 | 17:15 | Wave-4A Steps B+C: inserted reportTemplates.js script tag (L45 index.html), removed inline rpt* cluster (L3440�3561) | index.html | all 5 functions removed, generateReport/REPORT_CSS/BRAND/exportCaseData intact, module load order verified | ~1800 |
 | 17:16 | Session end: 3 writes across 2 files (reportTemplates.js, index.html) | 2 reads | ~84148 tok |
+| 17:23 | Session end: 3 writes across 2 files (reportTemplates.js, index.html) | 2 reads | ~82056 tok |
+| 17:26 | Created src/render/costGraphPanel.js | — | ~5226 |
+| 17:26 | Edited src/render/costGraphPanel.js | "http://www.w3.org/2020/sv" → "http://www.w3.org/2000/sv" | ~26 |
+| 17:27 | Wave-4B.1 Step-A: created src/render/costGraphPanel.js � renderCost + renderGraph copied from index.html L2459�2574 + L2579�2703 | src/render/costGraphPanel.js | copy-only complete, index.html untouched, both functions + all deps validated | ~530 |
+| 17:28 | Session end: 5 writes across 3 files (reportTemplates.js, index.html, costGraphPanel.js) | 2 reads | ~87308 tok |
+
+## Session: 2026-05-14 17:31
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 17:34 | Edited index.html | 2→3 lines | ~33 |
+| 17:35 | Edited index.html | removed 254 lines | ~1 |
+
+| 14:52 | Wave-4B.1 Steps B+C: inserted costGraphPanel.js script tag (L46) + removed renderCost/renderGraph inline cluster (252 lines) from index.html | index.html, .wolf/anatomy.md | complete — costGraphPanel.js sole source of truth, 4422 lines | ~530 || 17:36 | Session end: 2 writes across 1 files (index.html) | 2 reads | ~74860 tok |
+| 17:39 | Created src/render/materialPanel.js | — | ~1143 |
+
+| 14:55 | Wave-4B.2 Step-A: created src/render/materialPanel.js — _matFadeTimer + renderMaterial + getCrownMaterial copied from index.html L2234–2283 + L2440–2451 | src/render/materialPanel.js, .wolf/anatomy.md | complete — index.html untouched | ~270 || 17:40 | Session end: 3 writes across 2 files (index.html, materialPanel.js) | 2 reads | ~76003 tok |
+| 17:42 | Edited index.html | 2→3 lines | ~32 |
+| 17:42 | Edited index.html | removed 52 lines | ~1 |
+| 17:42 | Edited index.html | — | ~0 |
+
+| 15:05 | Wave-4B.2 Steps B+C: inserted materialPanel.js script tag (L47) + removed Hunk1 (MATERIAL header+_matFadeTimer+renderMaterial, L2234-2284) + Hunk2 (getCrownMaterial, L2440-2451) from index.html. beforeunload cleanup ref at L4225 confirmed valid (classic-script shared scope). | index.html, .wolf/anatomy.md | complete — materialPanel.js sole source of truth, 4361 lines | ~270 || 17:45 | Session end: 6 writes across 2 files (index.html, materialPanel.js) | 2 reads | ~74970 tok |
