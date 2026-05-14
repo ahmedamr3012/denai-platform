@@ -307,3 +307,20 @@
 | 18:04 | Edited index.html | — | ~0 |
 | 18:05 | Wave-4B.3 Steps B+C complete: comparisonPanel.js sole source of truth — Hunk1 (renderComparison ~167 lines) + Hunk2 (_compTableObserver+lazyRenderComparisonTable+renderComparisonTable ~196 lines) removed from index.html | index.html, .wolf/anatomy.md | complete | ~700 tok |
 | 18:05 | Session end: 3 writes across 1 files (index.html) | 3 reads | ~67497 tok |
+| 18:11 | Session end: 3 writes across 1 files (index.html) | 3 reads | ~67497 tok |
+
+## Session: 2026-05-14 18:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 18:15 | Edited index.html | modified renderPatientDisplay() | ~729 |
+| 18:15 | Edited index.html | inline fix | ~30 |
+| 18:16 | Wave-4C.1 Pre-Work A complete: renderPatientDisplay parameterized — signature → (state), all 12 S reads (bone/smoking/name/gender/age/multiTooth/tooth/tooth2/condition/occlusion/hygiene/diabetes) replaced with state.*, call site in renderMainPanels L2285 updated to renderPatientDisplay(state) | index.html | zero S reads remain in function, one call site updated, ready for Wave-4C.1 Step A | ~200 tok |
+| 18:16 | Session end: 2 writes across 1 files (index.html) | 2 reads | ~68303 tok |
+| 18:17 | Created src/render/patientPanel.js | — | ~932 |
+| 18:17 | Wave-4C.1 Step A complete: created src/render/patientPanel.js — exact copy of index.html L1611-L1647 (BONE_LBL/OCC_LBL/HYG_LBL + renderPatientDisplay(state), 37 lines). index.html untouched. Steps B+C pending. | src/render/patientPanel.js | copy-only extraction complete | ~300 tok |
+| 18:18 | Session end: 3 writes across 2 files (index.html, patientPanel.js) | 3 reads | ~69235 tok |
+| 18:45 | Edited index.html | 2→3 lines | ~32 |
+| 18:45 | Edited index.html | — | ~0 |
+| 18:46 | Wave-4C.1 Steps B+C complete: <script src="src/render/patientPanel.js"> inserted at L49 (after comparisonPanel.js); contiguous block BONE_LBL+OCC_LBL+HYG_LBL+renderPatientDisplay(state) (orig L1611–L1647) removed from index.html inline script. patientPanel.js is sole source of truth. | index.html, .wolf/anatomy.md | complete | ~250 tok |
+| 18:47 | Session end: 5 writes across 2 files (index.html, patientPanel.js) | 3 reads | ~68403 tok |
