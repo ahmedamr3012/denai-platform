@@ -3,7 +3,7 @@
   "started": "2026-05-14T20:54:41.784Z",
   "files_read": {
     "c:/Users/Dr.Ahmed/Desktop/denai/index.html": {
-      "count": 9,
+      "count": 24,
       "tokens": 65118,
       "first_read": "2026-05-14T20:55:53.020Z"
     },
@@ -16,6 +16,11 @@
       "count": 2,
       "tokens": 0,
       "first_read": "2026-05-14T20:59:40.965Z"
+    },
+    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-05-14T21:06:11.886Z"
     }
   },
   "files_written": [
@@ -91,8 +96,8 @@
     "src/render/riskPanel.js": 1
   },
   "anatomy_hits": 1,
-  "anatomy_misses": 2,
-  "repeated_reads_warned": 9,
+  "anatomy_misses": 3,
+  "repeated_reads_warned": 24,
   "cerebrum_warnings": 0,
-  "stop_count": 3
+  "stop_count": 4
 }

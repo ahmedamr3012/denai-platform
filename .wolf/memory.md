@@ -354,3 +354,4 @@
 
 | 00:03 | Wave-4C.2 Steps B+C complete: <script src='src/render/riskPanel.js'> inserted at L50 (after patientPanel.js); renderRisk(state,ai)+_applyRiskCompact() block (orig L1916-L2020, 105 lines) removed from index.html. Zero inline definitions remain. Two call sites intact (renderMainPanels L2154, whatIfApply L2466). riskPanel.js is sole source of truth. | index.html, .wolf/anatomy.md | complete | ~250 tok |
 | 00:04 | Session end: 11 writes across 2 files (index.html, riskPanel.js) | 3 reads | ~67221 tok |
+| 00:09 | Session end: 11 writes across 2 files (index.html, riskPanel.js) | 4 reads | ~67221 tok |
