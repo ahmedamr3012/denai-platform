@@ -128,6 +128,8 @@
       container.innerHTML = '<div class="empty-state" style="padding:14px;"><i class="fa-solid fa-chart-line" aria-hidden="true" style="font-size:24px;color:var(--c-brand);"></i><h4 style="font-size:14px;margin-top:8px;color:var(--c-n800);">No Projection Data</h4><p style="font-size:11px;color:var(--c-n500);margin-top:4px;">Complete patient profile to see success projection.</p></div>';
       return;
     }
+    if (ai?.isMultiTooth) return;
+    if (ai?.treatmentMode === 'restorative') return;
     // PERF#2: remove empty-state without wiping SVG
     const _emptyState = container.querySelector('.empty-state');
     if (_emptyState) _emptyState.remove();

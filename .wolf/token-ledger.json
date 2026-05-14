@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-05-12T12:33:56.356Z",
   "lifetime": {
-    "total_tokens_estimated": 6413352,
-    "total_reads": 239,
-    "total_writes": 380,
-    "total_sessions": 25,
-    "anatomy_hits": 91,
-    "anatomy_misses": 148,
-    "repeated_reads_blocked": 742,
-    "estimated_savings_vs_bare_cli": 55311375
+    "total_tokens_estimated": 6481203,
+    "total_reads": 249,
+    "total_writes": 381,
+    "total_sessions": 27,
+    "anatomy_hits": 97,
+    "anatomy_misses": 152,
+    "repeated_reads_blocked": 746,
+    "estimated_savings_vs_bare_cli": 55442833
   },
   "sessions": [
     {
@@ -4524,6 +4524,104 @@
         "reads_count": 1,
         "writes_count": 4,
         "repeated_reads_blocked": 3,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-05-14-0023",
+      "started": "2026-05-14T21:23:58.252Z",
+      "ended": "2026-05-14T21:45:51.643Z",
+      "reads": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/render/costGraphPanel.js",
+          "tokens_estimated": 530,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/utils/costEngine.js",
+          "tokens_estimated": 180,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/ai/clinicalEngine.js",
+          "tokens_estimated": 1200,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/ai/calcAI.js",
+          "tokens_estimated": 120,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 65129,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [],
+      "totals": {
+        "input_tokens_estimated": 67159,
+        "output_tokens_estimated": 0,
+        "reads_count": 7,
+        "writes_count": 0,
+        "repeated_reads_blocked": 2,
+        "anatomy_lookups": 5
+      }
+    },
+    {
+      "id": "session-2026-05-14-0049",
+      "started": "2026-05-14T21:49:46.454Z",
+      "ended": "2026-05-14T21:51:01.869Z",
+      "reads": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/render/costGraphPanel.js",
+          "tokens_estimated": 530,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/buglog.json",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/render/costGraphPanel.js",
+          "tokens_estimated": 162,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 530,
+        "output_tokens_estimated": 162,
+        "reads_count": 3,
+        "writes_count": 1,
+        "repeated_reads_blocked": 2,
         "anatomy_lookups": 1
       }
     }

@@ -1,45 +1,37 @@
 {
-  "session_id": "session-2026-05-14-0014",
-  "started": "2026-05-14T21:14:14.814Z",
+  "session_id": "session-2026-05-14-0049",
+  "started": "2026-05-14T21:49:46.454Z",
   "files_read": {
-    "c:/Users/Dr.Ahmed/Desktop/denai/index.html": {
-      "count": 4,
-      "tokens": 65118,
-      "first_read": "2026-05-14T21:14:37.877Z"
+    "c:/Users/Dr.Ahmed/Desktop/denai/src/render/costGraphPanel.js": {
+      "count": 1,
+      "tokens": 530,
+      "first_read": "2026-05-14T21:50:06.425Z"
+    },
+    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/buglog.json": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-05-14T21:50:17.400Z"
+    },
+    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-05-14T21:50:17.638Z"
     }
   },
   "files_written": [
     {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/render/costGraphPanel.js",
       "action": "edit",
-      "tokens": 89,
-      "at": "2026-05-14T21:16:43.472Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 36,
-      "at": "2026-05-14T21:16:48.497Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 86,
-      "at": "2026-05-14T21:16:54.373Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 16,
-      "at": "2026-05-14T21:16:59.009Z"
+      "tokens": 162,
+      "at": "2026-05-14T21:50:12.802Z"
     }
   ],
   "edit_counts": {
-    "index.html": 4
+    "src/render/costGraphPanel.js": 1
   },
   "anatomy_hits": 1,
-  "anatomy_misses": 0,
-  "repeated_reads_warned": 3,
+  "anatomy_misses": 2,
+  "repeated_reads_warned": 2,
   "cerebrum_warnings": 0,
   "stop_count": 1
 }

@@ -610,6 +610,34 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-14T21:01:27.954Z"
+    },
+    {
+      "id": "bug-039",
+      "timestamp": "2026-05-14T21:50:12.810Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/render/costGraphPanel.js",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T21:50:12.811Z"
+    },
+    {
+      "id": "bug-040",
+      "timestamp": "2026-05-15T00:00:00.000Z",
+      "error_message": "<polyline> attribute points: Expected number 'NaN' / <circle> attribute cy: Expected length 'NaN'",
+      "file": "src/render/costGraphPanel.js",
+      "root_cause": "renderGraph() unconditionally reads ai.implant and ai.bridge at line 138-139. calcAIMulti() returns implant2/bridge4/cantilever — no .implant or .bridge — so both are undefined, and undefined - number = NaN, Math.max(65, NaN) = NaN (JS spec), propagating NaN into all SVG attributes. Wave 4 modularization introduced renderMainPanels() which routes ALL ai modes through renderGraph(), exposing the gap that renderCost() already guards with early returns but renderGraph() did not.",
+      "fix": "Inserted two early-return guards immediately after the if (!ai) guard in renderGraph(): if (ai?.isMultiTooth) return; and if (ai?.treatmentMode === 'restorative') return; — mirroring the pattern already used in renderCost().",
+      "tags": ["nan", "svg", "renderGraph", "multi-tooth", "restorative", "wave4", "modularization"],
+      "related_bugs": ["bug-039"],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T00:00:00.000Z"
     }
   ]
 }

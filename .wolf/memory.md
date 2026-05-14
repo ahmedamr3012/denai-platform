@@ -1,6 +1,12 @@
 # Memory
 
 > Chronological action log. Hooks and AI append to this file automatically.
+
+## Session: 2026-05-15
+
+| Time  | Action | File(s) | Outcome | ~Tokens |
+|-------|--------|---------|---------|---------|
+| 00:00 | wave5: bug-040 patch — renderGraph NaN guard for isMultiTooth + restorative modes | src/render/costGraphPanel.js | inserted 2 early-return guards after if (!ai); SVG NaN eliminated | ~80 tok |
 > Old sessions are consolidated by the daemon weekly.
 
 | 11:05 | Wave-1 focus-ring extraction | src/styles/tokens/focus-tokens.css, index.html | created token file, added link, removed 2 declarations + empty rulesets | ~60 tok |
@@ -366,3 +372,15 @@
 | 00:16 | Edited index.html | inline fix | ~15 |
 | 00:18 | Pre-Work C: renderTxCards(ai)->renderTxCards(state,ai), renderRestorativeTxCards(ai)->renderRestorativeTxCards(state,ai); 4 S.tx reads replaced; 2 call sites updated (L1938 internal dispatch, L2147 renderMainPanels) | index.html | complete | ~60 tok |
 | 00:18 | Session end: 4 writes across 1 files (index.html) | 1 reads | ~65345 tok |
+
+## Session: 2026-05-14 00:23
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-14 00:49
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:50 | Edited src/render/costGraphPanel.js | added optional chaining | ~162 |
+| 00:51 | Session end: 1 writes across 1 files (costGraphPanel.js) | 3 reads | ~692 tok |
