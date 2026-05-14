@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T21:50:12.788Z
-> Files: 38 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T22:33:16.936Z
+> Files: 40 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -73,3 +73,8 @@
 
 - `costEngine.js` — Wave-3.4 extraction: 7 cost constants (ANNUAL_CHECKUP, CROWN_REPLACE_PROB, CROWN_COST_RATIO, BRIDGE_REPLACE_PROB, BRIDGE_REPLACE_RATIO, STANDALONE_CROWN_REPLACE_PROB, STANDALONE_CROWN_REPLACE_RATIO) + computeCosts(state, ai). Pure function — no DOM, no S, no localStorage. Classic-script globals. Dual-definition active (Step A only). (~180 tok)
 - `formatting.js` — Declares escapeHtml (~50 tok)
+
+## tests/engine/
+
+- `runner.js` — Wave 5.1B engine regression runner. DenaiEngineRunner.runAll() / runOne(id) / assert(ai,assertions). Assertion types: eq, finite, range, minLen, notNull, noNaN. Calls ClinicalEngine.process/processCompound on frozen state copies. Never touches S, render(), setState(), localStorage, or DOM. (~280 tok)
+- `scenarios.js` — Wave 5.1B scenario registry: 9 deterministic scenarios (implant-good-bone, bridge-fair-bone, smoker-implant, diabetic-uncontrolled, poor-bone-implant, restorative-viable, restorative-hopeless, multi-tooth-two-implants, compound-two-sites). Pure data — BASE state + overrides + assertion arrays. Exposes window.DENAI_SCENARIOS. (~280 tok)

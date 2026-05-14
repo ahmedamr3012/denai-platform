@@ -7,6 +7,8 @@
 | Time  | Action | File(s) | Outcome | ~Tokens |
 |-------|--------|---------|---------|---------|
 | 00:00 | wave5: bug-040 patch — renderGraph NaN guard for isMultiTooth + restorative modes | src/render/costGraphPanel.js | inserted 2 early-return guards after if (!ai); SVG NaN eliminated | ~80 tok |
+| 14:00 | wave5.1A: regression infra recon — full architecture report produced | notes/denai-runtime-execution-chains.md, anatomy.md | read-only analysis; documented entrypoints, timer risks, scenario shapes, isolation strategy | ~800 tok |
+| 14:30 | wave5.1B: engine regression runner created | tests/engine/scenarios.js, tests/engine/runner.js | 9 scenarios, 93 assertions; covers all ClinicalEngine paths; zero DOM/S/localStorage contact | ~400 tok |
 > Old sessions are consolidated by the daemon weekly.
 
 | 11:05 | Wave-1 focus-ring extraction | src/styles/tokens/focus-tokens.css, index.html | created token file, added link, removed 2 declarations + empty rulesets | ~60 tok |
@@ -384,3 +386,11 @@
 |------|--------|---------|---------|--------|
 | 00:50 | Edited src/render/costGraphPanel.js | added optional chaining | ~162 |
 | 00:51 | Session end: 1 writes across 1 files (costGraphPanel.js) | 3 reads | ~692 tok |
+
+## Session: 2026-05-14 00:55
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 01:32 | Created tests/engine/scenarios.js | — | ~5434 |
+| 01:33 | Created tests/engine/runner.js | — | ~2873 |
+| 01:34 | Session end: 2 writes across 2 files (scenarios.js, runner.js) | 9 reads | ~93045 tok |
