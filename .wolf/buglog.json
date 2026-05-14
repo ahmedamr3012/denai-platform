@@ -416,6 +416,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-14T09:20:34.773Z"
+    },
+    {
+      "id": "bug-027",
+      "timestamp": "2026-05-14T10:08:51.205Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T10:08:51.205Z"
+    },
+    {
+      "id": "bug-028",
+      "timestamp": "2026-05-14T10:19:37.744Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 12→4 lines (7 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T10:19:37.744Z"
     }
   ]
 }

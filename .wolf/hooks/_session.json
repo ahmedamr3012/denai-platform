@@ -1,57 +1,32 @@
 {
-  "session_id": "session-2026-05-14-1214",
-  "started": "2026-05-14T09:14:09.954Z",
+  "session_id": "session-2026-05-14-1318",
+  "started": "2026-05-14T10:18:19.301Z",
   "files_read": {
-    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-05-14T09:14:19.106Z"
-    },
-    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-05-14T09:14:19.639Z"
-    },
-    "c:/Users/Dr.Ahmed/Desktop/denai/notes/denai-runtime-execution-chains.md": {
-      "count": 1,
-      "tokens": 10202,
-      "first_read": "2026-05-14T09:14:27.889Z"
-    },
-    "c:/Users/Dr.Ahmed/Desktop/denai/src/ai/calcAI.js": {
-      "count": 1,
-      "tokens": 120,
-      "first_read": "2026-05-14T09:14:34.956Z"
-    },
-    "c:/Users/Dr.Ahmed/Desktop/denai/notes/denai-architecture-risk-registry.md": {
-      "count": 1,
-      "tokens": 5229,
-      "first_read": "2026-05-14T09:14:41.073Z"
-    },
-    "c:/Users/Dr.Ahmed/Desktop/denai/.claude/settings.json": {
-      "count": 1,
-      "tokens": 441,
-      "first_read": "2026-05-14T09:14:41.147Z"
-    },
     "c:/Users/Dr.Ahmed/Desktop/denai/index.html": {
-      "count": 6,
-      "tokens": 96131,
-      "first_read": "2026-05-14T09:14:46.729Z"
+      "count": 2,
+      "tokens": 89365,
+      "first_read": "2026-05-14T10:19:33.853Z"
+    },
+    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-05-14T10:22:07.622Z"
     }
   },
   "files_written": [
     {
       "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
       "action": "edit",
-      "tokens": 130,
-      "at": "2026-05-14T09:20:34.771Z"
+      "tokens": 30,
+      "at": "2026-05-14T10:19:37.742Z"
     }
   ],
   "edit_counts": {
     "index.html": 1
   },
-  "anatomy_hits": 5,
-  "anatomy_misses": 2,
-  "repeated_reads_warned": 5,
+  "anatomy_hits": 1,
+  "anatomy_misses": 1,
+  "repeated_reads_warned": 2,
   "cerebrum_warnings": 0,
-  "stop_count": 3
+  "stop_count": 1
 }

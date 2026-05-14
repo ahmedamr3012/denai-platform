@@ -39,6 +39,7 @@
   <link rel="stylesheet" href="src/styles/components/cards.css" />
   <link rel="stylesheet" href="src/styles/utilities/print.css" />
   <script src="src/ai/calcAI.js"></script>
+  <script src="src/utils/formatting.js"></script>
   <style>
     /* ================================================================
        DESIGN TOKENS & VARIABLES
@@ -4797,14 +4798,6 @@ el.textContent = current + suffix;
 if (p < 1) { _rafIds[id] = requestAnimationFrame(step); } else { el.textContent = target + suffix; delete _rafIds[id]; }
 };
 _rafIds[id] = requestAnimationFrame(step);
-}
-function escapeHtml(str) {
-return String(str)
-  .replace(/&/g,'&amp;')
-  .replace(/</g,'&lt;')
-  .replace(/>/g,'&gt;')
-  .replace(/"/g,'&quot;')
-  .replace(/'/g,'&#39;');
 }
 
 // ================================================================

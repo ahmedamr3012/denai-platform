@@ -193,3 +193,22 @@
 | 12:23 | Session end: 1 writes across 1 files (index.html) | 7 reads | ~112250 tok |
 | 12:46 | Wave 3.2 Step C: remove 539-line inline calcAI duplicate block (lines 1577-2115) | index.html | calcAI.js is now sole executable source | ~540 tok |
 | 12:46 | Session end: 1 writes across 1 files (index.html) | 7 reads | ~112253 tok |
+
+## Session: 2026-05-14 12:52
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:00 | Created src/utils/formatting.js | — | ~50 |
+| 13:00 | Wave 3.3 Step A — created src/utils/formatting.js with escapeHtml copied byte-for-byte from index.html lines 4801–4808 | src/utils/formatting.js | File created, 8 lines, CRLF preserved, syntax OK, index.html untouched (5249 lines, 67 escapeHtml refs remain) | ~8 |
+| 13:07 | Session end: 1 writes across 1 files (formatting.js) | 3 reads | ~96181 tok |
+| 13:08 | Edited index.html | 2→3 lines | ~28 |
+| 13:08 | Wave 3.3 Step B — inserted <script src="src/utils/formatting.js"></script> at line 42 of index.html (after calcAI.js, before <style>) | index.html | Dual-definition state active; external loads first, inline declaration at line 4802 preserved; 5249→5250 lines | ~5 |
+| 13:16 | Session end: 2 writes across 2 files (formatting.js, index.html) | 3 reads | ~89494 tok |
+
+## Session: 2026-05-14 13:18
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:19 | Edited index.html | reduced (-8 lines) | ~28 |
+| 13:20 | Wave 3.3 Step C — removed inline escapeHtml declaration (8 lines) from index.html | index.html | formatting.js is now sole source of truth; 81 call sites verified; script tags intact; 5250->5242 lines |~30 |
+| 13:26 | Session end: 1 writes across 1 files (index.html) | 2 reads | ~89395 tok |
