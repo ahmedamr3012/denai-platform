@@ -3318,8 +3318,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     $('whatIfSmoking')?.addEventListener('input', e => { tempState.smoking = SMOKING_MAP[e.target.value]; e.target.setAttribute('aria-valuetext', tempState.smoking); updateSliderPositions(); debouncedUpdatePreview(); });
     $('whatIfApply').addEventListener('click', () => {
       const prevAI = calcAI(S);
-      Object.assign(S, { bone: tempState.bone, diabetes: tempState.diabetes || S.diabetes || 'None', hygiene: tempState.hygiene, occlusion: tempState.occlusion, smoking: tempState.smoking || S.smoking || 'Non-smoker', remainingStructure: tempState.remainingStructure || S.remainingStructure || 'Good', endodonticStatus: tempState.endodonticStatus || S.endodonticStatus || 'No RCT needed', parafunction: tempState.parafunction || S.parafunction || 'None' });
-      saveState();
+      setState({ bone: tempState.bone, diabetes: tempState.diabetes || S.diabetes || 'None', hygiene: tempState.hygiene, occlusion: tempState.occlusion, smoking: tempState.smoking || S.smoking || 'Non-smoker', remainingStructure: tempState.remainingStructure || S.remainingStructure || 'Good', endodonticStatus: tempState.endodonticStatus || S.endodonticStatus || 'No RCT needed', parafunction: tempState.parafunction || S.parafunction || 'None' });
       tempState = { ...S };
       _isPreviewMode = false;
       const banner = $('previewModeBanner');
@@ -3884,7 +3883,7 @@ showToast('Case data exported as JSON','success');
 function selectTx(option) {
 // Multi-tooth mode: full render so AI card, comparison, costs all update
 if (S.multiTooth) {
-S.tx = option; saveState(); render(S); return;
+setState({ tx: option }); render(S); return;
 }
 if (option === 'crown') {
 const card = $('cardCrown');
@@ -3922,7 +3921,7 @@ if (recTx !== S.tx) {
 if (!ai.isMultiTooth && recTx === 'crown' && !ai.crownViable) {
 showToast('Crown recommendation not applicable for current condition', 'error'); return;
 }
-S.tx = recTx; saveState();
+setState({ tx: recTx });
 render(S);
 const LABELS = { implant:'Implant', bridge:'Bridge', crown:'Crown', implant2:'2 Implants', bridge4:'4-Unit Bridge', cantilever:'Implant + Cantilever' };
 const label = LABELS[ai.rec] || LABELS[recTx] || recTx;
@@ -4272,8 +4271,7 @@ function _handleNotesInput() {
   const _notePatient = S.id;
   _notesDebounce = setTimeout(() => {
     if (S.id !== _notePatient) return;  // abort if patient switched mid-debounce
-    S.notes = DOMPurify.sanitize(textarea.value);
-    saveState();
+    setState({ notes: DOMPurify.sanitize(textarea.value) });
     if (status) status.textContent = 'Auto-saved';
     if (count) count.textContent = `${S.notes.length} chars`;
     showSaveIndicator('saved');

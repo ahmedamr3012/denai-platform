@@ -249,3 +249,14 @@
 | 14:51 | Edited index.html | inline fix | ~14 |
 | 15:40 | Wave-3.7.2 Step C: remove stale editing/whyOpen/historyOpen from S initialization, saveState() destructure, and switchPatient() Object.assign | index.html | UIState is now sole owner; persistence boundary is structural; zero stale S references | ~60 tok |
 | 14:52 | Session end: 13 writes across 1 files (index.html) | 3 reads | ~82452 tok |
+
+## Session: 2026-05-14 14:58
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:09 | Edited index.html | inline fix | ~12 |
+| 15:09 | Edited index.html | saveState() → setState() | ~10 |
+| 15:09 | Edited index.html | 2→1 lines | ~120 |
+| 15:09 | Edited index.html | saveState() → setState() | ~16 |
+| 15:09 | Wave-3.8.1 Tier-1 setState migration: applyAIRec, selectTx multiTooth branch, whatIfApply, _handleNotesInput | index.html | 4 bypass paths replaced with setState(); validation + diff logging now covers all clinical mutations except RED ZONE | ~80 tok |
+| 15:13 | Session end: 4 writes across 1 files (index.html) | 2 reads | ~82059 tok |

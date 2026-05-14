@@ -1,109 +1,50 @@
 {
-  "session_id": "session-2026-05-14-1431",
-  "started": "2026-05-14T11:31:07.370Z",
+  "session_id": "session-2026-05-14-1458",
+  "started": "2026-05-14T11:58:31.310Z",
   "files_read": {
     "c:/Users/Dr.Ahmed/Desktop/denai/index.html": {
-      "count": 36,
-      "tokens": 81899,
-      "first_read": "2026-05-14T11:32:23.748Z"
+      "count": 16,
+      "tokens": 81889,
+      "first_read": "2026-05-14T11:59:37.596Z"
     },
     "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md": {
-      "count": 1,
+      "count": 2,
       "tokens": 0,
-      "first_read": "2026-05-14T11:44:46.223Z"
-    },
-    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-05-14T11:51:48.811Z"
+      "first_read": "2026-05-14T12:09:54.770Z"
     }
   },
   "files_written": [
     {
       "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
       "action": "edit",
-      "tokens": 165,
-      "at": "2026-05-14T11:44:34.063Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 74,
-      "at": "2026-05-14T11:48:00.688Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 82,
-      "at": "2026-05-14T11:48:06.658Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 14,
-      "at": "2026-05-14T11:48:12.593Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 47,
-      "at": "2026-05-14T11:48:19.344Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 20,
-      "at": "2026-05-14T11:48:25.404Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 30,
-      "at": "2026-05-14T11:48:31.264Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 46,
-      "at": "2026-05-14T11:48:37.112Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 15,
-      "at": "2026-05-14T11:48:42.614Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 24,
-      "at": "2026-05-14T11:48:48.707Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 11,
-      "at": "2026-05-14T11:51:16.401Z"
+      "tokens": 13,
+      "at": "2026-05-14T12:09:29.257Z"
     },
     {
       "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
       "action": "edit",
       "tokens": 10,
-      "at": "2026-05-14T11:51:21.882Z"
+      "at": "2026-05-14T12:09:30.861Z"
     },
     {
       "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
       "action": "edit",
-      "tokens": 15,
-      "at": "2026-05-14T11:51:26.662Z"
+      "tokens": 129,
+      "at": "2026-05-14T12:09:32.630Z"
+    },
+    {
+      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+      "action": "edit",
+      "tokens": 18,
+      "at": "2026-05-14T12:09:34.624Z"
     }
   ],
   "edit_counts": {
-    "index.html": 13
+    "index.html": 4
   },
   "anatomy_hits": 1,
-  "anatomy_misses": 2,
-  "repeated_reads_warned": 35,
+  "anatomy_misses": 1,
+  "repeated_reads_warned": 16,
   "cerebrum_warnings": 0,
-  "stop_count": 5
+  "stop_count": 2
 }
