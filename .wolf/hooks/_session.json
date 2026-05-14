@@ -3,7 +3,7 @@
   "started": "2026-05-14T10:18:19.301Z",
   "files_read": {
     "c:/Users/Dr.Ahmed/Desktop/denai/index.html": {
-      "count": 8,
+      "count": 15,
       "tokens": 89379,
       "first_read": "2026-05-14T10:19:33.853Z"
     },
@@ -13,7 +13,7 @@
       "first_read": "2026-05-14T10:22:07.622Z"
     },
     "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md": {
-      "count": 1,
+      "count": 2,
       "tokens": 0,
       "first_read": "2026-05-14T10:31:18.651Z"
     },
@@ -47,7 +47,7 @@
   },
   "anatomy_hits": 1,
   "anatomy_misses": 4,
-  "repeated_reads_warned": 8,
+  "repeated_reads_warned": 16,
   "cerebrum_warnings": 0,
-  "stop_count": 4
+  "stop_count": 7
 }

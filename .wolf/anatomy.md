@@ -27,6 +27,7 @@
 ## src/ai/
 
 - `calcAI.js` — Wave-3 extraction: isPosteriorTooth, isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI. Pure functions — no DOM, no S, no localStorage. Globals exposed via classic-script top-level declarations. (~120 tok)
+- `clinicalEngine.js` — Wave-3.5 extraction: full ClinicalEngine IIFE (415 lines). Stages: CT constants, normalize, classify, generateTreatments, scoreRestorative, recommend, explain, buildRestorativeResult, process, processCompound. Zero DOM, zero S, zero escapeHtml, zero computeCosts. Outbound deps: calcAI/calcAIMulti/isPosteriorTooth/isMaxilla (runtime only). Public API: Object.freeze({ process, processCompound, normalize, classify, CT }). Extraction complete — clinicalEngine.js is sole source of truth. (~1200 tok)
 
 ## src/styles/components/
 

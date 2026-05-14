@@ -219,3 +219,8 @@
 | 13:35 | Session end: 2 writes across 1 files (index.html) | 3 reads | ~89441 tok |
 | 13:30 | Wave 3.4 Step C — removed 46 inline lines (2856-2901): 7 const declarations + computeCosts from index.html | index.html | costEngine.js is sole source; 5243->5197 lines; shadow at line 2889 intact; 5 call sites preserved | ~35 |
 | 13:48 | Session end: 2 writes across 1 files (index.html) | 5 reads | ~89441 tok |
+| 13:57 | Session end: 2 writes across 1 files (index.html) | 5 reads | ~89441 tok |
+| 13:45 | Wave 3.5 Step A — created src/ai/clinicalEngine.js with full ClinicalEngine IIFE copied byte-for-byte from index.html lines 1587-2001 | src/ai/clinicalEngine.js | 415 lines, 26071 bytes, CRLF, perfect binary match, index.html untouched (5197 lines) | ~120 |
+| 14:04 | Session end: 2 writes across 1 files (index.html) | 5 reads | ~89441 tok |
+| 13:50 | Wave 3.5 Steps B+C (atomic) — inserted clinicalEngine.js script tag at L44, removed 415-line IIFE from index.html | index.html | Single-pass write, net -414 lines (5197->4783), 0 inline CE declarations, 8 call sites intact, load order correct | ~50 |
+| 14:12 | Session end: 2 writes across 1 files (index.html) | 5 reads | ~89441 tok |
