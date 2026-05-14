@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T12:09:34.587Z
-> Files: 32 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T14:15:11.781Z
+> Files: 34 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~81889 tok)
+- `index.html` — denai — Clinical Insight (~79797 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -28,6 +28,10 @@
 
 - `calcAI.js` — Wave-3 extraction: isPosteriorTooth, isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI. Pure functions — no DOM, no S, no localStorage. Globals exposed via classic-script top-level declarations. (~120 tok)
 - `clinicalEngine.js` — Wave-3.5 extraction: full ClinicalEngine IIFE (415 lines). Stages: CT constants, normalize, classify, generateTreatments, scoreRestorative, recommend, explain, buildRestorativeResult, process, processCompound. Zero DOM, zero S, zero escapeHtml, zero computeCosts. Outbound deps: calcAI/calcAIMulti/isPosteriorTooth/isMaxilla (runtime only). Public API: Object.freeze({ process, processCompound, normalize, classify, CT }). Extraction complete — clinicalEngine.js is sole source of truth. (~1200 tok)
+
+## src/reports/
+
+- `reportTemplates.js` — Wave-4A complete: rptShell, rptPatientSection, rptRiskSection, rptOptCard, rptReasonsSection (5 pure template functions, extracted from index.html L3441–3561, inline copies removed). Deps: escapeHtml, isMaxilla, isPosteriorTooth, REPORT_CSS, BRAND — all inline globals. Sole source of truth. (~310 tok)
 
 ## src/styles/components/
 

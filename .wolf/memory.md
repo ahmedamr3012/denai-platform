@@ -261,3 +261,15 @@
 | 15:09 | Wave-3.8.1 Tier-1 setState migration: applyAIRec, selectTx multiTooth branch, whatIfApply, _handleNotesInput | index.html | 4 bypass paths replaced with setState(); validation + diff logging now covers all clinical mutations except RED ZONE | ~80 tok |
 | 15:13 | Session end: 4 writes across 1 files (index.html) | 2 reads | ~82059 tok |
 | 15:27 | Session end: 4 writes across 1 files (index.html) | 2 reads | ~82059 tok |
+
+## Session: 2026-05-14 16:35
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 17:11 | Created src/reports/reportTemplates.js | â€” | ~2224 |
+| 17:11 | Wave-4A Step-A: created src/reports/reportTemplates.js — 5 rpt* functions copied from index.html L3441–3561 | src/reports/reportTemplates.js | copy-only complete, index.html untouched, all 5 functions validated | ~310 |
+| 17:12 | Session end: 1 writes across 1 files (reportTemplates.js) | 2 reads | ~84113 tok |
+| 17:14 | Edited index.html | 2â†’3 lines | ~32 |
+| 17:15 | Edited index.html | removed 123 lines | ~1 |
+| 17:15 | Wave-4A Steps B+C: inserted reportTemplates.js script tag (L45 index.html), removed inline rpt* cluster (L3440–3561) | index.html | all 5 functions removed, generateReport/REPORT_CSS/BRAND/exportCaseData intact, module load order verified | ~1800 |
+| 17:16 | Session end: 3 writes across 2 files (reportTemplates.js, index.html) | 2 reads | ~84148 tok |
