@@ -1469,7 +1469,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   let _saveStateTimer = null;
   function saveState() {
-    const { editing, whyOpen, historyOpen, ...serializable } = S;
+    const serializable = { ...S };
     showSaveIndicator('saving');
     if (_saveStateTimer) clearTimeout(_saveStateTimer);
     _saveStateTimer = setTimeout(() => {
@@ -1489,7 +1489,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   }
 
   const S = (() => {
-    const loaded = { ...loadState(), editing: false, whyOpen: false, historyOpen: false };
+    const loaded = { ...loadState() };
     // Normalize: multi-tooth mode is only valid for Missing tooth condition.
     if (loaded.multiTooth && loaded.condition !== 'Missing tooth') {
       loaded.multiTooth = false; loaded.tooth2 = null;
@@ -1501,6 +1501,18 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     return loaded;
   })();
   let tempState = { ...S };
+
+  // ================================================================
+  // UISTATE — ephemeral session-only UI flags (never persisted)
+  // ================================================================
+  const UIState = {
+    editing:     false,  // edit form active
+    whyOpen:     false,  // why-panel accordion expanded
+    historyOpen: false,  // history accordion expanded
+  };
+  function setUIState(patch) {
+    Object.assign(UIState, patch);
+  }
 
   // ================================================================
   // CHANGE HISTORY
@@ -3919,20 +3931,20 @@ showToast('Applied AI recommendation: ' + label, 'success');
 }
 }
 function toggleWhy() {
-S.whyOpen = !S.whyOpen;
+setUIState({ whyOpen: !UIState.whyOpen });
 const toggle = $('whyToggle'), body = $('whyBody');
-if (toggle) toggle.setAttribute('aria-expanded', S.whyOpen?'true':'false');
-if (body) body.classList.toggle('open', S.whyOpen);
+if (toggle) toggle.setAttribute('aria-expanded', UIState.whyOpen?'true':'false');
+if (body) body.classList.toggle('open', UIState.whyOpen);
 }
 function toggleHistory() {
-S.historyOpen = !S.historyOpen;
+setUIState({ historyOpen: !UIState.historyOpen });
 const toggle = $('historyToggle'), body = $('historyBody');
-if (toggle) toggle.setAttribute('aria-expanded', S.historyOpen?'true':'false');
-if (body) body.classList.toggle('open', S.historyOpen);
+if (toggle) toggle.setAttribute('aria-expanded', UIState.historyOpen?'true':'false');
+if (body) body.classList.toggle('open', UIState.historyOpen);
 }
 function handleBeforeUnload(e) { e.preventDefault(); e.returnValue = ''; }
 function enterEdit() {
-S.editing = true; buildEditForm();
+setUIState({ editing: true }); buildEditForm();
 const btn = $('editBtn'); btn.textContent = '💾 Save'; btn.classList.add('editing'); btn.setAttribute('aria-expanded','true');
 $('infoDisplay').style.display = 'none'; $('editFields').style.display = 'grid'; $('editFields').setAttribute('aria-hidden','false');
 $('editActions').style.display = 'flex'; $('editActions').setAttribute('aria-hidden','false');
@@ -3940,12 +3952,12 @@ window.addEventListener('beforeunload', handleBeforeUnload);
 setTimeout(() => $('eName')?.focus(), 50);
 }
 function exitEdit() {
-S.editing = false; const btn = $('editBtn'); btn.textContent = '✏️ Edit'; btn.classList.remove('editing'); btn.setAttribute('aria-expanded','false');
+setUIState({ editing: false }); const btn = $('editBtn'); btn.textContent = '✏️ Edit'; btn.classList.remove('editing'); btn.setAttribute('aria-expanded','false');
 $('infoDisplay').style.display = 'grid'; $('editFields').style.display = 'none'; $('editFields').setAttribute('aria-hidden','true');
 $('editActions').style.display = 'none'; $('editActions').setAttribute('aria-hidden','true');
 window.removeEventListener('beforeunload', handleBeforeUnload);
 }
-function toggleEdit() { S.editing ? saveEdit() : enterEdit(); }
+function toggleEdit() { UIState.editing ? saveEdit() : enterEdit(); }
 function saveEdit() {
 const name = ($('eName')?.value.trim()) || S.name;
 const rawAge = parseInt($('eAge')?.value, 10);
@@ -4009,7 +4021,7 @@ function closeResetModal() { $('resetModal').style.display = 'none'; }
 function confirmReset() {
 closeResetModal();
 Object.assign(S, DEFAULT_STATE); tempState = { ...S }; saveState();
-if (S.editing) cancelEdit();
+if (UIState.editing) cancelEdit();
 // Reset multi-tooth UI
 const _mt = $('multiToothToggle');
 if (_mt) { _mt.classList.remove('active'); _mt.setAttribute('aria-pressed','false'); }
@@ -4083,8 +4095,8 @@ if (id === S.id) { if (window.innerWidth <= 900) closeSidebar(); return; }
 const list = loadAllPatients() || [];
 const target = list.find(p => p.id === id);
 if (!target) return;
-if (S.editing) cancelEdit();
-Object.assign(S, { ...DEFAULT_STATE, ...target, editing: false, whyOpen: false, historyOpen: false });
+if (UIState.editing) cancelEdit();
+Object.assign(S, { ...DEFAULT_STATE, ...target });
 // Normalize multi-site state for incoming patient
 if (S.multiSite && S.condition !== 'Missing tooth') { S.multiSite = false; }
 if (S.multiTooth && S.condition !== 'Missing tooth') { S.multiTooth = false; S.tooth2 = null; }
@@ -4347,7 +4359,7 @@ _rafIds[id] = requestAnimationFrame(step);
 const SHORTCUTS = {
 'ctrl+e': toggleEdit,
 'Escape': () => {
-if (S.editing) cancelEdit();
+if (UIState.editing) cancelEdit();
 if ($('saveModal').style.display==='flex') closeModal();
 if ($('resetModal').style.display==='flex') closeResetModal();
 if ($('shortcutsModal').style.display==='flex') closeShortcutsModal();
@@ -4493,7 +4505,7 @@ initClinicalNotes();
 History.render();
 
 render(S);
-if (calcAI(S)) { setTimeout(() => { if (!S.whyOpen) toggleWhy(); }, 800); }
+if (calcAI(S)) { setTimeout(() => { if (!UIState.whyOpen) toggleWhy(); }, 800); }
 
 // Restore multi-tooth UI state from saved state
 if (S.multiTooth && S.condition === 'Missing tooth') {

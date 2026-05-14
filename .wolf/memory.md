@@ -224,3 +224,28 @@
 | 14:04 | Session end: 2 writes across 1 files (index.html) | 5 reads | ~89441 tok |
 | 13:50 | Wave 3.5 Steps B+C (atomic) — inserted clinicalEngine.js script tag at L44, removed 415-line IIFE from index.html | index.html | Single-pass write, net -414 lines (5197->4783), 0 inline CE declarations, 8 call sites intact, load order correct | ~50 |
 | 14:12 | Session end: 2 writes across 1 files (index.html) | 5 reads | ~89441 tok |
+| 14:26 | Session end: 2 writes across 1 files (index.html) | 5 reads | ~89441 tok |
+
+## Session: 2026-05-14 14:31
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:44 | Edited index.html | modified setUIState() | ~154 |
+| 15:10 | Wave-3.7.2 Step A: introduce UIState + setUIState | index.html | Additive only — UIState object + setUIState() inserted after tempState at L1503; S unchanged; zero runtime change | ~80 tok |
+| 14:45 | Session end: 1 writes across 1 files (index.html) | 2 reads | ~82069 tok |
+| 14:48 | Edited index.html | modified toggleWhy() | ~70 |
+| 14:48 | Edited index.html | modified toggleHistory() | ~77 |
+| 14:48 | Edited index.html | inline fix | ~13 |
+| 14:48 | Edited index.html | inline fix | ~44 |
+| 14:48 | Edited index.html | inline fix | ~19 |
+| 14:48 | Edited index.html | 2→2 lines | ~28 |
+| 14:48 | Edited index.html | 3→3 lines | ~43 |
+| 14:48 | Edited index.html | 2→2 lines | ~14 |
+| 14:48 | Edited index.html | inline fix | ~22 |
+| 15:25 | Wave-3.7.2 Step B: migrate editing/whyOpen/historyOpen ownership from S to UIState | index.html | 9 write+read sites migrated; S fields still present (stale); saveState/DEFAULT_STATE untouched; zero runtime behavior change | ~120 tok |
+| 14:49 | Session end: 10 writes across 1 files (index.html) | 2 reads | ~82452 tok |
+| 14:51 | Edited index.html | inline fix | ~11 |
+| 14:51 | Edited index.html | inline fix | ~10 |
+| 14:51 | Edited index.html | inline fix | ~14 |
+| 15:40 | Wave-3.7.2 Step C: remove stale editing/whyOpen/historyOpen from S initialization, saveState() destructure, and switchPatient() Object.assign | index.html | UIState is now sole owner; persistence boundary is structural; zero stale S references | ~60 tok |
+| 14:52 | Session end: 13 writes across 1 files (index.html) | 3 reads | ~82452 tok |

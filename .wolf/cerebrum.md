@@ -25,3 +25,5 @@
 ## Decision Log
 
 <!-- Significant technical decisions with rationale. Why X was chosen over Y. -->
+
+- [2026-05-14] **UIState separation pattern (Wave 3.7.2).** `editing`, `whyOpen`, `historyOpen` moved from `S` to a standalone `UIState` object with a `setUIState(patch)` helper. Three-step sequence: (A) add UIState + setUIState without touching S, (B) migrate all mutation and read sites to UIState (including inline DOM reads within the same toggle functions — must migrate together or DOM breaks), (C) remove stale fields from S init, saveState() destructure, and switchPatient() Object.assign. `activeSite` deliberately left in S — it is a render-routing parameter, not a pure UI flag. `saveState()` destructure was simplified from `const { editing, whyOpen, historyOpen, ...serializable } = S` to `const serializable = { ...S }` since the fields are no longer in S. Persistence boundary is now structural (UIState never reaches saveState()) rather than convention-based (strip list).
