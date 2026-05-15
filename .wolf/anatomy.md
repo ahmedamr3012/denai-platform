@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-15T09:11:45.398Z
-> Files: 41 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-15T09:21:41.250Z
+> Files: 42 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -17,6 +17,10 @@
 ## .claude/rules/
 
 - `openwolf.md` (~313 tok)
+
+## docs/
+
+- `runtime-contracts.md` — denai — Runtime Contracts & Architecture Freeze (~5561 tok)
 
 ## notes/
 

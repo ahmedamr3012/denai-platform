@@ -1,83 +1,37 @@
 {
-  "session_id": "session-2026-05-15-1154",
-  "started": "2026-05-15T08:54:18.655Z",
+  "session_id": "session-2026-05-15-1215",
+  "started": "2026-05-15T09:15:39.548Z",
   "files_read": {
     "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-05-15T08:56:10.340Z"
+      "first_read": "2026-05-15T09:19:35.159Z"
     },
-    "c:/Users/Dr.Ahmed/Desktop/denai/src/render/riskPanel.js": {
-      "count": 1,
-      "tokens": 420,
-      "first_read": "2026-05-15T08:56:10.753Z"
-    },
-    "c:/Users/Dr.Ahmed/Desktop/denai/src/render/costGraphPanel.js": {
-      "count": 1,
-      "tokens": 5251,
-      "first_read": "2026-05-15T08:56:17.166Z"
-    },
-    "c:/Users/Dr.Ahmed/Desktop/denai/index.html": {
-      "count": 4,
-      "tokens": 65158,
-      "first_read": "2026-05-15T08:56:22.150Z"
+    "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md": {
+      "count": 2,
+      "tokens": 0,
+      "first_read": "2026-05-15T09:21:45.391Z"
     },
     "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md": {
       "count": 2,
       "tokens": 0,
-      "first_read": "2026-05-15T08:57:11.715Z"
-    },
-    "c:/Users/Dr.Ahmed/Desktop/denai/src/ai/clinicalEngine.js": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-05-15T09:03:04.529Z"
-    },
-    "c:/Users/Dr.Ahmed/Desktop/denai/src/ai/calcAI.js": {
-      "count": 1,
-      "tokens": 120,
-      "first_read": "2026-05-15T09:03:04.881Z"
+      "first_read": "2026-05-15T09:21:56.721Z"
     }
   },
   "files_written": [
     {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/render/riskPanel.js",
-      "action": "edit",
-      "tokens": 24,
-      "at": "2026-05-15T08:56:36.485Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/render/costGraphPanel.js",
-      "action": "edit",
-      "tokens": 68,
-      "at": "2026-05-15T08:56:41.017Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 249,
-      "at": "2026-05-15T08:56:52.176Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
-      "action": "edit",
-      "tokens": 38,
-      "at": "2026-05-15T08:56:57.514Z"
-    },
-    {
-      "file": "c:/Users/Dr.Ahmed/Desktop/denai/src/render/costGraphPanel.js",
-      "action": "edit",
-      "tokens": 35,
-      "at": "2026-05-15T09:11:45.409Z"
+      "file": "c:/Users/Dr.Ahmed/Desktop/denai/docs/runtime-contracts.md",
+      "action": "create",
+      "tokens": 6355,
+      "at": "2026-05-15T09:21:41.266Z"
     }
   ],
   "edit_counts": {
-    "src/render/riskPanel.js": 1,
-    "src/render/costGraphPanel.js": 2,
-    "index.html": 2
+    "docs/runtime-contracts.md": 1
   },
-  "anatomy_hits": 5,
-  "anatomy_misses": 2,
-  "repeated_reads_warned": 4,
+  "anatomy_hits": 0,
+  "anatomy_misses": 3,
+  "repeated_reads_warned": 2,
   "cerebrum_warnings": 0,
-  "stop_count": 3
+  "stop_count": 1
 }
