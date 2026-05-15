@@ -33,7 +33,8 @@ window.denaiCloudSync = (function () {
   // on a fresh install. Prevents uploading a meaningless placeholder to cloud.
   var DEFAULT_PATIENT_NAME = 'Mohamed A.';
 
-  var _syncing = false;
+  var _syncing        = false;
+  var _lastHydratedAt = null; // ISO string — set after each successful hydrate
 
   // ── Public: hydrate ───────────────────────────────────────────────────────
   // Entry point. Called from authModule after session restore / sign-in.
@@ -60,9 +61,10 @@ window.denaiCloudSync = (function () {
   // ── Fetch and dispatch ────────────────────────────────────────────────────
 
   async function _fetchAndMerge(client) {
+    // Wave 7G: include notes_enc — separate top-level column, decrypted before merge.
     var res = await client
       .from('patients')
-      .select('id, case_num, name, state, history, updated_at')
+      .select('id, case_num, name, state, history, notes_enc, updated_at')
       .is('deleted_at', null)
       .order('updated_at', { ascending: false });
 
@@ -75,10 +77,65 @@ window.denaiCloudSync = (function () {
 
     if (cloudRows.length === 0) {
       _handleFirstLogin();
+      _lastHydratedAt = new Date().toISOString();
       return;
     }
 
-    _mergeCloudIntoLocal(cloudRows);
+    // ── Wave 7G: decrypt notes_enc for all cloud rows (async, before merge) ──
+    // Builds a map { patientId → decryptedNotesText } used by _buildMerged.
+    // If no key (user skipped passphrase) the map is empty — local notes survive.
+    var decryptedNotesMap = {};
+    if (typeof denaiNotesEnc !== 'undefined' && denaiNotesEnc.hasKey()) {
+      for (var di = 0; di < cloudRows.length; di++) {
+        var drow = cloudRows[di];
+        if (drow && drow.id && drow.notes_enc) {
+          var decryptedText = await denaiNotesEnc.decrypt(drow.notes_enc);
+          if (decryptedText !== null) {
+            decryptedNotesMap[drow.id] = decryptedText;
+          }
+          // null = wrong key or corrupt — local notes preserved (fallback in _buildMerged)
+        }
+      }
+    }
+
+    // ── Tombstone cleanup ────────────────────────────────────────────────────
+    // Local patients absent from the non-deleted cloud set may have been deleted
+    // on another device. Query the cloud for their deleted_at timestamps.
+    var localList   = _loadLocalPatients() || [];
+    var cloudIdSet  = {};
+    cloudRows.forEach(function (r) { if (r && r.id) cloudIdSet[r.id] = true; });
+    var missingIds  = localList
+      .filter(function (p) { return p.id && !cloudIdSet[p.id]; })
+      .map(function (p) { return p.id; });
+
+    var tombstones = [];
+    if (missingIds.length > 0) {
+      tombstones = await _fetchTombstones(client, missingIds);
+    }
+
+    _mergeCloudIntoLocal(cloudRows, tombstones, localList, decryptedNotesMap);
+    _lastHydratedAt = new Date().toISOString();
+  }
+
+  // ── Fetch tombstone metadata for local-only patient IDs ───────────────────
+  // Only fetches rows that are already soft-deleted in cloud (deleted_at IS NOT NULL).
+
+  async function _fetchTombstones(client, ids) {
+    try {
+      var res = await client
+        .from('patients')
+        .select('id, deleted_at')
+        .in('id', ids)
+        .not('deleted_at', 'is', null);
+      if (res.error) {
+        console.warn('[denaiCloudSync] tombstone fetch error:', res.error.message);
+        return [];
+      }
+      return res.data || [];
+    } catch (e) {
+      console.warn('[denaiCloudSync] tombstone fetch exception:', e.message);
+      return [];
+    }
   }
 
   // ── First-login: cloud empty, local has patients ──────────────────────────
@@ -116,10 +173,15 @@ window.denaiCloudSync = (function () {
 
   // ── Main merge: cloud rows → local patients ───────────────────────────────
 
-  function _mergeCloudIntoLocal(cloudRows) {
-    var localList  = _loadLocalPatients() || [];
-    var mergedList = localList.slice();
-    var changedIds = [];
+  // tombstones:        array of { id, deleted_at } for local patients deleted on cloud.
+  // localList:         pre-loaded list (passed from _fetchAndMerge to avoid double read).
+  // decryptedNotesMap: { patientId → decryptedNotesText } from Wave 7G decrypt pass.
+  function _mergeCloudIntoLocal(cloudRows, tombstones, localList, decryptedNotesMap) {
+    localList         = localList || (_loadLocalPatients() || []);
+    tombstones        = tombstones || [];
+    decryptedNotesMap = decryptedNotesMap || {};
+    var mergedList    = localList.slice();
+    var changedIds    = [];
 
     // Index locals by id for fast lookup
     var localById  = {};
@@ -137,7 +199,7 @@ window.denaiCloudSync = (function () {
     Object.keys(cloudById).forEach(function (id) {
       var cloudRow = cloudById[id];
       var local    = localById[id];
-      var merged   = _mergeOne(local, cloudRow);
+      var merged   = _mergeOne(local, cloudRow, decryptedNotesMap);
 
       if (merged === null) return; // malformed — skip
 
@@ -175,6 +237,31 @@ window.denaiCloudSync = (function () {
       } catch (e) {}
     });
 
+    // ── Pass 3: tombstone cleanup ─────────────────────────────────────────────
+    // Remove local patients that were soft-deleted on cloud, unless we have
+    // unsent local edits (in-flight edit supersedes the cloud delete).
+    tombstones.forEach(function (tomb) {
+      if (!tomb || !tomb.id || !tomb.deleted_at) return;
+
+      // Guard: unsent local edit on this patient supersedes the cloud delete.
+      if (typeof denaiSyncQueue !== 'undefined' && denaiSyncQueue.hasPendingFor(tomb.id)) return;
+
+      var local = localById[tomb.id];
+      if (!local) return; // not in local list (already absent)
+
+      // Cloud delete wins only when it's strictly newer than our last sync of this patient.
+      var cloudDeleteTs = 0;
+      try { cloudDeleteTs = new Date(tomb.deleted_at).getTime(); } catch (e) {}
+      var localSyncedTs = 0;
+      if (local._syncedAt) { try { localSyncedTs = new Date(local._syncedAt).getTime(); } catch (e) {} }
+
+      if (cloudDeleteTs > localSyncedTs) {
+        // Remove from merged list — cloud delete is authoritative.
+        mergedList = mergedList.filter(function (p) { return p.id !== tomb.id; });
+        changedIds.push(tomb.id); // UI must refresh (patient removed from list)
+      }
+    });
+
     if (changedIds.length > 0) {
       _saveLocalPatients(mergedList);
       // Notify inline script to refresh UI (denaiApplyCloudMerge is a function
@@ -193,7 +280,7 @@ window.denaiCloudSync = (function () {
   // ── Merge a single patient ────────────────────────────────────────────────
   // Returns: local (reference, unchanged) | merged (new object) | null (skip)
 
-  function _mergeOne(local, cloudRow) {
+  function _mergeOne(local, cloudRow, decryptedNotesMap) {
     if (!cloudRow || !cloudRow.id || !cloudRow.state || typeof cloudRow.state !== 'object') {
       return null;
     }
@@ -204,7 +291,7 @@ window.denaiCloudSync = (function () {
 
     if (!local) {
       // New patient from cloud — build from cloud state
-      return _buildMerged(cloudState, cloudRow, null);
+      return _buildMerged(cloudState, cloudRow, null, decryptedNotesMap);
     }
 
     // Guard: unsent local edits take priority — don't overwrite in-flight changes.
@@ -219,7 +306,7 @@ window.denaiCloudSync = (function () {
     }
 
     if (cloudTs > localSyncedTs) {
-      return _buildMerged(cloudState, cloudRow, local);
+      return _buildMerged(cloudState, cloudRow, local, decryptedNotesMap);
     }
 
     // Local is same age or newer — keep unchanged
@@ -228,18 +315,20 @@ window.denaiCloudSync = (function () {
 
   // ── Build merged patient object ───────────────────────────────────────────
   // Produces a new object. Never mutates arguments.
-  // local (fallback) fields survive for anything cloudState omits (e.g. notes, activeSite).
+  // local (fallback) fields survive for anything cloudState omits (e.g. activeSite).
+  // Wave 7G: decryptedNotesMap provides notes when cloud wins and key is available.
 
-  function _buildMerged(cloudState, cloudRow, localFallback) {
+  function _buildMerged(cloudState, cloudRow, localFallback, decryptedNotesMap) {
+    decryptedNotesMap = decryptedNotesMap || {};
     var out = {};
     if (localFallback) {
-      // Copy local fields first; cloud fields will override matching keys below
+      // Copy local fields first (including local notes); cloud fields override below.
       var k;
       for (k in localFallback) {
         if (Object.prototype.hasOwnProperty.call(localFallback, k)) out[k] = localFallback[k];
       }
     }
-    // Apply cloud clinical fields (notes/activeSite are absent — serializer strips them)
+    // Apply cloud clinical fields (notes/activeSite absent — serializer strips them)
     var k2;
     for (k2 in cloudState) {
       if (Object.prototype.hasOwnProperty.call(cloudState, k2)) out[k2] = cloudState[k2];
@@ -255,6 +344,11 @@ window.denaiCloudSync = (function () {
     out._syncedAt = cloudRow.updated_at || null;
     // Remove schema_ver from the local object — it's cloud metadata, not patient data.
     delete out.schema_ver;
+    // Wave 7G: apply decrypted notes if available from cloud (overrides local notes copy).
+    // If key is absent or decryption failed, local notes from localFallback survive.
+    if (decryptedNotesMap[cloudRow.id] !== undefined) {
+      out.notes = decryptedNotesMap[cloudRow.id];
+    }
     return out;
   }
 
@@ -299,6 +393,8 @@ window.denaiCloudSync = (function () {
     } catch (e) {}
   }
 
-  return Object.freeze({ hydrate: hydrate });
+  function getLastHydratedAt() { return _lastHydratedAt; }
+
+  return Object.freeze({ hydrate: hydrate, getLastHydratedAt: getLastHydratedAt });
 
 })();

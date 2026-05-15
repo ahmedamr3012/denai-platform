@@ -48,12 +48,14 @@ not localhost.
 | `src/sync/serializer.js?v=2.0.0` | `200` | `404` |
 | `src/sync/syncQueue.js?v=2.0.0` | `200` | `404` |
 | `src/sync/cloudSync.js?v=2.0.0` | `200` | `404` |
+| `src/sync/prefsSync.js?v=2.0.0` | `200` | `404` |
+| `src/utils/notesEncryption.js?v=2.0.0` | `200` | `404` |
 | All 19 `src/styles/**/*.css?v=2.0.0` | `200` | `404` |
 | `fonts.googleapis.com/css2?…` | `200` | CDN outage (non-critical, app degrades visually) |
 | `cdnjs.cloudflare.com/…/all.min.css` | `200` | CDN outage (non-critical, icons degrade) |
 
-**Total first-party requests expected:** 1 HTML + 14 JS + 19 CSS = 34 requests, all `200`.
-*(Wave 7B added `src/auth/authModule.js`. Wave 7D added `src/sync/serializer.js` and `src/sync/syncQueue.js`. Wave 7E added `src/sync/cloudSync.js`. The Supabase CDN script is a third-party request, not counted here.)*
+**Total first-party requests expected:** 1 HTML + 16 JS + 19 CSS = 36 requests, all `200`.
+*(Wave 7B added `src/auth/authModule.js`. Wave 7D added `src/sync/serializer.js` and `src/sync/syncQueue.js`. Wave 7E added `src/sync/cloudSync.js`. Wave 7F added `src/sync/prefsSync.js`. Wave 7G added `src/utils/notesEncryption.js`. The Supabase CDN script is a third-party request, not counted here.)*
 
 ---
 

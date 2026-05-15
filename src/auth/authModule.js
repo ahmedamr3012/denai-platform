@@ -99,9 +99,11 @@ window.denaiAuth = (function () {
         // Wave 7D: flush pending queue on session restore (existing session on app load).
         // onAuthStateChange does not fire for getSession() — must trigger manually.
         setTimeout(function () {
-          if (typeof denaiSyncQueue   !== 'undefined') denaiSyncQueue.flush();
+          if (typeof denaiSyncQueue !== 'undefined') denaiSyncQueue.flush();
           // Wave 7E: hydrate patient data from cloud after session restore.
-          if (typeof denaiCloudSync   !== 'undefined') denaiCloudSync.hydrate();
+          if (typeof denaiCloudSync !== 'undefined') denaiCloudSync.hydrate();
+          // Wave 7F: hydrate preferences from cloud after session restore.
+          if (typeof denaiPrefs     !== 'undefined') denaiPrefs.hydrate();
         }, 0);
       } else {
         _session = null;
@@ -125,11 +127,17 @@ window.denaiAuth = (function () {
         // Wave 7D: flush any queued writes now that the session is confirmed.
         // Wave 7E: hydrate patient data from cloud on sign-in / token refresh.
         setTimeout(function () {
-          if (typeof denaiSyncQueue   !== 'undefined') denaiSyncQueue.flush();
-          if (typeof denaiCloudSync   !== 'undefined') denaiCloudSync.hydrate();
+          if (typeof denaiSyncQueue !== 'undefined') denaiSyncQueue.flush();
+          if (typeof denaiCloudSync !== 'undefined') denaiCloudSync.hydrate();
+          // Wave 7F: hydrate preferences from cloud on sign-in.
+          if (typeof denaiPrefs     !== 'undefined') denaiPrefs.hydrate();
         }, 0);
       } else {
         _setStatus('local');
+        // Wave 7G: clear encryption key and reset prompt flag on sign-out.
+        // Key is per-session only — never persisted.
+        try { if (typeof denaiNotesEnc    !== 'undefined') denaiNotesEnc.clearKey(); } catch (e) {}
+        try { if (typeof denaiResetNotesPrompt === 'function') denaiResetNotesPrompt(); } catch (e) {}
       }
     });
   }
@@ -177,6 +185,10 @@ window.denaiAuth = (function () {
     }
     _session = null;
     _setStatus('local');
+    // Wave 7G: clear encryption key on sign-out (key is per-session only).
+    // onAuthStateChange will also fire and call clearKey — this is safe to call twice.
+    try { if (typeof denaiNotesEnc    !== 'undefined') denaiNotesEnc.clearKey(); } catch (e) {}
+    try { if (typeof denaiResetNotesPrompt === 'function') denaiResetNotesPrompt(); } catch (e) {}
   }
 
   function getSession()  { return _session; }

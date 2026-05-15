@@ -28,10 +28,11 @@ window.denaiSyncQueue = (function () {
   var MAX_ATTEMPTS = 5;
   var FLUSH_DELAY  = 500; // ms — batches rapid successive saveState() calls
 
-  var _queue      = [];
-  var _flushing   = false;
-  var _flushTimer = null;
-  var _status     = 'local'; // 'local' | 'syncing' | 'synced' | 'error'
+  var _queue          = [];
+  var _flushing       = false;
+  var _flushTimer     = null;
+  var _status         = 'local'; // 'local' | 'syncing' | 'synced' | 'error'
+  var _lastSyncedAt   = null;    // ISO string — set after each fully successful flush
 
   // ── Queue persistence ─────────────────────────────────────────────────────
 
@@ -92,6 +93,13 @@ window.denaiSyncQueue = (function () {
     try {
       if (!op || !op.patientId) return;
 
+      // Wave 7G: capture raw notes BEFORE serialization — serializer strips them.
+      // rawNotes is stored in the queue item so encryption can happen at flush time,
+      // when the user may have already entered their passphrase (key available).
+      var rawNotes = (op.payload && typeof op.payload.notes === 'string' && op.payload.notes)
+        ? op.payload.notes
+        : null;
+
       var payload = null;
       if (typeof denaiSerializer !== 'undefined') {
         payload = denaiSerializer.serializePatient(op.payload);
@@ -106,6 +114,7 @@ window.denaiSyncQueue = (function () {
         entity:     'patient',
         patient_id: op.patientId,
         payload:    payload,
+        rawNotes:   rawNotes,  // plaintext — encrypted at flush time if key is available
         history:    op.history || [],
         local_ts:   Date.now(),
         attempts:   0,
@@ -213,6 +222,7 @@ window.denaiSyncQueue = (function () {
 
     if (_queue.length === 0) {
       _setStatus('synced');
+      _lastSyncedAt = new Date().toISOString();
     } else if (anyError) {
       _setStatus('error');
     }
@@ -224,6 +234,12 @@ window.denaiSyncQueue = (function () {
     try {
 
       if (op.type === 'upsert') {
+        // Wave 7G: encrypt raw notes at flush time — key is available after passphrase entry.
+        // notes_enc is a separate top-level column; plaintext notes never reach the cloud.
+        var notesEnc = null;
+        if (typeof denaiNotesEnc !== 'undefined' && denaiNotesEnc.hasKey() && op.rawNotes) {
+          try { notesEnc = await denaiNotesEnc.encrypt(op.rawNotes); } catch (e) {}
+        }
         var row = {
           id:         op.patient_id,
           user_id:    userId,
@@ -233,6 +249,9 @@ window.denaiSyncQueue = (function () {
           history:    op.history || [],
           updated_at: new Date(op.local_ts).toISOString(),
         };
+        // Add notes_enc only when encrypted — never send null to overwrite existing ciphertext
+        // with a null (user may not have entered passphrase this session).
+        if (notesEnc) row.notes_enc = notesEnc;
         var res = await client
           .from('patients')
           .upsert(row, { onConflict: 'id' });
@@ -277,8 +296,9 @@ window.denaiSyncQueue = (function () {
     window.addEventListener('online', function () { flush(); });
   }
 
-  function getStatus()      { return _status; }
-  function getQueueLength() { return _queue.length; }
+  function getStatus()        { return _status; }
+  function getQueueLength()   { return _queue.length; }
+  function getLastSyncedAt()  { return _lastSyncedAt; }
   // hasPendingFor — used by cloudSync merge engine to detect in-flight local edits.
   // Returns true if an unsent upsert exists for patientId — cloud must not overwrite it.
   function hasPendingFor(patientId) {
@@ -295,6 +315,7 @@ window.denaiSyncQueue = (function () {
     hasPendingFor:     hasPendingFor,
     getStatus:         getStatus,
     getQueueLength:    getQueueLength,
+    getLastSyncedAt:   getLastSyncedAt,
   });
 
 })();

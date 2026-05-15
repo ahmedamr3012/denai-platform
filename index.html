@@ -57,6 +57,10 @@
   <script src="src/sync/syncQueue.js?v=2.0.0"></script>
   <!-- Wave 7E: Cloud read path — cloudSync must follow syncQueue (uses hasPendingFor) -->
   <script src="src/sync/cloudSync.js?v=2.0.0"></script>
+  <!-- Wave 7F: Preferences sync — must follow cloudSync (hydrate called after auth) -->
+  <script src="src/sync/prefsSync.js?v=2.0.0"></script>
+  <!-- Wave 7G: Notes encryption — AES-GCM client-side PHI protection -->
+  <script src="src/utils/notesEncryption.js?v=2.0.0"></script>
   <style>
     /* ================================================================
        DESIGN TOKENS & VARIABLES
@@ -901,6 +905,14 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           <button class="btn btn-sec" type="button" id="authContinueLocalBtn" style="flex:1;justify-content:center;" onclick="closeAuthModal()">Continue locally</button>
           <button class="btn btn-pri" type="button" id="authSignInBtn" style="flex:1;justify-content:center;">Sign In</button>
         </div>
+        <!-- Data portability — accessible in local mode too -->
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--c-n200);">
+          <p style="font-size:11px;font-weight:600;color:var(--c-n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Data Portability</p>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="exportAllData();closeAuthModal();">⬇ Export All</button>
+            <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="importAllData();closeAuthModal();">⬆ Import</button>
+          </div>
+        </div>
       </div>
 
       <!-- Sign-up panel (hidden by default) -->
@@ -926,14 +938,55 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <!-- Signed-in panel (hidden by default) -->
       <div id="authPanelSignedIn" style="display:none;">
         <h3 style="font-size:18px;font-weight:800;color:var(--c-n900);margin-bottom:4px;">Account</h3>
-        <p id="authSignedInEmail" style="font-size:13px;color:var(--c-n500);margin-bottom:18px;">Signed in</p>
-        <p style="font-size:12px;color:var(--c-n400);margin-bottom:18px;">Your patients are syncing across devices. Signing out keeps all local data intact.</p>
+        <p id="authSignedInEmail" style="font-size:13px;color:var(--c-n500);margin-bottom:12px;">Signed in</p>
+
+        <!-- Sync status row -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:8px 10px;background:var(--surface-card);border:1px solid var(--c-n200);border-radius:8px;">
+          <span id="authSyncDot" style="width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;"></span>
+          <span id="authSyncLabel" style="font-size:12px;color:var(--c-n600);flex:1;">Synced</span>
+          <span id="authLastSyncTime" style="font-size:11px;color:var(--c-n400);"></span>
+        </div>
+
+        <!-- Notes encryption status row (Wave 7G) -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 10px;background:var(--surface-card);border:1px solid var(--c-n200);border-radius:8px;">
+          <span id="authNotesEncDot" style="width:7px;height:7px;border-radius:50%;background:#d1d5db;flex-shrink:0;"></span>
+          <span id="authNotesEncLabel" style="font-size:12px;color:var(--c-n600);flex:1;">Notes local only</span>
+          <button id="authNotesEncBtn" class="btn btn-sec" type="button" style="font-size:11px;padding:4px 10px;min-width:72px;">Enable</button>
+        </div>
+
+        <!-- Data management -->
+        <div style="margin-bottom:16px;">
+          <p style="font-size:11px;font-weight:600;color:var(--c-n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Data</p>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="exportAllData();closeAuthModal();">⬇ Export All</button>
+            <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="importAllData();closeAuthModal();">⬆ Import</button>
+          </div>
+        </div>
+
         <div style="display:flex;gap:10px;">
           <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;" onclick="closeAuthModal()">Close</button>
           <button class="btn btn-sec" type="button" id="authSignOutBtn" style="flex:1;justify-content:center;color:var(--c-danger);border-color:var(--c-danger);">Sign Out</button>
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- Wave 7G: Notes encryption passphrase prompt -->
+  <div class="modal-ov" id="notesPassphraseModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="notesPassphraseHeading">
+    <div class="modal-box" role="document" style="max-width:360px;text-align:left;">
+      <h3 id="notesPassphraseHeading" style="font-size:16px;font-weight:700;color:var(--c-n900);margin-bottom:4px;">Sync Clinical Notes</h3>
+      <p id="notesPassphraseDesc" style="font-size:13px;color:var(--c-n500);margin-bottom:14px;">Enter your notes passphrase to decrypt and sync clinical notes across devices.</p>
+      <div style="margin-bottom:10px;">
+        <label class="np-label" for="notesPassphraseInput">Passphrase</label>
+        <input class="np-input" id="notesPassphraseInput" type="password" placeholder="••••••••" autocomplete="off"/>
+      </div>
+      <div id="notesPassphraseError" style="display:none;font-size:12px;color:var(--c-danger);margin-bottom:8px;" role="alert"></div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;" onclick="closeNotesPassphraseModal()">Skip</button>
+        <button class="btn btn-pri" type="button" id="notesPassphraseBtn" style="flex:1;justify-content:center;">Unlock Notes</button>
+      </div>
+      <p style="font-size:11px;color:var(--c-n400);margin:0;">Notes remain accessible locally. Skipping leaves clinical notes on this device only.</p>
     </div>
   </div>
 
@@ -3038,6 +3091,130 @@ showToast('Case data exported as JSON','success');
 }
 
 // ================================================================
+// Wave 7F: FULL BACKUP EXPORT
+// Exports all patients + preferences to a portable JSON file.
+// Schema: { exportFormat, exportedAt, schemaVersion, patientCount, patients[], preferences }
+// ================================================================
+function exportAllData() {
+const list = loadAllPatients() || [];
+const exportData = {
+  exportFormat:    'denai-backup-v1',
+  exportedAt:      new Date().toISOString(),
+  schemaVersion:   1,
+  patientCount:    list.length,
+  patients: list.map(function(p) {
+    return Object.assign({}, p, { history: History.load(p.id) });
+  }),
+  preferences: {
+    darkMode: darkMode,
+  },
+};
+const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+const url  = URL.createObjectURL(blob);
+const a    = document.createElement('a');
+a.href     = url;
+a.download = `denai-backup-${new Date().toISOString().split('T')[0]}.json`;
+a.click();
+CleanupRegistry.timer(() => URL.revokeObjectURL(url), 500);
+showToast(`Exported ${list.length} patient${list.length === 1 ? '' : 's'}`, 'success');
+}
+
+// ================================================================
+// Wave 7F: FULL BACKUP IMPORT
+// Merges a denai-backup-v1 JSON file into local data.
+// Safety contract: NEVER silently overwrites existing patients.
+// Patients with IDs already in local are skipped (logged in toast).
+// Preferences are applied only if included in the backup.
+// ================================================================
+function importAllData() {
+const input = document.createElement('input');
+input.type = 'file';
+input.accept = '.json,application/json';
+input.onchange = function(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      _applyImport(data);
+    } catch (err) {
+      showToast('Import failed — file is not valid JSON', 'error');
+    }
+  };
+  reader.readAsText(file);
+};
+input.click();
+}
+
+function _applyImport(data) {
+// Format validation
+if (!data || data.exportFormat !== 'denai-backup-v1') {
+  showToast('Import failed — unrecognized backup format', 'error');
+  return;
+}
+if (!Array.isArray(data.patients)) {
+  showToast('Import failed — no patient data found', 'error');
+  return;
+}
+
+const existing    = loadAllPatients() || [];
+const existingIds = new Set(existing.map(function(p) { return p.id; }));
+const toAdd       = [];
+let   skipped     = 0;
+
+data.patients.forEach(function(p) {
+  // Basic structural validation
+  if (!p || typeof p.id !== 'string' || !p.id) { skipped++; return; }
+  if (!p.name || !p.condition)                  { skipped++; return; }
+  // Never silently overwrite an existing patient
+  if (existingIds.has(p.id))                    { skipped++; return; }
+
+  // Merge imported patient over DEFAULT_STATE for safety — fills any missing fields.
+  const imported = Object.assign({}, DEFAULT_STATE, p);
+  // Strip metadata that shouldn't be re-imported:
+  //   _syncedAt — imported patient hasn't been synced yet on this device
+  //   schema_ver — cloud metadata, not patient data
+  delete imported._syncedAt;
+  delete imported.schema_ver;
+
+  // Preserve history if present in the backup
+  if (Array.isArray(p.history) && p.history.length > 0) {
+    History.save(p.history.slice(-50), imported.id);
+  }
+
+  toAdd.push(imported);
+});
+
+if (toAdd.length > 0) {
+  saveAllPatients(existing.concat(toAdd));
+  renderPatientList();
+  // Enqueue imported patients for cloud upload (non-blocking)
+  toAdd.forEach(function(p) {
+    try {
+      if (typeof denaiSyncQueue !== 'undefined') {
+        denaiSyncQueue.enqueue({ type: 'upsert', patientId: p.id, payload: p, history: History.load(p.id) });
+      }
+    } catch (e) {}
+  });
+}
+
+// Apply imported preferences if present
+if (data.preferences && typeof data.preferences.darkMode === 'boolean') {
+  if (data.preferences.darkMode !== darkMode) {
+    denaiSetDarkMode(data.preferences.darkMode);
+    try { if (typeof denaiPrefs !== 'undefined') denaiPrefs.save({ darkMode: data.preferences.darkMode }); } catch {}
+  }
+}
+
+const msg = toAdd.length > 0
+  ? `Imported ${toAdd.length} patient${toAdd.length === 1 ? '' : 's'}` +
+    (skipped > 0 ? ` (${skipped} skipped — already exist locally)` : '')
+  : `Nothing to import — all ${skipped} patient${skipped === 1 ? '' : 's'} already exist locally`;
+showToast(msg, toAdd.length > 0 ? 'success' : 'info');
+}
+
+// ================================================================
 // MODULE: ui.js — UI actions, event handlers, user interactions
 // ================================================================
 // UI ACTIONS
@@ -3416,15 +3593,122 @@ showToast(`${name} removed`, 'info');
 function denaiApplyCloudMerge(changedIds) {
 renderPatientList();
 if (!Array.isArray(changedIds) || !changedIds.includes(S.id)) return;
-// Don't disrupt an active edit session — user's uncommitted changes take priority.
+
+const list      = loadAllPatients() || [];
+const stillHere = list.find(p => p.id === S.id);
+
+// Active patient was tombstoned (deleted on another device)
+if (!stillHere) {
+  const fallback = list[0];
+  if (fallback) {
+    switchPatient(fallback.id);
+    showToast('Active patient was removed on another device', 'info');
+  }
+  return;
+}
+
+// Don't disrupt an active edit session — uncommitted changes take priority.
 if (UIState.editing) return;
-const list = loadAllPatients() || [];
-const updated = list.find(p => p.id === S.id);
-if (!updated) return;
-// Reload the active patient into S and re-render.
-Object.assign(S, { ...DEFAULT_STATE, ...updated });
+
+// Active patient data was updated from another device
+Object.assign(S, { ...DEFAULT_STATE, ...stillHere });
 render(S);
-showToast('View updated from cloud sync', 'info');
+showToast('Patient updated from another device', 'info');
+}
+
+// ================================================================
+// Wave 7G: NOTES ENCRYPTION PASSPHRASE PROMPT
+// Bridge functions — function declarations so prefsSync.js and authModule.js
+// can reach them via window.*. State vars use var (top-level, not const).
+// ================================================================
+var _notesPromptShown = false;
+var _notesCurrentSalt = null;
+var _notesSetupMode   = false;
+
+// Called by denaiPrefs._triggerPassphrasePrompt() after hydrate.
+// Shown once per session; skipped if key already derived.
+function denaiShowNotesPassphrasePrompt(salt) {
+  if (_notesPromptShown) return;
+  if (typeof denaiNotesEnc !== 'undefined' && denaiNotesEnc.hasKey()) return;
+  _notesPromptShown = true;
+  _notesCurrentSalt = salt;
+  _notesSetupMode   = false;
+  const h = $('notesPassphraseHeading');
+  const d = $('notesPassphraseDesc');
+  const b = $('notesPassphraseBtn');
+  if (h) h.textContent = 'Sync Clinical Notes';
+  if (d) d.textContent = 'Enter your notes passphrase to decrypt and sync clinical notes across devices.';
+  if (b) b.textContent = 'Unlock Notes';
+  const modal = $('notesPassphraseModal');
+  if (modal) modal.style.display = 'flex';
+  setTimeout(() => { const inp = $('notesPassphraseInput'); if (inp) inp.focus(); }, 80);
+}
+
+// Called from authModule.js on sign-out — resets so prompt shows on next sign-in.
+function denaiResetNotesPrompt() {
+  _notesPromptShown = false;
+  _notesCurrentSalt = null;
+}
+
+// Called from account panel "Enable" button — first-time setup flow.
+function setupNotesEncryption() {
+  if (typeof denaiNotesEnc === 'undefined') return;
+  const salt = denaiNotesEnc.generateSalt();
+  // Save salt locally + schedule cloud push so it persists and syncs to other devices.
+  if (typeof denaiPrefs !== 'undefined') denaiPrefs.save({ notesKeySalt: salt });
+  _notesCurrentSalt = salt;
+  _notesSetupMode   = true;
+  _notesPromptShown = true; // prevent auto-prompt on this same session
+  const h = $('notesPassphraseHeading');
+  const d = $('notesPassphraseDesc');
+  const b = $('notesPassphraseBtn');
+  if (h) h.textContent = 'Set Up Notes Encryption';
+  if (d) d.textContent = 'Create a passphrase to encrypt your clinical notes before syncing to the cloud.';
+  if (b) b.textContent = 'Set Passphrase';
+  const errEl = $('notesPassphraseError'); if (errEl) errEl.style.display = 'none';
+  const inp = $('notesPassphraseInput'); if (inp) inp.value = '';
+  const modal = $('notesPassphraseModal');
+  if (modal) modal.style.display = 'flex';
+  setTimeout(() => { if (inp) inp.focus(); }, 80);
+}
+
+function closeNotesPassphraseModal() {
+  const modal = $('notesPassphraseModal');
+  if (modal) modal.style.display = 'none';
+  const inp = $('notesPassphraseInput'); if (inp) inp.value = '';
+  const err = $('notesPassphraseError'); if (err) err.style.display = 'none';
+}
+
+async function submitNotesPassphrase() {
+  if (typeof denaiNotesEnc === 'undefined') return;
+  const inp = $('notesPassphraseInput');
+  const err = $('notesPassphraseError');
+  const btn = $('notesPassphraseBtn');
+  if (!inp || !_notesCurrentSalt) return;
+  const passphrase = inp.value;
+  if (!passphrase) {
+    if (err) { err.textContent = 'Please enter a passphrase.'; err.style.display = ''; }
+    return;
+  }
+  if (btn) { btn.textContent = 'Unlocking…'; btn.disabled = true; }
+  try {
+    const ok = await denaiNotesEnc.init(passphrase, _notesCurrentSalt);
+    if (ok) {
+      closeNotesPassphraseModal();
+      if (_notesSetupMode) {
+        showToast('Notes encryption enabled — notes will sync securely', 'success');
+      } else {
+        showToast('Notes encryption active', 'success');
+      }
+      // Re-hydrate to decrypt any existing cloud notes now that the key is available.
+      if (typeof denaiCloudSync !== 'undefined') denaiCloudSync.hydrate();
+    } else {
+      if (err) { err.textContent = 'Key derivation failed. Try again.'; err.style.display = ''; }
+    }
+  } catch (e) {
+    if (err) { err.textContent = 'Unexpected error. Try again.'; err.style.display = ''; }
+  }
+  if (btn) { btn.textContent = _notesSetupMode ? 'Set Passphrase' : 'Unlock Notes'; btn.disabled = false; }
 }
 
 // ================================================================
@@ -3439,6 +3723,54 @@ if (status === 'signed-in') {
   const session = (typeof denaiAuth !== 'undefined') ? denaiAuth.getSession() : null;
   const emailEl = $('authSignedInEmail');
   if (emailEl) emailEl.textContent = (session && session.user && session.user.email) || 'Signed in';
+  // Populate sync status row
+  const syncDot   = $('authSyncDot');
+  const syncLabel = $('authSyncLabel');
+  const syncTime  = $('authLastSyncTime');
+  const queueLen  = (typeof denaiSyncQueue !== 'undefined') ? denaiSyncQueue.getQueueLength() : 0;
+  const queueStat = (typeof denaiSyncQueue !== 'undefined') ? denaiSyncQueue.getStatus()      : 'local';
+  // Combine upload and download timestamps to show most recent
+  const uploadTs   = (typeof denaiSyncQueue  !== 'undefined') ? denaiSyncQueue.getLastSyncedAt()   : null;
+  const downloadTs = (typeof denaiCloudSync  !== 'undefined') ? denaiCloudSync.getLastHydratedAt() : null;
+  const mostRecent = _newerTs(uploadTs, downloadTs);
+  if (syncDot && syncLabel) {
+    if (queueLen > 0) {
+      syncDot.style.background = '#f59e0b';
+      syncLabel.textContent    = queueLen + ' pending';
+    } else if (queueStat === 'error') {
+      syncDot.style.background = '#ef4444';
+      syncLabel.textContent    = 'Sync error';
+    } else {
+      syncDot.style.background = '#22c55e';
+      syncLabel.textContent    = 'Synced';
+    }
+  }
+  if (syncTime) syncTime.textContent = mostRecent ? _relativeTime(mostRecent) : '';
+  // Notes encryption status row (Wave 7G)
+  const notesDot   = $('authNotesEncDot');
+  const notesLabel = $('authNotesEncLabel');
+  const notesBtn   = $('authNotesEncBtn');
+  const notesActive = typeof denaiNotesEnc !== 'undefined' && denaiNotesEnc.hasKey();
+  const hasSalt     = typeof denaiPrefs !== 'undefined' && !!denaiPrefs.get('notesKeySalt');
+  if (notesDot && notesLabel && notesBtn) {
+    if (notesActive) {
+      notesDot.style.background  = '#22c55e';
+      notesLabel.textContent     = 'Notes encrypted';
+      notesBtn.style.display     = 'none';
+    } else if (hasSalt) {
+      notesDot.style.background  = '#f59e0b';
+      notesLabel.textContent     = 'Notes locked — passphrase needed';
+      notesBtn.textContent       = 'Unlock';
+      notesBtn.style.display     = '';
+      notesBtn.onclick = function() { closeAuthModal(); denaiShowNotesPassphrasePrompt(denaiPrefs.get('notesKeySalt')); };
+    } else {
+      notesDot.style.background  = '#d1d5db';
+      notesLabel.textContent     = 'Notes local only';
+      notesBtn.textContent       = 'Enable';
+      notesBtn.style.display     = '';
+      notesBtn.onclick = function() { closeAuthModal(); setupNotesEncryption(); };
+    }
+  }
   if ($('authPanelSignIn'))    $('authPanelSignIn').style.display    = 'none';
   if ($('authPanelSignUp'))    $('authPanelSignUp').style.display    = 'none';
   if ($('authPanelSignedIn'))  $('authPanelSignedIn').style.display  = '';
@@ -3452,6 +3784,26 @@ setTimeout(() => {
   const first = status === 'signed-in' ? null : $('authSignInEmail');
   if (first) first.focus();
 }, 80);
+}
+
+// Wave 7F: relative-time formatter for last-sync display in account panel.
+function _relativeTime(isoString) {
+  try {
+    const diff = Date.now() - new Date(isoString).getTime();
+    const min  = Math.floor(diff / 60000);
+    if (min < 1)  return 'just now';
+    if (min < 60) return min + ' min ago';
+    const hr = Math.floor(min / 60);
+    if (hr  < 24) return hr + ' hr ago';
+    const day = Math.floor(hr / 24);
+    return day + ' day' + (day === 1 ? '' : 's') + ' ago';
+  } catch { return ''; }
+}
+// Returns the more recent of two ISO strings (or null if both absent).
+function _newerTs(a, b) {
+  if (!a) return b;
+  if (!b) return a;
+  try { return new Date(a).getTime() >= new Date(b).getTime() ? a : b; } catch { return a; }
 }
 
 function closeAuthModal() {
@@ -3570,7 +3922,20 @@ if (!btn) return;  // BUG#12: early exit
 btn.innerHTML = darkMode ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
 btn.setAttribute('aria-label', darkMode ? 'Switch to light mode' : 'Switch to dark mode');
 }
-function toggleDarkMode() { darkMode = !darkMode; try { localStorage.setItem('dandyDarkMode', darkMode); } catch {} applyDarkMode(); }
+function toggleDarkMode() {
+  darkMode = !darkMode;
+  try { localStorage.setItem('dandyDarkMode', darkMode); } catch {}
+  applyDarkMode();
+  // Wave 7F: sync dark mode preference to cloud (non-blocking).
+  try { if (typeof denaiPrefs !== 'undefined') denaiPrefs.save({ darkMode: darkMode }); } catch {}
+}
+// Wave 7F: Bridge called by denaiPrefs._applyToDom() after a cloud preference sync.
+// Must be a function declaration so prefsSync.js can access it via window.denaiSetDarkMode.
+function denaiSetDarkMode(value) {
+  darkMode = !!value;
+  try { localStorage.setItem('dandyDarkMode', darkMode); } catch {}
+  applyDarkMode();
+}
 
 // ================================================================
 // UTILITIES
@@ -3857,6 +4222,11 @@ $('authSignOutBtn')?.addEventListener('click', async () => {
   // IMPORTANT: local patient data is never cleared on sign-out
   showToast('Signed out — local data preserved', 'info');
 });
+// Wave 7G: notes passphrase modal
+$('notesPassphraseBtn')?.addEventListener('click', submitNotesPassphrase);
+$('notesPassphraseInput')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitNotesPassphrase();
+});
 $('saveDraftBtn')?.addEventListener('click', openModal);
 $('createCaseBtn')?.addEventListener('click', createCase);
 $('resetBtn')?.addEventListener('click', openResetModal);
@@ -3939,8 +4309,12 @@ trapFocus('shortcutsModal');
 trapFocus('newPatientModal');
 trapFocus('deletePatientModal');
 trapFocus('authModal');
+trapFocus('notesPassphraseModal');
 
 renderPatientList();
+// Wave 7F: init preferences (synchronous — loads from localStorage, applies dark mode).
+// Called before applyDarkMode() so cloud-restored prefs take precedence on first paint.
+if (typeof denaiPrefs !== 'undefined') { denaiPrefs.init(); }
 applyDarkMode();
 
 // Cleanup on page unload to prevent memory leaks

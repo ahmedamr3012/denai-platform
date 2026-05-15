@@ -856,6 +856,230 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-15T15:21:01.637Z"
+    },
+    {
+      "id": "bug-054",
+      "timestamp": "2026-05-15T23:18:36.035Z",
+      "error_message": "Missing error handling in function",
+      "file": "src/sync/cloudSync.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T23:18:36.035Z"
+    },
+    {
+      "id": "bug-055",
+      "timestamp": "2026-05-15T23:18:47.776Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/sync/cloudSync.js",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→11 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T23:18:47.776Z"
+    },
+    {
+      "id": "bug-056",
+      "timestamp": "2026-05-15T23:19:03.245Z",
+      "error_message": "Missing guard clause",
+      "file": "src/sync/cloudSync.js",
+      "root_cause": "No early return/throw for edge case: !tomb || !tomb.id || !tomb.deleted_at",
+      "fix": "Added guard clause: if (!tomb || !tomb.id || !tomb.deleted_at)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T23:19:03.245Z"
+    },
+    {
+      "id": "bug-057",
+      "timestamp": "2026-05-15T23:19:09.769Z",
+      "error_message": "Wrong return value",
+      "file": "src/sync/cloudSync.js",
+      "root_cause": "Was returning: Object.freeze({ hydrate: hydrate });",
+      "fix": "Now returns: _lastHydratedAt; }",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T23:19:09.769Z"
+    },
+    {
+      "id": "bug-058",
+      "timestamp": "2026-05-15T23:19:28.871Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/sync/syncQueue.js",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 4→5 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T23:19:28.871Z"
+    },
+    {
+      "id": "bug-059",
+      "timestamp": "2026-05-15T23:20:03.988Z",
+      "error_message": "Wrong condition in logic",
+      "file": "src/auth/authModule.js",
+      "root_cause": "Condition was: if (typeof denaiSyncQueue   !== 'undefined')",
+      "fix": "Changed to: if (typeof denaiSyncQueue !== 'undefined')",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-15T23:20:10.569Z"
+    },
+    {
+      "id": "bug-060",
+      "timestamp": "2026-05-15T23:21:38.537Z",
+      "error_message": "Missing error handling in exportAllData",
+      "file": "index.html",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: // Populate sync status row; const syncDot   = $('authSyncDot');",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-15T23:23:00.785Z"
+    },
+    {
+      "id": "bug-061",
+      "timestamp": "2026-05-15T23:21:51.835Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 13→25 lines (7 removed) | Also: <p id=\"authSignedInEmail\" style=\"font-size:13px;co; <p style=\"font-size:12px;color:var(--c-n400);margi",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-15T23:22:11.649Z"
+    },
+    {
+      "id": "bug-062",
+      "timestamp": "2026-05-15T23:39:42.530Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/sync/syncQueue.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T23:39:42.530Z"
+    },
+    {
+      "id": "bug-063",
+      "timestamp": "2026-05-15T23:40:13.205Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/sync/cloudSync.js",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: function _mergeOne(local, cloudRow, decryptedNotesMap) {; return _buildMerged(cloudState, cloudRow, null, decryptedNot",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-15T23:40:54.739Z"
+    },
+    {
+      "id": "bug-064",
+      "timestamp": "2026-05-15T23:42:00.575Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/sync/prefsSync.js",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 39→59 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T23:42:00.575Z"
+    },
+    {
+      "id": "bug-065",
+      "timestamp": "2026-05-15T23:42:26.516Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/auth/authModule.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T23:42:26.516Z"
+    },
+    {
+      "id": "bug-066",
+      "timestamp": "2026-05-15T23:43:48.189Z",
+      "error_message": "Missing error handling in declarations",
+      "file": "index.html",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T23:43:48.189Z"
+    },
+    {
+      "id": "bug-067",
+      "timestamp": "2026-05-15T23:45:00.393Z",
+      "error_message": "Incorrect value in code",
+      "file": "docs/deployment-validation.md",
+      "root_cause": "Had `src/styles/**/*.css?v=2.0.0`",
+      "fix": "Changed to `src/utils/notesEncryption.js?v=2.0.0`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T23:45:00.393Z"
     }
   ]
 }
