@@ -1,0 +1,15 @@
+/* ================================================================
+   FOCUS RING TOKENS — Calibration Extraction Wave 1
+   Source of truth for --focus-ring accessibility token. Do not redeclare in index.html.
+   NOTE: Dark mode override present — both blocks are co-extracted as an atomic unit.
+         Values are raw rgba box-shadows. RGB channels hardcode brand color values
+         (31,122,79 light / 42,156,103 dark) — will drift silently on palette change.
+   ================================================================ */
+
+:root {
+  --focus-ring: 0 0 0 3px rgba(31,122,79,.35);
+}
+
+body.dark {
+  --focus-ring: 0 0 0 3px rgba(42,156,103,.45);
+}

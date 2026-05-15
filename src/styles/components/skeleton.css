@@ -1,0 +1,46 @@
+/* ================================================================
+   SKELETON & LOADING SYSTEM — Wave 2 extraction
+   Depends on: --skeleton-base/shine (skeleton-tokens), --r-sm/md/lg (layout-tokens),
+               --c-brand/brand-bg/brand-bdr/brand-dark (brand-tokens),
+               --c-n50/n150/n300/n500 (neutral-tokens),
+               --c-risk-high-bg (risk-tokens), --c-danger (state-tokens)
+   Consolidated: duplicate .skeleton merged — canonical uses --skeleton-base/shine tokens
+   ================================================================ */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-shine) 50%, var(--skeleton-base) 75%);
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--r-sm); display: block;
+}
+.skeleton-wrap { display: flex; flex-direction: column; gap: 14px; }
+.skel-banner { height: 72px; }
+.skel-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.skel-metric { height: 130px; border-radius: var(--r-lg); }
+.skel-reasons { height: 48px; }
+.skel-risk { height: 110px; }
+.skeleton-text  { height: 14px; margin: 6px 0; }
+.skeleton-text.w60 { width: 60%; }
+.skeleton-text.w80 { width: 80%; }
+.skeleton-text.w40 { width: 40%; }
+.skeleton-circle { width: 56px; height: 56px; border-radius: 50%; }
+.skeleton-bar    { height: 8px; width: 100%; border-radius: 4px; margin-top: 6px; }
+.skeleton-metric { display:flex; flex-direction:column; align-items:center; gap:8px; padding:12px; }
+.skeleton-metric .skeleton-circle { margin-bottom: 4px; }
+.card-skeleton-wrap { padding: 20px; display: flex; flex-direction: column; gap: 10px; min-height: 120px; }
+.empty-state { background: var(--c-brand-bg); border: 1.5px solid var(--c-brand-bdr); border-radius: var(--r-lg); padding: 28px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+body.dark .empty-state { background: var(--c-n50); border-color: var(--c-n150); }
+.empty-state i { font-size: 36px; color: var(--c-brand); }
+.empty-state h4 { font-size: 16px; color: var(--c-brand-dark); font-weight: 700; }
+.empty-state p { font-size: 13px; color: var(--c-n500); max-width: 300px; line-height: 1.5; }
+.card-error-fallback {
+  padding: 24px; text-align: center; color: var(--c-n500);
+  border: 1.5px dashed var(--c-n300); border-radius: var(--r-md);
+  margin: 8px; background: var(--c-risk-high-bg);
+}
+.card-error-fallback i  { font-size: 24px; color: var(--c-danger); margin-bottom: 8px; display: block; }
+.card-error-fallback p  { font-size: 12px; margin-bottom: 10px; }
+.card-error-fallback button { font-size: 11px; padding: 6px 14px; }

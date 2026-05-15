@@ -1,0 +1,26 @@
+/* ================================================================
+   PRINT UTILITIES — Wave 2 extraction
+   Depends on: no tokens (all hardcoded print values)
+   Note: @media print block in JS report template (line ~4694) is separate — not extracted
+   ================================================================ */
+
+@media print {
+  .opt-card.active { background: #f0faf5 !important; border-color: #1F7A4F !important; }
+  .opt-score-fill { background: #1F7A4F !important; }
+}
+
+@media print {
+  .sidebar, .topbar, .workflow, .opt-grid, .slider-group, .preset-row, .slider-actions,
+  .btn, .hamburger, .dark-toggle, .save-indicator, .modal-ov, .toast-wrap,
+  .edit-actions, .edit-grid, #whatIfContainer, .features, .comparison-section,
+  .notes-area, .notes-meta, .history-list { display: none !important; }
+  body { background: white; color: black; height: auto; overflow: visible; }
+  main { overflow: visible; }
+  .page { padding: 20px; }
+  .card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+  .grid3 { grid-template-columns: 1fr 1fr; }
+  .ai-card { border-top: 3px solid #1F7A4F; }
+  .rec-banner { background: #f5f5f5; border: 1px solid #ccc; }
+  .metric-big { color: #1F7A4F; }
+  .graph-container { page-break-inside: avoid; }
+}

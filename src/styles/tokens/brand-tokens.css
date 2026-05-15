@@ -1,0 +1,22 @@
+/* ================================================================
+   BRAND COLOR TOKENS — Calibration Extraction Wave 1
+   Source of truth for --c-brand-* family. Do not redeclare in index.html.
+   ================================================================ */
+
+:root {
+  --c-brand:       #1F7A4F;
+  --c-brand-hover: #185f3e;
+  --c-brand-lite:  #2a9c67;
+  --c-brand-bg:    #EDF6F1;
+  --c-brand-bdr:   #c5dfd0;
+  --c-brand-dark:  #0B2B1F;
+}
+
+body.dark {
+  --c-brand:       #2a9c67;
+  --c-brand-hover: #3bb77a;
+  --c-brand-lite:  #2a9c67;
+  --c-brand-bg:    #1A2F24;
+  --c-brand-bdr:   #2a5a3a;
+  --c-brand-dark:  #E0F2E9;
+}

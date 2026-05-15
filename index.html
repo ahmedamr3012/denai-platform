@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!-- denai Clinical Platform v2.0 — Production Ready -->
 
 <html lang="en" dir="ltr">
@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="denai — Clinical Insight Interface for dental professionals" />
   <!-- CSP: Restrictive but functional for single-file -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; script-src 'unsafe-inline' 'unsafe-eval'; connect-src https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; frame-src 'none'; base-uri 'none'; form-action 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; connect-src https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://*.supabase.co; img-src 'self' data:; frame-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; upgrade-insecure-requests;">
   <title>denai — Clinical Insight</title>
   <!-- PWA manifest & theme -->
   <meta name="theme-color" content="#1F7A4F" />
@@ -19,53 +19,49 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="src/styles/tokens/brand-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/neutral-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/shadow-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/layout-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/motion-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/layer-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/typography-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/skeleton-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/state-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/surface-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/risk-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/focus-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/utilities/accessibility.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/components/toast.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/components/skeleton.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/components/history.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/components/modal.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/components/cards.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/utilities/print.css?v=2.0.0" />
+  <script src="src/ai/calcAI.js?v=2.0.0"></script>
+  <script src="src/utils/formatting.js?v=2.0.0"></script>
+  <script src="src/utils/costEngine.js?v=2.0.0"></script>
+  <script src="src/ai/clinicalEngine.js?v=2.0.0"></script>
+  <script src="src/reports/reportTemplates.js?v=2.0.0"></script>
+  <script src="src/render/costGraphPanel.js?v=2.0.0"></script>
+  <script src="src/render/materialPanel.js?v=2.0.0"></script>
+  <script src="src/render/comparisonPanel.js?v=2.0.0"></script>
+  <script src="src/render/patientPanel.js?v=2.0.0"></script>
+  <script src="src/render/riskPanel.js?v=2.0.0"></script>
+  <!-- Wave 7B: Auth foundation — Supabase CDN must precede authModule.js -->
+  <!-- TODO: Pin to a specific version before production. Current: @2.39.7 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
+  <script src="src/auth/authModule.js?v=2.0.0"></script>
+  <!-- Wave 7D: Cloud write path — serializer must precede syncQueue -->
+  <script src="src/sync/serializer.js?v=2.0.0"></script>
+  <script src="src/sync/syncQueue.js?v=2.0.0"></script>
+  <!-- Wave 7E: Cloud read path — cloudSync must follow syncQueue (uses hasPendingFor) -->
+  <script src="src/sync/cloudSync.js?v=2.0.0"></script>
   <style>
     /* ================================================================
        DESIGN TOKENS & VARIABLES
        ================================================================ */
-    :root {
-      --c-brand: #1F7A4F; --c-brand-hover: #185f3e; --c-brand-lite: #2a9c67;
-      --c-brand-bg: #EDF6F1; --c-brand-bdr: #c5dfd0; --c-brand-dark: #0B2B1F;
-      --c-n50: #F9FAFB; --c-n100: #F3F4F6; --c-n150: #ECEEF1;
-      --c-n200: #E5E7EB; --c-n300: #D1D5DB; --c-n400: #9CA3AF;
-      --c-n500: #6B7280; --c-n600: #4B5563; --c-n700: #374151;
-      --c-n800: #1F2937; --c-n900: #111827;
-      --c-success: #22c55e; --c-warning: #f59e0b; --c-danger: #ef4444;
-      --surface-page: #EEF2EF; --surface-card: #ffffff; --surface-sidebar: var(--c-brand-dark);
-      --shadow-xs: 0 1px 2px rgba(0,0,0,.04);
-      --shadow-sm: 0 2px 6px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-      --shadow-md: 0 4px 14px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
-      --shadow-lg: 0 10px 28px rgba(0,0,0,.09), 0 4px 8px rgba(0,0,0,.04);
-      --shadow-brand: 0 4px 20px rgba(31,122,79,.18);
-      --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-2xl: 24px;
-      --t-fast: .15s ease; --t-base: .25s cubic-bezier(.4,0,.2,1); --t-spring: .5s cubic-bezier(.16,1,.3,1);
-      --sidebar-w: 238px; --topbar-h: 68px;
-      --focus-ring: 0 0 0 3px rgba(31,122,79,.35);
-      /* Extended tokens */
-      --c-risk-low: #16a34a;  --c-risk-med: #d97706;  --c-risk-high: #dc2626;
-      --c-risk-low-bg: rgba(22,163,74,.08); --c-risk-med-bg: rgba(217,119,6,.08); --c-risk-high-bg: rgba(220,38,38,.08);
-      --font-body: 'DM Sans', system-ui, sans-serif;
-      --font-display: 'Sora', sans-serif;
-      --z-sidebar: 30; --z-overlay: 100; --z-modal: 200; --z-toast: 300;
-      --skeleton-base: #e5e7eb; --skeleton-shine: #f3f4f6;
-      --transition-card: transform var(--t-base), box-shadow var(--t-base), opacity var(--t-base);
-    }
-    body.dark {
-      --c-brand-dark: #E0F2E9; --c-brand: #2a9c67; --c-brand-hover: #3bb77a;
-      --c-brand-lite: #2a9c67; --c-brand-bg: #1A2F24; --c-brand-bdr: #2a5a3a;
-      --c-n50: #1a1d21; --c-n100: #212429; --c-n150: #2a2e35;
-      --c-n200: #3a3f48; --c-n300: #4a505a; --c-n400: #8a909e;
-      --c-n500: #9aa0ae; --c-n600: #bac0cc; --c-n700: #d0d5df;
-      --c-n800: #e5e8ef; --c-n900: #f5f7fc;
-      --surface-page: #14181c; --surface-card: #1a1d21; --surface-sidebar: #0d1114;
-      --shadow-xs: 0 1px 2px rgba(0,0,0,.15);
-      --shadow-sm: 0 2px 6px rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.2);
-      --shadow-md: 0 4px 14px rgba(0,0,0,.35), 0 2px 4px rgba(0,0,0,.2);
-      --shadow-lg: 0 10px 28px rgba(0,0,0,.4), 0 4px 8px rgba(0,0,0,.2);
-      --shadow-brand: 0 4px 20px rgba(42,156,103,.3);
-      --focus-ring: 0 0 0 3px rgba(42,156,103,.45);
-      --skeleton-base: #2a2e35; --skeleton-shine: #3a3f48;
-    }
+
 
 /* ================================================================
    RESET & BASE
@@ -75,23 +71,14 @@
 @media (prefers-reduced-motion: no-preference) {
   .card       { transition: var(--transition-card); }
   .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-  .opt-card   { transition: transform var(--t-fast), box-shadow var(--t-fast), border-color var(--t-fast), background var(--t-fast); }
-  .opt-card:hover:not(.disabled) { transform: translateY(-3px) scale(1.01); box-shadow: var(--shadow-md); }
-  .opt-card.active { transform: translateY(-3px); }
   .btn-sm, .preset-btn, .nav-item { transition: background var(--t-fast), color var(--t-fast), transform var(--t-fast), box-shadow var(--t-fast); }
   .btn-sm:active, .preset-btn:active { transform: scale(0.97); }
-  .rec-banner { transition: background var(--t-fast), transform var(--t-fast), box-shadow var(--t-fast); }
-  .rec-banner:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
   .nav-item:hover { transform: translateX(3px); }
   .risk-val .dot { transition: background var(--t-base); }
   .prog-fill { transition: width 0.6s cubic-bezier(.16,1,.3,1); }
   .ring-fill { transition: stroke-dashoffset 0.7s cubic-bezier(.16,1,.3,1), stroke 0.4s; }
-  .modal-box, [class*="ModalBox"] { transition: transform var(--t-spring), opacity var(--t-base); }
   .sidebar { transition: background .4s, transform 0.3s cubic-bezier(.16,1,.3,1); }
   .card { will-change: transform; }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 html { scroll-behavior: smooth; }
 body {
@@ -109,15 +96,6 @@ body::before {
 }
 body.dark::before { opacity: .5; }
 h1,h2,h3,h4,h5,h6 { font-family: 'Sora', sans-serif; }
-
-/* Skip Link */
-.skip-link {
-  position: absolute; top: -40px; left: 0; background: var(--c-brand); color: #fff;
-  padding: 8px 16px; z-index: 1000; font-weight: 700; font-size: 13px;
-  border-radius: 0 0 var(--r-sm) 0; text-decoration: none;
-  transition: top .2s ease;
-}
-.skip-link:focus { top: 0; outline: none; }
 
 /* ================================================================
    SIDEBAR
@@ -159,6 +137,13 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Sora', sans-serif; }
 .user-av { width: 35px; height: 35px; border-radius: 9px; background: rgba(31,122,79,.4); border: 1px solid rgba(31,122,79,.55); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0; }
 .user-name { font-size: 13px; font-weight: 600; color: #fff; line-height: 1.2; }
 .user-plan { font-size: 11px; color: var(--c-brand-lite); font-weight: 500; }
+
+/* ── Wave 7B: Auth tab switcher ──────────────────────── */
+.auth-tab { flex: 1; padding: 9px; font-size: 14px; font-weight: 600; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: var(--c-n400); transition: color var(--t-fast), border-color var(--t-fast); }
+.auth-tab:hover { color: var(--c-n700); }
+.auth-tab-active { color: var(--c-brand) !important; border-bottom-color: var(--c-brand) !important; }
+body.dark .auth-tab { color: var(--c-n400); }
+body.dark .auth-tab-active { color: var(--c-brand-lite) !important; border-bottom-color: var(--c-brand-lite) !important; }
 
 /* ── Patient List ─────────────────────────────────────── */
 .patient-section { padding: 0 8px 8px; position: relative; z-index: 1; flex-shrink: 0; }
@@ -356,25 +341,6 @@ body.dark .note-strip { background: #0a2a1a; border-color: #1a4a2a; }
 .notes-meta { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--c-n400); margin-top: 4px; }
 
 /* ================================================================
-   AI RECOMMENDATION
-   ================================================================ */
-.rec-banner { background: linear-gradient(135deg, #edfaf4 0%, #e3f5ec 100%); border: 1.5px solid var(--c-brand-bdr); border-radius: var(--r-lg); padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all var(--t-base); position: relative; overflow: hidden; flex-shrink: 0; }
-body.dark .rec-banner { background: linear-gradient(135deg, #1a3a2a 0%, #1a3024 100%); border-color: var(--c-brand-bdr); }
-.rec-banner::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(31,122,79,.05), transparent); background-size: 200% 100%; animation: recShimmer 3.5s ease infinite; }
-@keyframes recShimmer { 0% { background-position: -100% 0; } 100% { background-position: 300% 0; } }
-.rec-banner:hover { border-color: var(--c-brand); box-shadow: var(--shadow-brand); transform: translateY(-1px); }
-.rec-banner:active { transform: translateY(0); }
-.rec-banner:focus-visible { outline: 2px solid var(--c-brand); outline-offset: 2px; box-shadow: var(--focus-ring); }
-.rec-icon { width: 44px; height: 44px; border-radius: 13px; background: var(--c-brand); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: 0 4px 14px rgba(31,122,79,.32); }
-.rec-content { flex: 1; position: relative; z-index: 1; }
-.rec-label { font-size: 9.5px; font-weight: 700; color: var(--c-brand); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 3px; }
-.rec-text { font-size: 15px; font-weight: 700; color: var(--c-brand-dark); line-height: 1.2; min-height: 1.5em; }
-.typewriter-cursor::after { content: '|'; animation: blink 1s step-start infinite; margin-left: 2px; color: var(--c-brand); font-weight: 300; }
-@keyframes blink { 50% { opacity: 0; } }
-.rec-arrow { color: var(--c-brand); opacity: .55; font-size: 12px; transition: all var(--t-base); flex-shrink: 0; position: relative; z-index: 1; }
-.rec-banner:hover .rec-arrow { opacity: 1; transform: translateX(3px); }
-
-/* ================================================================
    METRICS
    ================================================================ */
 .metrics-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -424,65 +390,9 @@ body.dark .tt-pop { background: var(--c-n900); }
 body.dark .tt-pop::after { border-top-color: var(--c-n900); }
 
 /* ================================================================
-   TREATMENT OPTIONS
-   ================================================================ */
-.opt-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-@media (max-width: 700px) { .opt-grid { grid-template-columns: 1fr; } }
-.opt-card { border: 2px solid var(--c-n200); border-radius: var(--r-lg); padding: 14px 10px; text-align: center; cursor: pointer; transition: all var(--t-spring); position: relative; background: var(--c-n50); overflow: visible; font-family: inherit; }
-.opt-card:hover { border-color: #b5d3c2; background: white; transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.opt-card.active { border-color: var(--c-brand); background: white; box-shadow: 0 0 0 4px rgba(31,122,79,.09), var(--shadow-md); transform: translateY(-1px); }
-.opt-card:not(.active) { opacity: .62; }
-.opt-card:not(.active):hover { opacity: .85; }
-.opt-card:focus-visible { outline: 2px solid var(--c-brand); outline-offset: 2px; box-shadow: var(--focus-ring); }
-body.dark .opt-card { background: var(--c-n50); }
-body.dark .opt-card:hover { background: var(--c-n100); }
-body.dark .opt-card.active { background: var(--c-n100); }
-body.dark .opt-card:not(.active) { opacity: .75; }
-.sel-badge { display: none; position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: var(--c-brand); color: white; font-size: 8.5px; font-weight: 700; padding: 2px 9px; border-radius: 20px; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; box-shadow: 0 2px 8px rgba(31,122,79,.3); animation: badgePop .35s cubic-bezier(.16,1,.3,1); }
-@keyframes badgePop { 0% { transform: translateX(-50%) scale(.5); opacity: 0; } 70% { transform: translateX(-50%) scale(1.06); } 100% { transform: translateX(-50%) scale(1); opacity: 1; } }
-.opt-card.active .sel-badge { display: block; }
-.opt-icon { font-size: 27px; margin-bottom: 6px; line-height: 1; display: flex; justify-content: center; align-items: center; gap: 4px; color: var(--c-n400); transition: color .3s; }
-.opt-card:hover .opt-icon { color: var(--c-brand); }
-.opt-card:not(.active):hover .opt-icon { color: var(--c-n600); }
-.opt-name { font-size: 14px; font-weight: 700; color: var(--c-n900); margin-bottom: 2px; }
-.opt-sub { font-size: 10px; color: var(--c-n400); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
-.opt-rec { display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
-.opt-rec-g { background: var(--c-brand-bg); color: var(--c-brand); }
-.opt-rec-b { background: #eff6ff; color: #2563eb; }
-.opt-rec-gold { background: #fefce8; color: #b45309; border: 1px solid #fde68a; }
-
-/* ================================================================
    PREMIUM POLISH — denai v2.0 Production Grade
    Additive layer — refines without replacing validated styles.
    ================================================================ */
-
-/* ── Treatment cards: active state depth ───────────────────────── */
-/* Replace flat white with a subtle brand-washed gradient */
-.opt-card.active {
-  background: linear-gradient(175deg, rgba(31,122,79,.05) 0%, white 55%);
-  border-color: var(--c-brand);
-  box-shadow: 0 0 0 4px rgba(31,122,79,.08), 0 4px 18px rgba(31,122,79,.14);
-  transform: translateY(-2px);
-}
-body.dark .opt-card.active {
-  background: linear-gradient(175deg, rgba(42,156,103,.1) 0%, var(--c-n100) 55%);
-}
-/* Non-active cards: raise opacity from 62% to 78% — clinicians need to read alternatives */
-.opt-card:not(.active) { opacity: .78; }
-.opt-card:not(.active):hover { opacity: .96; }
-body.dark .opt-card:not(.active) { opacity: .82; }
-
-/* ── Score bars: premium integration ───────────────────────────── */
-.opt-score-bar { margin: 7px 0 0; padding-top: 6px; border-top: 1px solid rgba(0,0,0,.05); }
-.opt-card.active .opt-score-bar { border-top-color: rgba(31,122,79,.15); }
-/* Gradient fill: direction-aware brand feel */
-.opt-score-fill { background: linear-gradient(90deg, var(--c-brand), var(--c-brand-lite)); }
-.opt-card.active .opt-score-fill { background: linear-gradient(90deg, rgba(255,255,255,.75), rgba(255,255,255,.95)); }
-/* Smooth entrance when score loads */
-@media (prefers-reduced-motion: no-preference) {
-  .opt-score-fill { transition: width .65s cubic-bezier(.16,1,.3,1), background .3s ease; }
-  .opt-score-val { transition: color .2s ease; }
-}
 
 /* ── Comparison inline table: legibility ───────────────────────── */
 /* dimmed opacity was .55 — harsh for comparative reading; raise to .70 */
@@ -517,21 +427,6 @@ th.comp-winner-col { color: var(--c-brand) !important; }
 body.dark #whatIfContainer { background: var(--c-n50) !important; border-color: var(--c-n200) !important; }
 body.dark #whatIfContainer h4 { background: var(--c-n100) !important; border-color: var(--c-n150) !important; }
 
-/* ── Inline top reason: brand accent ───────────────────────────── */
-.rec-top-reason {
-  font-size: 11.5px; color: var(--c-n600); line-height: 1.5;
-  background: var(--c-brand-bg); border-left: 3px solid var(--c-brand);
-  border-radius: 0 6px 6px 0; padding: 6px 10px; margin-top: 7px;
-}
-body.dark .rec-top-reason { background: rgba(31,122,79,.12); color: var(--c-n600); }
-
-/* ── Case class badge: entrance animation ──────────────────────── */
-@media (prefers-reduced-motion: no-preference) {
-  .caseclass-strip { animation: classStripIn .3s cubic-bezier(.16,1,.3,1) both; }
-  @keyframes classStripIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
-}
-.caseclass-strip { font-size: 11.5px; letter-spacing: .01em; padding: 7px 13px; }
-
 /* ── Risk nominal strip: cleaner ───────────────────────────────── */
 .risk-nominal-strip { font-size: 12px; padding: 9px 14px; border-radius: var(--r-md); }
 .risk-nominal-strip i { color: var(--c-brand); }
@@ -552,16 +447,6 @@ body.dark .card:hover {
 
 /* ── Compound banner: card-grade ───────────────────────────────── */
 .compound-banner { border-width: 1.5px; border-radius: var(--r-md); }
-
-/* ── Feature cards at bottom: lighter surface ──────────────────── */
-.features { gap: 10px; }
-.feat-card {
-  background: white; border: 1px solid var(--c-n100);
-  border-radius: var(--r-lg); padding: 14px 16px;
-  box-shadow: var(--shadow-xs); transition: box-shadow var(--t-base);
-}
-.feat-card:hover { box-shadow: var(--shadow-sm); }
-body.dark .feat-card { background: var(--c-n50); border-color: var(--c-n150); }
 
 /* ── Card header backdrop ───────────────────────────────────────── */
 .card-header { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
@@ -584,62 +469,7 @@ body.dark .feat-card { background: var(--c-n50); border-color: var(--c-n150); }
   font-size: 12px; letter-spacing: .01em;
 }
 
-/* ── Print: ensure polish translates to exports ─────────────────── */
-@media print {
-  .opt-card.active { background: #f0faf5 !important; border-color: #1F7A4F !important; }
-  .opt-score-fill { background: #1F7A4F !important; }
-}
-
-/* ================================================================
-   BUG FIXES — v2.0.1
-   ================================================================ */
-
-/* FIX 1: Active card score visibility
-   The active card background is now mostly white (gradient to white at 55%).
-   The previous white score text was designed for a fully-green active state.
-   Override with brand color so the score is readable on the white gradient. */
-.opt-card.active .opt-score-val   { color: var(--c-brand) !important; }
-.opt-card.active .opt-score-track { background: rgba(31,122,79,.12) !important; }
-.opt-card.active .opt-score-fill  { background: linear-gradient(90deg, var(--c-brand), var(--c-brand-lite)) !important; }
-/* Dark mode: background is dark grey — brand green remains visible */
-body.dark .opt-card.active .opt-score-val   { color: var(--c-brand); }
-body.dark .opt-card.active .opt-score-track { background: rgba(42,156,103,.15); }
-body.dark .opt-card.active .opt-score-fill  { background: linear-gradient(90deg, var(--c-brand), var(--c-brand-lite)); }
-
-/* FIX 2: Tooltip stacking context
-   .card has will-change:transform (motion query) → creates a stacking context.
-   Card 3 (DOM order after Card 2) paints over Card 2's stacking context,
-   hiding the tooltip. Give .ai-card an explicit z-index so its stacking
-   context is asserted above sibling cards.
-   .ai-card already has position:relative so z-index takes effect. */
-.ai-card { z-index: 1; }
-.ai-card:hover { z-index: 2; } /* keep on top when card itself is hovered */
-
-/* Ensure the tooltip popup can escape any ancestor overflow boundary */
-.ai-card .tt     { position: relative; isolation: isolate; }
-.ai-card .tt-pop { z-index: 9999; position: absolute; }
-
-/* END BUG FIXES */
-.opt-score-bar { margin:5px 0 2px; }
-.opt-score-val { font-family:'Sora',sans-serif; font-size:17px; font-weight:800; color:var(--c-brand); line-height:1; }
-.opt-score-track { height:4px; background:var(--c-n100); border-radius:2px; margin-top:4px; }
-.opt-score-fill  { height:4px; border-radius:2px; background:var(--c-brand); transition:width .4s ease; }
-.opt-card.active .opt-score-val { color:white; }
-.opt-card.active .opt-score-track { background:rgba(255,255,255,.25); }
-.opt-card.active .opt-score-fill  { background:rgba(255,255,255,.85); }
-.opt-card.disabled .opt-score-val { color:var(--c-n300); }
-.caseclass-strip { display:flex; align-items:center; gap:8px; padding:7px 12px; border-radius:var(--r-md); margin-bottom:8px; font-size:11px; font-weight:700; letter-spacing:.04em; }
-.caseclass-strip.viable      { background:#EDF6F1; border:1px solid #BBE0CD; color:#1F7A4F; }
-.caseclass-strip.compromised { background:#FFFBEB; border:1px solid #FDE68A; color:#92400E; }
-.caseclass-strip.hopeless    { background:#FEF2F2; border:1px solid #FECACA; color:#991B1B; }
-.caseclass-icon { font-size:13px; }
-.caseclass-note { font-size:10px; font-weight:400; opacity:.75; margin-left:auto; }
-.rec-top-reason { margin-top:6px; font-size:11px; color:var(--c-n500); line-height:1.45; padding:5px 8px; background:var(--c-n50); border-radius:6px; border-left:2px solid var(--c-brand); display:none; }
 .risk-nominal-strip { display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--c-n50); border-radius:var(--r-md); font-size:11.5px; color:var(--c-brand); font-weight:600; border:1px solid var(--c-n100); }
-body.dark .caseclass-strip.viable      { background:rgba(31,122,79,.15); border-color:rgba(31,122,79,.3); }
-body.dark .caseclass-strip.compromised { background:rgba(217,119,6,.12); border-color:rgba(217,119,6,.3); }
-body.dark .caseclass-strip.hopeless    { background:rgba(220,38,38,.12); border-color:rgba(220,38,38,.3); }
-body.dark .rec-top-reason { background:var(--c-n100); }
 body.dark .risk-nominal-strip { background:var(--c-n100); border-color:var(--c-n200); }
 
 /* ================================================================
@@ -778,19 +608,6 @@ th.crown-col-disabled::after {
 .comp-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; background: var(--c-brand); color: white; padding: 2px 7px; border-radius: 20px; margin-left: 6px; vertical-align: middle; }
 
 /* ================================================================
-   FEATURES
-   ================================================================ */
-.features { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
-@media (max-width: 900px) { .features { grid-template-columns: repeat(2,1fr); } }
-@media (max-width: 500px) { .features { grid-template-columns: repeat(2,1fr); } }
-.feat-card { background: white; border: 1px solid var(--c-n100); border-radius: var(--r-lg); padding: 14px; display: flex; align-items: flex-start; gap: 10px; box-shadow: var(--shadow-xs); transition: box-shadow var(--t-base), background .4s; }
-.feat-card:hover { box-shadow: var(--shadow-md); }
-body.dark .feat-card { background: var(--c-n100); border-color: var(--c-n150); }
-.feat-icon { font-size: 22px; flex-shrink: 0; line-height: 1; }
-.feat-title { font-size: 12.5px; font-weight: 700; color: var(--c-n900); margin-bottom: 3px; }
-.feat-desc { font-size: 11px; color: var(--c-n400); line-height: 1.4; }
-
-/* ================================================================
    AI FACTOR TAGS
    ================================================================ */
 .ai-factor-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
@@ -816,52 +633,6 @@ body.dark .ai-factor.warn { background: #2a1a00; border-color: #4a3a00; color: #
 .delta-neu  { background: var(--c-n100); color: var(--c-n500); border: 1px solid var(--c-n200); }
 
 /* ================================================================
-   SKELETON & EMPTY STATES
-   ================================================================ */
-@keyframes skeletonShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-.skeleton { background: linear-gradient(90deg, var(--c-n100) 25%, var(--c-n50) 50%, var(--c-n100) 75%); background-size: 200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: var(--r-md); }
-.skeleton-wrap { display: flex; flex-direction: column; gap: 14px; }
-.skel-banner { height: 72px; }
-.skel-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.skel-metric { height: 130px; border-radius: var(--r-lg); }
-.skel-reasons { height: 48px; }
-.skel-risk { height: 110px; }
-.empty-state { background: var(--c-brand-bg); border: 1.5px solid var(--c-brand-bdr); border-radius: var(--r-lg); padding: 28px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-body.dark .empty-state { background: var(--c-n50); border-color: var(--c-n150); }
-.empty-state i { font-size: 36px; color: var(--c-brand); }
-.empty-state h4 { font-size: 16px; color: var(--c-brand-dark); font-weight: 700; }
-.empty-state p { font-size: 13px; color: var(--c-n500); max-width: 300px; line-height: 1.5; }
-
-/* ================================================================
-   MODALS & TOASTS
-   ================================================================ */
-.modal-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); backdrop-filter: blur(5px); align-items: center; justify-content: center; z-index: 300; animation: mFadeIn .2s ease; }
-@keyframes mFadeIn { from { opacity: 0; } to { opacity: 1; } }
-.modal-box { background: white; border-radius: var(--r-2xl); padding: 32px 28px; text-align: center; max-width: 380px; width: 90%; box-shadow: 0 30px 60px rgba(0,0,0,.18); animation: mSlide .35s cubic-bezier(.16,1,.3,1); position: relative; }
-@keyframes mSlide { from { transform: translateY(28px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-body.dark .modal-box { background: var(--c-n100); }
-.modal-close-btn {
-  position: absolute; top: 12px; right: 14px; background: none; border: none;
-  font-size: 20px; color: var(--c-n400); cursor: pointer; line-height: 1;
-  padding: 4px 6px; border-radius: 6px; transition: color .15s, background .15s;
-}
-.modal-close-btn:hover { color: var(--c-n700); background: var(--c-n100); }
-.modal-close-btn:focus-visible { outline: 2px solid var(--c-brand); box-shadow: var(--focus-ring); }
-.toast-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 400; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-.toast-item { background: var(--c-n900); color: white; padding: 11px 18px; border-radius: 12px; font-size: 13px; font-weight: 500; pointer-events: auto; box-shadow: 0 8px 32px rgba(0,0,0,.22); animation: tIn .4s cubic-bezier(.16,1,.3,1); display: flex; align-items: center; gap: 8px; }
-.toast-item.removing { animation: tOut .3s ease forwards; }
-@keyframes tIn { from { opacity:0; transform:translateY(14px) scale(.95); } to { opacity:1; transform:translateY(0) scale(1); } }
-@keyframes tOut { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(14px); } }
-
-/* ================================================================
-   CHANGE HISTORY
-   ================================================================ */
-.history-list { max-height: 200px; overflow-y: auto; font-size: 11px; color: var(--c-n600); }
-.history-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--c-n100); }
-.history-item:last-child { border-bottom: none; }
-.history-time { color: var(--c-n400); font-size: 10px; }
-
-/* ================================================================
    KEYBOARD SHORTCUTS MODAL
    ================================================================ */
 .kbd { display: inline-block; background: var(--c-n100); border: 1px solid var(--c-n200); border-radius: 4px; padding: 2px 6px; font-size: 11px; font-family: monospace; color: var(--c-n700); }
@@ -869,61 +640,6 @@ body.dark .kbd { background: var(--c-n150); border-color: var(--c-n300); color: 
 .shortcut-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--c-n100); font-size: 13px; }
 .shortcut-row:last-child { border-bottom: none; }
 
-/* ================================================================
-   ACCESSIBILITY & MOTION
-   ================================================================ */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
-  .heartbeat-path { animation: none; stroke-dashoffset: 0; }
-}
-:focus:not(:focus-visible) { outline: none; }
-.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-
-/* ================================================================
-   PRINT STYLES
-   ================================================================ */
-@media print {
-  .sidebar, .topbar, .workflow, .opt-grid, .slider-group, .preset-row, .slider-actions,
-  .btn, .hamburger, .dark-toggle, .save-indicator, .modal-ov, .toast-wrap,
-  .edit-actions, .edit-grid, #whatIfContainer, .features, .comparison-section,
-  .notes-area, .notes-meta, .history-list { display: none !important; }
-  body { background: white; color: black; height: auto; overflow: visible; }
-  main { overflow: visible; }
-  .page { padding: 20px; }
-  .card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
-  .grid3 { grid-template-columns: 1fr 1fr; }
-  .ai-card { border-top: 3px solid #1F7A4F; }
-  .rec-banner { background: #f5f5f5; border: 1px solid #ccc; }
-  .metric-big { color: #1F7A4F; }
-  .graph-container { page-break-inside: avoid; }
-}
-
-
-/* ================================================================
-   CROWN TREATMENT OPTION
-   ================================================================ */
-.opt-card.disabled {
-  opacity: 0.38; cursor: not-allowed; pointer-events: none;
-  border-color: var(--c-n200); background: var(--c-n100); position: relative;
-  transition: all var(--t-fast);
-}
-.opt-card.disabled::after {
-  content: '🔒'; position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%); font-size: 22px; opacity: 0.45;
-}
-.opt-card.disabled .opt-name { color: var(--c-n400); }
-.opt-card.disabled .opt-sub  { color: var(--c-n300); }
-.crown-warning-banner {
-  display: none; align-items: center; gap: 8px; padding: 10px 14px;
-  background: rgba(245,158,11,.1); border: 1.5px solid rgba(245,158,11,.38);
-  border-radius: var(--r-md); margin-bottom: 8px;
-}
-.crown-warning-banner i  { color: #d97706; font-size: 13px; flex-shrink: 0; }
-.crown-warning-banner span{ font-size: 11.5px; color: #92400e; font-weight: 600; line-height: 1.4; }
-body.dark .crown-warning-banner { background: rgba(245,158,11,.08); }
-.crown-conditional { transition: opacity .3s ease; }
-.crown-conditional.hidden { display: none !important; }
-.parafunction-note { font-size: 10px; color: var(--c-warning); margin-top: 2px; }
 .preset-btn.crown { border-color: #c7d2fe; background: #eef2ff; color: #4338ca; }
 .preset-btn.crown:hover { background: #e0e7ff; }
 body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color: #a5b4fc; }
@@ -932,66 +648,13 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 /* Jaw zone label in info grid */
 .jaw-label { font-size:11px; color:var(--c-n400); font-style:italic; }
 
-
-/* ================================================================
-   #12 SKELETON LOADING
-   ================================================================ */
-@keyframes skeleton-shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position:  400px 0; }
-}
-.skeleton {
-  background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-shine) 50%, var(--skeleton-base) 75%);
-  background-size: 800px 100%;
-  animation: skeleton-shimmer 1.4s ease-in-out infinite;
-  border-radius: var(--r-sm); display: block;
-}
-.skeleton-text  { height: 14px; margin: 6px 0; }
-.skeleton-text.w60 { width: 60%; }
-.skeleton-text.w80 { width: 80%; }
-.skeleton-text.w40 { width: 40%; }
-.skeleton-circle { width: 56px; height: 56px; border-radius: 50%; }
-.skeleton-bar    { height: 8px; width: 100%; border-radius: 4px; margin-top: 6px; }
-.skeleton-metric { display:flex; flex-direction:column; align-items:center; gap:8px; padding:12px; }
-.skeleton-metric .skeleton-circle { margin-bottom: 4px; }
-.card-skeleton-wrap { padding: 20px; display: flex; flex-direction: column; gap: 10px; min-height: 120px; }
-/* Error boundary fallback UI */
-.card-error-fallback {
-  padding: 24px; text-align: center; color: var(--c-n500);
-  border: 1.5px dashed var(--c-n300); border-radius: var(--r-md);
-  margin: 8px; background: var(--c-risk-high-bg);
-}
-.card-error-fallback i  { font-size: 24px; color: var(--c-danger); margin-bottom: 8px; display: block; }
-.card-error-fallback p  { font-size: 12px; margin-bottom: 10px; }
-.card-error-fallback button { font-size: 11px; padding: 6px 14px; }
-
 /* ================================================================
    #14 WCAG 2.1 AA — Focus & Accessibility
    ================================================================ */
-:focus-visible {
-  outline: 3px solid var(--c-brand);
-  outline-offset: 2px;
-  border-radius: var(--r-sm);
-}
-:focus:not(:focus-visible) { outline: none; }
-.sr-only {
-  position: absolute; width: 1px; height: 1px; padding: 0;
-  margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
-  white-space: nowrap; border: 0;
-}
-[aria-busy="true"] { cursor: wait; }
-[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
-/* High contrast focus for interactive elements */
-button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:focus-visible {
-  box-shadow: var(--focus-ring);
-  outline: 2px solid var(--c-brand);
-}
 /* Ensure sufficient color contrast for risk labels */
 .risk-pill.low    { background: var(--c-risk-low-bg);  color: var(--c-risk-low);  font-weight: 700; border: 1px solid rgba(22,163,74,.2); }
 .risk-pill.medium { background: var(--c-risk-med-bg);  color: var(--c-risk-med);  font-weight: 700; border: 1px solid rgba(217,119,6,.2); }
 .risk-pill.high   { background: var(--c-risk-high-bg); color: var(--c-risk-high); font-weight: 700; border: 1px solid rgba(220,38,38,.2); }
-/* Keyboard navigation indicator */
-.keyboard-user *:focus { box-shadow: var(--focus-ring) !important; }
 
 /* ================================================================
    MULTI-TOOTH SELECTOR
@@ -1093,10 +756,17 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
       </button>
     </div>
 
-<div class="sidebar-user" role="button" tabindex="0" aria-label="User profile: Dr. Ahmed, Premium Plan" onclick="showToast('Profile settings coming soon','info')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showToast('Profile settings coming soon','info')}">
-  <div class="user-av" aria-hidden="true">Dr</div>
-  <div><div class="user-name">Dr. Ahmed</div><div class="user-plan">⭐ Premium Plan</div></div>
-  <i class="fa-solid fa-chevron-down" style="font-size:10px;color:rgba(255,255,255,.3);margin-left:auto;" aria-hidden="true"></i>
+<div class="sidebar-user" id="authUserArea" role="button" tabindex="0"
+     aria-label="Account"
+     onclick="openAuthModal()"
+     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAuthModal()}">
+  <div class="user-av" aria-hidden="true" id="authUserAvatar">Dr</div>
+  <div>
+    <div class="user-name" id="authUserName">Local mode</div>
+    <div class="user-plan" id="authUserPlan">Sign in to sync</div>
+  </div>
+  <span id="authStatusIndicator" aria-hidden="true" title="Local mode"
+        style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);margin-left:auto;flex-shrink:0;transition:background 0.3s;"></span>
 </div>
 
   </aside>
@@ -1200,6 +870,70 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
         <button class="btn btn-sec" type="button" id="cancelDeletePatientBtn" style="flex:1;justify-content:center;">Cancel</button>
         <button class="btn btn-pri" type="button" id="confirmDeletePatientBtn" style="flex:1;justify-content:center;background:var(--c-danger);box-shadow:0 4px 20px rgba(239,68,68,.25);">Delete</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Wave 7B: Auth Modal — sign in / sign up / account -->
+  <div class="modal-ov" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authModalHeading">
+    <div class="modal-box" id="authModalBox" role="document" style="max-width:400px;text-align:left;">
+      <button type="button" class="modal-close-btn" id="closeAuthModalBtn" aria-label="Close dialog">×</button>
+
+      <!-- Tab row -->
+      <div id="authTabRow" style="display:flex;margin-bottom:20px;border-bottom:1px solid var(--c-n200);">
+        <button type="button" id="authTabSignIn" class="auth-tab auth-tab-active" onclick="showAuthTab('signin')">Sign In</button>
+        <button type="button" id="authTabSignUp" class="auth-tab" onclick="showAuthTab('signup')">Create Account</button>
+      </div>
+
+      <!-- Sign-in panel -->
+      <div id="authPanelSignIn">
+        <h3 id="authModalHeading" style="font-size:18px;font-weight:800;color:var(--c-n900);margin-bottom:4px;">Welcome back</h3>
+        <p style="font-size:13px;color:var(--c-n500);margin-bottom:18px;">Sign in to sync your patients across devices.</p>
+        <div style="margin-bottom:12px;">
+          <label class="np-label" for="authSignInEmail">Email</label>
+          <input class="np-input" id="authSignInEmail" type="email" placeholder="dr@clinic.com" autocomplete="email"/>
+        </div>
+        <div style="margin-bottom:18px;">
+          <label class="np-label" for="authSignInPassword">Password</label>
+          <input class="np-input" id="authSignInPassword" type="password" placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <div id="authSignInError" style="display:none;font-size:12px;color:var(--c-danger);margin-bottom:10px;" role="alert"></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-sec" type="button" id="authContinueLocalBtn" style="flex:1;justify-content:center;" onclick="closeAuthModal()">Continue locally</button>
+          <button class="btn btn-pri" type="button" id="authSignInBtn" style="flex:1;justify-content:center;">Sign In</button>
+        </div>
+      </div>
+
+      <!-- Sign-up panel (hidden by default) -->
+      <div id="authPanelSignUp" style="display:none;">
+        <h3 style="font-size:18px;font-weight:800;color:var(--c-n900);margin-bottom:4px;">Create account</h3>
+        <p style="font-size:13px;color:var(--c-n500);margin-bottom:18px;">Back up your patients and sync across devices.</p>
+        <div style="margin-bottom:12px;">
+          <label class="np-label" for="authSignUpEmail">Email</label>
+          <input class="np-input" id="authSignUpEmail" type="email" placeholder="dr@clinic.com" autocomplete="email"/>
+        </div>
+        <div style="margin-bottom:18px;">
+          <label class="np-label" for="authSignUpPassword">Password</label>
+          <input class="np-input" id="authSignUpPassword" type="password" placeholder="At least 6 characters" autocomplete="new-password"/>
+        </div>
+        <div id="authSignUpError"   style="display:none;font-size:12px;color:var(--c-danger);margin-bottom:10px;" role="alert"></div>
+        <div id="authSignUpSuccess" style="display:none;font-size:12px;color:var(--c-success);margin-bottom:10px;" role="status"></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;" onclick="closeAuthModal()">Cancel</button>
+          <button class="btn btn-pri" type="button" id="authSignUpBtn" style="flex:1;justify-content:center;">Create Account</button>
+        </div>
+      </div>
+
+      <!-- Signed-in panel (hidden by default) -->
+      <div id="authPanelSignedIn" style="display:none;">
+        <h3 style="font-size:18px;font-weight:800;color:var(--c-n900);margin-bottom:4px;">Account</h3>
+        <p id="authSignedInEmail" style="font-size:13px;color:var(--c-n500);margin-bottom:18px;">Signed in</p>
+        <p style="font-size:12px;color:var(--c-n400);margin-bottom:18px;">Your patients are syncing across devices. Signing out keeps all local data intact.</p>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;" onclick="closeAuthModal()">Close</button>
+          <button class="btn btn-sec" type="button" id="authSignOutBtn" style="flex:1;justify-content:center;color:var(--c-danger);border-color:var(--c-danger);">Sign Out</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1828,7 +1562,7 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
 
   let _saveStateTimer = null;
   function saveState() {
-    const { editing, whyOpen, historyOpen, ...serializable } = S;
+    const serializable = { ...S };
     showSaveIndicator('saving');
     if (_saveStateTimer) clearTimeout(_saveStateTimer);
     _saveStateTimer = setTimeout(() => {
@@ -1842,13 +1576,20 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
         setActivePatientId(S.id);
         showSaveIndicator('saved');
         renderPatientList();
+        // Wave 7D: enqueue cloud upsert after successful localStorage write.
+        // Inner try-catch isolates sync failures from local persistence path.
+        try {
+          if (typeof denaiSyncQueue !== 'undefined') {
+            denaiSyncQueue.enqueue({ type: 'upsert', patientId: S.id, payload: updated, history: History.load(S.id) });
+          }
+        } catch (e) {}
       } catch(e) { console.warn('State persistence failed:', e.message); }
       _saveStateTimer = null;
     }, 200);
   }
 
   const S = (() => {
-    const loaded = { ...loadState(), editing: false, whyOpen: false, historyOpen: false };
+    const loaded = { ...loadState() };
     // Normalize: multi-tooth mode is only valid for Missing tooth condition.
     if (loaded.multiTooth && loaded.condition !== 'Missing tooth') {
       loaded.multiTooth = false; loaded.tooth2 = null;
@@ -1860,6 +1601,18 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
     return loaded;
   })();
   let tempState = { ...S };
+
+  // ================================================================
+  // UISTATE — ephemeral session-only UI flags (never persisted)
+  // ================================================================
+  const UIState = {
+    editing:     false,  // edit form active
+    whyOpen:     false,  // why-panel accordion expanded
+    historyOpen: false,  // history accordion expanded
+  };
+  function setUIState(patch) {
+    Object.assign(UIState, patch);
+  }
 
   // ================================================================
   // CHANGE HISTORY
@@ -1937,545 +1690,6 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
     '#31':{cx:40,cy:113},'#32':{cx:22,cy:100}
   });
 
-  function isPosteriorTooth(tooth) {
-    const n = parseInt(tooth.replace('#',''),10);
-    return (n>=1&&n<=5)||(n>=12&&n<=16)||(n>=17&&n<=21)||(n>=28&&n<=32);
-  }
-  function isMaxilla(tooth) {
-    const n = parseInt(tooth.replace('#',''),10);
-    return n >= 1 && n <= 16; // #1-16 = Upper jaw (Maxilla), #17-32 = Lower jaw (Mandible)
-  }
-
-  // ================================================================
-  // MODULE: ai.js — Pure AI calculation engine (no DOM access)
-  // ================================================================
-  // PURE LOGIC: AI CALCULATION
-  // ================================================================
-  // ── Multi-tooth helpers ────────────────────────────────────
-  function isAdjacent(t1, t2) {
-    const n1 = parseInt(t1.replace('#',''), 10);
-    const n2 = parseInt(t2.replace('#',''), 10);
-    if (Math.abs(n1 - n2) !== 1) return false;
-    // #16 (upper-left wisdom) and #17 (lower-left wisdom) are on opposite arches
-    // and are NOT clinically adjacent despite being numerically consecutive
-    if ((n1 === 16 && n2 === 17) || (n1 === 17 && n2 === 16)) return false;
-    return true;
-  }
-
-  function getAdjacentTeeth(tooth) {
-    const n = parseInt(tooth.replace('#',''), 10);
-    const adj = [];
-    // Block #16→#17 and #17→#16 cross-arch adjacency (opposite jaw arches)
-    if (n > 1  && !(n === 17)) adj.push('#' + (n - 1));
-    if (n < 32 && !(n === 16)) adj.push('#' + (n + 1));
-    return adj;
-  }
-
-  // ── Multi-tooth calcAI ────────────────────────────────────
-  function calcAIMulti(stateObj) {
-    if (!stateObj.bone || !stateObj.hygiene || !stateObj.occlusion) return null;
-    if (!stateObj.tooth2) return null;
-
-    const t1 = stateObj.tooth;
-    const t2 = stateObj.tooth2;
-    if (!isAdjacent(t1, t2)) return null;
-
-    const mx       = isMaxilla(t1);
-    const post     = isPosteriorTooth(t1);
-    const anterior = mx && !post;
-    const abutComp = stateObj.abutmentQuality === 'Compromised';
-    const youngGoodBone = stateObj.age < 35 && stateObj.bone === 'Good';
-
-    // ── Base scores (2-tooth scenario) ─────────────────────
-    // Option A: 2 Implants
-    let implant2 = 94.0;
-    // Option B: 4-Unit Bridge
-    let bridge4  = 86.0;
-    // Option C: Implant + Cantilever
-    let cantilever = anterior ? 82.0 : 72.0; // anterior safer
-
-    const reasons  = [];
-    const factors  = [];
-
-    // Bone
-    const boneAdj = { Good: +0.8, Fair: -4.2, Poor: -12.5 };
-    implant2   += boneAdj[stateObj.bone] * 2; // 2 implants affected
-    bridge4    += stateObj.bone === 'Fair' ? 0.5 : stateObj.bone === 'Poor' ? -2.0 : 0;
-    cantilever += boneAdj[stateObj.bone];
-
-    // Hygiene
-    if (stateObj.hygiene === 'Poor') {
-      implant2   -= 11.5; bridge4 -= 4.5; cantilever -= 8.0;
-      reasons.push('Poor hygiene: high peri-implantitis risk — maintenance protocol mandatory');
-    } else if (stateObj.hygiene === 'Fair') {
-      implant2   -= 2.6; bridge4 -= 1.5; cantilever -= 2.0;
-    }
-
-    // Abutment quality — critical for bridge and cantilever
-    if (abutComp) {
-      bridge4    -= 12.0;
-      cantilever -= 10.0;
-      implant2   += 5.0; // implants independent of abutments
-      reasons.push('Compromised abutments: bridge and cantilever reliability significantly reduced — 2 implants strongly preferred');
-      factors.push({ label: 'Compromised abutments → Implants ↑↑', type: 'neg', delta: -12 });
-    }
-
-    // Young patient + good bone → implants win long-term
-    if (youngGoodBone) {
-      implant2   += 4.0;
-      reasons.push('Young patient with good bone: 2 implants offer superior 20+ year prognosis');
-      factors.push({ label: 'Age <35 + Good bone +4.0%', type: 'pos', delta: +4.0 });
-    }
-
-    // Smoking
-    if (stateObj.smoking === 'Current smoker') {
-      implant2   -= 8.5; cantilever -= 6.0;
-      bridge4    -= 2.0;
-      reasons.push('Active smoker: implant failure rate up to 20% — smoking cessation required');
-    } else if (stateObj.smoking === 'Former smoker') {
-      implant2   -= 3.5; cantilever -= 2.5;
-    }
-
-    // Diabetes
-    if (stateObj.diabetes === 'Uncontrolled') {
-      implant2 -= 7.0; cantilever -= 5.0; bridge4 -= 2.0;
-      reasons.push('Uncontrolled diabetes: 2–3× higher implant failure — glycemic control essential');
-    } else if (stateObj.diabetes === 'Controlled') {
-      implant2 -= 1.5; cantilever -= 1.0;
-    }
-
-    // Jaw + position
-    if (mx && post) {
-      implant2 -= 3.0;
-      reasons.push('Maxilla posterior: lowest bone density — sinus proximity increases surgical complexity');
-    } else if (!mx && post) {
-      implant2 -= 0.5;
-    }
-
-    // Cantilever posterior warning
-    if (post) {
-      cantilever -= 8.0; // posterior cantilever high risk
-      reasons.push('Posterior cantilever: high occlusal stress — significant fracture risk');
-    }
-
-    // Occlusion effect
-    if (stateObj.occlusion === 'High occlusion load') {
-      implant2   -= 1.8; bridge4 -= 0.8; cantilever -= 3.0;
-    }
-
-    // Age > 65
-    if (stateObj.age > 65) { implant2 -= 2.5; cantilever -= 2.0; }
-
-    // ── CLAMP ───────────────────────────────────────────────
-    implant2   = Math.round(Math.max(50, Math.min(99, implant2))   * 10) / 10;
-    bridge4    = Math.round(Math.max(50, Math.min(95, bridge4))    * 10) / 10;
-    cantilever = Math.round(Math.max(40, Math.min(90, cantilever)) * 10) / 10;
-
-    // ── 3-way recommendation ─────────────────────────────────
-    const scores = [
-      { option: 'implant2',   score: implant2   },
-      { option: 'bridge4',    score: bridge4    },
-      { option: 'cantilever', score: cantilever },
-    ];
-    scores.sort((a, b) => b.score - a.score);
-    const ideal = scores[0].option;  // highest clinical score
-
-    // ── Cost calculation (MUST be before usage) ─────────────
-    const costs = {
-      implant2:   (stateObj.costImplant || 4500) * 2
-                  + (stateObj.bone === 'Poor' ? (stateObj.costBoneGraft || 1500) * 2 : 0),
-      bridge4:    Math.round((stateObj.costBridge || 3500) * 1.3),  // 4-unit upcharge
-      cantilever: Math.round((stateObj.costImplant || 4500) * 1.5), // 1 implant + extension
-    };
-
-    // Cost-adjusted recommendation:
-    // In anterior, bridge is recommended for average patient (cost saving ~$4,500)
-    // In posterior with compromised abutments, implants recommended regardless
-    const costDiff = costs.implant2 - costs.bridge4;
-    const bridgeIsReasonable = bridge4 >= 80 && !abutComp;
-    let rec;
-    if (bridgeIsReasonable && costDiff >= 3000) {
-      // Bridge is practical recommendation, implants are ideal
-      rec = 'bridge4';
-    } else {
-      rec = ideal;
-    }
-
-    // Confidence
-    let conf = 70;
-    if (stateObj.bone === 'Poor' || stateObj.hygiene === 'Poor') conf -= 10;
-    if (abutComp) conf -= 8;
-    if (youngGoodBone) conf += 5;
-    conf = Math.max(35, Math.min(90, conf));
-
-    // Fallback reasons
-    if (reasons.length < 2) {
-      reasons.push('Two adjacent missing teeth: span length and abutment integrity are key factors');
-      if (!abutComp) reasons.push('Healthy abutments support bridge as cost-effective alternative to 2 implants');
-    }
-
-    return {
-      isMultiTooth: true,
-      tooth1: t1, tooth2: t2,
-      anterior, posterior: post,
-      implant2, bridge4, cantilever,
-      rec, ideal, conf,
-      confLevel: conf >= 75 ? 'High' : conf >= 55 ? 'Medium' : 'Low',
-      costs,
-      abutmentCompromised: abutComp,
-      reasons: reasons.slice(0, 4),
-      factors,
-      caseCount: conf >= 75 ? 'strong multi-tooth profile' : 'moderate — review carefully',
-    };
-  }
-
-  function calcAI(stateObj) {
-    if (!stateObj.bone || !stateObj.hygiene || !stateObj.occlusion) return null;
-    const BASE_IMPLANT = 96.4, BASE_BRIDGE = 88.0;
-    const FALLBACK_REASONS = [
-      'Lower risk of abutment stress vs bridge',
-      'Better long-term prognosis and durability',
-      'Preserves adjacent tooth structure',
-      'Higher patient satisfaction in studies'
-    ];
-    let implant = BASE_IMPLANT, bridge = BASE_BRIDGE, conf = 76;
-    let peri = 'Low', boneR = 'Low', occR = 'Low';
-    const reasons = [];
-    const factors = [];
-
-    switch (stateObj.bone) {
-      case 'Good':
-        implant += 0.8; conf += 2; boneR = 'Low';
-        reasons.push('Native bone: 98.3% implant survival');
-        factors.push({ label: 'Good bone', type: 'pos', delta: +0.8 });
-        break;
-      case 'Fair':
-        implant -= 4.2; conf -= 10; boneR = 'Medium'; bridge += 0.5;
-        reasons.push('Reduced bone volume — grafting may improve success');
-        factors.push({ label: 'Fair bone −4.2%', type: 'warn', delta: -4.2 });
-        break;
-      default:
-        implant -= 12.5; conf -= 22; boneR = 'High'; bridge -= 1.5;
-        reasons.push('Poor bone (D3/D4): implant failure risk significantly elevated — grafting required');
-        factors.push({ label: 'Poor bone −12.5%', type: 'neg', delta: -12.5 });
-    }
-    switch (stateObj.hygiene) {
-      case 'Good':
-        implant += 0.5; peri = 'Low';
-        reasons.push('Good hygiene: peri‑implantitis risk < 10%');
-        factors.push({ label: 'Good hygiene', type: 'pos', delta: +0.5 });
-        break;
-      case 'Fair':
-        implant -= 2.6; bridge -= 1.5; peri = 'Medium'; conf -= 5;
-        reasons.push('Moderate hygiene — peri‑implantitis risk ~22%');
-        factors.push({ label: 'Fair hygiene −2.6%', type: 'warn', delta: -2.6 });
-        break;
-      default:
-        implant -= 11.5; bridge -= 4.5; peri = 'High'; conf -= 18;
-        reasons.push('Poor hygiene: peri‑implantitis prevalence up to 40% — patient counselling critical');
-        factors.push({ label: 'Poor hygiene −11.5%', type: 'neg', delta: -11.5 });
-    }
-    // Smoking — major risk factor in implantology
-    switch (stateObj.smoking || 'Non-smoker') {
-      case 'Non-smoker':
-        implant += 0.3;
-        factors.push({ label: 'Non-smoker', type: 'pos', delta: +0.3 });
-        break;
-      case 'Former smoker':
-        implant -= 3.5; conf -= 5;
-        reasons.push('Former smoker: implant failure risk ~2× higher than non-smoker — monitor closely');
-        factors.push({ label: 'Former smoker −3.5%', type: 'warn', delta: -3.5 });
-        break;
-      case 'Current smoker':
-        implant -= 8.5; bridge -= 2.0; conf -= 12; peri = peri === 'Low' ? 'Medium' : 'High';
-        reasons.push('Active smoker: implant failure rate up to 20% — smoking cessation strongly advised before surgery');
-        factors.push({ label: 'Current smoker −8.5%', type: 'neg', delta: -8.5 });
-        break;
-    }
-    // Diabetes — systemic risk factor
-    let diabetesR = 'Low';
-    switch (stateObj.diabetes || 'None') {
-      case 'None':
-        implant += 0.3;
-        factors.push({ label: 'No diabetes +0.3%', type: 'pos', delta: +0.3 });
-        diabetesR = 'Low';
-        break;
-      case 'Controlled':
-        implant -= 1.5; conf -= 3; diabetesR = 'Medium';
-        reasons.push('Controlled diabetes (HbA1c < 7.5%): slightly elevated implant failure risk — strict glycemic control required');
-        factors.push({ label: 'Controlled DM −1.5%', type: 'warn', delta: -1.5 });
-        bridge -= 0.5;
-        break;
-      case 'Uncontrolled':
-        implant -= 7.0; conf -= 12; diabetesR = 'High';
-        peri = 'High';
-        boneR = boneR === 'Low' ? 'Medium' : 'High';
-        reasons.push('Uncontrolled diabetes (HbA1c ≥ 7.5%): 2–3× higher implant failure risk — glycemic control is essential before any surgery');
-        factors.push({ label: 'Uncontrolled DM −7.0%', type: 'neg', delta: -7.0 });
-        bridge -= 2.0;
-        break;
-    }
-    switch (stateObj.occlusion) {
-      case 'Normal':
-        implant += 0.4; occR = 'Low';
-        reasons.push('Normal occlusion favors implant stability');
-        factors.push({ label: 'Normal occlusion', type: 'pos', delta: +0.4 });
-        break;
-      case 'High occlusion load':
-        implant -= 1.8; bridge -= 0.8; occR = 'Medium'; conf -= 3;
-        reasons.push('High occlusal load — night guard advised');
-        factors.push({ label: 'High occlusion −1.8%', type: 'warn', delta: -1.8 });
-        break;
-      default:
-        occR = 'Low';
-        reasons.push('Low occlusion minimizes restorative stress');
-        factors.push({ label: 'Low occlusion', type: 'pos', delta: 0 });
-    }
-    // Jaw (Maxilla/Mandible) + Position — evidence-based registry data
-    const _maxilla  = isMaxilla(stateObj.tooth);
-    const _posterior= isPosteriorTooth(stateObj.tooth);
-    if (_maxilla && _posterior) {
-      implant -= 3.0; bridge -= 2.2; conf -= 2;
-      reasons.push('Upper posterior (Maxilla): lowest bone density zone, sinus proximity — highest implant complication site');
-      factors.push({ label: 'Maxilla posterior −3.0%', type: 'warn', delta: -3.0 });
-    } else if (_maxilla && !_posterior) {
-      implant -= 1.5; bridge += 0.5;
-      reasons.push('Upper anterior (Maxilla): adequate for implant — esthetic zone, bone density slightly lower than mandible');
-      factors.push({ label: 'Maxilla anterior −1.5%', type: 'warn', delta: -1.5 });
-    } else if (!_maxilla && _posterior) {
-      implant -= 0.5; bridge -= 2.2;
-      reasons.push('Lower posterior (Mandible): excellent bone density — favorable implant zone with predictable outcomes');
-      factors.push({ label: 'Mandible posterior −0.5%', type: 'neu', delta: -0.5 });
-    } else {
-      implant += 0.5; bridge += 0.5;
-      reasons.push('Lower anterior (Mandible): best bone density and implant accessibility — most predictable zone');
-      factors.push({ label: 'Mandible anterior +0.5%', type: 'pos', delta: +0.5 });
-    }
-    if (stateObj.age < 40) {
-      implant += 0.6; bridge += 0.3; conf += 1;
-      reasons.push('Age < 40: implant osseointegration and long-term value are optimal');
-      factors.push({ label: 'Age < 40 +0.6%', type: 'pos', delta: +0.6 });
-    } else if (stateObj.age > 65) {
-      implant -= 2.5; bridge -= 1.8; conf -= 4;
-      reasons.push('Age > 65: healing time and bone density may reduce implant success');
-      factors.push({ label: `Age ${stateObj.age} −2.5%`, type: 'warn', delta: -2.5 });
-    }
-    if (['Severe decay','Failed restoration'].includes(stateObj.condition)) {
-      implant -= 1.5; bridge -= 1.2;
-      reasons.push('Adjacent tooth damage may affect restorative prognosis');
-      factors.push({ label: 'Compromised tooth', type: 'neg', delta: -1.5 });
-    }
-
-    // Fix 1: Bridge Logic — warn when Poor bone makes bridge risky for adjacent teeth
-    let bridgeWarning = null;
-    if (stateObj.bone === 'Poor' && stateObj.tx === 'bridge') {
-      bridgeWarning = 'Poor bone quality may compromise abutment teeth — bridge could accelerate adjacent tooth loss';
-      if (!reasons.includes(bridgeWarning)) reasons.push(bridgeWarning);
-    }
-
-    // ── CROWN VIABILITY + SCORING ───────────────────────────────
-    const BASE_CROWN = 91.0;
-    let crown = BASE_CROWN;
-    let crownViable = false;
-    let crownWarning = null;
-
-    switch (stateObj.condition) {
-      case 'Missing tooth':
-        crownViable = false;
-        crownWarning = 'Crown not applicable: no tooth structure remains. Consider implant or bridge.';
-        crown = 0;
-        break;
-      case 'Fractured tooth':
-        crownViable = true;
-        if (stateObj.remainingStructure === 'Poor') {
-          crownWarning = 'Poor remaining structure — high root fracture risk (60% failure). Consider extraction + implant.';
-          crown = 0; crownViable = false;
-        } else if (stateObj.remainingStructure === 'Fair') {
-          crownWarning = 'Partial ferrule — viable with post & core support, monitor closely.';
-        }
-        break;
-      case 'Severe decay':
-        crownViable = (stateObj.remainingStructure !== 'Poor');
-        if (!crownViable) {
-          crownWarning = 'Severe decay with poor structure: extraction + implant strongly recommended.';
-          crown = 0;
-        } else {
-          crownWarning = 'Crown viable ONLY if root is salvageable — verify radiographic bone support.';
-        }
-        break;
-      case 'Failed restoration':
-        crownViable = true;
-        reasons.push('Failed restoration: crown replaces compromised restoration while preserving natural tooth structure');
-        factors.push({ label: 'Replace failed restoration +1.0%', type: 'pos', delta: +1.0 });
-        crown += 1.0;
-        break;
-    }
-
-    if (crownViable && crown > 0) {
-      // Remaining Structure (Ferrule Effect)
-      switch (stateObj.remainingStructure || 'Good') {
-        case 'Good':
-          crown += 3.5; conf += 2;
-          reasons.push('Good remaining structure (≥2mm ferrule): excellent fracture resistance');
-          factors.push({ label: 'Good structure +3.5%', type: 'pos', delta: +3.5 });
-          break;
-        case 'Fair':
-          crown += 0.5;
-          reasons.push('Fair structure: crown viable with post & core support');
-          factors.push({ label: 'Fair structure +0.5%', type: 'warn', delta: +0.5 });
-          break;
-        case 'Poor':
-          crown = 0; crownViable = false;
-          crownWarning = 'Poor structure makes crown non-viable — no ferrule possible';
-          break;
-      }
-      if (crownViable && crown > 0) {
-        // Endodontic Status
-        switch (stateObj.endodonticStatus || 'No RCT needed') {
-          case 'RCT done':
-            crown += 1.5;
-            reasons.push('RCT completed: endodontic failure risk eliminated, 91.3% survival at 10 years');
-            factors.push({ label: 'RCT done +1.5%', type: 'pos', delta: +1.5 });
-            break;
-          case 'No RCT needed':
-            crown += 2.5;
-            reasons.push('Vital pulp: no endodontic intervention required — optimal prognosis');
-            factors.push({ label: 'Vital pulp +2.5%', type: 'pos', delta: +2.5 });
-            break;
-          case 'Needs RCT':
-            crown -= 3.0; conf -= 7;
-            reasons.push('RCT needed before crown: adds cost ($1,000), treatment time (2-4 weeks), and procedural risk');
-            factors.push({ label: 'Needs RCT −3.0%', type: 'neg', delta: -3.0 });
-            break;
-        }
-        // Parafunction
-        switch (stateObj.parafunction || 'None') {
-          case 'None':
-            crown += 0.5;
-            factors.push({ label: 'No parafunction +0.5%', type: 'pos', delta: +0.5 });
-            break;
-          case 'Clenching':
-            crown -= 2.0;
-            reasons.push('Clenching: increases crown and root fracture risk — night guard essential');
-            factors.push({ label: 'Clenching −2.0%', type: 'warn', delta: -2.0 });
-            break;
-          case 'Bruxism':
-            crown -= 4.0; conf -= 5;
-            reasons.push('Bruxism: 60% failure rate vs 10% without — immediate night guard required');
-            factors.push({ label: 'Bruxism −4.0%', type: 'neg', delta: -4.0 });
-            break;
-          case 'Both':
-            crown -= 5.0; conf -= 7;
-            reasons.push('Bruxism + Clenching: extremely high fracture risk — consider implant instead');
-            factors.push({ label: 'Bruxism+Clenching −5.0%', type: 'neg', delta: -5.0 });
-            break;
-        }
-        // Occlusion (Crown-specific)
-        switch (stateObj.occlusion) {
-          case 'High occlusion load':
-            crown -= 2.5;
-            reasons.push('High occlusion: increased crown fracture and wear risk — night guard essential');
-            factors.push({ label: 'High occlusion −2.5%', type: 'warn', delta: -2.5 });
-            break;
-          case 'Normal':
-            crown += 0.5;
-            factors.push({ label: 'Normal occlusion +0.5%', type: 'pos', delta: +0.5 });
-            break;
-          case 'Low':
-            crown += 1.5;
-            reasons.push('Low occlusion: minimal wear risk, excellent crown longevity');
-            factors.push({ label: 'Low occlusion +1.5%', type: 'pos', delta: +1.5 });
-            break;
-        }
-        // Smoking (less impact on crown than implant)
-        switch (stateObj.smoking || 'Non-smoker') {
-          case 'Non-smoker':  crown += 0.5; factors.push({ label: 'Non-smoker +0.5%', type: 'pos', delta: +0.5 }); break;
-          case 'Former smoker': crown -= 0.5; factors.push({ label: 'Former smoker −0.5%', type: 'warn', delta: -0.5 }); break;
-          case 'Current smoker':
-            crown -= 1.0;
-            reasons.push('Active smoking: increases periodontal risk around crowned tooth');
-            factors.push({ label: 'Current smoker −1.0%', type: 'neg', delta: -1.0 });
-            break;
-        }
-        // Diabetes (affects periodontal support and healing)
-        switch (stateObj.diabetes || 'None') {
-          case 'Controlled':
-            crown -= 0.5;
-            factors.push({ label: 'Controlled DM −0.5%', type: 'warn', delta: -0.5 });
-            break;
-          case 'Uncontrolled':
-            crown -= 1.5;
-            reasons.push('Uncontrolled diabetes: impaired healing and increased secondary caries/periodontal risk');
-            factors.push({ label: 'Uncontrolled DM −1.5%', type: 'neg', delta: -1.5 });
-            break;
-        }
-        // Tooth position
-        if (isPosteriorTooth(stateObj.tooth)) {
-          crown -= 1.0;
-          factors.push({ label: 'Posterior −1.0%', type: 'warn', delta: -1.0 });
-        } else {
-          crown += 0.5;
-          factors.push({ label: 'Anterior +0.5%', type: 'pos', delta: +0.5 });
-        }
-        // Jaw (maxilla has lower bone support for crown retention)
-        if (_maxilla) {
-          crown -= 0.5;
-          factors.push({ label: 'Maxilla −0.5%', type: 'warn', delta: -0.5 });
-        }
-        // Age
-        if (stateObj.age < 30) {
-          crown += 0.5;
-          factors.push({ label: 'Age < 30 +0.5%', type: 'pos', delta: +0.5 });
-        } else if (stateObj.age > 65) {
-          crown -= 1.0;
-          reasons.push('Age > 65: reduced periodontal support may compromise crown longevity');
-          factors.push({ label: `Age ${stateObj.age} −1.0%`, type: 'warn', delta: -1.0 });
-        }
-      }
-    }
-
-    // ── FINAL SCORING: clamp all scores ──────────────────────────
-    implant = Math.round(Math.max(50, Math.min(99, implant)) * 10) / 10;
-    bridge  = Math.round(Math.max(50, Math.min(95, bridge))  * 10) / 10;
-    if (crownViable && crown > 0) {
-      crown = Math.round(Math.max(60, Math.min(97, crown)) * 10) / 10;
-    } else { crown = 0; }
-    conf = Math.max(35, Math.min(95, Math.round(conf)));
-
-    // 3-way recommendation — pick HIGHEST evidence-based score among viable options
-    let recScores = [{ option: 'implant', score: implant }, { option: 'bridge', score: bridge }];
-    if (crownViable && crown > 0) recScores.push({ option: 'crown', score: crown });
-    recScores.sort((a, b) => b.score - a.score);
-    const rec = recScores[0].option; // Truly best option based on clinical data
-    const confLevel = conf >= 80 ? 'High' : conf >= 60 ? 'Medium' : 'Low';
-
-    const usedReasons = new Set(reasons);
-    for (const r of FALLBACK_REASONS) {
-      if (reasons.length >= 4) break;
-      if (!usedReasons.has(r)) { reasons.push(r); usedReasons.add(r); }
-    }
-
-    const caseCount = conf >= 80 ? 'strong clinical profile' : conf >= 60 ? 'moderate clinical profile' : 'limited data — review carefully';
-    const smokingStatus2 = stateObj.smoking || 'Non-smoker';
-    const smokingR = smokingStatus2 === 'Current smoker' ? 'High' : smokingStatus2 === 'Former smoker' ? 'Medium' : 'Low';
-    // diabetesR already set in diabetes switch above
-
-    // Crown risks
-    const crownRisks = (crownViable && crown > 0) ? {
-      secondaryCaries: stateObj.hygiene === 'Poor' ? 'High' : stateObj.hygiene === 'Fair' ? 'Medium' : 'Low',
-      crownFracture: (stateObj.parafunction === 'Bruxism' || stateObj.parafunction === 'Both')
-                       ? 'High'
-                       : (stateObj.occlusion === 'High occlusion load' || stateObj.parafunction === 'Clenching')
-                         ? 'Medium'
-                         : 'Low',
-      rootFracture: (stateObj.remainingStructure || 'Good') === 'Poor' ? 'High' : (stateObj.remainingStructure || 'Good') === 'Fair' ? 'Medium' : 'Low',
-      endodonticFailure: (stateObj.endodonticStatus || 'No RCT needed') === 'Needs RCT' ? 'High' : (stateObj.endodonticStatus || 'No RCT needed') === 'RCT done' ? 'Low' : 'Medium',
-      parafunctionDamage: stateObj.parafunction === 'Both' ? 'Critical' : stateObj.parafunction === 'Bruxism' ? 'High' : stateObj.parafunction === 'Clenching' ? 'Medium' : 'Low'  // EC#3
-    } : null;
-
-    return { implant, bridge, crown, conf, confLevel, rec, peri, boneR, occR, smokingR, diabetesR, crownViable, crownWarning, crownRisks, reasons: reasons.slice(0, 5), factors, caseCount };
-  }
-
   // ================================================================
   // CLINICAL ENGINE — 7-STAGE DETERMINISTIC DECISION PIPELINE
   // ================================================================
@@ -2483,421 +1697,6 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
   // MISSING conditions: delegates 100% to existing engines (zero change).
   // RESTORATIVE conditions: runs structured pipeline → backward-compat ai.
   // ================================================================
-  const ClinicalEngine = (() => {
-    'use strict';
-
-    // ── CASE TYPE CONSTANTS ────────────────────────────────────────
-    const CT = Object.freeze({
-      MISSING_SINGLE:          'MISSING_SINGLE',
-      MISSING_MULTI:           'MISSING_MULTI',
-      RESTORATIVE_VIABLE:      'RESTORATIVE_VIABLE',
-      RESTORATIVE_COMPROMISED: 'RESTORATIVE_COMPROMISED',
-      RESTORATIVE_HOPELESS:    'RESTORATIVE_HOPELESS',
-    });
-
-    // ── STAGE 1: CASE NORMALIZER ───────────────────────────────────
-    // Produces a structured clinical model from raw state.
-    // Single source of truth consumed by all downstream stages.
-    function normalize(s) {
-      const posterior = isPosteriorTooth(s.tooth);
-      const maxilla   = isMaxilla(s.tooth);
-      const rs  = s.remainingStructure || 'Good';
-      const es  = s.endodonticStatus   || 'No RCT needed';
-      const pf  = s.parafunction       || 'None';
-      return {
-        tooth: { id: s.tooth, isMaxilla: maxilla, isPosterior: posterior,
-                 isAnterior: !posterior, isMandibular: !maxilla },
-        restorative: {
-          condition: s.condition, remainingStructure: rs,
-          endoStatus: es, isMissing: s.condition === 'Missing tooth',
-          hasFracture: s.condition === 'Fractured tooth',
-          hasDecay: s.condition === 'Severe decay',
-          hasFailedResto: s.condition === 'Failed restoration',
-          needsRCT: es === 'Needs RCT', rctDone: es === 'RCT done',
-          goodStructure: rs === 'Good', fairStructure: rs === 'Fair', poorStructure: rs === 'Poor',
-        },
-        periodontal: {
-          bone: s.bone, hygiene: s.hygiene,
-          goodBone: s.bone === 'Good', fairBone: s.bone === 'Fair', poorBone: s.bone === 'Poor',
-          goodHygiene: s.hygiene === 'Good', poorHygiene: s.hygiene === 'Poor',
-        },
-        occlusal: {
-          load: s.occlusion, highLoad: s.occlusion === 'High occlusion load',
-          parafunction: pf,
-          bruxism: pf === 'Bruxism' || pf === 'Both',
-          clenching: pf === 'Clenching' || pf === 'Both',
-        },
-        systemic: {
-          smoking: s.smoking || 'Non-smoker',
-          diabetes: s.diabetes || 'None',
-          currentSmoker: s.smoking === 'Current smoker',
-          uncontrolledDM: s.diabetes === 'Uncontrolled',
-        },
-        biomechanical: {
-          ferrule: rs, goodFerrule: rs === 'Good', poorFerrule: rs === 'Poor',
-          abutmentQuality: s.abutmentQuality || 'Good',
-          abutmentCompromised: s.abutmentQuality === 'Compromised',
-        },
-        patient: { age: s.age, young: s.age < 40, elderly: s.age > 65 },
-        multi: { active: !!(s.multiTooth && s.tooth2 && s.condition === 'Missing tooth'), tooth2: s.tooth2 },
-        costs: { crown: s.costCrown || 1200, rct: s.costRCT || 1000, postCore: s.costPostCore || 400 },
-      };
-    }
-
-    // ── STAGE 2: CASE CLASSIFIER ──────────────────────────────────
-    // Determines case category — single source of truth for downstream logic.
-    function classify(c) {
-      const { restorative: r, periodontal: p, occlusal: o, multi: m } = c;
-      if (r.isMissing) {
-        if (m.active) return { type: CT.MISSING_MULTI, label: 'Two Adjacent Missing Teeth' };
-        return { type: CT.MISSING_SINGLE, label: 'Single Missing Tooth' };
-      }
-      // Hopeless: structurally non-restorable
-      if (r.poorStructure && (p.poorBone || o.bruxism || r.needsRCT)) {
-        return { type: CT.RESTORATIVE_HOPELESS, label: 'Tooth with Poor Prognosis',
-                 notes: 'Extraction and replacement strongly recommended' };
-      }
-      // Compromised: guarded prognosis
-      if (r.poorStructure || (r.fairStructure && (o.bruxism || p.poorBone))) {
-        return { type: CT.RESTORATIVE_COMPROMISED, label: 'Structurally Compromised Tooth',
-                 notes: 'Guarded prognosis — restorative possible with risk awareness' };
-      }
-      return { type: CT.RESTORATIVE_VIABLE, label: 'Restorable Tooth',
-               notes: r.goodStructure ? 'Excellent prognosis' : 'Good prognosis with appropriate treatment' };
-    }
-
-    // ── STAGE 3: VALID TREATMENT UNIVERSE GENERATOR ───────────────
-    // Generates only clinically valid treatment options for the case.
-    // Each option maps to a card slot (implant/bridge/crown) so the
-    // existing S.tx, renderTxCards, and comparison infrastructure works.
-    function generateTreatments(caseClass, c) {
-      const { restorative: r, occlusal: o, tooth: t, biomechanical: b } = c;
-
-      // Onlay viable: Good structure, vital (or no RCT needed), no decay, no bruxism
-      const onlayViable = b.goodFerrule && !r.needsRCT && !r.rctDone &&
-                          !r.hasDecay && !o.bruxism && r.goodStructure;
-      // Endocrown viable: RCT done, posterior only
-      const endocrownViable = r.rctDone && t.isPosterior;
-      // Splinting is a MULTI-TOOTH procedure that links adjacent crowns to share load.
-      // Indications (clinical literature):
-      //   - Poor ferrule on affected tooth (borrows retention from neighbors)
-      //   - Compromised adjacent abutment quality (already-failing neighbors)
-      //   - COMPROMISED case classification (structural weakness justifies support)
-      // NOT indicated for: bruxism on isolated single tooth with healthy neighbors
-      // (overtreatment — correct answer is monolithic zirconia + nightguard)
-      const splintedPreferred = b.poorFerrule || b.abutmentCompromised ||
-                                caseClass.type === CT.RESTORATIVE_COMPROMISED;
-      // Escalation to extraction viable when: hopeless or compromised
-      const escalationViable = caseClass.type === CT.RESTORATIVE_HOPELESS ||
-                               caseClass.type === CT.RESTORATIVE_COMPROMISED;
-
-      return [
-        // SLOT 1 ('implant' S.tx key) — minimal / conservative option
-        onlayViable
-          ? { slot: 'implant', id: 'onlay',      label: 'Onlay / Overlay',     sub: 'Minimal Prep · Conservative' }
-          : { slot: 'implant', id: 'crown_core',  label: 'Crown + Core',        sub: 'Post & Core Build-up' },
-
-        // SLOT 2 ('bridge' S.tx key) — standard crown option
-        splintedPreferred
-          ? { slot: 'bridge', id: 'splinted',    label: 'Splinted Crowns',     sub: 'Load Distribution' }
-          : { slot: 'bridge', id: 'crown',       label: 'Crown',               sub: 'Standard Coverage' },
-
-        // SLOT 3 ('crown' S.tx key) — advanced / escalation option
-        endocrownViable
-          ? { slot: 'crown', id: 'endocrown',    label: 'Endocrown',           sub: 'Monolithic · No Post' }
-          : escalationViable
-          ? { slot: 'crown', id: 'extract_impl', label: 'Extract + Implant',   sub: 'Escalation Path' }
-          : { slot: 'crown', id: 'crown_adv',   label: 'Crown + Core',        sub: 'Full Coverage' },
-      ];
-    }
-
-    // ── STAGE 4: CLINICAL SCORING ENGINE ──────────────────────────
-    // Scores each treatment using clinical evidence and patient factors.
-    // Crown/implant base scores from calcAI for accuracy consistency.
-    function scoreRestorative(treatments, c, baseAI, caseClass) {
-      const { restorative: r, occlusal: o, tooth: t, biomechanical: b,
-              periodontal: p, systemic: sys } = c;
-
-      return treatments.map(tx => {
-        let score = 0;
-        const rationale = [];
-
-        switch (tx.id) {
-          case 'onlay': {
-            score = 91.0;
-            if (b.goodFerrule)     { score += 3.0; rationale.push('Excellent residual structure — onlay preparation maximally preserves natural tooth'); }
-            if (!o.highLoad)       { score += 1.5; rationale.push('Low occlusal load favors minimal preparation approach'); }
-            if (t.isPosterior)     { score += 1.0; rationale.push('Posterior position ideal for onlay biomechanical distribution'); }
-            if (!r.needsRCT)       { score += 2.0; rationale.push('Vital pulp: no endodontic risk — highest preservation prognosis'); }
-            if (p.goodBone)        { score += 0.5; rationale.push('Good periodontal support ensures stable long-term margin integrity'); }
-            if (o.bruxism)         { score -= 8.0; rationale.push('⚠ Bruxism: onlay margins at high fracture risk — full coverage crown preferred'); }
-            if (o.highLoad)        { score -= 4.0; rationale.push('High occlusal load risks marginal fracture at onlay preparation boundary'); }
-            if (sys.currentSmoker) { score -= 2.0; rationale.push('Smoking increases secondary caries risk at resin margins'); }
-            if (r.hasDecay)        { score -= 5.0; rationale.push('Active decay compromises bond quality — full coverage preferred'); }
-            break;
-          }
-          case 'crown': case 'crown_core': case 'crown_adv': {
-            score = baseAI.crown > 0 ? baseAI.crown : 87.0;
-            rationale.push(tx.id === 'crown_core'
-              ? 'Post & core build-up required — adds structural risk but restores functional crown'
-              : 'Standard crown preparation with adequate ferrule support');
-            if (b.goodFerrule)  rationale.push('Good ferrule (≥2mm): optimal fracture resistance predicted');
-            if (r.rctDone)      rationale.push('RCT completed: endodontic stability confirmed before crown');
-            if (o.bruxism)      rationale.push('⚠ Bruxism: monolithic zirconia required — occlusal night guard essential');
-            if (p.poorHygiene)  rationale.push('Poor hygiene: secondary caries at crown margins — strict maintenance protocol required');
-            if (tx.id === 'crown_core' && r.fairStructure) { score -= 1.5; }
-            break;
-          }
-          case 'splinted': {
-            score = Math.max(72, (baseAI.crown > 0 ? baseAI.crown : 85.0) - 1.5);
-            if (o.highLoad)      { score += 4.0; rationale.push('High occlusal load: splinting distributes lateral forces — reduces individual crown fracture risk ~40%'); }
-            if (o.bruxism)       { score += 3.0; rationale.push('Bruxism: splinted crowns reduce lateral force concentration via shared occlusal surface'); }
-            if (b.poorFerrule)   { score += 2.5; rationale.push('Compromised ferrule: mutual support via splinting improves retention and load resistance'); }
-            if (p.poorHygiene)   { score -= 5.0; rationale.push('Poor hygiene: splinted crowns create plaque-retentive embrasures — periodontitis risk elevated'); }
-            if (!o.highLoad && !o.bruxism && !b.poorFerrule) {
-              score -= 3.0;
-              rationale.push('No clinical indication for splinting — separate crowns preferred for hygiene access and retrievability');
-            }
-            break;
-          }
-          case 'endocrown': {
-            score = 89.0;
-            if (r.rctDone)      { score += 3.0; rationale.push('RCT completed: endocrown is evidence-based first choice for posterior endodontically treated teeth (96% retention at 5 yrs)'); }
-            if (t.isPosterior)  { score += 2.0; rationale.push('Posterior position: pulp chamber macroretention distributes masticatory forces optimally'); }
-            if (!o.bruxism)     { score += 1.5; rationale.push('No bruxism: endocrown fracture risk within normal range (92–94% survival at 5 years)'); }
-            if (o.bruxism)      { score -= 6.0; rationale.push('⚠ Bruxism: endocrown fracture risk elevated — monolithic zirconia or additional coverage recommended'); }
-            if (o.highLoad)     { score -= 2.5; rationale.push('High occlusal load: monitor carefully — ensure adequate occlusal coverage thickness ≥2mm'); }
-            if (b.poorFerrule)  { score += 1.0; rationale.push('Compromised ferrule: endocrown avoids post stress — macroretention superior to conventional post'); }
-            if (p.poorHygiene)  { score -= 1.5; rationale.push('Poor hygiene: marginal integrity monitoring essential to prevent secondary failure'); }
-            if (t.isMaxilla)    { score -= 3.5; rationale.push('Maxillary position: less predictable chamber depth — endocrown retention 5–10% lower than mandibular molars (literature consensus)'); }
-            break;
-          }
-          case 'extract_impl': {
-            score = baseAI.implant;
-            rationale.push('Tooth prognosis is guarded — extraction eliminates ongoing infection or fracture propagation risk');
-            rationale.push('Implant placement after healing: predictable outcome vs attempting to preserve compromised tooth');
-            if (p.poorBone)         { score -= 5.0; rationale.push('Poor bone: bone grafting required — extends treatment timeline 4–6 months'); }
-            if (sys.currentSmoker)  { score -= 4.0; rationale.push('Active smoker: extraction site healing and osseointegration significantly compromised'); }
-            if (sys.uncontrolledDM) { score -= 3.0; rationale.push('Uncontrolled diabetes: impaired healing increases extraction and implant failure risk'); }
-            // CLINICAL SAFETY FLOOR: in HOPELESS cases, extract must remain the
-            // primary recommendation. Systemic penalties reduce confidence (and
-            // are documented in rationale) but the score itself must not drop
-            // below 70 — leaving a non-restorable tooth in place is worse than
-            // a delayed/staged extract+implant pathway, regardless of risk factors.
-            if (caseClass?.type === CT.RESTORATIVE_HOPELESS) {
-              score = Math.max(score, 70);
-              if (score === 70) rationale.push('Hopeless tooth: extraction remains clinically preferred despite elevated systemic risk — defer implant timing if needed');
-            }
-            break;
-          }
-          default: score = 80.0;
-        }
-
-        // Per-option clinical ceiling — prevents score saturation that destroys
-        // ranking discrimination. Each ceiling reflects evidence-based maximum
-        // long-term survival rates for that specific procedure type.
-        const PER_OPTION_CEILING = {
-          onlay:        95,  // marginal failure risk caps long-term success
-          crown:        96,  // standard literature ceiling
-          crown_core:   94,  // post adds structural risk
-          crown_adv:    96,
-          splinted:     93,  // hygiene access + retrievability cap
-          endocrown:    94,  // 5-year survival data ceiling (Sedrez-Porto 2016)
-          extract_impl: 97,  // highest survival in best conditions
-        };
-        // HOPELESS prognosis penalty: when the case is classified non-restorable,
-        // preservation attempts carry intrinsic prognosis risk regardless of how
-        // each individual factor scores. Apply a flat clinical-reality penalty
-        // to ensure extract ranks above preservation in hopeless classifications.
-        const isPreservation = tx.id !== 'extract_impl';
-        if (isPreservation && caseClass?.type === CT.RESTORATIVE_HOPELESS) {
-          score -= 18;
-          rationale.push('⚠ Hopeless prognosis: tooth classified non-restorable — preservation attempts carry high failure risk regardless of individual treatment factors');
-        }
-        const optionCeiling = PER_OPTION_CEILING[tx.id] || 96;
-        score = Math.round(Math.max(50, Math.min(optionCeiling, score)) * 10) / 10;
-        return { ...tx, score, rationale };
-      });
-    }
-
-    // ── STAGE 5: RECOMMENDATION ENGINE ────────────────────────────
-    // Determines the best treatment considering clinical scores + case classification.
-    function recommend(scored, baseAI, caseClass) {
-      if (!scored || !scored.length) return { rec: 'bridge', ideal: 'bridge', conf: baseAI.conf, confLevel: baseAI.confLevel };
-      const sorted = [...scored].sort((a, b) => b.score - a.score);
-      const ideal = sorted[0].slot;
-      // Tooth-preservation bias applies ONLY when classification is COMPROMISED or VIABLE.
-      // HOPELESS cases must defer to extract — preservation bias here would override
-      // a clinically determined non-restorable diagnosis, which is unsafe.
-      const extractOpt = scored.find(t => t.id === 'extract_impl');
-      const bestPreserve = sorted.find(t => t.id !== 'extract_impl');
-      const allowPreservationBias = caseClass?.type !== CT.RESTORATIVE_HOPELESS;
-      const rec = (allowPreservationBias && extractOpt && bestPreserve &&
-                   bestPreserve.score >= extractOpt.score - 3)
-        ? bestPreserve.slot
-        : ideal;
-      const conf = Math.max(35, Math.min(92, baseAI.conf));
-      return { rec, ideal, conf, confLevel: conf >= 80 ? 'High' : conf >= 60 ? 'Medium' : 'Low' };
-    }
-
-    // ── STAGE 6: EXPLAINABILITY ENGINE ────────────────────────────
-    // Structured clinical reasoning synchronized with scoring engine.
-    // Explanations derive from actual scores — never contradict recommendations.
-    function explain(scored, recResult, caseClass, c) {
-      const recOpt = scored.find(t => t.slot === recResult.rec) || scored[0];
-      const others = scored.filter(t => t.slot !== recResult.rec).sort((a, b) => b.score - a.score);
-      const { biomechanical: b, occlusal: o, periodontal: p, restorative: r } = c;
-
-      const reasons = [
-        `Case classified: ${caseClass.label}${caseClass.notes ? ' — ' + caseClass.notes : ''}`,
-        ...(recOpt?.rationale?.slice(0, 3) || []),
-      ];
-      // Why alternatives ranked lower (only when gap is meaningful)
-      for (const alt of others.slice(0, 2)) {
-        const diff = (recOpt?.score || 0) - alt.score;
-        if (diff > 3) reasons.push(`${alt.label} scored lower (Δ${diff.toFixed(1)}%): ${alt.rationale[0] || '—'}`);
-      }
-      const factors = [];
-      if (b.goodFerrule)  factors.push({ label: 'Good ferrule ≥2mm', type: 'pos', delta: +3.5 });
-      if (b.poorFerrule)  factors.push({ label: 'Poor ferrule <1mm', type: 'neg', delta: -5.0 });
-      if (o.bruxism)      factors.push({ label: 'Bruxism — fracture risk', type: 'neg', delta: -4.0 });
-      if (o.highLoad)     factors.push({ label: 'High occlusal load', type: 'warn', delta: -2.5 });
-      if (p.poorBone)     factors.push({ label: 'Poor bone quality', type: 'neg', delta: -3.0 });
-      if (r.rctDone)      factors.push({ label: 'RCT done — stable', type: 'pos', delta: +1.5 });
-      if (r.needsRCT)     factors.push({ label: 'RCT needed', type: 'warn', delta: -3.0 });
-      if (p.poorHygiene)  factors.push({ label: 'Poor hygiene — caries risk', type: 'neg', delta: -2.5 });
-
-      return {
-        summary: `${recOpt?.label || 'Crown'} recommended — ${recResult.confLevel} clinical confidence`,
-        reasons: reasons.slice(0, 5),
-        factors: factors.slice(0, 6),
-        recOption: recOpt,
-      };
-    }
-
-    // ── RESULT BUILDER ─────────────────────────────────────────────
-    // Builds a fully backward-compatible ai object so every existing
-    // render function (renderComparison, renderRisk, renderCost, renderGraph,
-    // updateAICard, etc.) continues to work without modification paths.
-    function buildRestorativeResult(scored, recResult, expl, caseClass, c, baseAI, treatments) {
-      const bySlot = {};
-      scored.forEach(t => { bySlot[t.slot] = t; });
-      // Slot scores map to backward-compat fields implant/bridge/crown
-      const implant = bySlot['implant']?.score ?? baseAI.implant;
-      const bridge  = bySlot['bridge']?.score  ?? baseAI.bridge;
-      const crown   = bySlot['crown']?.score   ?? (baseAI.crownViable ? baseAI.crown : 80.0);
-
-      // Per-slot display labels for card relabeling and report generation
-      const restorativeLabels = {
-        slot1: bySlot['implant'] || { label: 'Crown + Core', sub: 'Full Coverage' },
-        slot2: bySlot['bridge']  || { label: 'Crown',        sub: 'Standard Coverage' },
-        slot3: bySlot['crown']   || { label: 'Crown',        sub: 'Full Coverage' },
-      };
-      // Human-readable label for the recommended option (used in AI card typewriter)
-      const SLOT_MAP = { implant: 'slot1', bridge: 'slot2', crown: 'slot3' };
-      const recDisplay = restorativeLabels[SLOT_MAP[recResult.rec]]?.label || 'Crown';
-
-      return {
-        // ── Backward-compatible fields ─────────────────────────────
-        implant, bridge, crown,
-        conf: recResult.conf, confLevel: recResult.confLevel,
-        rec: recResult.rec,
-        peri: baseAI.peri, boneR: baseAI.boneR, occR: baseAI.occR,
-        smokingR: baseAI.smokingR, diabetesR: baseAI.diabetesR,
-        crownViable: true,   // all slots are clinically relevant in restorative mode
-        crownWarning: baseAI.crownWarning,
-        crownRisks: baseAI.crownRisks,
-        reasons: expl.reasons,
-        factors: expl.factors,
-        caseCount: baseAI.caseCount,
-        bridgeWarning: null,
-        // ── New structured fields ──────────────────────────────────
-        treatmentMode: 'restorative',
-        caseClass,
-        clinical: c,
-        treatments,
-        scored,
-        explanation: expl,
-        restorativeLabels,
-        recDisplay,           // correct display name for the rec (not "Implant")
-        // ── Restorative cost basis (used by renderCost override) ───
-        restorativeCosts: {
-          slot1: Math.round((bySlot['implant']?.id === 'onlay'
-            ? (c.costs.crown * 0.65)        // onlay ≈ 65% of crown cost
-            : c.costs.crown + (c.costs.postCore * (c.restorative.fairStructure ? 1 : 0))) * 10) / 10,
-          slot2: c.costs.crown + (c.restorative.needsRCT ? c.costs.rct : 0),
-          slot3: Math.round((bySlot['crown']?.id === 'endocrown'
-            ? c.costs.crown * 0.9           // endocrown ≈ 90% (no post needed)
-            : bySlot['crown']?.id === 'extract_impl'
-            ? 4500                           // extraction + implant base
-            : c.costs.crown) * 10) / 10,
-        },
-      };
-    }
-
-    // ── PUBLIC API: process(state) ─────────────────────────────────
-    // Single entry point for all clinical reasoning. Render functions
-    // call this instead of calcAI/calcAIMulti directly.
-    function process(state) {
-      // Null guard: any invalid state degrades to null (callers check for null)
-      if (!state || typeof state !== 'object') return null;
-      if (!state.bone || !state.hygiene || !state.occlusion) return null;
-      const c = normalize(state);
-      const caseClass = classify(c);
-      // MISSING paths: delegate entirely to existing engines (zero regression risk)
-      if (caseClass.type === CT.MISSING_SINGLE) {
-        const ai = calcAI(state);
-        return ai ? { ...ai, treatmentMode: 'single', caseClass, clinical: c } : null;
-      }
-      if (caseClass.type === CT.MISSING_MULTI) {
-        const ai = calcAIMulti(state);
-        return ai ? { ...ai, treatmentMode: 'multi', caseClass, clinical: c } : null;
-      }
-      // RESTORATIVE path: full structured pipeline
-      const baseAI    = calcAI(state);
-      if (!baseAI) return null;
-      const treatments = generateTreatments(caseClass, c);
-      const scored     = scoreRestorative(treatments, c, baseAI, caseClass);
-      const recResult  = recommend(scored, baseAI, caseClass);
-      const expl       = explain(scored, recResult, caseClass, c);
-      return buildRestorativeResult(scored, recResult, expl, caseClass, c, baseAI, treatments);
-    }
-
-    // ── PUBLIC: processCompound(state) ────────────────────────────
-    // Compound multi-site reasoning: two independent sites, each processed
-    // through the full 7-stage pipeline. Shared patient-level factors
-    // (periodontal, systemic) apply to both sites; restorative profile
-    // is independent per site.
-    function processCompound(state) {
-      // Site 1 uses the primary state as-is (no modification)
-      const site1State = { ...state, multiTooth: false, multiSite: false };
-      // Site 2 builds a derived state from site2* fields
-      const site2State = {
-        ...state,
-        tooth:               state.site2Tooth      || '#11',
-        condition:           state.site2Condition   || 'Missing tooth',
-        remainingStructure:  state.site2Structure   || 'Good',
-        endodonticStatus:    state.site2EndoStatus  || 'No RCT needed',
-        multiTooth: false, multiSite: false,
-        // Shared patient-level: bone, hygiene, occlusion, smoking, diabetes, parafunction
-        // These are periodontal/systemic — they affect ALL teeth of the same patient
-      };
-      const ai1 = process(site1State);
-      const ai2 = process(site2State);
-      if (!ai1 && !ai2) return null;
-      return {
-        isCompound: true,
-        site1: ai1,
-        site2: ai2,
-        site1Tooth: state.tooth,
-        site2Tooth: state.site2Tooth || '#11',
-        site1Condition: state.condition,
-        site2Condition: state.site2Condition || 'Missing tooth',
-      };
-    }
-
-    return Object.freeze({ process, processCompound, normalize, classify, CT });
-  })();
   const $ = (id) => document.getElementById(id);
   const $$ = (sel, root = document) => root.querySelectorAll(sel);
 
@@ -2905,43 +1704,6 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
   // MODULE: render.js — All DOM rendering functions
   // ================================================================
   // RENDER LOOKUP MAPS
-  // ================================================================
-  const BONE_LBL = { Good: ['Good (11.2 mm)','dot-low'], Fair: ['Fair (7‑9 mm)','dot-med'], Poor: ['Poor (<5 mm)','dot-high'] };
-  const OCC_LBL  = { 'High occlusion load':'dot-med', Normal:'dot-low', Low:'dot-low' };
-  const HYG_LBL  = { Good:'dot-low', Fair:'dot-med', Poor:'dot-high' };
-
-  // ================================================================
-  // RENDER: PATIENT DISPLAY
-  // ================================================================
-  function renderPatientDisplay() {
-    const grid = $('infoDisplay');
-    if (!grid) return;
-    const bm = BONE_LBL[S.bone] || BONE_LBL.Good;
-    const smokingColor = (S.smoking || 'Non-smoker') === 'Current smoker' ? '#dc2626' : (S.smoking || 'Non-smoker') === 'Former smoker' ? '#d97706' : 'var(--c-success)';
-    grid.innerHTML = `
-      <div class="info-label"><i class="fa-regular fa-user" aria-hidden="true"></i> Patient</div>
-      <div class="info-val"><span id="dPatient">${escapeHtml(S.name)}</span><span class="info-sub">${escapeHtml(S.gender)}, ${escapeHtml(String(S.age))} Y</span></div>
-      <div class="info-label"><i class="fa-solid fa-tooth" aria-hidden="true"></i> Tooth / Area</div>
-            <div class="info-val">${
-        S.multiTooth && S.tooth2
-          ? escapeHtml(S.tooth) + ' + ' + escapeHtml(S.tooth2) + ' <span style="font-size:10px;background:var(--c-brand-bg);color:var(--c-brand);padding:2px 6px;border-radius:10px;font-weight:700">2 Missing</span>'
-          : escapeHtml(S.tooth)
-      } </div>
-      <div class="info-label"><i class="fa-solid fa-file-medical" aria-hidden="true"></i> Condition</div>
-      <div class="info-val">${escapeHtml(S.condition)}</div>
-      <div class="info-label"><i class="fa-solid fa-bone" aria-hidden="true"></i> Bone</div>
-      <div class="info-val">${bm[0]} <span class="dot ${bm[1]}" aria-label="${S.bone} bone quality"></span></div>
-      <div class="info-label"><i class="fa-solid fa-teeth-open" aria-hidden="true"></i> Occlusion</div>
-      <div class="info-val">${escapeHtml(S.occlusion)} <span class="dot ${OCC_LBL[S.occlusion]||'dot-low'}" aria-label="${S.occlusion}"></span></div>
-      <div class="info-label"><i class="fa-solid fa-sparkles" aria-hidden="true"></i> Hygiene</div>
-      <div class="info-val">${escapeHtml(S.hygiene)} <span class="dot ${HYG_LBL[S.hygiene]}" aria-label="${S.hygiene} hygiene"></span></div>
-      <div class="info-label"><i class="fa-solid fa-smoking" aria-hidden="true"></i> Smoking</div>
-      <div class="info-val" style="color:${smokingColor};font-weight:700;">${escapeHtml(S.smoking || 'Non-smoker')}</div>
-      <div class="info-label"><i class="fa-solid fa-droplet" aria-hidden="true"></i> Diabetes</div>
-      <div class="info-val" style="color:${(S.diabetes||'None')==='Uncontrolled'?'#dc2626':(S.diabetes==='Controlled'?'#d97706':'var(--c-success)')};font-weight:700;">${escapeHtml(S.diabetes||'None')}</div>
-      <div class="info-label"><i class="fa-solid fa-teeth-open" aria-hidden="true"></i> Jaw</div>
-      <div class="info-val">${isMaxilla(S.tooth)?'Upper (Maxilla)':'Lower (Mandible)'}</div>`;
-  }
 
   // ================================================================
   // RENDER: AI CARD
@@ -3152,7 +1914,7 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
     if (!ai) return;
     const circ = 2 * Math.PI * 23;
     const ring = $('ringFill');
-    if (ring) { ring.setAttribute('stroke-dasharray', circ); ring.setAttribute('stroke-dashoffset', circ - (ai.conf / 100) * circ); }
+    if (ring) { ring.setAttribute('stroke-dasharray', circ); if (Number.isFinite(ai.conf)) ring.setAttribute('stroke-dashoffset', circ - (ai.conf / 100) * circ); }
     const confValEl = $('confVal'), confLvlEl = $('confLevel');
     if (confValEl) confValEl.textContent = ai.conf;
     if (confLvlEl) confLvlEl.textContent = ai.confLevel;
@@ -3163,7 +1925,7 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
           implant2: ai.implant2, bridge4: ai.bridge4, cantilever: ai.cantilever }
       : { implant: ai.implant, bridge: ai.bridge, crown: ai.crown || ai.implant };
     const displayRate = rateMap[ai.rec] ?? (ai.isMultiTooth ? ai.implant2 : ai.implant);
-    animateNumber('successVal', displayRate.toFixed(1), '%');
+    animateNumber('successVal', Number.isFinite(displayRate) ? displayRate.toFixed(1) : '0.0', '%');
     const bar = $('successBar'); if (bar) bar.style.width = displayRate + '%';
     const subEl = $('successSub');
 
@@ -3246,113 +2008,9 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
     }, speed);
   }
 
-  function renderRisk(ai) {
-    const RISK_STYLES = {
-      Low: { style: 'color:#16a34a;font-weight:700', dotCls: 'dot-low', label: 'Low risk' },
-      Medium: { style: 'color:#d97706;font-weight:700', dotCls: 'dot-med', label: 'Medium risk' },
-      High: { style: 'color:#dc2626;font-weight:700', dotCls: 'dot-high', label: 'High risk' },
-      Critical: { style: 'color:#7c2d12;font-weight:700;background:rgba(220,38,38,.1);padding:1px 4px;border-radius:3px', dotCls: 'dot-high', label: 'Critical risk' }  // EC#3
-    };
-    const setRisk = (id, level) => {
-      const el = $(id); if (!el) return;
-      const s = RISK_STYLES[level] || RISK_STYLES.Low;
-      el.innerHTML = `<span style="${s.style}">${level || 'Low'}</span> <span class="dot ${s.dotCls}" aria-label="${s.label}"></span>`;
-    };
-
-    // Restorative mode: all options are crown/restorative — show crown risk section
-    // plus implant risks only if escalation option (extract+implant) is selected
-    if (ai?.treatmentMode === 'restorative') {
-      const implantSection = $('implantRiskSection'), crownSection = $('crownRiskSection');
-      const isExtractImpl = ai.scored?.find(t => t.slot === S.tx)?.id === 'extract_impl';
-      if (implantSection) implantSection.style.display = isExtractImpl ? 'block' : 'none';
-      if (crownSection)   crownSection.style.display   = 'block';
-      if (ai.crownRisks) {
-        setRisk('riskCaries',   ai.crownRisks.secondaryCaries);
-        setRisk('riskCrownFrac',ai.crownRisks.crownFracture);
-        setRisk('riskRootFrac', ai.crownRisks.rootFracture);
-        setRisk('riskEndo',     ai.crownRisks.endodonticFailure);
-        setRisk('riskParafunc', ai.crownRisks.parafunctionDamage);
-      }
-      if (isExtractImpl) {
-        setRisk('riskPeri', ai.peri || 'Low');
-        setRisk('riskBone', ai.boneR || 'Low');
-        setRisk('riskOcc',  ai.occR  || 'Low');
-        setRisk('riskSmoking', ai.smokingR || 'Low');
-      }
-      return;
-    }
-    // Derive approximate risk levels from available multi-tooth data.
-    if (ai?.isMultiTooth) {
-      const implantSection = $('implantRiskSection'), crownSection = $('crownRiskSection');
-      if (implantSection) implantSection.style.display = 'block';
-      if (crownSection)   crownSection.style.display   = 'none';
-      // Approximate risks from bone/hygiene/smoking in S (global state)
-      const periLevel   = S.hygiene === 'Poor' ? 'High' : S.hygiene === 'Fair' ? 'Medium' : 'Low';
-      const boneLevel   = S.bone    === 'Poor' ? 'High' : S.bone    === 'Fair' ? 'Medium' : 'Low';
-      const occLevel    = S.occlusion === 'High occlusion load' ? 'Medium' : 'Low';
-      const smokeLevel  = (S.smoking||'Non-smoker') === 'Current smoker' ? 'High' : (S.smoking||'') === 'Former smoker' ? 'Medium' : 'Low';
-      setRisk('riskPeri',    periLevel);
-      setRisk('riskBone',    boneLevel);
-      setRisk('riskOcc',     occLevel);
-      setRisk('riskSmoking', smokeLevel);
-      const diabRow = $('riskDiabetesRow');
-      const hasDiabetes = (S.diabetes && S.diabetes !== 'None');
-      if (diabRow) diabRow.style.display = hasDiabetes ? 'flex' : 'none';
-      if (hasDiabetes) {
-        const diabLevel = S.diabetes === 'Uncontrolled' ? 'High' : 'Medium';
-        setRisk('riskDiabetes', diabLevel);
-      }
-      return;
-    }
-
-    // Single-tooth path (unchanged)
-    const isCrown = S.tx === 'crown' && ai?.crownViable;
-    const implantSection = $('implantRiskSection'), crownSection = $('crownRiskSection');
-    if (implantSection) implantSection.style.display = isCrown ? 'none' : 'block';
-    if (crownSection)   crownSection.style.display   = isCrown ? 'block' : 'none';
-    if (!isCrown) {
-      setRisk('riskPeri', ai.peri);
-      setRisk('riskBone', ai.boneR);
-      setRisk('riskOcc', ai.occR);
-      setRisk('riskSmoking', ai.smokingR);
-      const diabRow = $('riskDiabetesRow');
-      const hasDiabetes = (S.diabetes && S.diabetes !== 'None');
-      if (diabRow) diabRow.style.display = hasDiabetes ? 'flex' : 'none';
-      if (hasDiabetes) setRisk('riskDiabetes', ai.diabetesR || 'Medium');
-    } else if (ai.crownRisks) {
-      setRisk('riskCaries',   ai.crownRisks.secondaryCaries);
-      setRisk('riskCrownFrac',ai.crownRisks.crownFracture);
-      setRisk('riskRootFrac', ai.crownRisks.rootFracture);
-      setRisk('riskEndo',     ai.crownRisks.endodonticFailure);
-      setRisk('riskParafunc', ai.crownRisks.parafunctionDamage);
-    }
-    _applyRiskCompact();
-  }
-
-  // FIX 5: Compact nominal state — reduces visual noise when all risks are Low.
-  // When something IS elevated, the individual risk rows are immediately visible.
-  function _applyRiskCompact() {
-    const riskCard = document.querySelector('.risk-section');
-    if (!riskCard) return;
-    const riskVals = Array.from(riskCard.querySelectorAll('.risk-val'));
-    const hasWarning = riskVals.some(el => {
-      const t = el.textContent.toLowerCase();
-      return t.includes('high') || t.includes('medium') || t.includes('med');
-    });
-    let strip = $('riskNominalStrip');
-    if (!strip) {
-      strip = document.createElement('div');
-      strip.id = 'riskNominalStrip';
-      strip.className = 'risk-nominal-strip';
-      strip.innerHTML = '<i class="fa-solid fa-shield-check" aria-hidden="true"></i> All patient-level risks nominal';
-      riskCard.insertBefore(strip, riskCard.firstChild);
-    }
-    // Collapse individual pills when all low; expand them when warnings exist
-    strip.style.display = hasWarning ? 'none' : 'flex';
-    riskVals.forEach(el => { el.closest('.risk-row')?.style?.setProperty('display', hasWarning ? '' : 'none'); });
-  }
 
   function renderReasons(list, factors) {
+    if (!Array.isArray(list)) return;
     const el = $('reasonsList');
     if (!el) return;
     const factorHtml = factors && factors.length
@@ -3363,232 +2021,16 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
     el.innerHTML = factorHtml + list.map(r => `<div class="reason-item"><i class="fa-solid fa-check" aria-hidden="true"></i>${escapeHtml(r)}</div>`).join('');
   }
 
-  // ================================================================
-  // RENDER: COMPARISON
-  // ================================================================
-  function renderComparison(state, ai) {
-    // ── MULTI-TOOTH ROUTING ──────────────────────────────────────────────
-    if (ai?.isMultiTooth) {
-      const cImp = $('cImplantSuc'), cBri = $('cBridgeSuc'), cCrn = $('cCrownSuc');
-      if (cImp) cImp.textContent = ai.implant2.toFixed(1) + '%';
-      if (cBri) cBri.textContent = ai.bridge4.toFixed(1)  + '%';
-      if (cCrn) cCrn.textContent = ai.cantilever.toFixed(1) + '%';
 
-      const cImpRisk = $('cImplantRisk'), cBriRisk = $('cBridgeRisk'), cCrnRisk = $('cCrownRisk');
-      if (cImpRisk) cImpRisk.textContent = ai.conf >= 75 ? 'Low–Med' : 'Medium';
-      if (cBriRisk) cBriRisk.textContent = ai.abutmentCompromised ? 'High' : 'Medium';
-      if (cCrnRisk) cCrnRisk.textContent = ai.posterior ? 'High' : 'Medium';
-
-      const cImpRec = $('cImplantRec'), cBriRec = $('cBridgeRec'), cCrnRec = $('cCrownRec');
-      if (cImpRec) cImpRec.textContent = '3–6 months';
-      if (cBriRec) cBriRec.textContent = '3–5 weeks';
-      if (cCrnRec) cCrnRec.textContent = 'N/A';
-
-      const cImpLong = $('cImplantLong'), cBriLong = $('cBridgeLong'), cCrnLong = $('cCrownLong');
-      if (cImpLong) cImpLong.textContent = '20–25 yrs';
-      if (cBriLong) cBriLong.textContent = '10–15 yrs';
-      if (cCrnLong) cCrnLong.textContent = 'N/A';
-
-      const cImpMR = $('cImplantMR'), cBriMR = $('cBridgeMR'), cCrnMR = $('cCrownMR');
-      if (cImpMR) cImpMR.textContent = 'Peri-implantitis';
-      if (cBriMR) cBriMR.textContent = 'Abutment stress';
-      if (cCrnMR) cCrnMR.textContent = 'N/A';
-
-      const isImp2 = state.tx === 'implant2' || state.tx === 'implant';
-      const isBri4 = state.tx === 'bridge4'  || state.tx === 'bridge';
-      const isCant = state.tx === 'cantilever' || state.tx === 'crown';
-      ['cImplantLong','cImplantSuc','cImplantRisk','cImplantMR','cImplantRec'].forEach(id => {
-        const el = $(id); if (el) { el.classList.toggle('dimmed', !isImp2); el.classList.toggle('hi', isImp2); }
-      });
-      ['cBridgeLong','cBridgeSuc','cBridgeRisk','cBridgeMR','cBridgeRec'].forEach(id => {
-        const el = $(id); if (el) { el.classList.toggle('dimmed', !isBri4); el.classList.toggle('hi', isBri4); }
-      });
-      ['cCrownLong','cCrownSuc','cCrownRisk','cCrownMR','cCrownRec'].forEach(id => {
-        const el = $(id); if (el) { el.classList.toggle('dimmed', !isCant); el.classList.toggle('hi', isCant); }
-      });
-      return;
-    }
-
-    // ── RESTORATIVE ROUTING ───────────────────────────────────────────────
-    if (ai?.treatmentMode === 'restorative' && ai.restorativeLabels) {
-      const { slot1, slot2, slot3 } = ai.restorativeLabels;
-      const bySlot = {};
-      (ai.scored || []).forEach(t => { bySlot[t.slot] = t; });
-
-      // Update inline column headers to match actual treatment labels
-      const inlineHeads = document.querySelectorAll('#compInlineTable .comp-head-cell');
-      if (inlineHeads[1]) inlineHeads[1].textContent = slot1.label;
-      if (inlineHeads[2]) inlineHeads[2].textContent = slot2.label;
-      if (inlineHeads[3]) inlineHeads[3].textContent = slot3.label;
-
-      const cImpSuc = $('cImplantSuc'), cBriSuc = $('cBridgeSuc'), cCrnSuc = $('cCrownSuc');
-      if (cImpSuc) cImpSuc.textContent = ai.implant.toFixed(1) + '%';
-      if (cBriSuc) cBriSuc.textContent = ai.bridge.toFixed(1)  + '%';
-      if (cCrnSuc) cCrnSuc.textContent = ai.crown.toFixed(1)   + '%';
-
-      // Longevity by treatment type
-      const LONGEVITY = {
-        onlay: '10–15 yrs', crown: '10–20 yrs', crown_core: '10–18 yrs',
-        crown_adv: '10–18 yrs', splinted: '10–18 yrs',
-        endocrown: '10–15 yrs', extract_impl: '20–25 yrs'
-      };
-      const MAIN_RISK = {
-        onlay: 'Marginal fracture', crown: 'Secondary caries', crown_core: 'Root fracture risk',
-        crown_adv: 'Secondary caries', splinted: 'Perio access', endocrown: 'Cusp fracture',
-        extract_impl: 'Peri-implantitis'
-      };
-      const RECOVERY = {
-        onlay: '1–2 weeks', crown: '1–2 wks', crown_core: '2–3 wks',
-        crown_adv: '1–2 wks', splinted: '2–3 wks', endocrown: '1–2 wks',
-        extract_impl: '4–6 months'
-      };
-      const s1 = bySlot['implant'], s2 = bySlot['bridge'], s3 = bySlot['crown'];
-      const cImpLong = $('cImplantLong'), cBriLong = $('cBridgeLong'), cCrnLong = $('cCrownLong');
-      if (cImpLong) cImpLong.textContent = LONGEVITY[s1?.id] || '10–18 yrs';
-      if (cBriLong) cBriLong.textContent = LONGEVITY[s2?.id] || '10–20 yrs';
-      if (cCrnLong) cCrnLong.textContent = LONGEVITY[s3?.id] || '10–15 yrs';
-
-      const cImpRisk = $('cImplantRisk'), cBriRisk = $('cBridgeRisk'), cCrnRisk = $('cCrownRisk');
-      const riskFor = (opt) => opt?.score >= 90 ? 'Low' : opt?.score >= 80 ? 'Medium' : 'Med–High';
-      if (cImpRisk) cImpRisk.textContent = riskFor(s1);
-      if (cBriRisk) cBriRisk.textContent = riskFor(s2);
-      if (cCrnRisk) cCrnRisk.textContent = riskFor(s3);
-
-      const cImpMR = $('cImplantMR'), cBriMR = $('cBridgeMR'), cCrnMR = $('cCrownMR');
-      if (cImpMR) cImpMR.textContent = MAIN_RISK[s1?.id] || '—';
-      if (cBriMR) cBriMR.textContent = MAIN_RISK[s2?.id] || '—';
-      if (cCrnMR) cCrnMR.textContent = MAIN_RISK[s3?.id] || '—';
-
-      const cImpRec = $('cImplantRec'), cBriRec = $('cBridgeRec'), cCrnRec = $('cCrownRec');
-      if (cImpRec) cImpRec.textContent = RECOVERY[s1?.id] || '1–2 wks';
-      if (cBriRec) cBriRec.textContent = RECOVERY[s2?.id] || '1–2 wks';
-      if (cCrnRec) cCrnRec.textContent = RECOVERY[s3?.id] || '1–2 wks';
-
-      // Highlight active selection
-      const isSlot1 = state.tx === 'implant', isSlot2 = state.tx === 'bridge', isSlot3 = state.tx === 'crown';
-      ['cImplantLong','cImplantSuc','cImplantRisk','cImplantMR','cImplantRec'].forEach(id => {
-        const el = $(id); if (el) { el.classList.toggle('dimmed', !isSlot1); el.classList.toggle('hi', isSlot1); }
-      });
-      ['cBridgeLong','cBridgeSuc','cBridgeRisk','cBridgeMR','cBridgeRec'].forEach(id => {
-        const el = $(id); if (el) { el.classList.toggle('dimmed', !isSlot2); el.classList.toggle('hi', isSlot2); }
-      });
-      ['cCrownLong','cCrownSuc','cCrownRisk','cCrownMR','cCrownRec'].forEach(id => {
-        const el = $(id); if (el) { el.classList.toggle('dimmed', !isSlot3); el.classList.toggle('hi', isSlot3); }
-      });
-      return;
-    }
-
-    // ── SINGLE-TOOTH PATH ────────────────────────────────────────────────
-    // Restore inline column headers to standard labels (may have been changed by restorative path)
-    const inlineHeads = document.querySelectorAll('#compInlineTable .comp-head-cell');
-    if (inlineHeads[1] && inlineHeads[1].textContent !== 'Implant') inlineHeads[1].textContent = 'Implant';
-    if (inlineHeads[2] && inlineHeads[2].textContent !== 'Bridge')  inlineHeads[2].textContent = 'Bridge';
-    if (inlineHeads[3] && inlineHeads[3].textContent !== 'Crown')   inlineHeads[3].textContent = 'Crown';
-
-    const isImp = state.tx === 'implant';
-    const isBri = state.tx === 'bridge';
-    const isCrn = state.tx === 'crown';
-    const crownViable = ai?.crownViable === true;
-    if (ai) {
-      const cImpSuc = $('cImplantSuc'), cBriSuc = $('cBridgeSuc'), cCrnSuc = $('cCrownSuc');
-      if (cImpSuc) cImpSuc.textContent = ai.implant.toFixed(1) + '%';
-      if (cBriSuc) cBriSuc.textContent = ai.bridge.toFixed(1)  + '%';
-      if (cCrnSuc) cCrnSuc.textContent = crownViable ? ai.crown.toFixed(1) + '%' : 'N/A';
-
-      const cImpRisk = $('cImplantRisk'), cBriRisk = $('cBridgeRisk'), cCrnRisk = $('cCrownRisk');
-      if (cImpRisk) cImpRisk.textContent = (ai.boneR==='High'||ai.peri==='High') ? 'Med‑High' : 'Low';
-      const bridgeRiskLevel = (state.hygiene==='Poor'||state.bone==='Poor') ? 'Med‑High' : (state.hygiene==='Good'&&state.bone==='Good') ? 'Low' : 'Medium';
-      if (cBriRisk) cBriRisk.textContent = bridgeRiskLevel;
-      if (cCrnRisk) {
-        if (crownViable && ai.crownRisks) {
-          const cr = ai.crownRisks;
-          cCrnRisk.textContent = (cr.crownFracture==='High'||cr.rootFracture==='High') ? 'High' : (cr.crownFracture==='Medium'||cr.secondaryCaries==='Medium') ? 'Medium' : 'Low';
-        } else { cCrnRisk.textContent = 'N/A'; }
-      }
-      const needsRCT = state.endodonticStatus === 'Needs RCT';
-      const cCrnRec  = $('cCrownRec'),  cCrnLong = $('cCrownLong'), cCrnMR = $('cCrownMR');
-      if (cCrnRec)  cCrnRec.textContent  = crownViable ? (needsRCT ? '3‑4 wks' : '1‑2 wks ✓') : 'N/A';
-      if (cCrnLong) cCrnLong.textContent = crownViable ? '10‑20 yrs' : 'N/A';
-      if (cCrnMR)   cCrnMR.textContent   = crownViable ? 'Secondary caries' : 'N/A';
-    } else {
-      ['cImplantLong','cBridgeLong','cCrownLong','cImplantSuc','cBridgeSuc','cCrownSuc','cImplantRisk','cBridgeRisk','cCrownRisk','cImplantMR','cBridgeMR','cCrownMR','cImplantRec','cBridgeRec','cCrownRec'].forEach(id => {
-        const el = $(id); if (el) { el.textContent = '—'; el.classList.remove('hi','dimmed'); }
-      });
-      return;
-    }
-    const HI_IMPLANT = ['cImplantLong','cImplantSuc','cImplantRisk'];
-    const HI_BRIDGE  = ['cBridgeLong','cBridgeSuc','cBridgeRisk'];
-    const HI_CROWN   = ['cCrownLong','cCrownSuc','cCrownRisk'];
-    ['cImplantLong','cImplantSuc','cImplantRisk','cImplantMR','cImplantRec'].forEach(id => {
-      const el = $(id); if(el){el.classList.toggle('dimmed',!isImp);el.classList.toggle('hi',isImp&&HI_IMPLANT.includes(id));}
-    });
-    ['cBridgeLong','cBridgeSuc','cBridgeRisk','cBridgeMR','cBridgeRec'].forEach(id => {
-      const el = $(id); if(el){el.classList.toggle('dimmed',!isBri);el.classList.toggle('hi',isBri&&HI_BRIDGE.includes(id));}
-    });
-    ['cCrownLong','cCrownSuc','cCrownRisk','cCrownMR','cCrownRec'].forEach(id => {
-      const el = $(id); if(el){el.classList.toggle('dimmed',!isCrn||!crownViable);el.classList.toggle('hi',isCrn&&crownViable&&HI_CROWN.includes(id));}
-    });
-  }
-
-  // ================================================================
-  // RENDER: MATERIAL
-  // ================================================================
-  let _matFadeTimer = null;  // FIX#6: cancel stale fade timers on re-render
-  function renderMaterial(state) {
-    const isImp = state.tx === 'implant';
-    const isCrn = state.tx === 'crown';
-    const highOcc = state.occlusion === 'High occlusion load';
-    const posterior = isPosteriorTooth(state.tooth);
-    const matForEl = $('matFor');
-    if (matForEl) matForEl.textContent = isImp ? '(for Implant)' : isCrn ? '(for Crown)' : '(for Bridge)';
-    const primary = $('matPrimary'), alt = $('matAlt');
-    if (!primary || !alt) return;
-    primary.style.opacity = '0'; alt.style.opacity = '0';
-    if (_matFadeTimer) { clearTimeout(_matFadeTimer); _matFadeTimer = null; }  // FIX#6
-    _matFadeTimer = setTimeout(() => {
-      _matFadeTimer = null;
-      if (isCrn) {
-        const cm = getCrownMaterial(state);
-        $('matPrimaryName').textContent   = cm.name;
-        $('matPrimaryReason').textContent = cm.reason;
-        $('matPrimaryRate').textContent   = cm.rate;
-        $('matAltName').textContent       = 'Alternative: ' + cm.alt;
-        $('matAltReason').textContent     = cm.altReason;
-        $('matAltRate').textContent       = cm.altRate;
-      } else if (isImp) {
-        $('matPrimaryName').textContent   = 'Titanium + Zirconia';
-        $('matPrimaryReason').textContent = 'Best biocompatibility & load bearing';
-        $('matPrimaryRate').textContent   = '95%+';
-        $('matAltName').textContent       = 'Alternative: All‑Zirconia';
-        $('matAltReason').textContent     = 'Metal allergy cases';
-        $('matAltRate').textContent       = '88‑92%';
-      } else if (!isCrn && highOcc) {
-        $('matPrimaryName').textContent   = 'Zirconia (Bridge)';
-        $('matPrimaryReason').textContent = posterior ? 'High load posterior — zirconia absorbs chewing forces best' : 'High occlusal load — zirconia offers maximum strength';
-        $('matPrimaryRate').textContent   = '92‑95%';
-        $('matAltName').textContent       = 'Alternative: e.max';
-        $('matAltReason').textContent     = 'Suitable if load is low & esthetics critical';
-        $('matAltRate').textContent       = '85‑90%';
-      } else {
-        $('matPrimaryName').textContent   = 'e.max (Bridge)';
-        $('matPrimaryReason').textContent = posterior ? 'Excellent strength — still suitable for posterior region' : 'Ideal for anterior esthetics with low occlusal load';
-        $('matPrimaryRate').textContent   = '90‑94%';
-        $('matAltName').textContent       = 'Alternative: Zirconia';
-        $('matAltReason').textContent     = posterior ? 'Maximum strength if load unexpectedly high' : 'Higher strength for additional safety';
-        $('matAltRate').textContent       = '92‑95%';
-      }
-      primary.style.opacity = '1'; alt.style.opacity = '1';
-    }, 160);
-  }
 
   // ================================================================
   // RENDER: TREATMENT CARDS
   // ================================================================
-  function renderTxCards(ai) {
+  function renderTxCards(state, ai) {
     // Multi-tooth: relabel and redirect
     if (ai?.isMultiTooth) { renderMultiTxCards(ai); return; }
     // Restorative: relabel via ClinicalEngine-determined treatment universe
-    if (ai?.treatmentMode === 'restorative') { renderRestorativeTxCards(ai); return; }
+    if (ai?.treatmentMode === 'restorative') { renderRestorativeTxCards(state, ai); return; }
 
     // RESTORE single-tooth labels — renderMultiTxCards and renderRestorativeTxCards
     // mutate .opt-name/.opt-sub directly in the DOM. Switching back to single-tooth
@@ -3610,9 +2052,9 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
       if (s && s.textContent !== 'Single Crown')  s.textContent = 'Single Crown';
     }
 
-    const isImp  = S.tx === 'implant';
-    const isBri  = S.tx === 'bridge';
-    const isCrn  = S.tx === 'crown';
+    const isImp  = state.tx === 'implant';
+    const isBri  = state.tx === 'bridge';
+    const isCrn  = state.tx === 'crown';
     // Update score bars — primary scanability improvement
     setCardScore('Implant', ai?.implant,                   !!ai);
     setCardScore('Bridge',  ai?.bridge,                    !!ai);
@@ -3676,11 +2118,11 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
     valEl.textContent = typeof score === 'number' ? score.toFixed(1) + '%' : '–';
     fillEl.style.width = pct + '%';
   }
-  function renderRestorativeTxCards(ai) {
+  function renderRestorativeTxCards(state, ai) {
     if (!ai?.restorativeLabels) return;
     const TX_TO_SLOT = { implant: 'slot1', bridge: 'slot2', crown: 'slot3' };
     const SLOT_TO_TX = { slot1: 'implant', slot2: 'bridge', slot3: 'crown' };
-    const activeSlot = TX_TO_SLOT[S.tx] || 'slot2';
+    const activeSlot = TX_TO_SLOT[state.tx] || 'slot2';
     // Score bars — show the scored % for each restorative option
     setCardScore('Implant', ai.implant, true);
     setCardScore('Bridge',  ai.bridge,  true);
@@ -3736,317 +2178,7 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
     }
   }
 
-  function getCrownMaterial(state) {
-    const highOcc = state.occlusion === 'High occlusion load';
-    const posterior = isPosteriorTooth(state.tooth);
-    const bruxism = (state.parafunction === 'Bruxism' || state.parafunction === 'Both');
-    if (bruxism || (highOcc && posterior)) {
-      return { name: 'Monolithic Zirconia Crown', reason: 'Maximum fracture resistance for bruxism/high load (93.3% survival)', rate: '93-96%', alt: 'Layered Zirconia', altReason: 'Better esthetics, slightly less strength', altRate: '91-94%' };
-    } else if (!highOcc && !posterior) {
-      return { name: 'e.max (Lithium Disilicate) Crown', reason: 'Superior translucency for anterior esthetics (92-95% survival)', rate: '92-95%', alt: 'Layered Zirconia', altReason: 'More strength if load increases', altRate: '92-94%' };
-    } else {
-      return { name: 'Zirconia Crown', reason: 'Balanced strength and esthetics for moderate occlusal load', rate: '92-95%', alt: 'e.max Crown', altReason: 'Better esthetics if load is moderate', altRate: '90-93%' };
-    }
-  }
 
-  // ================================================================
-  // COST COMPUTATION
-  // ================================================================
-  // ── Literature-backed 10-year cost constants ──────────────────────
-  const ANNUAL_CHECKUP        = 300;   // 2 visits/yr × $150
-  const CROWN_REPLACE_PROB    = 0.12;  // 12% implant crown replacement in 10 yrs
-  const CROWN_COST_RATIO      = 0.33;  // Crown ≈ 33% of implant total cost
-  const BRIDGE_REPLACE_PROB   = 0.28;  // 28% bridge failure at 10 yrs (NIH data)
-  const BRIDGE_REPLACE_RATIO  = 0.90;  // Replacement = 90% of original cost
-  const STANDALONE_CROWN_REPLACE_PROB  = 0.15;  // 15% standalone crown replacement in 10 yrs
-  const STANDALONE_CROWN_REPLACE_RATIO = 0.80;  // 80% of original crown cost
-
-  function computeCosts(state, ai) {
-    if (!state) return { implantInitial:4500, bridgeInitialAdjusted:3500, crownInitial:0, needsRCT:false, needsPostCore:false, implant10yr:7500, bridge10yr:6800, crown10yr:0, bestValue:"Implant", reason:"No data" };
-    const implantBase = state.costImplant  || 4500;
-    const bridgeBase  = state.costBridge   || 3500;
-    const graftCost   = state.costBoneGraft || 1500;
-    const crownBase   = state.costCrown    || 1200;
-    const rctCost     = state.costRCT      || 1000;
-    const postCoreCost= state.costPostCore || 400;
-    const implantInitial = implantBase + (state.bone === 'Poor' ? graftCost : 0);
-    const bridgeMaterialUpcharge  = state.occlusion === 'High occlusion load' ? 0.15 : 0;
-    const bridgeInitialAdjusted   = bridgeBase * (1 + bridgeMaterialUpcharge);
-    const needsRCT      = state.endodonticStatus === 'Needs RCT';
-    const needsPostCore = (state.remainingStructure === 'Fair' || state.remainingStructure === 'Poor');
-    const _crownViable  = ai?.crownViable === true;
-    const crownInitial  = _crownViable ? crownBase + (needsRCT ? rctCost : 0) + (needsPostCore ? postCoreCost : 0) : 0;
-    const implant10yr = implantInitial + (ANNUAL_CHECKUP * 10) + (implantInitial * CROWN_COST_RATIO * CROWN_REPLACE_PROB);
-    const bridge10yr  = bridgeInitialAdjusted + (ANNUAL_CHECKUP * 10) + (bridgeInitialAdjusted * BRIDGE_REPLACE_PROB * BRIDGE_REPLACE_RATIO);
-    const crown10yr   = _crownViable ? crownInitial + (ANNUAL_CHECKUP * 10) + (crownInitial * STANDALONE_CROWN_REPLACE_PROB * STANDALONE_CROWN_REPLACE_RATIO) : 0;
-    let bestValue = '', reason = '';
-    if (ai) {
-      const implantValue = ai.implant / implant10yr;
-      const bridgeValue  = ai.bridge  / bridge10yr;
-      const crownValue   = (ai.crownViable && ai.crown > 0) ? ai.crown / crown10yr : 0;
-      if (crownValue > implantValue && crownValue > bridgeValue) {
-        bestValue = 'Crown'; reason = 'Crown offers best success-per-dollar — lowest initial cost, preserve natural tooth';
-      } else if (implantValue >= bridgeValue) {
-        bestValue = 'Implant'; reason = 'Implant offers higher success‑per‑dollar over 10 years (no replacement needed)';
-      } else {
-        bestValue = 'Bridge'; reason = 'Bridge provides better cost‑effectiveness despite replacement risk';
-      }
-    } else {
-      const minCost = Math.min(implant10yr, bridge10yr, crown10yr);
-      bestValue = minCost === crown10yr ? 'Crown' : minCost === implant10yr ? 'Implant' : 'Bridge';
-      reason = 'Based on projected 10‑year total cost';
-    }
-    return { implantInitial, bridgeInitialAdjusted, crownInitial, needsRCT, needsPostCore, implant10yr, bridge10yr, crown10yr, bestValue, reason };
-  }
-
-  // ================================================================
-  // RENDER: COST
-  // ================================================================
-  function renderCost(state, ai) {
-    const container = $('costContainer');
-    if (!container) return;
-
-    // ── RESTORATIVE COST DISPLAY ─────────────────────────────────
-    if (ai?.treatmentMode === 'restorative' && ai.restorativeLabels) {
-      const { slot1, slot2, slot3 } = ai.restorativeLabels;
-      const rc = ai.restorativeCosts || {};
-      const checkupAnnual = 300;
-      const s1_10yr = rc.slot1 ? Math.round(rc.slot1 + checkupAnnual * 10) : null;
-      const s2_10yr = rc.slot2 ? Math.round(rc.slot2 + checkupAnnual * 10 + rc.slot2 * 0.15 * 0.8) : null;
-      const s3_10yr = rc.slot3 ? Math.round(rc.slot3 + checkupAnnual * 10) : null;
-      container.innerHTML = `
-        <div class="cost-title"><i class="fa-solid fa-circle-dollar-to-slot" aria-hidden="true"></i> Restorative Cost Estimate</div>
-        <div class="cost-row"><span>${escapeHtml(slot1.label)} — Initial</span><strong>$${rc.slot1 ? Math.round(rc.slot1).toLocaleString() : 'N/A'}</strong></div>
-        <div class="cost-row"><span>${escapeHtml(slot2.label)} — Initial</span><strong>$${rc.slot2 ? Math.round(rc.slot2).toLocaleString() : 'N/A'}</strong></div>
-        <div class="cost-row"><span>${escapeHtml(slot3.label)} — Initial</span><strong>$${rc.slot3 ? Math.round(rc.slot3).toLocaleString() : 'N/A'}</strong></div>
-        ${s1_10yr ? `<div class="cost-row"><span>${escapeHtml(slot1.label)} 10‑yr total</span><strong>$${s1_10yr.toLocaleString()}</strong></div>` : ''}
-        ${s2_10yr ? `<div class="cost-row"><span>${escapeHtml(slot2.label)} 10‑yr total</span><strong>$${s2_10yr.toLocaleString()}</strong></div>` : ''}
-        ${s3_10yr ? `<div class="cost-row"><span>${escapeHtml(slot3.label)} 10‑yr total</span><strong>$${s3_10yr.toLocaleString()}</strong></div>` : ''}
-        <div class="cost-best"><i class="fa-solid fa-star"></i> ${escapeHtml(slot1.label)} — lowest initial investment preserving natural tooth</div>
-        <div style="font-size:9.5px;color:var(--c-n400);margin-top:6px;line-height:1.5;">* Based on entered cost inputs · Lab and clinical complexity may vary</div>
-      `;
-      return;
-    }
-
-    // ── Multi-tooth cost display ─────────────────────────────
-    if (ai?.isMultiTooth) {
-      const mtCosts = ai.costs;
-      const ANNUAL_CHECKUP = 300;
-      const imp2_10yr  = mtCosts.implant2   + ANNUAL_CHECKUP * 10;
-      const bri4_10yr  = mtCosts.bridge4    + ANNUAL_CHECKUP * 10 + Math.round(mtCosts.bridge4 * 0.28 * 0.90);
-      const cant_10yr  = mtCosts.cantilever + ANNUAL_CHECKUP * 10;
-      const lowestCost = Math.min(imp2_10yr, bri4_10yr, cant_10yr);
-      container.innerHTML = `
-        <div class="cost-grid" style="display:grid;gap:10px">
-          <div class="cost-row" style="font-weight:700;color:var(--c-n700);border-bottom:1px solid var(--c-n100);padding-bottom:8px">
-            Multi-Tooth Cost Analysis — Teeth ${escapeHtml(state.tooth)} + ${escapeHtml(state.tooth2 || '')}
-          </div>
-          <div class="cost-row"><span>2 Implants initial</span><span style="font-weight:700">$${mtCosts.implant2.toLocaleString()}</span></div>
-          <div class="cost-row"><span>4-Unit Bridge initial</span><span style="font-weight:700">$${mtCosts.bridge4.toLocaleString()}</span></div>
-          <div class="cost-row"><span>Implant + Cantilever</span><span style="font-weight:700">$${mtCosts.cantilever.toLocaleString()}</span></div>
-          <div style="border-top:1px solid var(--c-n100);padding-top:8px;display:flex;flex-direction:column;gap:6px">
-            <div class="cost-row${imp2_10yr === lowestCost ? ' cost-best' : ''}"><span>2 Implants 10-yr</span><span style="font-weight:700;color:${imp2_10yr===lowestCost?'var(--c-brand)':'var(--c-n700)'}">$${imp2_10yr.toLocaleString()}${imp2_10yr===lowestCost?' ✓':''}</span></div>
-            <div class="cost-row${bri4_10yr === lowestCost ? ' cost-best' : ''}"><span>Bridge 4-unit 10-yr</span><span style="font-weight:700;color:${bri4_10yr===lowestCost?'var(--c-brand)':'var(--c-n700)'}">$${bri4_10yr.toLocaleString()}${bri4_10yr===lowestCost?' ✓':''}</span></div>
-            <div class="cost-row${cant_10yr === lowestCost ? ' cost-best' : ''}"><span>Cantilever 10-yr</span><span style="font-weight:700;color:${cant_10yr===lowestCost?'var(--c-brand)':'var(--c-n700)'}">$${cant_10yr.toLocaleString()}${cant_10yr===lowestCost?' ✓':''}</span></div>
-          </div>
-          <div style="padding:10px 12px;background:var(--c-brand-bg);border-radius:var(--r-md);border:1.5px solid rgba(31,122,79,.2);font-size:12px;color:var(--c-brand);font-weight:600">
-            ★ Lowest 10-yr cost: ${bri4_10yr < imp2_10yr && bri4_10yr < cant_10yr ? '4-Unit Bridge ($' + bri4_10yr.toLocaleString() + ')' : imp2_10yr < cant_10yr ? '2 Implants ($' + imp2_10yr.toLocaleString() + ')' : 'Cantilever ($' + cant_10yr.toLocaleString() + ')'}
-          </div>
-        </div>`;
-      return;
-    }
-
-    const { implantInitial, bridgeInitialAdjusted, implant10yr, bridge10yr, bestValue, reason } = computeCosts(state, ai);
-    const bridgeReplacement = Math.round(bridgeInitialAdjusted * BRIDGE_REPLACE_RATIO);
-    const boneLine = state.bone === 'Poor'
-      ? `<div class="cost-row" style="color:var(--c-n500);font-size:12px;"><span>↳ incl. bone graft</span><strong>+$${(state.costBoneGraft||800).toLocaleString()}</strong></div>` : '';
-
-    // Fix 5: Risk mitigation costs
-    const smokingStatus = state.smoking || 'Non-smoker';
-    const riskCostRows = [];
-    if (state.bone === 'Poor') riskCostRows.push({ label: 'Bone graft complication', cost: 1200 });
-    if (smokingStatus === 'Current smoker') riskCostRows.push({ label: 'Implant re-treatment (smoker)', cost: 2800 });
-    if (smokingStatus === 'Former smoker') riskCostRows.push({ label: 'Implant revision risk', cost: 1500 });
-    if (state.hygiene === 'Poor') riskCostRows.push({ label: 'Peri-implantitis treatment', cost: 900 });
-    const riskMitigationHtml = riskCostRows.length > 0 ? `
-      <div style="margin-top:8px;padding:8px 10px;background:rgba(239,68,68,.07);border-radius:var(--r-sm);border:1px solid rgba(239,68,68,.18);">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#dc2626;letter-spacing:.05em;margin-bottom:6px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:4px;"></i>If complication occurs…</div>
-        ${riskCostRows.map(r => `<div class="cost-row" style="font-size:12px;"><span>${escapeHtml(r.label)}</span><strong style="color:#dc2626;">~$${r.cost.toLocaleString()}</strong></div>`).join('')}
-      </div>` : '';
-
-    const checkupTotal = ANNUAL_CHECKUP * 10;
-    const implantCrownRisk = Math.round(implantInitial * CROWN_COST_RATIO * CROWN_REPLACE_PROB);
-    const bridgeReplaceRisk = Math.round(bridgeInitialAdjusted * BRIDGE_REPLACE_PROB * BRIDGE_REPLACE_RATIO);
-
-    const { crownInitial, needsRCT, needsPostCore, crown10yr } = computeCosts(state, ai);
-    const crownLine = ai?.crownViable
-      ? `<div class="cost-row"><span>Crown initial <span style="font-size:10px;">${needsRCT ? '(+RCT $1,000) ' : ''}${needsPostCore ? '(+Post&amp;Core $400)' : ''}</span></span><strong>$${Math.round(crownInitial).toLocaleString()}</strong></div>` : '';
-    const crown10yrLine = ai?.crownViable
-      ? `<div class="cost-row" style="font-weight:700;"><span>Crown 10‑yr total</span><strong style="color:var(--c-brand);">$${Math.round(crown10yr).toLocaleString()}</strong></div>` : '';
-    const crownReplaceRisk = ai?.crownViable ? Math.round(crownInitial * STANDALONE_CROWN_REPLACE_PROB * STANDALONE_CROWN_REPLACE_RATIO) : 0;
-
-    container.innerHTML = `
-      <div class="cost-row"><span>Implant initial</span><strong>$${implantInitial.toLocaleString()}</strong></div>
-      ${boneLine}
-      <div class="cost-row"><span>Bridge initial</span><strong>$${Math.round(bridgeInitialAdjusted).toLocaleString()}</strong></div>
-      ${crownLine}
-      <div class="cost-row" style="border-top:1px solid var(--c-n100); padding-top:8px; margin-top:4px; font-size:11.5px; color:var(--c-n500);">
-        <span>Checkups (all) <span style="font-size:10px;">2×/yr × $150 × 10yr</span></span>
-        <span>$${checkupTotal.toLocaleString()}</span>
-      </div>
-      <div class="cost-row" style="font-size:11.5px; color:var(--c-n500);">
-        <span>Implant crown replacement risk <span style="font-size:10px;">~12% prob.</span></span>
-        <span>~$${implantCrownRisk.toLocaleString()}</span>
-      </div>
-      <div class="cost-row" style="font-size:11.5px; color:var(--c-n500);">
-        <span>Bridge replacement risk <span style="font-size:10px;">~28% prob.</span></span>
-        <span>~$${bridgeReplaceRisk.toLocaleString()}</span>
-      </div>
-      ${ai?.crownViable ? `<div class="cost-row" style="font-size:11.5px; color:var(--c-n500);"><span>Crown replacement risk <span style="font-size:10px;">~15% prob.</span></span><span>~$${crownReplaceRisk.toLocaleString()}</span></div>` : ''}
-      <div class="cost-row" style="border-top:1px solid var(--c-n100); padding-top:8px; margin-top:4px; font-weight:700;">
-        <span>Implant 10‑yr total</span>
-        <strong>$${Math.round(implant10yr).toLocaleString()}</strong>
-      </div>
-      <div class="cost-row" style="font-weight:700;">
-        <span>Bridge 10‑yr total</span>
-        <strong>$${Math.round(bridge10yr).toLocaleString()}</strong>
-      </div>
-      ${crown10yrLine}
-      <div class="cost-best"><i class="fa-solid fa-star"></i> Best Overall Value: ${bestValue}</div>
-      <div style="font-size:10px; color:var(--c-n500); margin-top:4px;">${reason}</div>
-      <div style="font-size:9.5px; color:var(--c-n400); margin-top:6px; line-height:1.5;">* Bridge wins at 10 yrs on cost — Implant wins long-term (20+ yrs, no full replacement needed)</div>
-      ${riskMitigationHtml}
-    `;
-  }
-
-  // ================================================================
-  // RENDER: GRAPH (SVG) — OPTIMIZED
-  // ================================================================
-  function renderGraph(ai) {
-    const container = $('graphContainer');
-    if (!container) return;
-    if (!ai) {
-      container.innerHTML = '<div class="empty-state" style="padding:14px;"><i class="fa-solid fa-chart-line" aria-hidden="true" style="font-size:24px;color:var(--c-brand);"></i><h4 style="font-size:14px;margin-top:8px;color:var(--c-n800);">No Projection Data</h4><p style="font-size:11px;color:var(--c-n500);margin-top:4px;">Complete patient profile to see success projection.</p></div>';
-      return;
-    }
-    // PERF#2: remove empty-state without wiping SVG
-    const _emptyState = container.querySelector('.empty-state');
-    if (_emptyState) _emptyState.remove();
-
-    const width = 300, height = 120, padding = 30;
-    const years = Array.from({length: 15}, (_,i) => i+1);
-    const lastIndex = years.length - 1;
-    const implantPoints = years.map(y => Math.max(65, ai.implant - (y * 0.35)));
-    const bridgePoints = years.map(y => Math.max(55, ai.bridge - (y * 0.85)));
-    const scaleX = (i) => padding + (i / lastIndex) * (width - 2 * padding);
-    const scaleY = (v) => height - padding - (v / 100) * (height - 2 * padding);
-
-    let svg = container.querySelector('svg');
-    if (!svg) {
-      svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-      svg.classList.add('graph-svg');
-      container.appendChild(svg);
-
-      for (let i = 0; i <= 4; i++) {
-        const y = padding + (i / 4) * (height - 2 * padding);
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', padding); line.setAttribute('y1', y);
-        line.setAttribute('x2', width - padding); line.setAttribute('y2', y);
-        line.setAttribute('stroke', 'var(--c-n200)');
-        line.setAttribute('stroke-width', '0.5');
-        svg.appendChild(line);
-      }
-
-      const implantLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-      implantLine.classList.add('implant-line');
-      implantLine.setAttribute('fill', 'none');
-      implantLine.setAttribute('stroke', '#1F7A4F');
-      implantLine.setAttribute('stroke-width', '2.5');
-      svg.appendChild(implantLine);
-
-      const bridgeLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-      bridgeLine.classList.add('bridge-line');
-      bridgeLine.setAttribute('fill', 'none');
-      bridgeLine.setAttribute('stroke', '#f59e0b');
-      bridgeLine.setAttribute('stroke-width', '2.5');
-      bridgeLine.setAttribute('stroke-dasharray', '5,3');
-      svg.appendChild(bridgeLine);
-
-      const implantStart = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      implantStart.classList.add('implant-start'); implantStart.setAttribute('r', '3.5'); implantStart.setAttribute('fill', '#1F7A4F');
-      svg.appendChild(implantStart);
-      const implantEnd = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      implantEnd.classList.add('implant-end'); implantEnd.setAttribute('r', '3.5'); implantEnd.setAttribute('fill', '#1F7A4F');
-      svg.appendChild(implantEnd);
-      const bridgeStart = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      bridgeStart.classList.add('bridge-start'); bridgeStart.setAttribute('r', '3.5'); bridgeStart.setAttribute('fill', '#f59e0b');
-      svg.appendChild(bridgeStart);
-      const bridgeEnd = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      bridgeEnd.classList.add('bridge-end'); bridgeEnd.setAttribute('r', '3.5'); bridgeEnd.setAttribute('fill', '#f59e0b');
-      svg.appendChild(bridgeEnd);
-
-      const implantLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      implantLabel.classList.add('implant-label'); implantLabel.setAttribute('fill', '#1F7A4F'); implantLabel.setAttribute('font-size', '9'); implantLabel.setAttribute('font-weight', '700'); implantLabel.textContent = 'Implant';
-      svg.appendChild(implantLabel);
-      const bridgeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      bridgeLabel.classList.add('bridge-label'); bridgeLabel.setAttribute('fill', '#f59e0b'); bridgeLabel.setAttribute('font-size', '9'); bridgeLabel.setAttribute('font-weight', '700'); bridgeLabel.textContent = 'Bridge';
-      svg.appendChild(bridgeLabel);
-
-      // Crown line elements
-      const crownLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-      crownLine.classList.add('crown-line'); crownLine.setAttribute('fill','none'); crownLine.setAttribute('stroke','#3b82f6'); crownLine.setAttribute('stroke-width','2'); crownLine.setAttribute('stroke-dasharray','4,3');
-      svg.appendChild(crownLine);
-      const crownEnd = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      crownEnd.classList.add('crown-end'); crownEnd.setAttribute('r','3'); crownEnd.setAttribute('fill','#3b82f6');
-      svg.appendChild(crownEnd);
-      const crownLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      crownLabel.classList.add('crown-label'); crownLabel.setAttribute('fill','#3b82f6'); crownLabel.setAttribute('font-size','9'); crownLabel.setAttribute('font-weight','700'); crownLabel.textContent = 'Crown';
-      svg.appendChild(crownLabel);
-    }
-
-    svg.querySelector('.implant-line').setAttribute('points', implantPoints.map((v,i) => `${scaleX(i)},${scaleY(v)}`).join(' '));
-    svg.querySelector('.bridge-line').setAttribute('points', bridgePoints.map((v,i) => `${scaleX(i)},${scaleY(v)}`).join(' '));
-    svg.querySelector('.implant-start').setAttribute('cx', scaleX(0));
-    svg.querySelector('.implant-start').setAttribute('cy', scaleY(implantPoints[0]));
-    svg.querySelector('.implant-end').setAttribute('cx', scaleX(lastIndex));
-    svg.querySelector('.implant-end').setAttribute('cy', scaleY(implantPoints[lastIndex]));
-    svg.querySelector('.bridge-start').setAttribute('cx', scaleX(0));
-    svg.querySelector('.bridge-start').setAttribute('cy', scaleY(bridgePoints[0]));
-    svg.querySelector('.bridge-end').setAttribute('cx', scaleX(lastIndex));
-    svg.querySelector('.bridge-end').setAttribute('cy', scaleY(bridgePoints[lastIndex]));
-    // Update line labels based on mode
-    const implantLabelEl = svg.querySelector('.implant-label');
-    const bridgeLabelEl  = svg.querySelector('.bridge-label');
-    const crownLabelEl   = svg.querySelector('.crown-label');
-    if (ai.treatmentMode === 'restorative' && ai.restorativeLabels) {
-      if (implantLabelEl) implantLabelEl.textContent = ai.restorativeLabels.slot1.label.split(' ')[0];
-      if (bridgeLabelEl)  bridgeLabelEl.textContent  = ai.restorativeLabels.slot2.label.split(' ')[0];
-      if (crownLabelEl)   crownLabelEl.textContent   = ai.restorativeLabels.slot3.label.split(' ')[0];
-    } else if (ai.isMultiTooth) {
-      if (implantLabelEl) implantLabelEl.textContent = '2 Impl.';
-      if (bridgeLabelEl)  bridgeLabelEl.textContent  = '4-Unit';
-      if (crownLabelEl)   crownLabelEl.textContent   = 'Cantilever';
-    } else {
-      if (implantLabelEl) implantLabelEl.textContent = 'Implant';
-      if (bridgeLabelEl)  bridgeLabelEl.textContent  = 'Bridge';
-      if (crownLabelEl)   crownLabelEl.textContent   = 'Crown';
-    }
-    // Crown line update — reuse crownLabelEl from label-update block above
-    const crownLineEl = svg.querySelector('.crown-line');
-    const crownEndEl  = svg.querySelector('.crown-end');
-    if (ai.crownViable && ai.crown > 0) {
-      const crownPoints = years.map(y => Math.max(58, ai.crown - (y * 0.55)));
-      crownLineEl.setAttribute('points', crownPoints.map((v,i) => `${scaleX(i)},${scaleY(v)}`).join(' '));
-      crownLineEl.style.display = ''; crownEndEl.style.display = ''; crownLabelEl.style.display = '';
-      crownEndEl.setAttribute('cx', scaleX(lastIndex));
-      crownEndEl.setAttribute('cy', scaleY(crownPoints[lastIndex]));
-      crownLabelEl.setAttribute('x', scaleX(lastIndex - 2));
-      crownLabelEl.setAttribute('y', scaleY(crownPoints[lastIndex]) + 14);
-    } else {
-      crownLineEl.style.display = 'none'; crownEndEl.style.display = 'none'; crownLabelEl.style.display = 'none';
-    }
-  }
 
   // ================================================================
   // RENDER: MAIN DISPATCH
@@ -4105,16 +2237,16 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
 
   // ── Main render pipeline (shared by single-site and compound modes) ─
   function renderMainPanels(state, ai) {
-    withErrorBoundary(() => renderPatientDisplay(),                   'infoDisplay',         'Patient Card');
+    withErrorBoundary(() => renderPatientDisplay(state),                'infoDisplay',         'Patient Card');
     withErrorBoundary(() => {
-      renderTxCards(ai); buildAICardStructure();
+      renderTxCards(state, ai); buildAICardStructure();
       // FIX: route to the correct AI card updater based on mode
       // updateAICardMulti was previously dead code — never called from render()
       // Multi-tooth ai has no .implant/.bridge/.crown — updateAICard's fallback
       // path '|| ai.implant' would crash; updateAICardMulti uses the correct properties
       if (ai?.isMultiTooth) { updateAICardMulti(ai); }
       else                  { updateAICard(ai); }
-      renderRisk(ai);
+      renderRisk(state, ai);
       if (ai) renderReasons(ai.reasons, ai.factors);
       else if (!document.querySelector('#aiCardBody .conf-ring')) showSkeleton('aiCardBody');
     }, 'aiCardBody', 'AI Card');
@@ -4225,202 +2357,6 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
     if (!sel) return;
     const TEETH = ['#1','#2','#3','#4','#5','#6','#7','#8','#9','#10','#11','#12','#13','#14','#15','#16','#17','#18','#19','#20','#21','#22','#23','#24','#25','#26','#27','#28','#29','#30','#31','#32'];
     sel.innerHTML = TEETH.map(t => `<option value="${t}"${S.site2Tooth===t?' selected':''}>${t}</option>`).join('');
-  }
-  // ── #20 Lazy: comparison table renders only when visible ────
-  let _compTableObserver = null;
-  function lazyRenderComparisonTable(state, ai) {
-    const wrapper = document.querySelector('.comparison-table-wrap') || $('comparisonTableBody')?.closest('.card-body');
-    if (!wrapper) { renderComparisonTable(state, ai); return; }
-    // Disconnect any pending observer from a previous render cycle
-    if (_compTableObserver) { _compTableObserver.disconnect(); _compTableObserver = null; }
-    // Render synchronously when already visible — prevents stale data during mode
-    // transitions. The IntersectionObserver fires asynchronously even for already-visible
-    // elements (~1 frame delay), which is long enough for users to read old content.
-    const rect = wrapper.getBoundingClientRect();
-    const alreadyVisible = rect.top < (window.innerHeight || 900) && rect.bottom > 0;
-    if (alreadyVisible) {
-      renderComparisonTable(state, ai);
-      return;
-    }
-    // Lazy render for off-screen elements — only create observer when element is hidden
-    _compTableObserver = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        renderComparisonTable(state, ai);
-        _compTableObserver?.disconnect();
-        _compTableObserver = null;
-      }
-    }, { threshold: 0.1 });
-    _compTableObserver.observe(wrapper);
-  }
-
-  function renderComparisonTable(state, ai) {
-    const tbody = $('comparisonTableBody');
-    if (!tbody) return;
-
-    // Deterministic header reset — every render starts with neutral labels.
-    // Prevents headers set by a previous mode (e.g. '2 Implants' from multi-tooth)
-    // from persisting when switching to single-tooth or restorative mode.
-    const impH = $('compImplantHead'), briH = $('compBridgeHead'), crnH = $('compCrownHead');
-    if (impH) { impH.textContent = 'Implant'; impH.className = ''; }
-    if (briH) { briH.textContent = 'Bridge';  briH.className = ''; }
-    if (crnH) { crnH.textContent = 'Crown';   crnH.className = ''; }
-
-    if (!ai) { tbody.innerHTML = `<tr><td colspan="4"><div class="comp-empty-state"><i class="fa-solid fa-stethoscope" aria-hidden="true"></i>Complete patient &amp; clinical data above to generate the full treatment comparison</div></td></tr>`; return; }
-
-    // ── RESTORATIVE TABLE ──────────────────────────────────────────────
-    if (ai.treatmentMode === 'restorative' && ai.scored && ai.restorativeLabels) {
-      const { slot1, slot2, slot3 } = ai.restorativeLabels;
-      const bySlot = {};
-      ai.scored.forEach(t => { bySlot[t.slot] = t; });
-      const s1 = bySlot['implant'], s2 = bySlot['bridge'], s3 = bySlot['crown'];
-      const rc = ai.restorativeCosts || {};
-      const bestScore = Math.max(ai.implant, ai.bridge, ai.crown);
-
-      const impHead = $('compImplantHead'), briHead = $('compBridgeHead'), crnHead = $('compCrownHead');
-      if (impHead) { impHead.textContent = slot1.label; impHead.className = ai.rec === 'implant' ? 'comp-winner-col' : ''; }
-      if (briHead) { briHead.textContent = slot2.label; briHead.className = ai.rec === 'bridge'  ? 'comp-winner-col' : ''; }
-      if (crnHead) { crnHead.textContent = slot3.label; crnHead.className = ai.rec === 'crown'   ? 'comp-winner-col' : ''; }
-
-      const badge = (slotKey) => ai.rec === slotKey ? '<span class="comp-badge">✓ Rec</span>' : '';
-      const scoreBadge = (sc) => sc === bestScore ? '<span class="comp-badge">✓ Best</span>' : '';
-      const LONGEVITY = { onlay:'8–15 yrs', crown:'10–20 yrs', crown_core:'10–18 yrs', crown_adv:'10–18 yrs', splinted:'10–18 yrs', endocrown:'10–15 yrs', extract_impl:'20–25 yrs' };
-      const TOOTH_PRES = { onlay:'Yes — minimal prep', crown:'Preserved ✓', crown_core:'Preserved ✓', crown_adv:'Preserved ✓', splinted:'Preserved ✓', endocrown:'Preserved ✓', extract_impl:'No — extraction' };
-      const RECOVERY   = { onlay:'1–2 weeks', crown:'1–2 weeks', crown_core:'2–3 weeks', crown_adv:'1–2 weeks', splinted:'2–3 weeks', endocrown:'1–2 weeks', extract_impl:'4–6 months' };
-      const MAIN_RISK  = { onlay:'Marginal fracture', crown:'Secondary caries', crown_core:'Root fracture', crown_adv:'Secondary caries', splinted:'Perio access / plaque', endocrown:'Cusp fracture', extract_impl:'Peri-implantitis' };
-
-      const rows = [
-        ['Success Rate',
-          `${ai.implant.toFixed(1)}%${scoreBadge(ai.implant)}`,
-          `${ai.bridge.toFixed(1)}%${scoreBadge(ai.bridge)}`,
-          `${ai.crown.toFixed(1)}%${scoreBadge(ai.crown)}`,
-          ai.implant === bestScore],
-        ['Initial Cost',
-          rc.slot1 ? `$${Math.round(rc.slot1).toLocaleString()}<span class="comp-badge">✓ Lowest</span>` : '—',
-          rc.slot2 ? `$${Math.round(rc.slot2).toLocaleString()}` : '—',
-          rc.slot3 ? `$${Math.round(rc.slot3).toLocaleString()}` : '—',
-          true],
-        ['Longevity', LONGEVITY[s1?.id]||'—', LONGEVITY[s2?.id]||'—', LONGEVITY[s3?.id]||'—',
-          (s3?.id === 'extract_impl')],
-        ['Tooth Preserved', TOOTH_PRES[s1?.id]||'—', TOOTH_PRES[s2?.id]||'—', TOOTH_PRES[s3?.id]||'—',
-          s1?.id !== 'extract_impl'],
-        ['Recovery', RECOVERY[s1?.id]||'—', RECOVERY[s2?.id]||'—', RECOVERY[s3?.id]||'—', true],
-        ['Main Risk', MAIN_RISK[s1?.id]||'—', MAIN_RISK[s2?.id]||'—', MAIN_RISK[s3?.id]||'—', false],
-        ['AI Recommendation',
-          `${slot1.label}${badge('implant')}`,
-          `${slot2.label}${badge('bridge')}`,
-          `${slot3.label}${badge('crown')}`,
-          ai.rec === 'implant'],
-      ];
-      tbody.innerHTML = rows.map(([label, c1, c2, c3, firstBetter]) => `
-        <tr>
-          <td>${escapeHtml(label)}</td>
-          <td class="${firstBetter?'winner':'loser'} ${ai.rec==='implant'?'comp-winner-col':''}">${c1}</td>
-          <td class="${!firstBetter?'winner':'loser'} ${ai.rec==='bridge'?'comp-winner-col':''}">${c2}</td>
-          <td class="${ai.rec==='crown'?'winner comp-winner-col':''}">${c3}</td>
-        </tr>`).join('');
-      return;
-    }
-
-    // ── MULTI-TOOTH TABLE ──────────────────────────────────────────────
-    if (ai.isMultiTooth) {
-      const { implant2, bridge4, cantilever, costs, rec, ideal } = ai;
-      const lowestScore = Math.max(implant2, bridge4, cantilever);
-      const impBest = implant2 === lowestScore, briBest = bridge4 === lowestScore, cntBest = cantilever === lowestScore;
-
-      const impHead = $('compImplantHead'), briHead = $('compBridgeHead'), crnHead = $('compCrownHead');
-      if (impHead) { impHead.textContent = '2 Implants';       impHead.className = rec==='implant2'   ? 'comp-winner-col' : ''; }
-      if (briHead) { briHead.textContent = '4-Unit Bridge';    briHead.className = rec==='bridge4'    ? 'comp-winner-col' : ''; }
-      if (crnHead) { crnHead.textContent = 'Impl. + Cantilever'; crnHead.className = rec==='cantilever' ? 'comp-winner-col' : ''; }
-
-      const badge = (flag) => flag ? '<span class="comp-badge">✓ Best</span>' : '';
-      const recBadge = (opt) => rec === opt ? '<span class="comp-badge">✓ Rec</span>' : (ideal === opt ? '<span class="comp-badge">✦ Ideal</span>' : '');
-      const rows = [
-        ['Success Rate',    `${implant2.toFixed(1)}%${badge(impBest)}`,   `${bridge4.toFixed(1)}%${badge(briBest)}`,  `${cantilever.toFixed(1)}%${badge(cntBest)}`,  impBest],
-        ['Initial Cost',    `$${costs.implant2.toLocaleString()}`,        `$${costs.bridge4.toLocaleString()}`,        `$${costs.cantilever.toLocaleString()}`,        false],
-        ['Longevity',       '20–25 yrs<span class="comp-badge">✓</span>', '10–15 yrs',                                '15–20 yrs',                                    true],
-        ['Adjacent Teeth',  'Independent<span class="comp-badge">✓</span>','Requires grinding','Independent<span class="comp-badge">✓</span>', true],
-        ['Bone Stim.',      'Both sites<span class="comp-badge">✓</span>', 'None — resorption', 'One site only',       true],
-        ['Complexity',      'Two surgeries', 'Single procedure<span class="comp-badge">✓</span>', 'One surgery',      false],
-        ['AI Recommendation', `2 Implants${recBadge('implant2')}`, `4-Unit Bridge${recBadge('bridge4')}`, `Cantilever${recBadge('cantilever')}`, rec==='implant2'],
-      ];
-      tbody.innerHTML = rows.map(([label, imp, bri, crn, impBetter]) => `
-        <tr>
-          <td>${escapeHtml(label)}</td>
-          <td class="${impBetter?'winner':'loser'} ${rec==='implant2'?'comp-winner-col':''}">${imp}</td>
-          <td class="${!impBetter?'winner':'loser'} ${rec==='bridge4'?'comp-winner-col':''}">${bri}</td>
-          <td class="${rec==='cantilever'?'winner comp-winner-col':''}">${crn}</td>
-        </tr>`).join('');
-      return;
-    }
-
-    // ── SINGLE-TOOTH PATH (unchanged logic, hardened) ────────────────────
-    const { implantInitial, bridgeInitialAdjusted, crownInitial, needsRCT, implant10yr, bridge10yr, crown10yr } = computeCosts(state, ai);
-    const crownViable = ai.crownViable && ai.crown > 0;
-    const crownSucStr = crownViable ? `${ai.crown.toFixed(1)}%` : 'N/A';
-    const crownCostStr = crownViable ? `$${Math.round(crownInitial).toLocaleString()}${needsRCT ? ' (+RCT)' : ''}` : 'N/A';
-    const crown10yrStr = crownViable ? `$${Math.round(crown10yr).toLocaleString()}` : 'N/A';
-
-    // Best scores for highlighting
-    const scores = [ai.implant, ai.bridge, crownViable ? ai.crown : 0];
-    const bestScore = Math.max(...scores);
-    const costs = [implant10yr, bridge10yr, crownViable ? crown10yr : Infinity];
-    const lowestCost = Math.min(...costs);
-
-    const implantBestScore = ai.implant === bestScore;
-    const bridgeBestScore  = ai.bridge  === bestScore;
-    const crownBestScore   = crownViable && ai.crown === bestScore;
-    const implantBestCost  = implant10yr === lowestCost;
-    const bridgeBestCost   = bridge10yr  === lowestCost && !implantBestCost;
-    const crownBestCost    = crownViable && crown10yr === lowestCost && !implantBestCost && !bridgeBestCost;
-
-    const rows = [
-      ['Success Rate',
-        `${ai.implant.toFixed(1)}%${implantBestScore?'<span class="comp-badge">✓ Best</span>':''}`,
-        `${ai.bridge.toFixed(1)}%${bridgeBestScore?'<span class="comp-badge">✓ Best</span>':''}`,
-        crownViable ? `${crownSucStr}${crownBestScore?'<span class="comp-badge">✓ Best</span>':''}` : '—',
-        implantBestScore],
-      ['Initial Cost',
-        `$${Math.round(implantInitial).toLocaleString()}`,
-        `$${Math.round(bridgeInitialAdjusted).toLocaleString()}`,
-        crownViable ? crownCostStr + '<span class="comp-badge">✓ Lowest</span>' : '—', false],
-      ['10‑Year Cost',
-        `$${Math.round(implant10yr).toLocaleString()}${implantBestCost?'<span class="comp-badge">✓ Best</span>':''}`,
-        `$${Math.round(bridge10yr).toLocaleString()}${bridgeBestCost?'<span class="comp-badge">✓ Best</span>':''}`,
-        crownViable ? `${crown10yrStr}${crownBestCost?'<span class="comp-badge">✓ Best</span>':''}` : '—',
-        implantBestCost],
-      ['Longevity', '20‑25 years<span class="comp-badge">✓ Best</span>', '10‑15 years',
-        crownViable?'10‑20 years':'—', true],
-      ['Recovery Time', '3‑6 months',
-        needsRCT?'2‑4 weeks<span class="comp-badge">✓ Faster</span>':'2‑4 weeks<span class="comp-badge">✓ Better</span>',
-        crownViable?(needsRCT?'3‑4 wks (RCT)':'1‑2 wks<span class="comp-badge">✓ Fastest</span>'):'—', false],
-      ['Adjacent Teeth', 'Not affected<span class="comp-badge">✓</span>', 'Requires grinding',
-        crownViable?'Not affected<span class="comp-badge">✓</span>':'—', true],
-      ['Tooth Preserved', 'No', 'No',
-        crownViable?'Yes ✓<span class="comp-badge">Unique</span>':'<span style="color:var(--c-n300)">—</span>', false],
-      ['Reversible', 'No', 'No',
-        crownViable?'Yes ✓':'<span style="color:var(--c-n300)">—</span>', false],
-      ['Bone Preservation', 'Stimulates bone<span class="comp-badge">✓</span>', 'Bone resorption', crownViable?'Preserves root':'—', true],
-      ['AI Recommendation',
-        ai.rec==='implant'?`Implant<span class="comp-badge">✓ Rec'd</span>`:'Implant',
-        ai.rec==='bridge'?`Bridge<span class="comp-badge">✓ Rec'd</span>`:'Bridge',
-        crownViable?(ai.rec==='crown'?`Crown<span class="comp-badge">✓ Rec'd</span>`:'Crown'):'—',
-        ai.rec==='implant'],
-    ];
-
-    const implantHead = $('compImplantHead'), bridgeHead = $('compBridgeHead'), crownHead = $('compCrownHead');
-    if (implantHead) implantHead.className = ai.rec==='implant' ? 'comp-winner-col' : '';
-    if (bridgeHead)  bridgeHead.className  = ai.rec==='bridge'  ? 'comp-winner-col' : '';
-    if (crownHead)   crownHead.className   = crownViable
-      ? (ai.rec==='crown' ? 'comp-winner-col' : '')
-      : 'crown-col-disabled';
-
-    tbody.innerHTML = rows.map(([label, imp, bri, crn, implantBetter]) => `
-      <tr class="${!crownViable ? 'comp-crown-row-na' : ''}">
-        <td>${escapeHtml(label)}</td>
-        <td class="${implantBetter?'winner':'loser'} ${ai.rec==='implant'?'comp-winner-col':''}">${imp}</td>
-        <td class="${!implantBetter?'winner':'loser'} ${ai.rec==='bridge'?'comp-winner-col':''}">${bri}</td>
-        <td class="${crownViable ? (ai.rec==='crown'?'winner comp-winner-col':'') : 'comp-crown-col-disabled'}" style="${!crownViable ? 'color:var(--c-n300);' : ''}">${crn}</td>
-      </tr>`).join('');
   }
 
   // ================================================================
@@ -4622,7 +2558,7 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
       _isPreviewMode = true;
       buildAICardStructure();
       if (ai.isMultiTooth) updateAICardMulti(ai); else updateAICard(ai);
-      renderRisk(ai);
+      renderRisk(tempState, ai);
       renderReasons(ai.reasons, ai.factors);
       renderComparison(tempState, ai);
       renderMaterial(tempState);
@@ -4665,8 +2601,7 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
     $('whatIfSmoking')?.addEventListener('input', e => { tempState.smoking = SMOKING_MAP[e.target.value]; e.target.setAttribute('aria-valuetext', tempState.smoking); updateSliderPositions(); debouncedUpdatePreview(); });
     $('whatIfApply').addEventListener('click', () => {
       const prevAI = calcAI(S);
-      Object.assign(S, { bone: tempState.bone, diabetes: tempState.diabetes || S.diabetes || 'None', hygiene: tempState.hygiene, occlusion: tempState.occlusion, smoking: tempState.smoking || S.smoking || 'Non-smoker', remainingStructure: tempState.remainingStructure || S.remainingStructure || 'Good', endodonticStatus: tempState.endodonticStatus || S.endodonticStatus || 'No RCT needed', parafunction: tempState.parafunction || S.parafunction || 'None' });
-      saveState();
+      setState({ bone: tempState.bone, diabetes: tempState.diabetes || S.diabetes || 'None', hygiene: tempState.hygiene, occlusion: tempState.occlusion, smoking: tempState.smoking || S.smoking || 'Non-smoker', remainingStructure: tempState.remainingStructure || S.remainingStructure || 'Good', endodonticStatus: tempState.endodonticStatus || S.endodonticStatus || 'No RCT needed', parafunction: tempState.parafunction || S.parafunction || 'None' });
       tempState = { ...S };
       _isPreviewMode = false;
       const banner = $('previewModeBanner');
@@ -4785,127 +2720,6 @@ button:focus-visible, [role="radio"]:focus-visible, select:focus-visible, input:
     @media(max-width:640px){.patient-grid{grid-template-columns:1fr 1fr}.options-grid,.cost-compare,.risk-grid{grid-template-columns:1fr}.conf-banner{flex-direction:column}.conf-rec-box{border-left:none;border-top:1px solid #E5E7EB;min-width:unset}.rpt-header{flex-direction:column;gap:14px;text-align:center}.rpt-meta-box{text-align:center}.section{padding:16px 18px}.no-print{padding:16px 18px}}
   `;
 
-  // ── Shared report shell (header + CSS + footer wrapper) ─────────
-  function rptShell(cfg, bodyHTML) {
-    const cc = (v) => v==='High'?'#dc2626':v==='Medium'?'#d97706':'#16a34a';
-    const confC = cc(cfg.confLevel);
-    const circum = (2 * Math.PI * 26).toFixed(1);
-    const offset = ((1 - (cfg.conf||50)/100) * 2 * Math.PI * 26).toFixed(1);
-    return `<!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>${escapeHtml(cfg.title)}</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<style>${REPORT_CSS}</style></head><body>
-<div class="page-wrap">
-<div class="rpt-header">
-  <div class="rpt-brand"><div>
-    <div style="display:flex;align-items:center;gap:10px">
-      <div class="rpt-logo">denai</div>
-      <div class="rpt-logo-badge">AI Co‑Pilot</div>
-    </div>
-    <div class="rpt-tagline">Clinical Decision Support Platform</div>
-  </div></div>
-  <div class="rpt-meta-box">
-    <div class="rpt-case-num">${escapeHtml(cfg.caseNumber)}</div>
-    <div class="rpt-date">Generated <span>${cfg.date}</span> at <span>${cfg.time}</span></div>
-  </div>
-</div>
-<div class="conf-banner">
-  <div class="conf-main">
-    <svg class="conf-ring" viewBox="0 0 64 64">
-      <circle cx="32" cy="32" r="26" fill="none" stroke="#D1FAE5" stroke-width="6"/>
-      <circle cx="32" cy="32" r="26" fill="none" stroke="#1F7A4F" stroke-width="6"
-        stroke-linecap="round" stroke-dasharray="${circum}" stroke-dashoffset="${offset}"
-        transform="rotate(-90 32 32)"/>
-      <text x="32" y="37" text-anchor="middle" font-family="Sora,sans-serif" font-size="13" font-weight="800" fill="#1F7A4F">${cfg.conf}%</text>
-    </svg>
-    <div>
-      <div class="conf-label">AI Confidence Score</div>
-      <div class="conf-value">${cfg.conf}%</div>
-      <div class="conf-level" style="background:${confC}">${cfg.confLevel}</div>
-    </div>
-  </div>
-  <div class="conf-rec-box">
-    <div class="conf-rec-label">AI Recommendation</div>
-    <div class="conf-rec-val">${escapeHtml(cfg.aiRec)}</div>
-    <div class="conf-rec-sub">${escapeHtml(cfg.recSub || '')}</div>
-    <div class="conf-rec-sub" style="margin-top:3px">Patient: <strong>${escapeHtml(cfg.patientName)}</strong></div>
-  </div>
-</div>
-${bodyHTML}
-<div class="section">
-  <div class="disclaimer"><strong>⚠️ Clinical Disclaimer</strong>
-    ${BRAND.disclaimer}
-  </div>
-</div>
-<div class="rpt-footer">
-  <span>${BRAND.footerLine} · <strong>${escapeHtml(cfg.caseNumber)}</strong> · ${escapeHtml(cfg.patientName)}</span>
-  <span>${cfg.date}</span>
-</div>
-<div class="no-print">
-  <button class="print-btn" onclick="window.print()">🖨️ &nbsp;Save as PDF / Print</button>
-  <p style="font-size:11px;color:#9CA3AF;margin-top:8px">Use browser's "Save as PDF" in the print dialog</p>
-</div>
-</div></body></html>`;
-  }
-
-  // ── Patient grid section (shared by all case types) ──────────────
-  function rptPatientSection(state, toothDisplay) {
-    const smokingColor = (state.smoking||'Non-smoker')==='Current smoker'?'#dc2626':(state.smoking==='Former smoker'?'#d97706':'#16a34a');
-    const dmColor = (state.diabetes||'None')==='Uncontrolled'?'#dc2626':state.diabetes==='Controlled'?'#d97706':'#16a34a';
-    return `<div class="section"><div class="sec-title">Patient Summary</div><div class="patient-grid">
-    <div class="pfield"><div class="pfield-label">Patient</div><div class="pfield-val">${escapeHtml(state.name)}</div></div>
-    <div class="pfield"><div class="pfield-label">Age / Gender</div><div class="pfield-val">${state.age} yrs, ${escapeHtml(state.gender)}</div></div>
-    <div class="pfield"><div class="pfield-label">Tooth #</div><div class="pfield-val">${toothDisplay}</div></div>
-    <div class="pfield"><div class="pfield-label">Condition</div><div class="pfield-val">${escapeHtml(state.condition)}</div></div>
-    <div class="pfield"><div class="pfield-label">Bone Quality</div><div class="pfield-val">${state.bone}</div></div>
-    <div class="pfield"><div class="pfield-label">Oral Hygiene</div><div class="pfield-val">${state.hygiene}</div></div>
-    <div class="pfield"><div class="pfield-label">Occlusion</div><div class="pfield-val">${escapeHtml(state.occlusion)}</div></div>
-    <div class="pfield"><div class="pfield-label">Smoking</div><div class="pfield-val" style="color:${smokingColor}">${escapeHtml(state.smoking||'Non-smoker')}</div></div>
-    <div class="pfield"><div class="pfield-label">Diabetes</div><div class="pfield-val" style="color:${dmColor};font-weight:700">${escapeHtml(state.diabetes||'None')}</div></div>
-    <div class="pfield"><div class="pfield-label">Jaw / Arch</div><div class="pfield-val">${isMaxilla(state.tooth)?'Upper (Maxilla)':'Lower (Mandible)'}</div></div>
-    </div></div>`;
-  }
-
-  // ── Risk section (shared; derives from state when ai fields missing) ─
-  function rptRiskSection(state, ai) {
-    const rv = (v) => `<div class="risk-pill ${(v||'low').toLowerCase()}">${v||'Low'}</div>`;
-    const peri     = ai?.peri     || (state.hygiene==='Poor'?'High':state.hygiene==='Fair'?'Medium':'Low');
-    const boneR    = ai?.boneR    || (state.bone==='Poor'?'High':state.bone==='Fair'?'Medium':'Low');
-    const occR     = ai?.occR     || (state.occlusion==='High occlusion load'?'Medium':'Low');
-    const smokingR = ai?.smokingR || (state.smoking==='Current smoker'?'High':state.smoking==='Former smoker'?'Medium':'Low');
-    const diabR    = ai?.diabetesR|| (state.diabetes==='Uncontrolled'?'High':state.diabetes==='Controlled'?'Medium':'Low');
-    return `<div class="section"><div class="sec-title">Risk Indicators</div><div class="risk-grid">
-    <div class="risk-cell"><div class="risk-cell-label">Peri-implantitis</div>${rv(peri)}</div>
-    <div class="risk-cell"><div class="risk-cell-label">Bone Loss Risk</div>${rv(boneR)}</div>
-    <div class="risk-cell"><div class="risk-cell-label">Occlusal Overload</div>${rv(occR)}</div>
-    <div class="risk-cell"><div class="risk-cell-label">Smoking Risk</div>${rv(smokingR)}</div>
-    ${(state.diabetes&&state.diabetes!=='None')?`<div class="risk-cell"><div class="risk-cell-label">Diabetes Risk</div>${rv(diabR)}</div>`:''}
-    <div class="risk-cell"><div class="risk-cell-label">Jaw Zone</div><div class="risk-pill ${isMaxilla(state.tooth)&&isPosteriorTooth(state.tooth)?'medium':'low'}">${isMaxilla(state.tooth)?'Maxilla':'Mandible'} — ${isPosteriorTooth(state.tooth)?'Post':'Ant'}</div></div>
-    </div></div>`;
-  }
-
-  // ── Opt card (shared treatment option card) ─────────────────────
-  function rptOptCard(opt) {
-    const rows = opt.rows.map(r => `<div class="opt-row"><span class="opt-row-label">${escapeHtml(r.label)}</span><span class="opt-row-val">${r.value}</span></div>`).join('');
-    return `<div class="opt-card ${opt.isRec?'winner':''}">
-    <div class="opt-card-head">
-      <div class="opt-card-title">${escapeHtml(opt.label)}</div>
-      <div class="opt-rec-badge ${opt.isRec?'rec':'alt'}">${opt.isRec?'★ Recommended':'Alternative'}</div>
-    </div>
-    <div class="opt-card-body">
-      <div class="opt-rate">${(+opt.score||0).toFixed(1)}%</div>
-      <div class="opt-rate-label">${escapeHtml(opt.rateLabel||'Success Rate')}</div>
-      ${rows}
-    </div></div>`;
-  }
-
-  // ── Reasons section ─────────────────────────────────────────────
-  function rptReasonsSection(reasons) {
-    if (!reasons?.length) return '';
-    const items = reasons.slice(0, 4).map(r => `<li style="font-size:12px;color:#374151;margin-bottom:4px;padding-left:4px">${escapeHtml(r)}</li>`).join('');
-    return `<div class="section"><div class="sec-title">Clinical Reasoning</div><ul style="padding-left:16px;margin:0">${items}</ul></div>`;
-  }
 
   function generateReport() {
     const btn = $('reportBtn');
@@ -5231,7 +3045,7 @@ showToast('Case data exported as JSON','success');
 function selectTx(option) {
 // Multi-tooth mode: full render so AI card, comparison, costs all update
 if (S.multiTooth) {
-S.tx = option; saveState(); render(S); return;
+setState({ tx: option }); render(S); return;
 }
 if (option === 'crown') {
 const card = $('cardCrown');
@@ -5269,7 +3083,7 @@ if (recTx !== S.tx) {
 if (!ai.isMultiTooth && recTx === 'crown' && !ai.crownViable) {
 showToast('Crown recommendation not applicable for current condition', 'error'); return;
 }
-S.tx = recTx; saveState();
+setState({ tx: recTx });
 render(S);
 const LABELS = { implant:'Implant', bridge:'Bridge', crown:'Crown', implant2:'2 Implants', bridge4:'4-Unit Bridge', cantilever:'Implant + Cantilever' };
 const label = LABELS[ai.rec] || LABELS[recTx] || recTx;
@@ -5278,20 +3092,20 @@ showToast('Applied AI recommendation: ' + label, 'success');
 }
 }
 function toggleWhy() {
-S.whyOpen = !S.whyOpen;
+setUIState({ whyOpen: !UIState.whyOpen });
 const toggle = $('whyToggle'), body = $('whyBody');
-if (toggle) toggle.setAttribute('aria-expanded', S.whyOpen?'true':'false');
-if (body) body.classList.toggle('open', S.whyOpen);
+if (toggle) toggle.setAttribute('aria-expanded', UIState.whyOpen?'true':'false');
+if (body) body.classList.toggle('open', UIState.whyOpen);
 }
 function toggleHistory() {
-S.historyOpen = !S.historyOpen;
+setUIState({ historyOpen: !UIState.historyOpen });
 const toggle = $('historyToggle'), body = $('historyBody');
-if (toggle) toggle.setAttribute('aria-expanded', S.historyOpen?'true':'false');
-if (body) body.classList.toggle('open', S.historyOpen);
+if (toggle) toggle.setAttribute('aria-expanded', UIState.historyOpen?'true':'false');
+if (body) body.classList.toggle('open', UIState.historyOpen);
 }
 function handleBeforeUnload(e) { e.preventDefault(); e.returnValue = ''; }
 function enterEdit() {
-S.editing = true; buildEditForm();
+setUIState({ editing: true }); buildEditForm();
 const btn = $('editBtn'); btn.textContent = '💾 Save'; btn.classList.add('editing'); btn.setAttribute('aria-expanded','true');
 $('infoDisplay').style.display = 'none'; $('editFields').style.display = 'grid'; $('editFields').setAttribute('aria-hidden','false');
 $('editActions').style.display = 'flex'; $('editActions').setAttribute('aria-hidden','false');
@@ -5299,12 +3113,12 @@ window.addEventListener('beforeunload', handleBeforeUnload);
 setTimeout(() => $('eName')?.focus(), 50);
 }
 function exitEdit() {
-S.editing = false; const btn = $('editBtn'); btn.textContent = '✏️ Edit'; btn.classList.remove('editing'); btn.setAttribute('aria-expanded','false');
+setUIState({ editing: false }); const btn = $('editBtn'); btn.textContent = '✏️ Edit'; btn.classList.remove('editing'); btn.setAttribute('aria-expanded','false');
 $('infoDisplay').style.display = 'grid'; $('editFields').style.display = 'none'; $('editFields').setAttribute('aria-hidden','true');
 $('editActions').style.display = 'none'; $('editActions').setAttribute('aria-hidden','true');
 window.removeEventListener('beforeunload', handleBeforeUnload);
 }
-function toggleEdit() { S.editing ? saveEdit() : enterEdit(); }
+function toggleEdit() { UIState.editing ? saveEdit() : enterEdit(); }
 function saveEdit() {
 const name = ($('eName')?.value.trim()) || S.name;
 const rawAge = parseInt($('eAge')?.value, 10);
@@ -5368,7 +3182,7 @@ function closeResetModal() { $('resetModal').style.display = 'none'; }
 function confirmReset() {
 closeResetModal();
 Object.assign(S, DEFAULT_STATE); tempState = { ...S }; saveState();
-if (S.editing) cancelEdit();
+if (UIState.editing) cancelEdit();
 // Reset multi-tooth UI
 const _mt = $('multiToothToggle');
 if (_mt) { _mt.classList.remove('active'); _mt.setAttribute('aria-pressed','false'); }
@@ -5442,8 +3256,8 @@ if (id === S.id) { if (window.innerWidth <= 900) closeSidebar(); return; }
 const list = loadAllPatients() || [];
 const target = list.find(p => p.id === id);
 if (!target) return;
-if (S.editing) cancelEdit();
-Object.assign(S, { ...DEFAULT_STATE, ...target, editing: false, whyOpen: false, historyOpen: false });
+if (UIState.editing) cancelEdit();
+Object.assign(S, { ...DEFAULT_STATE, ...target });
 // Normalize multi-site state for incoming patient
 if (S.multiSite && S.condition !== 'Missing tooth') { S.multiSite = false; }
 if (S.multiTooth && S.condition !== 'Missing tooth') { S.multiTooth = false; S.tooth2 = null; }
@@ -5544,6 +3358,12 @@ notes: '',
 let list = loadAllPatients() || [];
 list.push(newPatient);
 saveAllPatients(list);
+// Wave 7D: enqueue cloud upsert for new patient (empty history — patient just created).
+try {
+  if (typeof denaiSyncQueue !== 'undefined') {
+    denaiSyncQueue.enqueue({ type: 'upsert', patientId: newPatient.id, payload: newPatient, history: [] });
+  }
+} catch (e) {}
 closeNewPatientModal();
 switchPatient(newPatient.id);
 History.add('New patient added', name);
@@ -5568,6 +3388,12 @@ if (!_pendingDeleteId) return;
 let list = loadAllPatients() || [];
 if (list.length <= 1) { showToast('Cannot delete the only patient', 'error'); closeDeletePatient(); return; }
 const name = (list.find(p => p.id === _pendingDeleteId) || {}).name || 'Patient';
+// Wave 7D: enqueue soft-delete BEFORE local removal — cloud row needs the known ID.
+try {
+  if (typeof denaiSyncQueue !== 'undefined') {
+    denaiSyncQueue.enqueueSoftDelete(_pendingDeleteId);
+  }
+} catch (e) {}
 list = list.filter(p => p.id !== _pendingDeleteId);
 saveAllPatients(list);
 closeDeletePatient();
@@ -5578,6 +3404,70 @@ switchPatient(list[0].id);
 renderPatientList();
 }
 showToast(`${name} removed`, 'info');
+}
+
+// ================================================================
+// Wave 7E: CLOUD MERGE UI CALLBACK
+// Called by denaiCloudSync after a background merge changes local patients.
+// changedIds: string[] of patient IDs that were updated or added from cloud.
+// Must be a function declaration (not const) so cloudSync.js can access
+// it via window.denaiApplyCloudMerge from a separate classic script.
+// ================================================================
+function denaiApplyCloudMerge(changedIds) {
+renderPatientList();
+if (!Array.isArray(changedIds) || !changedIds.includes(S.id)) return;
+// Don't disrupt an active edit session — user's uncommitted changes take priority.
+if (UIState.editing) return;
+const list = loadAllPatients() || [];
+const updated = list.find(p => p.id === S.id);
+if (!updated) return;
+// Reload the active patient into S and re-render.
+Object.assign(S, { ...DEFAULT_STATE, ...updated });
+render(S);
+showToast('View updated from cloud sync', 'info');
+}
+
+// ================================================================
+// Wave 7B: AUTH MODAL UI HANDLERS
+// denaiAuth (window.denaiAuth) is defined in src/auth/authModule.js.
+// These functions are safe to call even if denaiAuth is unavailable.
+// ================================================================
+function openAuthModal() {
+const status = (typeof denaiAuth !== 'undefined') ? denaiAuth.getStatus() : 'local';
+const tabRow = $('authTabRow');
+if (status === 'signed-in') {
+  const session = (typeof denaiAuth !== 'undefined') ? denaiAuth.getSession() : null;
+  const emailEl = $('authSignedInEmail');
+  if (emailEl) emailEl.textContent = (session && session.user && session.user.email) || 'Signed in';
+  if ($('authPanelSignIn'))    $('authPanelSignIn').style.display    = 'none';
+  if ($('authPanelSignUp'))    $('authPanelSignUp').style.display    = 'none';
+  if ($('authPanelSignedIn'))  $('authPanelSignedIn').style.display  = '';
+  if (tabRow) tabRow.style.display = 'none';
+} else {
+  showAuthTab('signin');
+  if (tabRow) tabRow.style.display = 'flex';
+}
+$('authModal').style.display = 'flex';
+setTimeout(() => {
+  const first = status === 'signed-in' ? null : $('authSignInEmail');
+  if (first) first.focus();
+}, 80);
+}
+
+function closeAuthModal() {
+$('authModal').style.display = 'none';
+const errSI = $('authSignInError'); if (errSI) errSI.style.display = 'none';
+const errSU = $('authSignUpError'); if (errSU) errSU.style.display = 'none';
+const sucSU = $('authSignUpSuccess'); if (sucSU) sucSU.style.display = 'none';
+}
+
+function showAuthTab(tab) {
+if ($('authPanelSignIn'))   $('authPanelSignIn').style.display   = tab === 'signin' ? '' : 'none';
+if ($('authPanelSignUp'))   $('authPanelSignUp').style.display   = tab === 'signup' ? '' : 'none';
+if ($('authPanelSignedIn')) $('authPanelSignedIn').style.display = 'none';
+const btnSI = $('authTabSignIn'), btnSU = $('authTabSignUp');
+if (btnSI) { btnSI.classList.toggle('auth-tab-active', tab === 'signin'); }
+if (btnSU) { btnSU.classList.toggle('auth-tab-active', tab === 'signup'); }
 }
 
 // Shortcuts modal
@@ -5619,8 +3509,7 @@ function _handleNotesInput() {
   const _notePatient = S.id;
   _notesDebounce = setTimeout(() => {
     if (S.id !== _notePatient) return;  // abort if patient switched mid-debounce
-    S.notes = DOMPurify.sanitize(textarea.value);
-    saveState();
+    setState({ notes: DOMPurify.sanitize(textarea.value) });
     if (status) status.textContent = 'Auto-saved';
     if (count) count.textContent = `${S.notes.length} chars`;
     showSaveIndicator('saved');
@@ -5699,14 +3588,6 @@ if (p < 1) { _rafIds[id] = requestAnimationFrame(step); } else { el.textContent 
 };
 _rafIds[id] = requestAnimationFrame(step);
 }
-function escapeHtml(str) {
-return String(str)
-  .replace(/&/g,'&amp;')
-  .replace(/</g,'&lt;')
-  .replace(/>/g,'&gt;')
-  .replace(/"/g,'&quot;')
-  .replace(/'/g,'&#39;');
-}
 
 // ================================================================
 // EVENT DELEGATION & SHORTCUTS
@@ -5714,7 +3595,7 @@ return String(str)
 const SHORTCUTS = {
 'ctrl+e': toggleEdit,
 'Escape': () => {
-if (S.editing) cancelEdit();
+if (UIState.editing) cancelEdit();
 if ($('saveModal').style.display==='flex') closeModal();
 if ($('resetModal').style.display==='flex') closeResetModal();
 if ($('shortcutsModal').style.display==='flex') closeShortcutsModal();
@@ -5860,7 +3741,7 @@ initClinicalNotes();
 History.render();
 
 render(S);
-if (calcAI(S)) { setTimeout(() => { if (!S.whyOpen) toggleWhy(); }, 800); }
+if (calcAI(S)) { setTimeout(() => { if (!UIState.whyOpen) toggleWhy(); }, 800); }
 
 // Restore multi-tooth UI state from saved state
 if (S.multiTooth && S.condition === 'Missing tooth') {
@@ -5918,6 +3799,64 @@ $('deletePatientModalBox')?.addEventListener('click', e => e.stopPropagation());
 $('closeDeletePatientBtn')?.addEventListener('click', closeDeletePatient);
 $('cancelDeletePatientBtn')?.addEventListener('click', closeDeletePatient);
 $('confirmDeletePatientBtn')?.addEventListener('click', confirmDeletePatient);
+// Wave 7B: Auth modal event listeners
+$('authModal')?.addEventListener('click', closeAuthModal);
+$('authModalBox')?.addEventListener('click', e => e.stopPropagation());
+$('closeAuthModalBtn')?.addEventListener('click', closeAuthModal);
+$('authSignInBtn')?.addEventListener('click', async () => {
+  if (typeof denaiAuth === 'undefined') { showToast('Auth service not loaded', 'error'); return; }
+  const email    = $('authSignInEmail')?.value.trim();
+  const password = $('authSignInPassword')?.value;
+  const errEl    = $('authSignInError');
+  const btn      = $('authSignInBtn');
+  if (!email || !password) {
+    if (errEl) { errEl.textContent = 'Email and password required.'; errEl.style.display = ''; }
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
+  if (btn) { btn.textContent = 'Signing in…'; btn.disabled = true; }
+  const { error } = await denaiAuth.signIn(email, password);
+  if (btn) { btn.textContent = 'Sign In'; btn.disabled = false; }
+  if (error) {
+    if (errEl) { errEl.textContent = error.message || 'Sign in failed.'; errEl.style.display = ''; }
+  } else {
+    closeAuthModal();
+    showToast('Signed in — your patients will sync shortly', 'success');
+  }
+});
+$('authSignUpBtn')?.addEventListener('click', async () => {
+  if (typeof denaiAuth === 'undefined') { showToast('Auth service not loaded', 'error'); return; }
+  const email    = $('authSignUpEmail')?.value.trim();
+  const password = $('authSignUpPassword')?.value;
+  const errEl    = $('authSignUpError');
+  const sucEl    = $('authSignUpSuccess');
+  const btn      = $('authSignUpBtn');
+  if (!email || !password) {
+    if (errEl) { errEl.textContent = 'Email and password required.'; errEl.style.display = ''; }
+    return;
+  }
+  if (password.length < 6) {
+    if (errEl) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.style.display = ''; }
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
+  if (sucEl) sucEl.style.display = 'none';
+  if (btn) { btn.textContent = 'Creating…'; btn.disabled = true; }
+  const { error } = await denaiAuth.signUp(email, password);
+  if (btn) { btn.textContent = 'Create Account'; btn.disabled = false; }
+  if (error) {
+    if (errEl) { errEl.textContent = error.message || 'Sign up failed.'; errEl.style.display = ''; }
+  } else {
+    if (sucEl) { sucEl.textContent = 'Account created! Check your email to confirm, then sign in.'; sucEl.style.display = ''; }
+  }
+});
+$('authSignOutBtn')?.addEventListener('click', async () => {
+  if (typeof denaiAuth === 'undefined') return;
+  await denaiAuth.signOut();
+  closeAuthModal();
+  // IMPORTANT: local patient data is never cleared on sign-out
+  showToast('Signed out — local data preserved', 'info');
+});
 $('saveDraftBtn')?.addEventListener('click', openModal);
 $('createCaseBtn')?.addEventListener('click', createCase);
 $('resetBtn')?.addEventListener('click', openResetModal);
@@ -5999,6 +3938,7 @@ trapFocus('resetModal');
 trapFocus('shortcutsModal');
 trapFocus('newPatientModal');
 trapFocus('deletePatientModal');
+trapFocus('authModal');
 
 renderPatientList();
 applyDarkMode();
@@ -6013,6 +3953,17 @@ window.addEventListener('beforeunload', () => {
   for (const id of Object.keys(_rafIds)) cancelAnimationFrame(_rafIds[id]);
   if (_matFadeTimer) { clearTimeout(_matFadeTimer); _matFadeTimer = null; }
 });
+
+// Wave 7B: Auth initializes AFTER first render. Failures silently degrade to local mode.
+if (typeof denaiAuth !== 'undefined') {
+  denaiAuth.init().catch(function () {}); // never throws to caller
+}
+
+// Wave 7D: Sync queue init — loads persisted queue, registers online listener.
+// Synchronous. Must run after denaiAuth.init() so flush() can check isSignedIn().
+if (typeof denaiSyncQueue !== 'undefined') {
+  denaiSyncQueue.init();
+}
 
 })();
 

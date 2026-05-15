@@ -1,0 +1,9 @@
+/* ================================================================
+   TOAST SYSTEM — Wave 2 extraction
+   Depends on: --c-n900 (neutral-tokens), --z-toast (layer-tokens)
+   ================================================================ */
+.toast-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 400; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast-item { background: var(--c-n900); color: white; padding: 11px 18px; border-radius: 12px; font-size: 13px; font-weight: 500; pointer-events: auto; box-shadow: 0 8px 32px rgba(0,0,0,.22); animation: tIn .4s cubic-bezier(.16,1,.3,1); display: flex; align-items: center; gap: 8px; }
+.toast-item.removing { animation: tOut .3s ease forwards; }
+@keyframes tIn { from { opacity:0; transform:translateY(14px) scale(.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes tOut { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(14px); } }

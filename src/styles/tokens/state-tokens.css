@@ -1,0 +1,13 @@
+/* ================================================================
+   SEMANTIC STATE COLOR TOKENS — Calibration Extraction Wave 1
+   Source of truth for --c-success/warning/danger signal colors.
+   Do not redeclare in index.html.
+   NOTE: No body.dark overrides — these values are mode-invariant.
+         Risk tokens (--c-risk-*) are separate and NOT derived from these.
+   ================================================================ */
+
+:root {
+  --c-success: #22c55e;
+  --c-warning:  #f59e0b;
+  --c-danger:   #ef4444;
+}

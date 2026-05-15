@@ -1,0 +1,94 @@
+# netlify.toml — denai production deployment configuration
+# Wave 6C.3 — Static hosting infrastructure
+#
+# Architecture constraints:
+#   - No build step: denai is a pure static site (index.html + src/ assets)
+#   - Runtime is frozen: no bundler, no module system, no compilation
+#   - CSP is delivered exclusively via <meta http-equiv="Content-Security-Policy">
+#     NO Content-Security-Policy response header is added here.
+#     A host-level CSP header that omits 'unsafe-inline' would silently kill
+#     the entire orchestration kernel. Do not add one.
+
+[build]
+  publish = "."
+  command = ""
+
+# ─── Block internal dev metadata from public access ──────────────────────────
+#
+# .wolf/ contains architecture metadata, bug logs, cerebrum notes, and session
+# memory. These files are git-tracked (used by OpenWolf across sessions) but
+# must never be served publicly. Same applies to .claude/, tests/, notes/, docs/.
+#
+# Pattern /.wolf* matches: /.wolf, /.wolf/, /.wolf/cerebrum.md, etc.
+# force = true ensures the rule fires even if a matching file exists on disk.
+
+[[redirects]]
+  from   = "/.wolf*"
+  to     = "/404"
+  status = 404
+  force  = true
+
+[[redirects]]
+  from   = "/.claude*"
+  to     = "/404"
+  status = 404
+  force  = true
+
+[[redirects]]
+  from   = "/tests/*"
+  to     = "/404"
+  status = 404
+  force  = true
+
+[[redirects]]
+  from   = "/notes/*"
+  to     = "/404"
+  status = 404
+  force  = true
+
+[[redirects]]
+  from   = "/docs/*"
+  to     = "/404"
+  status = 404
+  force  = true
+
+# ─── Cache-Control headers ────────────────────────────────────────────────────
+#
+# HTML — no-cache on both URL forms that serve index.html.
+#
+# Rationale: browsers must always revalidate index.html so that ?v= version
+# bumps on src/ asset references are seen immediately. If index.html is cached,
+# a deploy that bumps ?v=2.0.0 → ?v=2.1.0 is invisible until the HTML cache
+# expires. no-store prevents the response from being written to any cache at all;
+# must-revalidate is a belt-and-suspenders directive for proxy caches.
+#
+# Both "/" and "/index.html" must be covered because browsers can request
+# either form and Netlify routes both to the same file.
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# First-party src/ assets — immutable, 1-year cache.
+#
+# Rationale: all src/ references in index.html carry ?v=2.0.0 query strings
+# (applied in Wave 6C.2). The query string is part of the browser cache key,
+# so ?v=2.0.0 and ?v=2.1.0 are treated as entirely different resources.
+# When the version is bumped on deploy, browsers fetch the new URL and cache
+# the new content under the new key. The old ?v=2.0.0 entry is simply never
+# requested again. This makes long-lived caching safe without any risk of
+# stale-asset mismatches.
+#
+# "immutable" tells browsers the response will never change for this URL —
+# no conditional GET requests are issued during the max-age window.
+
+[[headers]]
+  for = "/src/**"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

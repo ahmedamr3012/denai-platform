@@ -1,0 +1,861 @@
+{
+  "version": 1,
+  "bugs": [
+    {
+      "id": "bug-001",
+      "timestamp": "2026-05-13T08:38:26.992Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T08:38:26.992Z"
+    },
+    {
+      "id": "bug-002",
+      "timestamp": "2026-05-13T08:48:10.215Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had 'unsafe-inline'",
+      "fix": "Changed to 'self'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T08:48:10.215Z"
+    },
+    {
+      "id": "bug-003",
+      "timestamp": "2026-05-13T08:56:40.117Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T08:56:40.117Z"
+    },
+    {
+      "id": "bug-004",
+      "timestamp": "2026-05-13T09:02:59.111Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T09:02:59.111Z"
+    },
+    {
+      "id": "bug-005",
+      "timestamp": "2026-05-13T09:24:12.270Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-13T09:31:38.002Z"
+    },
+    {
+      "id": "bug-006",
+      "timestamp": "2026-05-13T09:38:22.374Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T09:38:22.374Z"
+    },
+    {
+      "id": "bug-007",
+      "timestamp": "2026-05-13T09:44:39.687Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T09:44:39.687Z"
+    },
+    {
+      "id": "bug-008",
+      "timestamp": "2026-05-13T09:52:07.088Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-13T09:55:44.885Z"
+    },
+    {
+      "id": "bug-009",
+      "timestamp": "2026-05-13T10:03:23.009Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T10:03:23.009Z"
+    },
+    {
+      "id": "bug-010",
+      "timestamp": "2026-05-13T10:59:44.055Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T10:59:44.055Z"
+    },
+    {
+      "id": "bug-011",
+      "timestamp": "2026-05-13T10:59:48.749Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T10:59:48.749Z"
+    },
+    {
+      "id": "bug-012",
+      "timestamp": "2026-05-13T12:54:43.938Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T12:54:43.938Z"
+    },
+    {
+      "id": "bug-013",
+      "timestamp": "2026-05-13T12:55:00.668Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 20→15 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T12:55:00.668Z"
+    },
+    {
+      "id": "bug-014",
+      "timestamp": "2026-05-13T13:15:08.568Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:15:08.568Z"
+    },
+    {
+      "id": "bug-015",
+      "timestamp": "2026-05-13T13:15:32.174Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "30 lines replaced/restructured",
+      "fix": "Rewrote 37→4 lines (30 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:15:32.174Z"
+    },
+    {
+      "id": "bug-016",
+      "timestamp": "2026-05-13T13:20:44.780Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:20:44.780Z"
+    },
+    {
+      "id": "bug-017",
+      "timestamp": "2026-05-13T13:28:56.867Z",
+      "error_message": "Wrong reference: style should be link",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"link\"",
+      "fix": "Changed style → link",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:28:56.867Z"
+    },
+    {
+      "id": "bug-018",
+      "timestamp": "2026-05-13T13:42:34.027Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"src/styles/utilities/print.css\"",
+      "fix": "Changed to \"src/styles/components/modal.css\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:42:34.027Z"
+    },
+    {
+      "id": "bug-019",
+      "timestamp": "2026-05-13T13:42:52.092Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "13 lines replaced/restructured",
+      "fix": "Rewrote 19→3 lines (13 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:42:52.092Z"
+    },
+    {
+      "id": "bug-020",
+      "timestamp": "2026-05-13T13:52:55.961Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "44 lines replaced/restructured",
+      "fix": "Rewrote 54→5 lines (44 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:52:55.962Z"
+    },
+    {
+      "id": "bug-021",
+      "timestamp": "2026-05-13T13:53:43.819Z",
+      "error_message": "CSS fix: color, font-size",
+      "file": "src/styles/components/cards.css",
+      "root_cause": "color: #92400e → var(--c-warning); font-size: 11.5px → 10px",
+      "fix": "Changed color: #92400e → var(--c-warning); font-size: 11.5px → 10px",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "css"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:53:43.819Z"
+    },
+    {
+      "id": "bug-022",
+      "timestamp": "2026-05-13T13:54:00.447Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"src/styles/utilities/print.css\"",
+      "fix": "Changed to \"src/styles/components/cards.css\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T13:54:00.447Z"
+    },
+    {
+      "id": "bug-023",
+      "timestamp": "2026-05-13T14:03:19.142Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"src/styles/components/toast.css\"",
+      "fix": "Changed to \"src/styles/utilities/accessibility.css\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T14:03:19.143Z"
+    },
+    {
+      "id": "bug-024",
+      "timestamp": "2026-05-13T14:03:54.536Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "20 lines replaced/restructured",
+      "fix": "Rewrote 27→7 lines (20 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T14:03:54.536Z"
+    },
+    {
+      "id": "bug-025",
+      "timestamp": "2026-05-13T14:37:52.582Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-13T14:37:52.582Z"
+    },
+    {
+      "id": "bug-026",
+      "timestamp": "2026-05-14T09:20:34.773Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had 'unsafe-inline'",
+      "fix": "Changed to 'self'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T09:20:34.773Z"
+    },
+    {
+      "id": "bug-027",
+      "timestamp": "2026-05-14T10:08:51.205Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T10:08:51.205Z"
+    },
+    {
+      "id": "bug-028",
+      "timestamp": "2026-05-14T10:19:37.744Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 12→4 lines (7 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T10:19:37.744Z"
+    },
+    {
+      "id": "bug-029",
+      "timestamp": "2026-05-14T10:32:57.168Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T10:32:57.168Z"
+    },
+    {
+      "id": "bug-030",
+      "timestamp": "2026-05-14T13:30:00.000Z",
+      "error_message": "Dual-definition runtime strategy invalid for top-level const declarations — ANNUAL_CHECKUP and 6 other constants cannot be redeclared globally (SyntaxError: Identifier has already been declared)",
+      "file": "index.html, src/utils/costEngine.js",
+      "root_cause": "const/let bindings at the top level of a classic script are added to the global declarative record but cannot be re-declared. Loading costEngine.js first declares all 7 constants; the inline script re-declaring them with const would throw SyntaxError. function declarations are hoistable and silently overwrite — dual-definition is ONLY safe for function declarations, not const/let.",
+      "fix": "Skipped dual-definition holding period for const declarations. Step C executed immediately after Step B, collapsing them into a single atomic operation for const-containing modules.",
+      "tags": [
+        "const-redeclaration",
+        "classic-script",
+        "dual-definition",
+        "wave3",
+        "costEngine"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T13:30:00.000Z"
+    },
+    {
+      "id": "bug-031",
+      "timestamp": "2026-05-14T11:48:31.270Z",
+      "error_message": "Wrong condition in logic",
+      "file": "index.html",
+      "root_cause": "Condition was: if (S.editing)",
+      "fix": "Changed to: if (UIState.editing)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-14T11:48:42.620Z"
+    },
+    {
+      "id": "bug-032",
+      "timestamp": "2026-05-14T14:14:54.210Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T14:14:54.210Z"
+    },
+    {
+      "id": "bug-033",
+      "timestamp": "2026-05-14T14:26:37.329Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/render/costGraphPanel.js",
+      "root_cause": "Had 'http://www.w3.org/2020/svg'",
+      "fix": "Changed to 'http://www.w3.org/2000/svg'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T14:26:37.330Z"
+    },
+    {
+      "id": "bug-034",
+      "timestamp": "2026-05-14T14:34:07.226Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T14:34:07.226Z"
+    },
+    {
+      "id": "bug-035",
+      "timestamp": "2026-05-14T14:42:22.454Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T14:42:22.454Z"
+    },
+    {
+      "id": "bug-036",
+      "timestamp": "2026-05-14T15:01:59.686Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T15:01:59.686Z"
+    },
+    {
+      "id": "bug-037",
+      "timestamp": "2026-05-14T15:45:15.460Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T15:45:15.460Z"
+    },
+    {
+      "id": "bug-038",
+      "timestamp": "2026-05-14T21:01:27.954Z",
+      "error_message": "Wrong reference: style should be script",
+      "file": "index.html",
+      "root_cause": "Used \"style\" instead of \"script\"",
+      "fix": "Changed style → script",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T21:01:27.954Z"
+    },
+    {
+      "id": "bug-039",
+      "timestamp": "2026-05-14T21:50:12.810Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/render/costGraphPanel.js",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T21:50:12.811Z"
+    },
+    {
+      "id": "bug-040",
+      "timestamp": "2026-05-15T00:00:00.000Z",
+      "error_message": "<polyline> attribute points: Expected number 'NaN' / <circle> attribute cy: Expected length 'NaN'",
+      "file": "src/render/costGraphPanel.js",
+      "root_cause": "renderGraph() unconditionally reads ai.implant and ai.bridge at line 138-139. calcAIMulti() returns implant2/bridge4/cantilever — no .implant or .bridge — so both are undefined, and undefined - number = NaN, Math.max(65, NaN) = NaN (JS spec), propagating NaN into all SVG attributes. Wave 4 modularization introduced renderMainPanels() which routes ALL ai modes through renderGraph(), exposing the gap that renderCost() already guards with early returns but renderGraph() did not.",
+      "fix": "Inserted two early-return guards immediately after the if (!ai) guard in renderGraph(): if (ai?.isMultiTooth) return; and if (ai?.treatmentMode === 'restorative') return; — mirroring the pattern already used in renderCost().",
+      "tags": [
+        "nan",
+        "svg",
+        "renderGraph",
+        "multi-tooth",
+        "restorative",
+        "wave4",
+        "modularization"
+      ],
+      "related_bugs": [
+        "bug-039"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T00:00:00.000Z"
+    },
+    {
+      "id": "bug-041",
+      "timestamp": "2026-05-15T08:56:36.487Z",
+      "error_message": "Missing guard clause",
+      "file": "src/render/riskPanel.js",
+      "root_cause": "No early return/throw for edge case: !ai",
+      "fix": "Added guard clause: if (!ai)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T08:56:36.487Z"
+    },
+    {
+      "id": "bug-042",
+      "timestamp": "2026-05-15T08:56:57.524Z",
+      "error_message": "Wrong condition in logic",
+      "file": "index.html",
+      "root_cause": "Condition was: if (!el)",
+      "fix": "Changed to: if (!Array.isArray(list)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T08:56:57.524Z"
+    },
+    {
+      "id": "bug-043",
+      "timestamp": "2026-05-15T09:11:45.411Z",
+      "error_message": "Missing guard clause",
+      "file": "src/render/costGraphPanel.js",
+      "root_cause": "No early return/throw for edge case: ai?.isMultiTooth",
+      "fix": "Added guard clause: if (ai?.isMultiTooth)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T09:11:45.411Z"
+    },
+    {
+      "id": "bug-044",
+      "timestamp": "2026-05-15T10:09:56.471Z",
+      "error_message": "Wrong operator: !== should be ===",
+      "file": "tests/ci/engine.spec.js",
+      "root_cause": "Used \"!==\" instead of \"===\"",
+      "fix": "Changed operator !== → ===",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T10:09:56.471Z"
+    },
+    {
+      "id": "bug-045",
+      "timestamp": "2026-05-15T13:39:20.795Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had 'unsafe-eval'",
+      "fix": "Changed to 'self'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T13:39:20.795Z"
+    },
+    {
+      "id": "bug-046",
+      "timestamp": "2026-05-15T14:22:03.427Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: typeof denaiAuth === 'undefined'",
+      "fix": "Added guard clause: if (typeof denaiAuth === 'undefined')",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T14:22:03.428Z"
+    },
+    {
+      "id": "bug-047",
+      "timestamp": "2026-05-15T14:22:21.049Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "index.html",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T14:22:21.049Z"
+    },
+    {
+      "id": "bug-048",
+      "timestamp": "2026-05-15T14:22:43.186Z",
+      "error_message": "Incorrect value in code",
+      "file": "docs/deployment-validation.md",
+      "root_cause": "Had `src/styles/**/*.css?v=2.0.0`",
+      "fix": "Changed to `src/auth/authModule.js?v=2.0.0`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T14:22:43.186Z"
+    },
+    {
+      "id": "bug-049",
+      "timestamp": "2026-05-15T14:59:58.802Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "index.html",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: // Wave 7D: enqueue soft-delete BEFORE local removal — cloud; try {",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-15T15:00:07.392Z"
+    },
+    {
+      "id": "bug-050",
+      "timestamp": "2026-05-15T15:00:36.282Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/release-checklist.md",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 8→8 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T15:00:36.282Z"
+    },
+    {
+      "id": "bug-051",
+      "timestamp": "2026-05-15T15:00:43.459Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/deployment-validation.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→9 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T15:00:43.459Z"
+    },
+    {
+      "id": "bug-052",
+      "timestamp": "2026-05-15T15:19:40.202Z",
+      "error_message": "Wrong condition in logic",
+      "file": "src/auth/authModule.js",
+      "root_cause": "Condition was: if (typeof denaiSyncQueue !== 'undefined')",
+      "fix": "Changed to: if (typeof denaiSyncQueue   !== 'undefined')",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T15:19:40.202Z"
+    },
+    {
+      "id": "bug-053",
+      "timestamp": "2026-05-15T15:21:01.637Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: !Array.isArray(changedIds",
+      "fix": "Added guard clause: if (!Array.isArray(changedIds)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T15:21:01.637Z"
+    }
+  ]
+}
