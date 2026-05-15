@@ -1,13 +1,15 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-15T09:21:41.250Z
-> Files: 42 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-15T10:09:56.458Z
+> Files: 48 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `.gitignore` — Git ignore rules (~18 tok)
+- `.gitignore` — Git ignore rules (~28 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
 - `index.html` — denai — Clinical Insight (~65158 tok)
+- `package.json` — Node.js package manifest (~106 tok)
+- `playwright.config.js` — Wave 6B: Chromium-only headless config, zero artifacts (no screenshots/video/trace), webServer via node tests/ci/serve.js on port 3000, retries=0, workers=1 (~325 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -17,6 +19,10 @@
 ## .claude/rules/
 
 - `openwolf.md` (~313 tok)
+
+## .github/workflows/
+
+- `ci.yml` — Wave 6B: GitHub Actions workflow; ubuntu-latest, Node 20, npm ci, Playwright Chromium only; runs test:engine then test:smoke on push/PR to main (~247 tok)
 
 ## docs/
 
@@ -77,6 +83,12 @@
 
 - `costEngine.js` — Wave-3.4 extraction: 7 cost constants (ANNUAL_CHECKUP, CROWN_REPLACE_PROB, CROWN_COST_RATIO, BRIDGE_REPLACE_PROB, BRIDGE_REPLACE_RATIO, STANDALONE_CROWN_REPLACE_PROB, STANDALONE_CROWN_REPLACE_RATIO) + computeCosts(state, ai). Pure function — no DOM, no S, no localStorage. Classic-script globals. Dual-definition active (Step A only). (~180 tok)
 - `formatting.js` — Declares escapeHtml (~50 tok)
+
+## tests/ci/
+
+- `engine.spec.js` — Wave 6B Playwright spec: injects scenarios.js + runner.js, runs DenaiEngineRunner.runAll(), asserts failed===0; sentinel: window.render; zero runtime code touched (~921 tok)
+- `serve.js` — Wave 6B zero-dependency static server (Node.js http built-in only); serves project root on 127.0.0.1:3000; path-traversal guard; used by playwright.config.js webServer (~584 tok)
+- `smoke.spec.js` — Wave 6B Playwright spec: injects smoke/runner.js, captures load-phase EB errors + pageerrors, runs DenaiSmokeRunner.runAll(), asserts failed===0; Tier 1 only; no async waits (~1211 tok)
 
 ## tests/engine/
 

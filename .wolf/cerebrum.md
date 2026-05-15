@@ -17,6 +17,10 @@
 
 ## Do-Not-Repeat
 
+- [2026-05-15] **`const`/`let` top-level classic-script declarations are NOT `window.*` properties.** In Playwright (and in browsers), `window.X` only resolves for `var` declarations and `function` declarations at script top level. `const ClinicalEngine = ...` makes `ClinicalEngine` available in the global scope but NOT as `window.ClinicalEngine`. Use `typeof X !== 'undefined'` (not `window.X`) when checking for `const`/`let` globals in `page.waitForFunction` or `page.evaluate`. For CI test sentinels, prefer a known function declaration (`window.render`) over `const` globals.
+
+
+
 <!-- Mistakes made and corrected. Each entry prevents the same mistake recurring. -->
 <!-- Format: [YYYY-MM-DD] Description of what went wrong and what to do instead. -->
 

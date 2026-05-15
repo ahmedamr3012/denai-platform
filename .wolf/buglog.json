@@ -696,6 +696,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-15T09:11:45.411Z"
+    },
+    {
+      "id": "bug-044",
+      "timestamp": "2026-05-15T10:09:56.471Z",
+      "error_message": "Wrong operator: !== should be ===",
+      "file": "tests/ci/engine.spec.js",
+      "root_cause": "Used \"!==\" instead of \"===\"",
+      "fix": "Changed operator !== → ===",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T10:09:56.471Z"
     }
   ]
 }

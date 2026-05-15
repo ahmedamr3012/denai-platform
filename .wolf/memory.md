@@ -2,6 +2,19 @@
 
 > Chronological action log. Hooks and AI append to this file automatically.
 
+## Session: 2026-05-15 (Wave 6B)
+
+| Time  | Action | File(s) | Outcome | ~Tokens |
+|-------|--------|---------|---------|---------|
+| 19:00 | wave6B: CI infrastructure implementation — Playwright engine + smoke gates | package.json, playwright.config.js, tests/ci/serve.js, tests/ci/engine.spec.js, tests/ci/smoke.spec.js, .github/workflows/ci.yml, .gitignore | 2 specs pass in 3.5s; engine 9-scenario and smoke Tier-1 3-scenario both green; zero runtime code touched | ~500 tok |
+| 19:05 | bug-fix: engine spec waitForFunction sentinel — window.ClinicalEngine is undefined (const ≠ window.*); fixed to window.render (function declaration) | tests/ci/engine.spec.js | timeout resolved; spec passes in 1.0s | ~5 tok |
+
+## Session: 2026-05-15 (Wave 6A)
+
+| Time  | Action | File(s) | Outcome | ~Tokens |
+|-------|--------|---------|---------|---------|
+| 18:00 | wave6A: developer infrastructure & deployment recon — full read-only audit | docs/runtime-contracts.md, notes/*, tests/*, index.html, src/*, .gitignore | 10-section structured report: packaging audit, build-system compat matrix, regression automation strategy, deployment risks, CI/CD readiness, env strategy, testing infra, source org, operational risks, final recommendation | ~2200 tok |
+
 ## Session: 2026-05-15
 
 | Time  | Action | File(s) | Outcome | ~Tokens |
@@ -436,3 +449,17 @@
 |------|--------|---------|---------|--------|
 | 12:21 | Created docs/runtime-contracts.md | — | ~5931 |
 | 12:22 | Session end: 1 writes across 1 files (runtime-contracts.md) | 3 reads | ~6355 tok |
+
+## Session: 2026-05-15 12:28
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:02 | Created package.json | — | ~106 |
+| 13:02 | Created playwright.config.js | — | ~325 |
+| 13:02 | Created tests/ci/serve.js | — | ~584 |
+| 13:03 | Created tests/ci/engine.spec.js | — | ~824 |
+| 13:03 | Created tests/ci/smoke.spec.js | — | ~1211 |
+| 13:04 | Created .github/workflows/ci.yml | — | ~247 |
+| 13:05 | Edited .gitignore | 1→3 lines | ~11 |
+| 13:09 | Edited tests/ci/engine.spec.js | modified declaration() | ~222 |
+| 13:13 | Session end: 8 writes across 7 files (package.json, playwright.config.js, serve.js, engine.spec.js, smoke.spec.js) | 13 reads | ~93617 tok |

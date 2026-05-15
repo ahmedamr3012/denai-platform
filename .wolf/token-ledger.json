@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-05-12T12:33:56.356Z",
   "lifetime": {
-    "total_tokens_estimated": 7094432,
-    "total_reads": 301,
-    "total_writes": 399,
-    "total_sessions": 32,
-    "anatomy_hits": 129,
-    "anatomy_misses": 172,
-    "repeated_reads_blocked": 777,
-    "estimated_savings_vs_bare_cli": 56952625
+    "total_tokens_estimated": 7278136,
+    "total_reads": 326,
+    "total_writes": 407,
+    "total_sessions": 33,
+    "anatomy_hits": 147,
+    "anatomy_misses": 177,
+    "repeated_reads_blocked": 786,
+    "estimated_savings_vs_bare_cli": 56956225
   },
   "sessions": [
     {
@@ -5176,6 +5176,229 @@
         "writes_count": 1,
         "repeated_reads_blocked": 2,
         "anatomy_lookups": 0
+      }
+    },
+    {
+      "id": "session-2026-05-15-1228",
+      "started": "2026-05-15T09:28:02.582Z",
+      "ended": "2026-05-15T09:49:17.121Z",
+      "reads": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/docs/runtime-contracts.md",
+          "tokens_estimated": 5561,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/notes/denai-architecture-risk-registry.md",
+          "tokens_estimated": 5229,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/notes/denai-runtime-execution-chains.md",
+          "tokens_estimated": 10202,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/notes/denai-state-architecture-audit.md",
+          "tokens_estimated": 2858,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.gitignore",
+          "tokens_estimated": 18,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.claude/settings.json",
+          "tokens_estimated": 441,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 65158,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/tests/engine/runner.js",
+          "tokens_estimated": 280,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/tests/smoke/runner.js",
+          "tokens_estimated": 340,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [],
+      "totals": {
+        "input_tokens_estimated": 90087,
+        "output_tokens_estimated": 0,
+        "reads_count": 12,
+        "writes_count": 0,
+        "repeated_reads_blocked": 1,
+        "anatomy_lookups": 9
+      }
+    },
+    {
+      "id": "session-2026-05-15-1228",
+      "started": "2026-05-15T09:28:02.582Z",
+      "ended": "2026-05-15T10:13:46.540Z",
+      "reads": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/anatomy.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/cerebrum.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/docs/runtime-contracts.md",
+          "tokens_estimated": 5561,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/notes/denai-architecture-risk-registry.md",
+          "tokens_estimated": 5229,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/notes/denai-runtime-execution-chains.md",
+          "tokens_estimated": 10202,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/notes/denai-state-architecture-audit.md",
+          "tokens_estimated": 2858,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.gitignore",
+          "tokens_estimated": 18,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.claude/settings.json",
+          "tokens_estimated": 441,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/index.html",
+          "tokens_estimated": 65158,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/tests/engine/runner.js",
+          "tokens_estimated": 280,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/tests/smoke/runner.js",
+          "tokens_estimated": 340,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.wolf/memory.md",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "C:/Users/DRCC48~1.AHM/AppData/Local/Temp/claude/c--Users-Dr-Ahmed-Desktop-denai/4c54a7e2-588d-4c6b-a3ac-44dbb06c6785/tasks/bpxqd5b7i.output",
+          "tokens_estimated": 0,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/package.json",
+          "tokens_estimated": 106,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/playwright.config.js",
+          "tokens_estimated": 325,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/tests/ci/serve.js",
+          "tokens_estimated": 584,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/tests/ci/engine.spec.js",
+          "tokens_estimated": 824,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/tests/ci/smoke.spec.js",
+          "tokens_estimated": 1211,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.github/workflows/ci.yml",
+          "tokens_estimated": 247,
+          "action": "create"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/.gitignore",
+          "tokens_estimated": 11,
+          "action": "edit"
+        },
+        {
+          "file": "c:/Users/Dr.Ahmed/Desktop/denai/tests/ci/engine.spec.js",
+          "tokens_estimated": 222,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 90087,
+        "output_tokens_estimated": 3530,
+        "reads_count": 13,
+        "writes_count": 8,
+        "repeated_reads_blocked": 8,
+        "anatomy_lookups": 9
       }
     }
   ],

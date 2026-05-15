@@ -5,3 +5,5 @@ dist/
 build/
 .vscode/
 *.log
+test-results/
+playwright-report/
