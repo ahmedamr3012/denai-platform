@@ -1,0 +1,44 @@
+// src/sync/serializer.js
+// Wave 7D: Patient serializer for cloud write path.
+// Produces a cloud-safe JSONB payload from a local patient object.
+//
+// EXCLUDED fields (must never reach the cloud):
+//   notes      — PHI, deferred to Wave 7G (client-side AES-GCM encryption)
+//   activeSite — device-local navigation state (meaningless on another device)
+//   AI outputs — deterministically computed; never stored
+//
+// Matches Wave 7C schema contract: patients.state JSONB.
+// Uses an explicit allowlist — any new DEFAULT_STATE field stays local-only
+// until deliberately added here.
+
+window.denaiSerializer = (function () {
+
+  var SYNC_SCHEMA_VERSION = 1; // must match schema.sql schema_ver DEFAULT
+
+  // Explicit allowlist — not a denylist. New fields require a deliberate addition.
+  var ALLOWED_FIELDS = [
+    'id', 'caseNum',
+    'name', 'age', 'gender',
+    'tooth', 'condition', 'bone', 'hygiene', 'occlusion', 'tx',
+    'smoking', 'diabetes', 'remainingStructure', 'endodonticStatus', 'parafunction',
+    'multiTooth', 'tooth2', 'abutmentQuality',
+    'multiSite', 'site2Tooth', 'site2Condition', 'site2Structure', 'site2EndoStatus',
+    'costImplant', 'costBridge', 'costBoneGraft', 'costCrown', 'costRCT', 'costPostCore',
+  ];
+
+  // serializePatient — pure function. Never mutates src. Tolerates missing fields.
+  // Returns null if src is not a valid object.
+  function serializePatient(src) {
+    if (!src || typeof src !== 'object') return null;
+    var out = {};
+    for (var i = 0; i < ALLOWED_FIELDS.length; i++) {
+      var f = ALLOWED_FIELDS[i];
+      if (f in src) out[f] = src[f];
+    }
+    out.schema_ver = SYNC_SCHEMA_VERSION;
+    return out;
+  }
+
+  return Object.freeze({ serializePatient: serializePatient });
+
+})();

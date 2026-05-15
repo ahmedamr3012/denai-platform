@@ -1,13 +1,14 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-15T10:09:56.458Z
-> Files: 48 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-15T15:21:25.529Z
+> Files: 60 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~28 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~65158 tok)
+- `index.html` — denai — Clinical Insight (~68754 tok)
+- `netlify.toml` — netlify.toml — denai production deployment configuration (~843 tok)
 - `package.json` — Node.js package manifest (~106 tok)
 - `playwright.config.js` — Wave 6B: Chromium-only headless config, zero artifacts (no screenshots/video/trace), webServer via node tests/ci/serve.js on port 3000, retries=0, workers=1 (~325 tok)
 - `README.md` — Project documentation (~0 tok)
@@ -26,6 +27,10 @@
 
 ## docs/
 
+- `cloud-schema.md` — denai — Cloud Schema Design & Persistence Contracts (~4842 tok)
+- `deployment-validation.md` — denai — Deployment Validation Playbook (~2571 tok)
+- `release-checklist.md` — denai — Release Checklist (~1919 tok)
+- `rollback-playbook.md` — denai — Rollback Playbook (~3203 tok)
 - `runtime-contracts.md` — denai — Runtime Contracts & Architecture Freeze (~5561 tok)
 
 ## notes/
@@ -38,6 +43,14 @@
 
 - `calcAI.js` — Wave-3 extraction: isPosteriorTooth, isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI. Pure functions — no DOM, no S, no localStorage. Globals exposed via classic-script top-level declarations. (~120 tok)
 - `clinicalEngine.js` — Wave-3.5 extraction: full ClinicalEngine IIFE (415 lines). Stages: CT constants, normalize, classify, generateTreatments, scoreRestorative, recommend, explain, buildRestorativeResult, process, processCompound. Zero DOM, zero S, zero escapeHtml, zero computeCosts. Outbound deps: calcAI/calcAIMulti/isPosteriorTooth/isMaxilla (runtime only). Public API: Object.freeze({ process, processCompound, normalize, classify, CT }). Extraction complete — clinicalEngine.js is sole source of truth. (~1200 tok)
+
+## src/auth/
+
+- `authModule.js` — Wave 7B+7D+7E: denaiAuth IIFE. Wave 7E additions: `denaiCloudSync.hydrate()` triggered from both `_restoreSession` and `_listenAuthChanges` alongside existing flush calls. Public API: init, signIn, signUp, signOut, getSession, getStatus, isSignedIn, getClient. (~360 tok)
+
+## src/db/
+
+- `schema.sql` — Wave 7C: PostgreSQL DDL for denai cloud schema v1. Tables: patients (state JSONB + history JSONB + notes_enc + schema_ver) + profiles (preferences JSONB). RLS default-deny on both tables (7 policies). 3 indexes. touch_updated_at trigger. Design artifact — not yet executed. See docs/cloud-schema.md for rationale. (~2557 tok)
 
 ## src/render/
 
@@ -78,6 +91,12 @@
 
 - `accessibility.css` — Wave-2 extraction: .skip-link (+:focus), 2× @media(prefers-reduced-motion:reduce) globals (+ .heartbeat-path override), :focus:not(:focus-visible), .sr-only (2 cascade layers), :focus-visible global, [aria-busy]/[aria-disabled] ARIA utilities, button/input:focus-visible high-contrast, .keyboard-user indicator. NOT extracted: .risk-pill.* (business-specific), component-owned :focus-visible rules. Loads after focus-tokens, before components. (~120 tok)
 - `print.css` — Wave-2 extraction: 2 @media print blocks (Premium Polish opt-card.active override + main suppression/layout block, 14 rules total). All hardcoded values, no token deps. JS report template @media print (line ~4669) left untouched. (~200 tok)
+
+## src/sync/
+
+- `cloudSync.js` — Wave 7E: `denaiCloudSync` IIFE. `hydrate()` — async fetch from `patients` table (deleted_at IS NULL), dispatches to `_mergeCloudIntoLocal` or `_handleFirstLogin` (cloud empty). Merge: `_syncedAt` tracks last received cloud timestamp; cloud wins when `cloudRow.updated_at > local._syncedAt`, guarded by `denaiSyncQueue.hasPendingFor()` (in-flight edits never overwritten). `_isPlaceholder()` prevents uploading the auto-generated default seed patient. Calls `denaiApplyCloudMerge(changedIds)` (function declaration in inline script) to refresh UI. (~530 tok)
+- `serializer.js` — Wave 7D: `denaiSerializer` IIFE. `serializePatient(src)` — pure function, explicit allowlist of 28 cloud-safe fields, strips `notes`/`activeSite`/AI outputs, adds `schema_ver:1`. Never mutates source. Returns null for invalid input. (~90 tok)
+- `syncQueue.js` — Wave 7D+7E: `denaiSyncQueue` IIFE. Wave 7E addition: `hasPendingFor(patientId)` — returns true if unsent upsert exists for that patient (used by cloudSync merge guard). Public API: init, enqueue, enqueueSoftDelete, flush, hasPendingFor, getStatus, getQueueLength. (~450 tok)
 
 ## src/utils/
 

@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="denai — Clinical Insight Interface for dental professionals" />
   <!-- CSP: Restrictive but functional for single-file -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; frame-src 'none'; base-uri 'none'; form-action 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; connect-src https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://*.supabase.co; img-src 'self' data:; frame-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; upgrade-insecure-requests;">
   <title>denai — Clinical Insight</title>
   <!-- PWA manifest & theme -->
   <meta name="theme-color" content="#1F7A4F" />
@@ -19,35 +19,44 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="src/styles/tokens/brand-tokens.css" />
-  <link rel="stylesheet" href="src/styles/tokens/neutral-tokens.css" />
-  <link rel="stylesheet" href="src/styles/tokens/shadow-tokens.css" />
-  <link rel="stylesheet" href="src/styles/tokens/layout-tokens.css" />
-  <link rel="stylesheet" href="src/styles/tokens/motion-tokens.css" />
-  <link rel="stylesheet" href="src/styles/tokens/layer-tokens.css" />
-  <link rel="stylesheet" href="src/styles/tokens/typography-tokens.css" />
-  <link rel="stylesheet" href="src/styles/tokens/skeleton-tokens.css" />
-  <link rel="stylesheet" href="src/styles/tokens/state-tokens.css" />
-  <link rel="stylesheet" href="src/styles/tokens/surface-tokens.css" />
-  <link rel="stylesheet" href="src/styles/tokens/risk-tokens.css" />
-  <link rel="stylesheet" href="src/styles/tokens/focus-tokens.css" />
-  <link rel="stylesheet" href="src/styles/utilities/accessibility.css" />
-  <link rel="stylesheet" href="src/styles/components/toast.css" />
-  <link rel="stylesheet" href="src/styles/components/skeleton.css" />
-  <link rel="stylesheet" href="src/styles/components/history.css" />
-  <link rel="stylesheet" href="src/styles/components/modal.css" />
-  <link rel="stylesheet" href="src/styles/components/cards.css" />
-  <link rel="stylesheet" href="src/styles/utilities/print.css" />
-  <script src="src/ai/calcAI.js"></script>
-  <script src="src/utils/formatting.js"></script>
-  <script src="src/utils/costEngine.js"></script>
-  <script src="src/ai/clinicalEngine.js"></script>
-  <script src="src/reports/reportTemplates.js"></script>
-  <script src="src/render/costGraphPanel.js"></script>
-  <script src="src/render/materialPanel.js"></script>
-  <script src="src/render/comparisonPanel.js"></script>
-  <script src="src/render/patientPanel.js"></script>
-  <script src="src/render/riskPanel.js"></script>
+  <link rel="stylesheet" href="src/styles/tokens/brand-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/neutral-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/shadow-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/layout-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/motion-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/layer-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/typography-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/skeleton-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/state-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/surface-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/risk-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/tokens/focus-tokens.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/utilities/accessibility.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/components/toast.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/components/skeleton.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/components/history.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/components/modal.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/components/cards.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/utilities/print.css?v=2.0.0" />
+  <script src="src/ai/calcAI.js?v=2.0.0"></script>
+  <script src="src/utils/formatting.js?v=2.0.0"></script>
+  <script src="src/utils/costEngine.js?v=2.0.0"></script>
+  <script src="src/ai/clinicalEngine.js?v=2.0.0"></script>
+  <script src="src/reports/reportTemplates.js?v=2.0.0"></script>
+  <script src="src/render/costGraphPanel.js?v=2.0.0"></script>
+  <script src="src/render/materialPanel.js?v=2.0.0"></script>
+  <script src="src/render/comparisonPanel.js?v=2.0.0"></script>
+  <script src="src/render/patientPanel.js?v=2.0.0"></script>
+  <script src="src/render/riskPanel.js?v=2.0.0"></script>
+  <!-- Wave 7B: Auth foundation — Supabase CDN must precede authModule.js -->
+  <!-- TODO: Pin to a specific version before production. Current: @2.39.7 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
+  <script src="src/auth/authModule.js?v=2.0.0"></script>
+  <!-- Wave 7D: Cloud write path — serializer must precede syncQueue -->
+  <script src="src/sync/serializer.js?v=2.0.0"></script>
+  <script src="src/sync/syncQueue.js?v=2.0.0"></script>
+  <!-- Wave 7E: Cloud read path — cloudSync must follow syncQueue (uses hasPendingFor) -->
+  <script src="src/sync/cloudSync.js?v=2.0.0"></script>
   <style>
     /* ================================================================
        DESIGN TOKENS & VARIABLES
@@ -128,6 +137,13 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Sora', sans-serif; }
 .user-av { width: 35px; height: 35px; border-radius: 9px; background: rgba(31,122,79,.4); border: 1px solid rgba(31,122,79,.55); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0; }
 .user-name { font-size: 13px; font-weight: 600; color: #fff; line-height: 1.2; }
 .user-plan { font-size: 11px; color: var(--c-brand-lite); font-weight: 500; }
+
+/* ── Wave 7B: Auth tab switcher ──────────────────────── */
+.auth-tab { flex: 1; padding: 9px; font-size: 14px; font-weight: 600; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: var(--c-n400); transition: color var(--t-fast), border-color var(--t-fast); }
+.auth-tab:hover { color: var(--c-n700); }
+.auth-tab-active { color: var(--c-brand) !important; border-bottom-color: var(--c-brand) !important; }
+body.dark .auth-tab { color: var(--c-n400); }
+body.dark .auth-tab-active { color: var(--c-brand-lite) !important; border-bottom-color: var(--c-brand-lite) !important; }
 
 /* ── Patient List ─────────────────────────────────────── */
 .patient-section { padding: 0 8px 8px; position: relative; z-index: 1; flex-shrink: 0; }
@@ -740,10 +756,17 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       </button>
     </div>
 
-<div class="sidebar-user" role="button" tabindex="0" aria-label="User profile: Dr. Ahmed, Premium Plan" onclick="showToast('Profile settings coming soon','info')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showToast('Profile settings coming soon','info')}">
-  <div class="user-av" aria-hidden="true">Dr</div>
-  <div><div class="user-name">Dr. Ahmed</div><div class="user-plan">⭐ Premium Plan</div></div>
-  <i class="fa-solid fa-chevron-down" style="font-size:10px;color:rgba(255,255,255,.3);margin-left:auto;" aria-hidden="true"></i>
+<div class="sidebar-user" id="authUserArea" role="button" tabindex="0"
+     aria-label="Account"
+     onclick="openAuthModal()"
+     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAuthModal()}">
+  <div class="user-av" aria-hidden="true" id="authUserAvatar">Dr</div>
+  <div>
+    <div class="user-name" id="authUserName">Local mode</div>
+    <div class="user-plan" id="authUserPlan">Sign in to sync</div>
+  </div>
+  <span id="authStatusIndicator" aria-hidden="true" title="Local mode"
+        style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);margin-left:auto;flex-shrink:0;transition:background 0.3s;"></span>
 </div>
 
   </aside>
@@ -847,6 +870,70 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <button class="btn btn-sec" type="button" id="cancelDeletePatientBtn" style="flex:1;justify-content:center;">Cancel</button>
         <button class="btn btn-pri" type="button" id="confirmDeletePatientBtn" style="flex:1;justify-content:center;background:var(--c-danger);box-shadow:0 4px 20px rgba(239,68,68,.25);">Delete</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Wave 7B: Auth Modal — sign in / sign up / account -->
+  <div class="modal-ov" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authModalHeading">
+    <div class="modal-box" id="authModalBox" role="document" style="max-width:400px;text-align:left;">
+      <button type="button" class="modal-close-btn" id="closeAuthModalBtn" aria-label="Close dialog">×</button>
+
+      <!-- Tab row -->
+      <div id="authTabRow" style="display:flex;margin-bottom:20px;border-bottom:1px solid var(--c-n200);">
+        <button type="button" id="authTabSignIn" class="auth-tab auth-tab-active" onclick="showAuthTab('signin')">Sign In</button>
+        <button type="button" id="authTabSignUp" class="auth-tab" onclick="showAuthTab('signup')">Create Account</button>
+      </div>
+
+      <!-- Sign-in panel -->
+      <div id="authPanelSignIn">
+        <h3 id="authModalHeading" style="font-size:18px;font-weight:800;color:var(--c-n900);margin-bottom:4px;">Welcome back</h3>
+        <p style="font-size:13px;color:var(--c-n500);margin-bottom:18px;">Sign in to sync your patients across devices.</p>
+        <div style="margin-bottom:12px;">
+          <label class="np-label" for="authSignInEmail">Email</label>
+          <input class="np-input" id="authSignInEmail" type="email" placeholder="dr@clinic.com" autocomplete="email"/>
+        </div>
+        <div style="margin-bottom:18px;">
+          <label class="np-label" for="authSignInPassword">Password</label>
+          <input class="np-input" id="authSignInPassword" type="password" placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <div id="authSignInError" style="display:none;font-size:12px;color:var(--c-danger);margin-bottom:10px;" role="alert"></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-sec" type="button" id="authContinueLocalBtn" style="flex:1;justify-content:center;" onclick="closeAuthModal()">Continue locally</button>
+          <button class="btn btn-pri" type="button" id="authSignInBtn" style="flex:1;justify-content:center;">Sign In</button>
+        </div>
+      </div>
+
+      <!-- Sign-up panel (hidden by default) -->
+      <div id="authPanelSignUp" style="display:none;">
+        <h3 style="font-size:18px;font-weight:800;color:var(--c-n900);margin-bottom:4px;">Create account</h3>
+        <p style="font-size:13px;color:var(--c-n500);margin-bottom:18px;">Back up your patients and sync across devices.</p>
+        <div style="margin-bottom:12px;">
+          <label class="np-label" for="authSignUpEmail">Email</label>
+          <input class="np-input" id="authSignUpEmail" type="email" placeholder="dr@clinic.com" autocomplete="email"/>
+        </div>
+        <div style="margin-bottom:18px;">
+          <label class="np-label" for="authSignUpPassword">Password</label>
+          <input class="np-input" id="authSignUpPassword" type="password" placeholder="At least 6 characters" autocomplete="new-password"/>
+        </div>
+        <div id="authSignUpError"   style="display:none;font-size:12px;color:var(--c-danger);margin-bottom:10px;" role="alert"></div>
+        <div id="authSignUpSuccess" style="display:none;font-size:12px;color:var(--c-success);margin-bottom:10px;" role="status"></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;" onclick="closeAuthModal()">Cancel</button>
+          <button class="btn btn-pri" type="button" id="authSignUpBtn" style="flex:1;justify-content:center;">Create Account</button>
+        </div>
+      </div>
+
+      <!-- Signed-in panel (hidden by default) -->
+      <div id="authPanelSignedIn" style="display:none;">
+        <h3 style="font-size:18px;font-weight:800;color:var(--c-n900);margin-bottom:4px;">Account</h3>
+        <p id="authSignedInEmail" style="font-size:13px;color:var(--c-n500);margin-bottom:18px;">Signed in</p>
+        <p style="font-size:12px;color:var(--c-n400);margin-bottom:18px;">Your patients are syncing across devices. Signing out keeps all local data intact.</p>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;" onclick="closeAuthModal()">Close</button>
+          <button class="btn btn-sec" type="button" id="authSignOutBtn" style="flex:1;justify-content:center;color:var(--c-danger);border-color:var(--c-danger);">Sign Out</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1489,6 +1576,13 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         setActivePatientId(S.id);
         showSaveIndicator('saved');
         renderPatientList();
+        // Wave 7D: enqueue cloud upsert after successful localStorage write.
+        // Inner try-catch isolates sync failures from local persistence path.
+        try {
+          if (typeof denaiSyncQueue !== 'undefined') {
+            denaiSyncQueue.enqueue({ type: 'upsert', patientId: S.id, payload: updated, history: History.load(S.id) });
+          }
+        } catch (e) {}
       } catch(e) { console.warn('State persistence failed:', e.message); }
       _saveStateTimer = null;
     }, 200);
@@ -3264,6 +3358,12 @@ notes: '',
 let list = loadAllPatients() || [];
 list.push(newPatient);
 saveAllPatients(list);
+// Wave 7D: enqueue cloud upsert for new patient (empty history — patient just created).
+try {
+  if (typeof denaiSyncQueue !== 'undefined') {
+    denaiSyncQueue.enqueue({ type: 'upsert', patientId: newPatient.id, payload: newPatient, history: [] });
+  }
+} catch (e) {}
 closeNewPatientModal();
 switchPatient(newPatient.id);
 History.add('New patient added', name);
@@ -3288,6 +3388,12 @@ if (!_pendingDeleteId) return;
 let list = loadAllPatients() || [];
 if (list.length <= 1) { showToast('Cannot delete the only patient', 'error'); closeDeletePatient(); return; }
 const name = (list.find(p => p.id === _pendingDeleteId) || {}).name || 'Patient';
+// Wave 7D: enqueue soft-delete BEFORE local removal — cloud row needs the known ID.
+try {
+  if (typeof denaiSyncQueue !== 'undefined') {
+    denaiSyncQueue.enqueueSoftDelete(_pendingDeleteId);
+  }
+} catch (e) {}
 list = list.filter(p => p.id !== _pendingDeleteId);
 saveAllPatients(list);
 closeDeletePatient();
@@ -3298,6 +3404,70 @@ switchPatient(list[0].id);
 renderPatientList();
 }
 showToast(`${name} removed`, 'info');
+}
+
+// ================================================================
+// Wave 7E: CLOUD MERGE UI CALLBACK
+// Called by denaiCloudSync after a background merge changes local patients.
+// changedIds: string[] of patient IDs that were updated or added from cloud.
+// Must be a function declaration (not const) so cloudSync.js can access
+// it via window.denaiApplyCloudMerge from a separate classic script.
+// ================================================================
+function denaiApplyCloudMerge(changedIds) {
+renderPatientList();
+if (!Array.isArray(changedIds) || !changedIds.includes(S.id)) return;
+// Don't disrupt an active edit session — user's uncommitted changes take priority.
+if (UIState.editing) return;
+const list = loadAllPatients() || [];
+const updated = list.find(p => p.id === S.id);
+if (!updated) return;
+// Reload the active patient into S and re-render.
+Object.assign(S, { ...DEFAULT_STATE, ...updated });
+render(S);
+showToast('View updated from cloud sync', 'info');
+}
+
+// ================================================================
+// Wave 7B: AUTH MODAL UI HANDLERS
+// denaiAuth (window.denaiAuth) is defined in src/auth/authModule.js.
+// These functions are safe to call even if denaiAuth is unavailable.
+// ================================================================
+function openAuthModal() {
+const status = (typeof denaiAuth !== 'undefined') ? denaiAuth.getStatus() : 'local';
+const tabRow = $('authTabRow');
+if (status === 'signed-in') {
+  const session = (typeof denaiAuth !== 'undefined') ? denaiAuth.getSession() : null;
+  const emailEl = $('authSignedInEmail');
+  if (emailEl) emailEl.textContent = (session && session.user && session.user.email) || 'Signed in';
+  if ($('authPanelSignIn'))    $('authPanelSignIn').style.display    = 'none';
+  if ($('authPanelSignUp'))    $('authPanelSignUp').style.display    = 'none';
+  if ($('authPanelSignedIn'))  $('authPanelSignedIn').style.display  = '';
+  if (tabRow) tabRow.style.display = 'none';
+} else {
+  showAuthTab('signin');
+  if (tabRow) tabRow.style.display = 'flex';
+}
+$('authModal').style.display = 'flex';
+setTimeout(() => {
+  const first = status === 'signed-in' ? null : $('authSignInEmail');
+  if (first) first.focus();
+}, 80);
+}
+
+function closeAuthModal() {
+$('authModal').style.display = 'none';
+const errSI = $('authSignInError'); if (errSI) errSI.style.display = 'none';
+const errSU = $('authSignUpError'); if (errSU) errSU.style.display = 'none';
+const sucSU = $('authSignUpSuccess'); if (sucSU) sucSU.style.display = 'none';
+}
+
+function showAuthTab(tab) {
+if ($('authPanelSignIn'))   $('authPanelSignIn').style.display   = tab === 'signin' ? '' : 'none';
+if ($('authPanelSignUp'))   $('authPanelSignUp').style.display   = tab === 'signup' ? '' : 'none';
+if ($('authPanelSignedIn')) $('authPanelSignedIn').style.display = 'none';
+const btnSI = $('authTabSignIn'), btnSU = $('authTabSignUp');
+if (btnSI) { btnSI.classList.toggle('auth-tab-active', tab === 'signin'); }
+if (btnSU) { btnSU.classList.toggle('auth-tab-active', tab === 'signup'); }
 }
 
 // Shortcuts modal
@@ -3629,6 +3799,64 @@ $('deletePatientModalBox')?.addEventListener('click', e => e.stopPropagation());
 $('closeDeletePatientBtn')?.addEventListener('click', closeDeletePatient);
 $('cancelDeletePatientBtn')?.addEventListener('click', closeDeletePatient);
 $('confirmDeletePatientBtn')?.addEventListener('click', confirmDeletePatient);
+// Wave 7B: Auth modal event listeners
+$('authModal')?.addEventListener('click', closeAuthModal);
+$('authModalBox')?.addEventListener('click', e => e.stopPropagation());
+$('closeAuthModalBtn')?.addEventListener('click', closeAuthModal);
+$('authSignInBtn')?.addEventListener('click', async () => {
+  if (typeof denaiAuth === 'undefined') { showToast('Auth service not loaded', 'error'); return; }
+  const email    = $('authSignInEmail')?.value.trim();
+  const password = $('authSignInPassword')?.value;
+  const errEl    = $('authSignInError');
+  const btn      = $('authSignInBtn');
+  if (!email || !password) {
+    if (errEl) { errEl.textContent = 'Email and password required.'; errEl.style.display = ''; }
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
+  if (btn) { btn.textContent = 'Signing in…'; btn.disabled = true; }
+  const { error } = await denaiAuth.signIn(email, password);
+  if (btn) { btn.textContent = 'Sign In'; btn.disabled = false; }
+  if (error) {
+    if (errEl) { errEl.textContent = error.message || 'Sign in failed.'; errEl.style.display = ''; }
+  } else {
+    closeAuthModal();
+    showToast('Signed in — your patients will sync shortly', 'success');
+  }
+});
+$('authSignUpBtn')?.addEventListener('click', async () => {
+  if (typeof denaiAuth === 'undefined') { showToast('Auth service not loaded', 'error'); return; }
+  const email    = $('authSignUpEmail')?.value.trim();
+  const password = $('authSignUpPassword')?.value;
+  const errEl    = $('authSignUpError');
+  const sucEl    = $('authSignUpSuccess');
+  const btn      = $('authSignUpBtn');
+  if (!email || !password) {
+    if (errEl) { errEl.textContent = 'Email and password required.'; errEl.style.display = ''; }
+    return;
+  }
+  if (password.length < 6) {
+    if (errEl) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.style.display = ''; }
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
+  if (sucEl) sucEl.style.display = 'none';
+  if (btn) { btn.textContent = 'Creating…'; btn.disabled = true; }
+  const { error } = await denaiAuth.signUp(email, password);
+  if (btn) { btn.textContent = 'Create Account'; btn.disabled = false; }
+  if (error) {
+    if (errEl) { errEl.textContent = error.message || 'Sign up failed.'; errEl.style.display = ''; }
+  } else {
+    if (sucEl) { sucEl.textContent = 'Account created! Check your email to confirm, then sign in.'; sucEl.style.display = ''; }
+  }
+});
+$('authSignOutBtn')?.addEventListener('click', async () => {
+  if (typeof denaiAuth === 'undefined') return;
+  await denaiAuth.signOut();
+  closeAuthModal();
+  // IMPORTANT: local patient data is never cleared on sign-out
+  showToast('Signed out — local data preserved', 'info');
+});
 $('saveDraftBtn')?.addEventListener('click', openModal);
 $('createCaseBtn')?.addEventListener('click', createCase);
 $('resetBtn')?.addEventListener('click', openResetModal);
@@ -3710,6 +3938,7 @@ trapFocus('resetModal');
 trapFocus('shortcutsModal');
 trapFocus('newPatientModal');
 trapFocus('deletePatientModal');
+trapFocus('authModal');
 
 renderPatientList();
 applyDarkMode();
@@ -3724,6 +3953,17 @@ window.addEventListener('beforeunload', () => {
   for (const id of Object.keys(_rafIds)) cancelAnimationFrame(_rafIds[id]);
   if (_matFadeTimer) { clearTimeout(_matFadeTimer); _matFadeTimer = null; }
 });
+
+// Wave 7B: Auth initializes AFTER first render. Failures silently degrade to local mode.
+if (typeof denaiAuth !== 'undefined') {
+  denaiAuth.init().catch(function () {}); // never throws to caller
+}
+
+// Wave 7D: Sync queue init — loads persisted queue, registers online listener.
+// Synchronous. Must run after denaiAuth.init() so flush() can check isSignedIn().
+if (typeof denaiSyncQueue !== 'undefined') {
+  denaiSyncQueue.init();
+}
 
 })();
 
