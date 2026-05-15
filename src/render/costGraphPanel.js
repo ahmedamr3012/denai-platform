@@ -30,6 +30,7 @@
     // ── Multi-tooth cost display ─────────────────────────────
     if (ai?.isMultiTooth) {
       const mtCosts = ai.costs;
+      if (!mtCosts) return;
       const ANNUAL_CHECKUP = 300;
       const imp2_10yr  = mtCosts.implant2   + ANNUAL_CHECKUP * 10;
       const bri4_10yr  = mtCosts.bridge4    + ANNUAL_CHECKUP * 10 + Math.round(mtCosts.bridge4 * 0.28 * 0.90);
@@ -137,6 +138,7 @@
     const width = 300, height = 120, padding = 30;
     const years = Array.from({length: 15}, (_,i) => i+1);
     const lastIndex = years.length - 1;
+    if (!Number.isFinite(ai.implant) || !Number.isFinite(ai.bridge)) return;
     const implantPoints = years.map(y => Math.max(65, ai.implant - (y * 0.35)));
     const bridgePoints = years.map(y => Math.max(55, ai.bridge - (y * 0.85)));
     const scaleX = (i) => padding + (i / lastIndex) * (width - 2 * padding);

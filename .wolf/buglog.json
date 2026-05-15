@@ -634,10 +634,68 @@
       "file": "src/render/costGraphPanel.js",
       "root_cause": "renderGraph() unconditionally reads ai.implant and ai.bridge at line 138-139. calcAIMulti() returns implant2/bridge4/cantilever — no .implant or .bridge — so both are undefined, and undefined - number = NaN, Math.max(65, NaN) = NaN (JS spec), propagating NaN into all SVG attributes. Wave 4 modularization introduced renderMainPanels() which routes ALL ai modes through renderGraph(), exposing the gap that renderCost() already guards with early returns but renderGraph() did not.",
       "fix": "Inserted two early-return guards immediately after the if (!ai) guard in renderGraph(): if (ai?.isMultiTooth) return; and if (ai?.treatmentMode === 'restorative') return; — mirroring the pattern already used in renderCost().",
-      "tags": ["nan", "svg", "renderGraph", "multi-tooth", "restorative", "wave4", "modularization"],
-      "related_bugs": ["bug-039"],
+      "tags": [
+        "nan",
+        "svg",
+        "renderGraph",
+        "multi-tooth",
+        "restorative",
+        "wave4",
+        "modularization"
+      ],
+      "related_bugs": [
+        "bug-039"
+      ],
       "occurrences": 1,
       "last_seen": "2026-05-15T00:00:00.000Z"
+    },
+    {
+      "id": "bug-041",
+      "timestamp": "2026-05-15T08:56:36.487Z",
+      "error_message": "Missing guard clause",
+      "file": "src/render/riskPanel.js",
+      "root_cause": "No early return/throw for edge case: !ai",
+      "fix": "Added guard clause: if (!ai)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T08:56:36.487Z"
+    },
+    {
+      "id": "bug-042",
+      "timestamp": "2026-05-15T08:56:57.524Z",
+      "error_message": "Wrong condition in logic",
+      "file": "index.html",
+      "root_cause": "Condition was: if (!el)",
+      "fix": "Changed to: if (!Array.isArray(list)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T08:56:57.524Z"
+    },
+    {
+      "id": "bug-043",
+      "timestamp": "2026-05-15T09:11:45.411Z",
+      "error_message": "Missing guard clause",
+      "file": "src/render/costGraphPanel.js",
+      "root_cause": "No early return/throw for edge case: ai?.isMultiTooth",
+      "fix": "Added guard clause: if (ai?.isMultiTooth)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-15T09:11:45.411Z"
     }
   ]
 }

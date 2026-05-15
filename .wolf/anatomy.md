@@ -1,13 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T22:33:16.936Z
-> Files: 40 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-15T09:11:45.398Z
+> Files: 41 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~18 tok)
 - `CLAUDE.md` — OpenWolf (~57 tok)
-- `index.html` — denai — Clinical Insight (~65129 tok)
+- `index.html` — denai — Clinical Insight (~65158 tok)
 - `README.md` — Project documentation (~0 tok)
 
 ## .claude/
@@ -32,10 +32,10 @@
 ## src/render/
 
 - `comparisonPanel.js` — Wave-4B.3 complete: renderComparison (3-path: multi-tooth/restorative/single-tooth, writes 15 c* metric cells + inline column headers) + _compTableObserver (let, global lexical env) + lazyRenderComparisonTable (sync bypass via getBoundingClientRect + IntersectionObserver) + renderComparisonTable (3-path: restorative/multi-tooth/single-tooth, deterministic header reset). LONGEVITY onlay inconsistency preserved (renderComparison: '10–15 yrs' / renderComparisonTable: '8–15 yrs'). Deps: computeCosts (single-tooth path), escapeHtml, $. No S reads. Sole source of truth — inline copies removed from index.html. (~700 tok)
-- `costGraphPanel.js` — ================================================================ (~5251 tok)
+- `costGraphPanel.js` — ================================================================ (~5281 tok)
 - `materialPanel.js` — Wave-4B.2 complete: _matFadeTimer (let, global lexical env) + renderMaterial + getCrownMaterial. renderMaterial: 4-branch selector (crown/implant/bridge-highOcc/bridge-default), 160ms fade, FIX#6 timer-cancel. getCrownMaterial: pure crown material selector. Deps: isPosteriorTooth, $. No S reads. beforeunload handler in inline script refs _matFadeTimer — valid (classic-script shared global scope). Sole source of truth. (~270 tok)
 - `patientPanel.js` — Wave-4C.1 complete: BONE_LBL/OCC_LBL/HYG_LBL constants (dot-class lookup maps for bone/occlusion/hygiene) + renderPatientDisplay(state) (29 lines, writes #infoDisplay grid, 12 state fields: bone/smoking/name/gender/age/multiTooth/tooth/tooth2/condition/occlusion/hygiene/diabetes). Deps: escapeHtml, isMaxilla, $. No S reads. Sole source of truth — inline copies removed from index.html. (~300 tok)
-- `riskPanel.js` — Wave-4C.2 complete: renderRisk(state, ai) (3-path: restorative/multi-tooth/single-tooth, RISK_STYLES + setRisk inner helper, section visibility, diabetes row toggle) + _applyRiskCompact() (compact nominal state: textContent scan, strip create/show, row collapse). Deps: $. No S reads. Co-resident pair — _applyRiskCompact called only from renderRisk single-tooth tail. Sole source of truth — inline copies removed from index.html. (~420 tok)
+- `riskPanel.js` — renderRisk: _applyRiskCompact (~1625 tok)
 
 ## src/reports/
 
@@ -78,3 +78,7 @@
 
 - `runner.js` — Wave 5.1B engine regression runner. DenaiEngineRunner.runAll() / runOne(id) / assert(ai,assertions). Assertion types: eq, finite, range, minLen, notNull, noNaN. Calls ClinicalEngine.process/processCompound on frozen state copies. Never touches S, render(), setState(), localStorage, or DOM. (~280 tok)
 - `scenarios.js` — Wave 5.1B scenario registry: 9 deterministic scenarios (implant-good-bone, bridge-fair-bone, smoker-implant, diabetic-uncontrolled, poor-bone-implant, restorative-viable, restorative-hopeless, multi-tooth-two-implants, compound-two-sites). Pure data — BASE state + overrides + assertion arrays. Exposes window.DENAI_SCENARIOS. (~280 tok)
+
+## tests/smoke/
+
+- `runner.js` — Wave 5.1C-0 DOM smoke runner. DenaiSmokeRunner.runAll() / runOne(id). 3 scenarios: smoke-implant, smoke-bridge, smoke-restorative-viable. Tier 1 synchronous-only assertions: EB errors, fallbacks, infoDisplay, costContainer, recBanner, ringFill dashoffset, confVal, successBar, risk section visibility, graph SVG, tx active card. Calls render(frozenState) directly. Never calls setState/saveState/localStorage. (~340 tok)

@@ -9,6 +9,9 @@
 | 00:00 | wave5: bug-040 patch — renderGraph NaN guard for isMultiTooth + restorative modes | src/render/costGraphPanel.js | inserted 2 early-return guards after if (!ai); SVG NaN eliminated | ~80 tok |
 | 14:00 | wave5.1A: regression infra recon — full architecture report produced | notes/denai-runtime-execution-chains.md, anatomy.md | read-only analysis; documented entrypoints, timer risks, scenario shapes, isolation strategy | ~800 tok |
 | 14:30 | wave5.1B: engine regression runner created | tests/engine/scenarios.js, tests/engine/runner.js | 9 scenarios, 93 assertions; covers all ClinicalEngine paths; zero DOM/S/localStorage contact | ~400 tok |
+| 15:00 | wave5.1C-0: DOM smoke runner created | tests/smoke/runner.js | 3 scenarios, ~63 assertions; Tier 1 sync-only; calls render(frozenState); no hooks, no async | ~340 tok |
+| 16:00 | wave5.2A-1→4: 4 runtime hardening guards applied | src/render/riskPanel.js, src/render/costGraphPanel.js, index.html | P1 renderRisk null-ai guard; P2 renderGraph NaN coordinate guard; P3A displayRate finite check; P3B ai.conf finite check; P4 renderReasons array guard | ~5 lines |
+| 16:30 | wave5.2A-5: renderCost multi-tooth ai.costs null guard | src/render/costGraphPanel.js | if (!mtCosts) return; closes D-2 dangerous debt | ~1 line |
 > Old sessions are consolidated by the daemon weekly.
 
 | 11:05 | Wave-1 focus-ring extraction | src/styles/tokens/focus-tokens.css, index.html | created token file, added link, removed 2 declarations + empty rulesets | ~60 tok |
@@ -394,3 +397,34 @@
 | 01:32 | Created tests/engine/scenarios.js | — | ~5434 |
 | 01:33 | Created tests/engine/runner.js | — | ~2873 |
 | 01:34 | Session end: 2 writes across 2 files (scenarios.js, runner.js) | 9 reads | ~93045 tok |
+
+## Session: 2026-05-15 11:20
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-15 11:20
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-15 11:28
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:36 | Created tests/smoke/runner.js | — | ~4406 |
+| 11:38 | Session end: 1 writes across 1 files (runner.js) | 4 reads | ~69535 tok |
+| 11:47 | Session end: 1 writes across 1 files (runner.js) | 6 reads | ~75206 tok |
+
+## Session: 2026-05-15 11:54
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:56 | Edited src/render/riskPanel.js | added 1 condition(s) | ~24 |
+| 11:56 | Edited src/render/costGraphPanel.js | added 1 condition(s) | ~68 |
+| 11:56 | Edited index.html | added 1 condition(s) | ~233 |
+| 11:56 | Edited index.html | added 1 condition(s) | ~36 |
+| 11:57 | Session end: 4 writes across 3 files (riskPanel.js, costGraphPanel.js, index.html) | 5 reads | ~71179 tok |
+| 12:08 | Session end: 4 writes across 3 files (riskPanel.js, costGraphPanel.js, index.html) | 7 reads | ~71328 tok |
+| 12:11 | Edited src/render/costGraphPanel.js | added 1 condition(s) | ~35 |
+| 12:12 | Session end: 5 writes across 3 files (riskPanel.js, costGraphPanel.js, index.html) | 7 reads | ~71363 tok |

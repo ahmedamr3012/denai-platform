@@ -1,4 +1,5 @@
   function renderRisk(state, ai) {
+    if (!ai) return;
     const RISK_STYLES = {
       Low: { style: 'color:#16a34a;font-weight:700', dotCls: 'dot-low', label: 'Low risk' },
       Medium: { style: 'color:#d97706;font-weight:700', dotCls: 'dot-med', label: 'Medium risk' },

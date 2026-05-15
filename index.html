@@ -1820,7 +1820,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (!ai) return;
     const circ = 2 * Math.PI * 23;
     const ring = $('ringFill');
-    if (ring) { ring.setAttribute('stroke-dasharray', circ); ring.setAttribute('stroke-dashoffset', circ - (ai.conf / 100) * circ); }
+    if (ring) { ring.setAttribute('stroke-dasharray', circ); if (Number.isFinite(ai.conf)) ring.setAttribute('stroke-dashoffset', circ - (ai.conf / 100) * circ); }
     const confValEl = $('confVal'), confLvlEl = $('confLevel');
     if (confValEl) confValEl.textContent = ai.conf;
     if (confLvlEl) confLvlEl.textContent = ai.confLevel;
@@ -1831,7 +1831,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           implant2: ai.implant2, bridge4: ai.bridge4, cantilever: ai.cantilever }
       : { implant: ai.implant, bridge: ai.bridge, crown: ai.crown || ai.implant };
     const displayRate = rateMap[ai.rec] ?? (ai.isMultiTooth ? ai.implant2 : ai.implant);
-    animateNumber('successVal', displayRate.toFixed(1), '%');
+    animateNumber('successVal', Number.isFinite(displayRate) ? displayRate.toFixed(1) : '0.0', '%');
     const bar = $('successBar'); if (bar) bar.style.width = displayRate + '%';
     const subEl = $('successSub');
 
@@ -1916,6 +1916,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
 
   function renderReasons(list, factors) {
+    if (!Array.isArray(list)) return;
     const el = $('reasonsList');
     if (!el) return;
     const factorHtml = factors && factors.length
