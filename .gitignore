@@ -7,3 +7,6 @@ build/
 *.log
 test-results/
 playwright-report/
+.wolf/hooks/
+.wolf/token-ledger.json
+.wolf/memory.md
