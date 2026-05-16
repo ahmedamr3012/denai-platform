@@ -1487,6 +1487,24 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-16T18:02:24.662Z"
+    },
+    {
+      "id": "bug-093",
+      "timestamp": "2026-05-16T18:29:46.873Z",
+      "error_message": "WCAG 2 AA color-contrast failure on #continueLocallyBtn in entry overlay CI a11y test",
+      "file": "index.html",
+      "root_cause": ".entry-btn-local had background: rgba(255,255,255,.08) — nearly transparent white on a composited dark-green overlay background (~rgb(98,119,112)) gave a contrast ratio of ~3.7:1 with white text, below the 4.5:1 WCAG AA threshold",
+      "fix": "Changed .entry-btn-local background from rgba(255,255,255,.08) to rgba(0,0,0,.30) and hover from rgba(255,255,255,.14) to rgba(0,0,0,.42) — darkens the button background to yield ~7.3:1 contrast ratio with white text",
+      "tags": [
+        "a11y",
+        "wcag",
+        "color-contrast",
+        "css",
+        "entry-overlay"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T18:29:46.873Z"
     }
   ]
 }
