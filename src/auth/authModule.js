@@ -5,15 +5,12 @@
 // denaiAuth.init() is called AFTER render(S) completes. Auth failures NEVER
 // break the app — they silently degrade to local mode.
 //
-// TODO: Replace placeholder credentials with real Supabase project values.
 // TODO: Pin Supabase CDN to a specific version before production deployment.
 
 window.denaiAuth = (function () {
 
-  // TODO: Replace with actual Supabase project URL and anon key.
-  // These placeholders cause client init to fail gracefully → local mode.
-  var SUPABASE_URL  = 'https://placeholder.supabase.co'; // TODO: replace
-  var SUPABASE_ANON = 'placeholder-anon-key';            // TODO: replace
+  var SUPABASE_URL  = 'https://dwvtbumwojzohclzxson.supabase.co';
+  var SUPABASE_ANON = 'sb_publishable_uXDrSO7eWF5Yy4YW-L7XBw_ZPpWORNv';
 
   var _client  = null;
   var _session = null;

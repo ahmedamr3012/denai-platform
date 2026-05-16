@@ -1288,6 +1288,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-16T07:53:16.361Z"
+    },
+    {
+      "id": "bug-081",
+      "timestamp": "2026-05-16T08:35:14.234Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/auth/authModule.js",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 9→6 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T08:35:14.234Z"
     }
   ]
 }

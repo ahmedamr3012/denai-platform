@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-16T07:54:01.823Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-16T08:35:14.217Z
 > Files: 11 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -29,7 +29,7 @@
 
 ## src/auth/
 
-- `authModule.js` — src/auth/authModule.js (~2394 tok)
+- `authModule.js` — src/auth/authModule.js (~2328 tok)
 
 ## src/db/
 
