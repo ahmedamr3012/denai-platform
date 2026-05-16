@@ -1304,6 +1304,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-16T08:35:14.234Z"
+    },
+    {
+      "id": "bug-082",
+      "timestamp": "2026-05-16T13:14:12.541Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had 'dandy-v1'",
+      "fix": "Changed to 'denai-v2.0'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T13:14:12.541Z"
     }
   ]
 }

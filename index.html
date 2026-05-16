@@ -5242,7 +5242,7 @@ const link = document.getElementById('pwaManifest');
 if (link) link.href = url;
 // Service Worker (inline — app shell cache strategy)
 if ('serviceWorker' in navigator) {
-const swCode = `const CACHE = 'dandy-v1'; const SHELL = ['./']; self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)))); self.addEventListener('fetch',   e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => new Response('Offline', {status:503}))))); self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));`;
+const swCode = `const CACHE = 'denai-v2.0'; const SHELL = ['./']; self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)))); self.addEventListener('fetch',   e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => new Response('Offline', {status:503}))))); self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));`;
 const swBlob = new Blob([swCode], { type: 'application/javascript' });
 const swUrl  = URL.createObjectURL(swBlob);
 navigator.serviceWorker.register(swUrl).catch(() => {});
