@@ -20,7 +20,7 @@ const RUNNER_PATH    = path.resolve(__dirname, '../engine/runner.js');
 
 test.describe('Engine Regression', () => {
 
-  test('all 9 scenarios pass — zero ClinicalEngine regressions', async ({ page }) => {
+  test('all 15 scenarios pass — zero ClinicalEngine regressions', async ({ page }) => {
     await page.goto('/');
 
     // Wait for render() to land on window — the strongest available sentinel.

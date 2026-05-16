@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-16T18:26:49.699Z
-> Files: 22 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-16T19:11:16.018Z
+> Files: 25 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~94659 tok)
+- `index.html` — denai — Clinical Insight (~95080 tok)
 - `playwright.config.js` (~337 tok)
 
 ## .claude/
@@ -27,6 +27,7 @@
 
 ## src/ai/
 
+- `calcAI.js` — isPosteriorTooth: isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI (~7372 tok)
 
 ## src/auth/
 
@@ -77,6 +78,7 @@
 
 - `accessibility.spec.js` — tests/ci/accessibility.spec.js (~1508 tok)
 - `auth.spec.js` — CI gate: injects tests/auth/runner.js; adds auth-settle waitForFunction before runner (status≠'reconnecting') (~912 tok)
+- `engine.spec.js` — tests/ci/engine.spec.js (~944 tok)
 - `sync.spec.js` — CI gate: injects tests/sync/runner.js, runs DenaiSyncRunner.runAll() (11 scenarios: serializer×5, queue×4, tombstone×1, placeholder×1) (~784 tok)
 
 ## tests/e2e/
@@ -86,6 +88,7 @@
 
 ## tests/engine/
 
+- `scenarios.js` — ================================================================ (~9553 tok)
 
 ## tests/smoke/
 

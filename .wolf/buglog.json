@@ -1505,6 +1505,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-16T18:29:46.873Z"
+    },
+    {
+      "id": "bug-094",
+      "timestamp": "2026-05-16T18:58:40.767Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/ci/engine.spec.js",
+      "root_cause": "Had 'all 9 scenarios pass — zero ClinicalEngine regres",
+      "fix": "Changed to 'all 15 scenarios pass — zero ClinicalEngine regre",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T18:58:40.767Z"
+    },
+    {
+      "id": "bug-095",
+      "timestamp": "2026-05-16T19:10:18.532Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 13→16 lines (7 removed) | Also: // Wave 7B: Auth initializes AFTER first render. F; denaiAuth.init().catch(function () {}); // never t",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-16T19:10:49.055Z"
     }
   ]
 }

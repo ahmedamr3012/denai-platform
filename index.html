@@ -17,6 +17,17 @@
   <link rel="manifest" id="pwaManifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Phase 4: early connection to Font Awesome CDN reduces icon-font latency -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+  <!-- Inline SVG favicon — no extra network request -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231F7A4F'/%3E%3Ctext x='16' y='22' font-family='system-ui' font-size='18' font-weight='800' text-anchor='middle' fill='%23fff'%3Ed%3C/text%3E%3C/svg%3E" type="image/svg+xml" />
+  <!-- SEO / social meta — private clinical tool, no indexing -->
+  <meta name="robots" content="noindex, nofollow" />
+  <meta property="og:title" content="denai — Clinical Insight" />
+  <meta property="og:description" content="Clinical decision support interface for dental professionals." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="src/styles/tokens/brand-tokens.css?v=2.0.0" />
@@ -50,17 +61,20 @@
   <script src="src/render/riskPanel.js?v=2.0.0"></script>
   <!-- Wave 7B: Auth foundation — Supabase CDN must precede authModule.js -->
   <!-- TODO: To upgrade Supabase: bump version here + run npm run test:ci before deploying. Pinned: @2.39.7 -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
-  <script src="src/auth/authModule.js?v=2.0.0"></script>
+  <!-- Phase 4: defer preserves load order (Supabase → authModule → sync chain) but moves
+       all 7 scripts off the critical render path. DOMContentLoaded listener in the inline
+       script calls denaiAuth.init() + denaiSyncQueue.init() after they execute. -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
+  <script defer src="src/auth/authModule.js?v=2.0.0"></script>
   <!-- Wave 7D: Cloud write path — serializer must precede syncQueue -->
-  <script src="src/sync/serializer.js?v=2.0.0"></script>
-  <script src="src/sync/syncQueue.js?v=2.0.0"></script>
+  <script defer src="src/sync/serializer.js?v=2.0.0"></script>
+  <script defer src="src/sync/syncQueue.js?v=2.0.0"></script>
   <!-- Wave 7E: Cloud read path — cloudSync must follow syncQueue (uses hasPendingFor) -->
-  <script src="src/sync/cloudSync.js?v=2.0.0"></script>
+  <script defer src="src/sync/cloudSync.js?v=2.0.0"></script>
   <!-- Wave 7F: Preferences sync — must follow cloudSync (hydrate called after auth) -->
-  <script src="src/sync/prefsSync.js?v=2.0.0"></script>
+  <script defer src="src/sync/prefsSync.js?v=2.0.0"></script>
   <!-- Wave 7G: Notes encryption — AES-GCM client-side PHI protection -->
-  <script src="src/utils/notesEncryption.js?v=2.0.0"></script>
+  <script defer src="src/utils/notesEncryption.js?v=2.0.0"></script>
   <style>
     /* ================================================================
        DESIGN TOKENS & VARIABLES
@@ -86,7 +100,7 @@ html { scroll-behavior: smooth; }
 body {
   font-family: 'DM Sans', system-ui, sans-serif;
   background: var(--surface-page); color: var(--c-n800);
-  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
   line-height: 1.5; height: 100vh; display: flex; overflow: hidden;
   transition: background .4s, color .4s;
 }
@@ -106,6 +120,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Sora', sans-serif; }
   width: var(--sidebar-w); background: var(--surface-sidebar);
   display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 30;
   transition: background .4s, transform .3s ease;
+  contain: layout style;
 }
 .sidebar::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
@@ -5502,18 +5517,22 @@ window.addEventListener('beforeunload', () => {
   if (_matFadeTimer) { clearTimeout(_matFadeTimer); _matFadeTimer = null; }
 });
 
-// Wave 7B: Auth initializes AFTER first render. Failures silently degrade to local mode.
-if (typeof denaiAuth !== 'undefined') {
-  denaiAuth.init().catch(function () {}); // never throws to caller
-}
-
-// Wave 7D: Sync queue init — loads persisted queue, registers online listener.
-// Synchronous. Must run after denaiAuth.init() so flush() can check isSignedIn().
-if (typeof denaiSyncQueue !== 'undefined') {
-  denaiSyncQueue.init();
-}
-
 })();
+
+// Phase 4: auth/sync scripts are loaded with `defer` so they don't block the
+// render path. Deferred scripts execute after DOM parsing completes (after the
+// inline script) but before DOMContentLoaded. This listener therefore runs
+// with denaiAuth and denaiSyncQueue guaranteed to be defined.
+document.addEventListener('DOMContentLoaded', function () {
+  // Wave 7B: Auth init — silently degrades to local mode on any failure.
+  if (typeof denaiAuth !== 'undefined') {
+    denaiAuth.init().catch(function () {});
+  }
+  // Wave 7D: Sync queue must init after denaiAuth.init() so flush() can check isSignedIn().
+  if (typeof denaiSyncQueue !== 'undefined') {
+    denaiSyncQueue.init();
+  }
+});
 
 // ================================================================
 // MODULE: tests.js — #6 Unit tests for calcAI() (100% branch coverage)

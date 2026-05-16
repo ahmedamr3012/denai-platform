@@ -340,6 +340,232 @@
       ],
     },
 
+
+    // ── 10. dm-bruxism-hopeless ──────────────────────────────────────
+    // Uncontrolled DM + bruxism + poor remaining structure → HOPELESS.
+    // generateTreatments: crown_core (slot=implant), splinted (slot=bridge,
+    //   poorFerrule triggers splinting), extract_impl (slot=crown, escalation).
+    // scoreRestorative:
+    //   crown_core: 87.0 -18(hopeless) = 69.0, ceil 94 → 69.0
+    //   splinted: max(72, 83.5) +3.0(bruxism) +2.5(poorFerrule) -18(hopeless) = 71.0, ceil 93 → 71.0
+    //   extract_impl: baseAI.implant(90.9) -3.0(uncontrolledDM) = 87.9, floor max(87.9,70), ceil 97 → 87.9
+    // recommend: allowPreservationBias=false (HOPELESS) → rec=ideal='crown' (extract_impl)
+    {
+      id: 'dm-bruxism-hopeless',
+      description: 'Uncontrolled DM + bruxism + poor structure — HOPELESS, extraction path recommended, conservative treatments suppressed',
+      mode: 'process',
+      state: s({
+        tooth: '#30', condition: 'Fractured tooth',
+        bone: 'Good', hygiene: 'Good', occlusion: 'Normal',
+        smoking: 'Non-smoker', diabetes: 'Uncontrolled',
+        remainingStructure: 'Poor', endodonticStatus: 'No RCT needed',
+        parafunction: 'Bruxism', age: 52,
+      }),
+      assertions: [
+        { type: 'eq',     path: 'rec',            expected: 'crown'               },
+        { type: 'eq',     path: 'treatmentMode',  expected: 'restorative'         },
+        { type: 'eq',     path: 'caseClass.type', expected: 'RESTORATIVE_HOPELESS'},
+        { type: 'finite', path: 'implant'                                          },
+        { type: 'finite', path: 'bridge'                                           },
+        { type: 'finite', path: 'crown'                                            },
+        // Conservative slots suppressed by hopeless penalty — both < 80
+        { type: 'range',  path: 'implant', min: 50, max: 80                       },
+        { type: 'range',  path: 'bridge',  min: 50, max: 80                       },
+        // extract_impl slot (crown field) must rank highest in hopeless case
+        { type: 'range',  path: 'crown',   min: 70, max: 95                       },
+        { type: 'range',  path: 'conf',    min: 35, max: 80                       },
+        { type: 'minLen', path: 'reasons', min: 1                                  },
+        { type: 'noNaN',  paths: ['implant', 'bridge', 'crown', 'conf']            },
+      ],
+    },
+
+    // ── 11. endocrown-viable ─────────────────────────────────────────
+    // Posterior tooth, RCT done, good structure, no bruxism → endocrown viable.
+    // generateTreatments: endocrown lands in slot3 (crown field) because
+    //   endocrownViable = rctDone && isPosterior.
+    // scoreRestorative:
+    //   crown_core (slot=implant): baseAI.crown(96.5), ceil 94 → 94.0
+    //   crown (slot=bridge): 96.5, ceil 96 → 96.0
+    //   endocrown (slot=crown): 89.0 +3.0(rctDone) +2.0(posterior) +1.5(!bruxism) = 95.5, ceil 94 → 94.0
+    // recommend: rec='bridge' (crown slot wins), but endocrown scored 94 — clinically viable/preferred vs alternatives
+    {
+      id: 'endocrown-viable',
+      description: 'Posterior RCT-done tooth, good structure — endocrown lands in slot3 with high viability score',
+      mode: 'process',
+      state: s({
+        tooth: '#30', condition: 'Fractured tooth',
+        bone: 'Good', hygiene: 'Good', occlusion: 'Normal',
+        smoking: 'Non-smoker', diabetes: 'None',
+        remainingStructure: 'Good', endodonticStatus: 'RCT done',
+        parafunction: 'None', age: 45,
+      }),
+      assertions: [
+        { type: 'eq',     path: 'treatmentMode',  expected: 'restorative'         },
+        { type: 'eq',     path: 'caseClass.type', expected: 'RESTORATIVE_VIABLE'  },
+        { type: 'finite', path: 'implant'                                          },
+        { type: 'finite', path: 'bridge'                                           },
+        { type: 'finite', path: 'crown'                                            },
+        // endocrown in slot3 (crown field) must score in high-viability range
+        { type: 'range',  path: 'crown',   min: 88, max: 95                       },
+        // standard crown slot (bridge field) scores highest — rec should be 'bridge'
+        { type: 'range',  path: 'bridge',  min: 88, max: 97                       },
+        { type: 'range',  path: 'implant', min: 85, max: 96                       },
+        { type: 'range',  path: 'conf',    min: 35, max: 95                       },
+        { type: 'minLen', path: 'reasons', min: 1                                  },
+        { type: 'noNaN',  paths: ['implant', 'bridge', 'crown', 'conf']            },
+      ],
+    },
+
+    // ── 12. splinting-indicated ──────────────────────────────────────
+    // Fair structure + bruxism + compromised abutment → RESTORATIVE_COMPROMISED.
+    // splintedPreferred = true (abutmentCompromised || COMPROMISED).
+    // scoreRestorative:
+    //   crown_core (slot=implant): baseAI.crown(89.5) -1.5(fairStructure) = 88.0, ceil 94
+    //   splinted (slot=bridge): max(72, 88.0) +3.0(bruxism) = 91.0, ceil 93
+    //   extract_impl (slot=crown): baseAI.implant(91.4), ceil 97
+    // recommend: allowPreservationBias=true (COMPROMISED).
+    //   bestPreserve=splinted(91.0), extractOpt=91.4, 91.0 >= 91.4-3=88.4 → bias fires
+    //   rec='bridge' (splinted wins via preservation bias)
+    {
+      id: 'splinting-indicated',
+      description: 'Fair structure + bruxism + compromised abutment — COMPROMISED, splinting triggered and wins via preservation bias',
+      mode: 'process',
+      state: s({
+        tooth: '#30', condition: 'Fractured tooth',
+        bone: 'Fair', hygiene: 'Good', occlusion: 'Normal',
+        smoking: 'Non-smoker', diabetes: 'Controlled',
+        remainingStructure: 'Fair', endodonticStatus: 'No RCT needed',
+        parafunction: 'Bruxism', abutmentQuality: 'Compromised', age: 45,
+      }),
+      assertions: [
+        { type: 'eq',     path: 'rec',            expected: 'bridge'                  },
+        { type: 'eq',     path: 'treatmentMode',  expected: 'restorative'             },
+        { type: 'eq',     path: 'caseClass.type', expected: 'RESTORATIVE_COMPROMISED' },
+        { type: 'finite', path: 'implant'                                              },
+        { type: 'finite', path: 'bridge'                                               },
+        { type: 'finite', path: 'crown'                                                },
+        // splinted slot (bridge field) should score in the high 80s-low 90s
+        { type: 'range',  path: 'bridge',  min: 85, max: 93                           },
+        { type: 'range',  path: 'implant', min: 75, max: 92                           },
+        { type: 'range',  path: 'crown',   min: 80, max: 95                           },
+        { type: 'range',  path: 'conf',    min: 35, max: 95                           },
+        { type: 'minLen', path: 'reasons', min: 1                                      },
+        { type: 'noNaN',  paths: ['implant', 'bridge', 'crown', 'conf']                },
+      ],
+    },
+
+    // ── 13. mixed-multisite-no-nan ───────────────────────────────────
+    // Compound: anterior missing (#8) + posterior viable restorative (#30).
+    // Tests orchestration stability across two different treatment regions.
+    // Site 1: MISSING_SINGLE → calcAI → rec='implant'
+    // Site 2: RESTORATIVE_VIABLE → full pipeline → rec='bridge'
+    // Primary assertion: no NaN anywhere in either site's output.
+    {
+      id: 'mixed-multisite-no-nan',
+      description: 'Compound case: anterior missing (#8) + posterior viable restorative (#30) — orchestration stable, no NaN',
+      mode: 'compound',
+      state: s({
+        tooth: '#8', condition: 'Missing tooth',
+        bone: 'Good', hygiene: 'Good', occlusion: 'Normal',
+        smoking: 'Non-smoker', diabetes: 'None', age: 48,
+        multiSite: true,
+        site2Tooth: '#30', site2Condition: 'Fractured tooth',
+        site2Structure: 'Good', site2EndoStatus: 'No RCT needed',
+      }),
+      assertions: [
+        { type: 'eq',      path: 'isCompound',           expected: true                },
+        { type: 'notNull', path: 'site1'                                                },
+        { type: 'notNull', path: 'site2'                                                },
+        { type: 'eq',      path: 'site1.treatmentMode',  expected: 'single'            },
+        { type: 'eq',      path: 'site1.caseClass.type', expected: 'MISSING_SINGLE'    },
+        { type: 'eq',      path: 'site1.rec',            expected: 'implant'           },
+        { type: 'eq',      path: 'site2.treatmentMode',  expected: 'restorative'       },
+        { type: 'eq',      path: 'site2.caseClass.type', expected: 'RESTORATIVE_VIABLE'},
+        { type: 'eq',      path: 'site2.rec',            expected: 'bridge'            },
+        { type: 'finite',  path: 'site1.implant'                                        },
+        { type: 'finite',  path: 'site1.bridge'                                         },
+        { type: 'finite',  path: 'site2.implant'                                        },
+        { type: 'finite',  path: 'site2.bridge'                                         },
+        { type: 'noNaN',   paths: ['site1.implant', 'site1.bridge', 'site1.conf',
+                                   'site2.implant', 'site2.bridge', 'site2.conf']       },
+      ],
+    },
+
+    // ── 14. young-patient-deferral ───────────────────────────────────
+    // Age 16 — skeletal growth incomplete. The age<18 deferral penalty in
+    // calcAI applies: implant -= 15.0, conf -= 15.
+    // Hand-trace (tooth #7, maxilla anterior):
+    //   implant: 96.4 +0.8 +0.5 +0.3 +0.3 +0.4 -1.5 +0.6(age<40) -15.0(age<18) = 82.8
+    //   bridge:  88.0 +0.3(age<40) +0.5(maxilla ant)                              = 88.8
+    //   rec: bridge (88.8 > 82.8)
+    //   conf: 76 +2(bone) +1(age<40) -15(age<18) = 64
+    {
+      id: 'young-patient-deferral',
+      description: 'Age 16 missing tooth — skeletal immaturity penalty depresses implant score below bridge; implant caution reflected',
+      mode: 'process',
+      state: s({
+        tooth: '#7', condition: 'Missing tooth',
+        bone: 'Good', hygiene: 'Good', occlusion: 'Normal',
+        smoking: 'Non-smoker', diabetes: 'None', age: 16,
+      }),
+      assertions: [
+        { type: 'eq',     path: 'rec',            expected: 'bridge'         },
+        { type: 'eq',     path: 'treatmentMode',  expected: 'single'         },
+        { type: 'eq',     path: 'caseClass.type', expected: 'MISSING_SINGLE' },
+        { type: 'finite', path: 'implant'                                     },
+        { type: 'finite', path: 'bridge'                                      },
+        // Implant score depressed by -15 deferral penalty
+        { type: 'range',  path: 'implant', min: 65, max: 90                  },
+        // Bridge unaffected — remains in normal range
+        { type: 'range',  path: 'bridge',  min: 80, max: 95                  },
+        // Confidence reduced by growth-risk penalty
+        { type: 'range',  path: 'conf',    min: 35, max: 75                  },
+        { type: 'minLen', path: 'reasons', min: 1                             },
+        { type: 'noNaN',  paths: ['implant', 'bridge', 'conf']                },
+      ],
+    },
+
+    // ── 15. anterior-aesthetic-zone ──────────────────────────────────
+    // Maxillary anterior (#8), fractured tooth, good structure, vital pulp.
+    // Onlay is viable (goodFerrule, no RCT, no bruxism, goodStructure) and
+    // lands in slot1. Standard crown in slot2. Both score high.
+    // scoreRestorative:
+    //   onlay (slot=implant): 91+3+1.5+2+0.5 = 98 → ceil 95 → 95.0
+    //   crown (slot=bridge): baseAI.crown(97.0) → ceil 96 → 96.0
+    //   crown_adv (slot=crown): 97.0 → ceil 96 → 96.0
+    // recommend: rec='bridge' (crown slot tops the list)
+    // Aesthetic-zone adjustments (anterior +0.5, maxilla -0.5) are reflected
+    // in the baseAI.crown used for scoring — confirming position-aware logic.
+    {
+      id: 'anterior-aesthetic-zone',
+      description: 'Maxillary anterior fractured tooth — anterior-zone scoring adjustments applied, onlay viable, crown recommended',
+      mode: 'process',
+      state: s({
+        tooth: '#8', condition: 'Fractured tooth',
+        bone: 'Good', hygiene: 'Good', occlusion: 'Normal',
+        smoking: 'Non-smoker', diabetes: 'None',
+        remainingStructure: 'Good', endodonticStatus: 'No RCT needed',
+        parafunction: 'None', age: 38,
+      }),
+      assertions: [
+        { type: 'eq',     path: 'rec',            expected: 'bridge'             },
+        { type: 'eq',     path: 'treatmentMode',  expected: 'restorative'        },
+        { type: 'eq',     path: 'caseClass.type', expected: 'RESTORATIVE_VIABLE' },
+        { type: 'finite', path: 'implant'                                         },
+        { type: 'finite', path: 'bridge'                                          },
+        { type: 'finite', path: 'crown'                                           },
+        // onlay in slot1 (implant field): high score, at or near its ceiling (95)
+        { type: 'range',  path: 'implant', min: 88, max: 96                      },
+        // standard crown in slot2 (bridge field): tops the ranking
+        { type: 'range',  path: 'bridge',  min: 88, max: 97                      },
+        // crown_adv in slot3 (crown field): tied with bridge slot
+        { type: 'range',  path: 'crown',   min: 88, max: 97                      },
+        { type: 'range',  path: 'conf',    min: 35, max: 95                      },
+        { type: 'minLen', path: 'reasons', min: 1                                 },
+        { type: 'noNaN',  paths: ['implant', 'bridge', 'crown', 'conf']           },
+      ],
+    },
+
   ]; // end SCENARIOS
 
   // Expose globally so runner.js and browser console can access it.

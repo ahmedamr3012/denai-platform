@@ -321,6 +321,14 @@
       reasons.push('Age > 65: healing time and bone density may reduce implant success');
       factors.push({ label: `Age ${stateObj.age} −2.5%`, type: 'warn', delta: -2.5 });
     }
+    // Skeletal immaturity — jaw growth typically completes at 18–20 yrs.
+    // Implant placed before growth arrest will be ankylosed and infraoccluded
+    // as adjacent teeth continue to erupt. Deferral is the clinical standard.
+    if (stateObj.age < 18) {
+      implant -= 15.0; conf -= 15;
+      reasons.push('Age < 18: skeletal growth likely incomplete — implant strongly deferred until jaw maturity confirmed (cephalometric assessment recommended)');
+      factors.push({ label: 'Age <18 — growth risk −15.0%', type: 'neg', delta: -15.0 });
+    }
     if (['Severe decay','Failed restoration'].includes(stateObj.condition)) {
       implant -= 1.5; bridge -= 1.2;
       reasons.push('Adjacent tooth damage may affect restorative prognosis');
