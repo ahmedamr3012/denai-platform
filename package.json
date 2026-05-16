@@ -9,6 +9,7 @@
     "test:ci": "playwright test tests/ci/ tests/e2e/"
   },
   "devDependencies": {
-    "@playwright/test": "^1.44.0"
+    "@playwright/test": "^1.44.0",
+    "axe-playwright": "^2.2.2"
   }
 }

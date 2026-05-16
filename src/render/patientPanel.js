@@ -23,11 +23,11 @@
       <div class="info-label"><i class="fa-solid fa-file-medical" aria-hidden="true"></i> Condition</div>
       <div class="info-val">${escapeHtml(state.condition)}</div>
       <div class="info-label"><i class="fa-solid fa-bone" aria-hidden="true"></i> Bone</div>
-      <div class="info-val">${bm[0]} <span class="dot ${bm[1]}" aria-label="${state.bone} bone quality"></span></div>
+      <div class="info-val">${bm[0]} <span role="img" class="dot ${bm[1]}" aria-label="${state.bone} bone quality"></span></div>
       <div class="info-label"><i class="fa-solid fa-teeth-open" aria-hidden="true"></i> Occlusion</div>
-      <div class="info-val">${escapeHtml(state.occlusion)} <span class="dot ${OCC_LBL[state.occlusion]||'dot-low'}" aria-label="${state.occlusion}"></span></div>
+      <div class="info-val">${escapeHtml(state.occlusion)} <span role="img" class="dot ${OCC_LBL[state.occlusion]||'dot-low'}" aria-label="${state.occlusion}"></span></div>
       <div class="info-label"><i class="fa-solid fa-sparkles" aria-hidden="true"></i> Hygiene</div>
-      <div class="info-val">${escapeHtml(state.hygiene)} <span class="dot ${HYG_LBL[state.hygiene]}" aria-label="${state.hygiene} hygiene"></span></div>
+      <div class="info-val">${escapeHtml(state.hygiene)} <span role="img" class="dot ${HYG_LBL[state.hygiene]}" aria-label="${state.hygiene} hygiene"></span></div>
       <div class="info-label"><i class="fa-solid fa-smoking" aria-hidden="true"></i> Smoking</div>
       <div class="info-val" style="color:${smokingColor};font-weight:700;">${escapeHtml(state.smoking || 'Non-smoker')}</div>
       <div class="info-label"><i class="fa-solid fa-droplet" aria-hidden="true"></i> Diabetes</div>

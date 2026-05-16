@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-16T14:33:10.068Z
-> Files: 18 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-16T18:02:24.649Z
+> Files: 22 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~94596 tok)
+- `index.html` — denai — Clinical Insight (~94662 tok)
 - `playwright.config.js` (~337 tok)
 
 ## .claude/
@@ -37,6 +37,8 @@
 
 ## src/render/
 
+- `patientPanel.js` — ================================================================ (~952 tok)
+- `riskPanel.js` — renderRisk: _applyRiskCompact (~1659 tok)
 
 ## src/reports/
 
@@ -63,12 +65,17 @@
 
 - `notesEncryption.js` — Wave 7G: `denaiNotesEnc` IIFE. AES-GCM 256-bit client-side PHI encryption. PBKDF2 key derivation (100k iterations, SHA-256). Payload format: `{ v:1, iv:<b64>, ct:<b64> }`. Key lives in-memory only; cleared on sign-out. Public API: generateSalt, init, encrypt, decrypt, hasKey, clearKey. (~120 tok)
 
+## tests/a11y/
+
+- `runner.js` — tests/a11y/runner.js (~572 tok)
+
 ## tests/auth/
 
 - `runner.js` — In-browser auth/enc runner: 12 scenarios (auth state×2, signout lifecycle×2, PBKDF2/AES-GCM crypto×6, PHI cloud safety×2) (~4026 tok)
 
 ## tests/ci/
 
+- `accessibility.spec.js` — tests/ci/accessibility.spec.js (~1508 tok)
 - `auth.spec.js` — CI gate: injects tests/auth/runner.js; adds auth-settle waitForFunction before runner (status≠'reconnecting') (~912 tok)
 - `sync.spec.js` — CI gate: injects tests/sync/runner.js, runs DenaiSyncRunner.runAll() (11 scenarios: serializer×5, queue×4, tombstone×1, placeholder×1) (~784 tok)
 

@@ -1336,6 +1336,157 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-16T14:33:10.081Z"
+    },
+    {
+      "id": "bug-084",
+      "timestamp": "2026-05-16T14:58:18.720Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"denai\"",
+      "fix": "Changed to \"img\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-16T14:58:34.623Z"
+    },
+    {
+      "id": "bug-085",
+      "timestamp": "2026-05-16T14:58:22.771Z",
+      "error_message": "Wrong reference: n400 should be n500",
+      "file": "index.html",
+      "root_cause": "Used \"n400\" instead of \"n500\"",
+      "fix": "Changed n400 → n500",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T14:58:22.771Z"
+    },
+    {
+      "id": "bug-086",
+      "timestamp": "2026-05-16T15:05:07.829Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/render/riskPanel.js",
+      "root_cause": "Had '}</span> <span class=\"",
+      "fix": "Changed to '}</span> <span role=\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T15:05:07.829Z"
+    },
+    {
+      "id": "bug-087",
+      "timestamp": "2026-05-16T15:05:09.338Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"font-size:17px;color:var(--c-n300);transition:col",
+      "fix": "Changed to \"button\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T15:05:09.338Z"
+    },
+    {
+      "id": "bug-088",
+      "timestamp": "2026-05-16T15:05:13.358Z",
+      "error_message": "Wrong reference: n500 should be n600",
+      "file": "index.html",
+      "root_cause": "Used \"n500\" instead of \"n600\"",
+      "fix": "Changed n500 → n600",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T15:05:13.358Z"
+    },
+    {
+      "id": "bug-089",
+      "timestamp": "2026-05-16T17:53:18.177Z",
+      "error_message": "Wrong reference: success should be brand",
+      "file": "index.html",
+      "root_cause": "Used \"success\" instead of \"brand\"",
+      "fix": "Changed success → brand",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T17:53:18.177Z"
+    },
+    {
+      "id": "bug-090",
+      "timestamp": "2026-05-16T15:10:00.000Z",
+      "error_message": "axe aria-prohibited-attr: aria-label on role=generic elements (entry-logo div, dot spans in patientPanel.js and riskPanel.js, fa-circle-info icon)",
+      "file": "index.html, src/render/patientPanel.js, src/render/riskPanel.js",
+      "root_cause": "aria-label is prohibited on elements without an explicit role that allows it. <div>, <span>, and <i> elements have role=generic/none by default.",
+      "fix": "Added role=\"img\" to entry-logo div and all dot spans (static + dynamic in riskPanel.js + patientPanel.js). Added role=\"button\" to tabindex=0 fa-circle-info icon.",
+      "tags": [
+        "a11y",
+        "aria",
+        "axe",
+        "wcag2a"
+      ],
+      "related_bugs": [
+        "bug-091"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T15:10:00.000Z"
+    },
+    {
+      "id": "bug-091",
+      "timestamp": "2026-05-16T15:10:00.000Z",
+      "error_message": "axe color-contrast: semi-transparent rgba white text on dark overlay fails WCAG AA (4.5:1). --c-success (#22c55e) on white topbar is only 2.2:1.",
+      "file": "index.html, src/styles/tokens/state-tokens.css",
+      "root_cause": "1) Entry overlay text used rgba(255,255,255,.55/.3/.35/.8) which composites to insufficient contrast against the dark overlay background. 2) .save-indicator.saved used --c-success: #22c55e (bright green, 2.2:1 on white). 3) saveState() is called on page init, making the save indicator briefly visible with the inaccessible saved color.",
+      "fix": "Changed entry overlay text colors to #fff / rgba(.95). Changed .save-indicator default to --c-n600, .saved to var(--c-brand) (#1F7A4F, 5.38:1).",
+      "tags": [
+        "a11y",
+        "color-contrast",
+        "axe",
+        "wcag2aa",
+        "css"
+      ],
+      "related_bugs": [
+        "bug-090"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T15:10:00.000Z"
+    },
+    {
+      "id": "bug-092",
+      "timestamp": "2026-05-16T18:02:24.662Z",
+      "error_message": "Wrong condition in logic",
+      "file": "index.html",
+      "root_cause": "Condition was: if (!p || typeof p.id !== 'string' || !p.id)",
+      "fix": "Changed to: if (!p || typeof p.id !== 'string' || !/^p_\\d+_[a-z0-9)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T18:02:24.662Z"
     }
   ]
 }

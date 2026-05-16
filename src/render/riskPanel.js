@@ -9,7 +9,7 @@
     const setRisk = (id, level) => {
       const el = $(id); if (!el) return;
       const s = RISK_STYLES[level] || RISK_STYLES.Low;
-      el.innerHTML = `<span style="${s.style}">${level || 'Low'}</span> <span class="dot ${s.dotCls}" aria-label="${s.label}"></span>`;
+      el.innerHTML = `<span style="${s.style}">${level || 'Low'}</span> <span role="img" class="dot ${s.dotCls}" aria-label="${s.label}"></span>`;
     };
 
     // Restorative mode: all options are crown/restorative — show crown risk section

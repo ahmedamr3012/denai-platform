@@ -252,10 +252,10 @@ body.dark .dark-toggle:hover { background: var(--c-n150); }
 @media (max-width: 900px) { .hamburger { display: inline-flex; align-items: center; justify-content: center; } }
 
 /* Auto-save indicator */
-.save-indicator { font-size: 11px; color: var(--c-n400); display: flex; align-items: center; gap: 5px; opacity: 0; transition: opacity .3s; }
+.save-indicator { font-size: 11px; color: var(--c-n600); display: flex; align-items: center; gap: 5px; opacity: 0; transition: opacity .3s; }
 .save-indicator.visible { opacity: 1; }
 .save-indicator.saving { color: var(--c-brand); }
-.save-indicator.saved { color: var(--c-success); }
+.save-indicator.saved { color: var(--c-brand); }
 .save-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
@@ -351,15 +351,15 @@ body.dark .dash-sync-row { background: var(--c-n50); border-color: var(--c-n150)
 .entry-overlay.entry-visible { opacity: 1; pointer-events: all; }
 .entry-card { background: rgba(255,255,255,.11); border: 1px solid rgba(255,255,255,.15); border-radius: 22px; padding: 44px 40px 36px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 32px 80px rgba(0,0,0,.32); backdrop-filter: blur(6px); }
 .entry-logo { margin-bottom: 6px; }
-.entry-tagline { font-size: 13px; color: rgba(255,255,255,.55); margin-bottom: 32px; font-weight: 500; letter-spacing: .01em; }
-.entry-divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; color: rgba(255,255,255,.3); font-size: 11px; font-weight: 600; }
+.entry-tagline { font-size: 13px; color: #fff; margin-bottom: 32px; font-weight: 500; letter-spacing: .01em; }
+.entry-divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; color: rgba(255,255,255,.95); font-size: 11px; font-weight: 600; }
 .entry-divider::before, .entry-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.15); }
 .entry-btn-primary { width: 100%; padding: 13px; background: var(--c-brand); color: #fff; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background var(--t-fast), transform var(--t-fast); margin-bottom: 10px; }
 .entry-btn-primary:hover { background: var(--c-brand-hover); transform: translateY(-1px); }
-.entry-btn-local { width: 100%; padding: 12px; background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.15); border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background var(--t-fast); }
+.entry-btn-local { width: 100%; padding: 12px; background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.15); border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background var(--t-fast); }
 .entry-btn-local:hover { background: rgba(255,255,255,.14); }
 .entry-btn-local:focus-visible, .entry-btn-primary:focus-visible { outline: 2px solid rgba(255,255,255,.6); outline-offset: 2px; }
-.entry-local-note { font-size: 11px; color: rgba(255,255,255,.35); margin-top: 8px; }
+.entry-local-note { font-size: 11px; color: rgba(255,255,255,.95); margin-top: 8px; }
 
 .case-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
 .back-link { font-size: 13px; font-weight: 600; color: var(--c-n500); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color var(--t-fast); border-radius: 6px; padding: 4px 6px; margin: -4px -6px; }
@@ -1369,7 +1369,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <div class="card-header">
         <h2 class="card-title"><i class="fa-solid fa-brain" aria-hidden="true"></i> 2. AI Clinical Insight</h2>
         <div class="tt" role="tooltip">
-          <i class="fa-solid fa-circle-info" style="font-size:17px;color:var(--c-n300);transition:color var(--t-fast)" tabindex="0" aria-label="How AI works"></i>
+          <i class="fa-solid fa-circle-info" role="button" style="font-size:17px;color:var(--c-n300);transition:color var(--t-fast)" tabindex="0" aria-label="How AI works"></i>
           <span class="tt-pop" role="tooltip">AI analyzes clinical data, intraoral scans,<br>bone condition &amp; historical denai case outcomes</span>
         </div>
       </div>
@@ -1627,7 +1627,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   <!-- ── Glass Entry Overlay ─────────────────────────────────── -->
   <div class="entry-overlay" id="entryOverlay" role="dialog" aria-modal="true" aria-labelledby="entryTitle" aria-describedby="entryDesc">
     <div class="entry-card">
-      <div class="entry-logo" aria-label="denai">
+      <div class="entry-logo" role="img" aria-label="denai">
         <svg viewBox="0 0 520 88" height="28" fill="none" aria-hidden="true">
           <path fill="white" d="M 8 4 L 8 68 L 30.2 68 C 46.8 68 59 56.8 59 43.4 C 59 30.0 46.8 19.6 30.2 19.6 L 30.2 27.2 C 42.4 27.2 51 34.4 51 43.4 C 51 52.4 42.4 60.4 30.2 60.4 L 16 60.4 L 16 26.0 C 16 22.2 12.6 19.6 8.8 20.4 L 8 20.6 Z"/>
           <path fill="white" d="M 109 43.4 C 109 30.2 98.4 19.6 85.4 19.6 C 72.2 19.6 62 30.2 62 43.4 C 62 56.8 72.2 68 85.4 68 C 94.6 68 102.6 63.0 107.0 55.6 L 99.2 51.8 C 96.6 56.4 91.4 59.4 85.4 59.4 C 77.0 59.4 70.4 53.2 69.6 45.2 L 109 45.2 Z M 69.8 38.6 C 71.0 31.2 77.4 26.4 85.4 26.4 C 93.2 26.4 99.4 31.2 100.6 38.6 Z"/>
@@ -2944,35 +2944,35 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
               <span class="tt"><span style="font-size:11px;cursor:help;" tabindex="0" aria-label="Peri-implantitis risk info">ⓘ</span>
               <span class="tt-pop" role="tooltip">Risk of inflammation around implant<br>based on hygiene &amp; bone quality</span></span>
             </div>
-            <div class="risk-val" id="riskPeri" aria-live="polite">Low <span class="dot dot-low" aria-label="Low risk"></span></div>
+            <div class="risk-val" id="riskPeri" aria-live="polite">Low <span role="img" class="dot dot-low" aria-label="Low risk"></span></div>
           </div>
           <div class="risk-row">
             <div class="risk-lbl">Bone Loss Risk
               <span class="tt"><span style="font-size:11px;cursor:help;" tabindex="0" aria-label="Bone loss risk info">ⓘ</span>
               <span class="tt-pop" role="tooltip">Likelihood of peri-implant<br>bone resorption over time</span></span>
             </div>
-            <div class="risk-val" id="riskBone" aria-live="polite">Low <span class="dot dot-low" aria-label="Low risk"></span></div>
+            <div class="risk-val" id="riskBone" aria-live="polite">Low <span role="img" class="dot dot-low" aria-label="Low risk"></span></div>
           </div>
           <div class="risk-row">
             <div class="risk-lbl">Occlusal Overload
               <span class="tt"><span style="font-size:11px;cursor:help;" tabindex="0" aria-label="Occlusal overload risk info">ⓘ</span>
               <span class="tt-pop" role="tooltip">Excessive bite force risk —<br>night guard recommended</span></span>
             </div>
-            <div class="risk-val" id="riskOcc" aria-live="polite">Medium <span class="dot dot-med" aria-label="Medium risk"></span></div>
+            <div class="risk-val" id="riskOcc" aria-live="polite">Medium <span role="img" class="dot dot-med" aria-label="Medium risk"></span></div>
           </div>
           <div class="risk-row">
             <div class="risk-lbl">Smoking Risk
               <span class="tt"><span style="font-size:11px;cursor:help;" tabindex="0" aria-label="Smoking risk info">ⓘ</span>
               <span class="tt-pop" role="tooltip">Active smoking significantly increases<br>implant failure and peri-implantitis risk</span></span>
             </div>
-            <div class="risk-val" id="riskSmoking" aria-live="polite">Low <span class="dot dot-low" aria-label="Low risk"></span></div>
+            <div class="risk-val" id="riskSmoking" aria-live="polite">Low <span role="img" class="dot dot-low" aria-label="Low risk"></span></div>
           </div>
           <div class="risk-row" id="riskDiabetesRow" style="display:none;">
             <div class="risk-lbl">Diabetes Risk
               <span class="tt"><span style="font-size:11px;cursor:help;" tabindex="0" aria-label="Diabetes risk info">ⓘ</span>
               <span class="tt-pop" role="tooltip">Uncontrolled HbA1c ≥7.5% causes<br>2–3× higher implant failure &amp; poor healing</span></span>
             </div>
-            <div class="risk-val" id="riskDiabetes" aria-live="polite">Medium <span class="dot dot-med" aria-label="Medium risk"></span></div>
+            <div class="risk-val" id="riskDiabetes" aria-live="polite">Medium <span role="img" class="dot dot-med" aria-label="Medium risk"></span></div>
           </div>
         </div>
         <div id="crownRiskSection" style="display:none;">
@@ -2981,35 +2981,35 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
               <span class="tt"><span style="font-size:11px;cursor:help;" tabindex="0">ⓘ</span>
               <span class="tt-pop" role="tooltip">Risk of decay at crown margin.<br>Hygiene is the #1 factor</span></span>
             </div>
-            <div class="risk-val" id="riskCaries" aria-live="polite">Low <span class="dot dot-low" aria-label="Low risk"></span></div>
+            <div class="risk-val" id="riskCaries" aria-live="polite">Low <span role="img" class="dot dot-low" aria-label="Low risk"></span></div>
           </div>
           <div class="risk-row">
             <div class="risk-lbl">Crown Fracture Risk
               <span class="tt"><span style="font-size:11px;cursor:help;" tabindex="0">ⓘ</span>
               <span class="tt-pop" role="tooltip">Risk of ceramic fracture.<br>Parafunction = 60% failure rate</span></span>
             </div>
-            <div class="risk-val" id="riskCrownFrac" aria-live="polite">Low <span class="dot dot-low" aria-label="Low risk"></span></div>
+            <div class="risk-val" id="riskCrownFrac" aria-live="polite">Low <span role="img" class="dot dot-low" aria-label="Low risk"></span></div>
           </div>
           <div class="risk-row">
             <div class="risk-lbl">Root Fracture Risk
               <span class="tt"><span style="font-size:11px;cursor:help;" tabindex="0">ⓘ</span>
               <span class="tt-pop" role="tooltip">Risk of vertical root fracture.<br>No ferrule = 60% early failure</span></span>
             </div>
-            <div class="risk-val" id="riskRootFrac" aria-live="polite">Low <span class="dot dot-low" aria-label="Low risk"></span></div>
+            <div class="risk-val" id="riskRootFrac" aria-live="polite">Low <span role="img" class="dot dot-low" aria-label="Low risk"></span></div>
           </div>
           <div class="risk-row">
             <div class="risk-lbl">Endodontic Failure
               <span class="tt"><span style="font-size:11px;cursor:help;" tabindex="0">ⓘ</span>
               <span class="tt-pop" role="tooltip">Risk of RCT failure after crown.<br>RCT done = 91.3% survival at 10yr</span></span>
             </div>
-            <div class="risk-val" id="riskEndo" aria-live="polite">Low <span class="dot dot-low" aria-label="Low risk"></span></div>
+            <div class="risk-val" id="riskEndo" aria-live="polite">Low <span role="img" class="dot dot-low" aria-label="Low risk"></span></div>
           </div>
           <div class="risk-row">
             <div class="risk-lbl">Parafunction Damage
               <span class="tt"><span style="font-size:11px;cursor:help;" tabindex="0">ⓘ</span>
               <span class="tt-pop" role="tooltip">Bruxism/clenching damage.<br>Night guard REQUIRED if present</span></span>
             </div>
-            <div class="risk-val" id="riskParafunc" aria-live="polite">Low <span class="dot dot-low" aria-label="Low risk"></span></div>
+            <div class="risk-val" id="riskParafunc" aria-live="polite">Low <span role="img" class="dot dot-low" aria-label="Low risk"></span></div>
           </div>
         </div>
       </div>`;
@@ -4316,8 +4316,9 @@ const toAdd       = [];
 let   skipped     = 0;
 
 data.patients.forEach(function(p) {
-  // Basic structural validation
-  if (!p || typeof p.id !== 'string' || !p.id) { skipped++; return; }
+  // Basic structural validation — ID must match the app-generated format to prevent
+  // onclick-injection XSS if a crafted backup file is imported.
+  if (!p || typeof p.id !== 'string' || !/^p_\d+_[a-z0-9]+$/i.test(p.id)) { skipped++; return; }
   if (!p.name || !p.condition)                  { skipped++; return; }
   // Never silently overwrite an existing patient
   if (existingIds.has(p.id))                    { skipped++; return; }
