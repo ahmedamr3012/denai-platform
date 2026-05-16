@@ -122,7 +122,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Sora', sans-serif; }
 .sidebar-logo { height: var(--topbar-h); display: flex; align-items: center; padding: 0 18px; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.07); flex-shrink: 0; position: relative; z-index: 1; }
 .logo-text { font-family: 'Sora', sans-serif; font-size: 25px; font-weight: 800; color: #fff; letter-spacing: -.5px; }
 .logo-ai { font-size: 9px; background: var(--c-brand); color: #fff; padding: 3px 7px; border-radius: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
-.sidebar-nav { padding: 10px 8px; flex: 1; display: flex; flex-direction: column; gap: 2px; position: relative; z-index: 1; overflow-y: auto; max-height: 260px; }
+.sidebar-nav { padding: 10px 8px; flex: 1; display: flex; flex-direction: column; gap: 2px; position: relative; z-index: 1; overflow-y: auto; }
 .nav-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: rgba(255,255,255,.28); padding: 14px 10px 5px; }
 .nav-item {
   display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: 10px;
@@ -262,10 +262,103 @@ body.dark .dark-toggle:hover { background: var(--c-n150); }
 /* ================================================================
    PAGE & GRID
    ================================================================ */
-.page { flex: 1; overflow-y: auto; padding: 22px 26px 32px; }
+.page { flex: 1; overflow-y: auto; padding: 0; position: relative; }
 .page::-webkit-scrollbar { width: 5px; }
 .page::-webkit-scrollbar-track { background: transparent; }
 .page::-webkit-scrollbar-thumb { background: var(--c-n300); border-radius: 10px; }
+
+/* ================================================================
+   VIEW PANEL SYSTEM
+   ================================================================ */
+.view-panel { display: none; padding: 22px 26px 32px; min-height: 100%; opacity: 0; }
+.view-panel.view-active { display: block; }
+.view-panel.view-visible { opacity: 1; transition: opacity 200ms cubic-bezier(.16,1,.3,1); }
+
+/* ================================================================
+   CASES VIEW
+   ================================================================ */
+.cases-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.cases-title { font-size: 22px; font-weight: 800; color: var(--c-n900); font-family: 'Sora', sans-serif; }
+.cases-search { display: flex; align-items: center; gap: 8px; background: var(--surface-card); border: 1.5px solid var(--c-n200); border-radius: var(--r-md); padding: 8px 14px; flex: 0 0 260px; transition: border-color var(--t-fast), box-shadow var(--t-fast); }
+.cases-search:focus-within { border-color: var(--c-brand); box-shadow: 0 0 0 3px rgba(31,122,79,.1); }
+.cases-search i { color: var(--c-n400); font-size: 13px; }
+.cases-search input { border: none; outline: none; background: none; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--c-n800); width: 100%; }
+.cases-search input::placeholder { color: var(--c-n400); }
+body.dark .cases-search { background: var(--c-n100); border-color: var(--c-n200); }
+body.dark .cases-search input { color: var(--c-n800); }
+.cases-section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--c-n400); margin-bottom: 10px; margin-top: 18px; display: flex; align-items: center; gap: 8px; }
+.cases-section-label::after { content: ''; flex: 1; height: 1px; background: var(--c-n150); }
+.cases-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.case-card { background: var(--surface-card); border: 1px solid var(--c-n150); border-radius: var(--r-xl); padding: 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: box-shadow var(--t-base), border-color var(--t-base), background var(--t-fast); animation: cardIn .4s cubic-bezier(.16,1,.3,1) both; }
+.case-card:hover { box-shadow: var(--shadow-md); border-color: var(--c-brand-bdr); }
+.case-card:focus-visible { outline: 2px solid var(--c-brand); outline-offset: 2px; }
+.case-card.case-active { border-color: var(--c-brand-bdr); background: var(--c-brand-bg); }
+body.dark .case-card { background: var(--c-n50); border-color: var(--c-n150); }
+.case-card-av { width: 44px; height: 44px; border-radius: 12px; background: rgba(31,122,79,.12); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: var(--c-brand); flex-shrink: 0; font-family: 'Sora', sans-serif; }
+.case-active .case-card-av { background: var(--c-brand); color: white; }
+.case-card-info { flex: 1; min-width: 0; }
+.case-card-name { font-size: 14px; font-weight: 700; color: var(--c-n900); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.case-card-meta { font-size: 11.5px; color: var(--c-n500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.case-card-stage { display: inline-flex; align-items: center; gap: 4px; margin-top: 5px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 2px 8px; border-radius: 10px; background: var(--c-brand-bg); color: var(--c-brand); border: 1px solid var(--c-brand-bdr); }
+.case-card-score { font-size: 18px; font-weight: 800; color: var(--c-brand); font-family: 'Sora', sans-serif; flex-shrink: 0; }
+.cases-empty { text-align: center; padding: 60px 20px; color: var(--c-n500); }
+.cases-empty-icon { font-size: 40px; margin-bottom: 14px; opacity: .4; }
+.cases-empty h3 { font-size: 18px; font-weight: 700; color: var(--c-n700); margin-bottom: 6px; }
+.cases-empty p { font-size: 13px; max-width: 280px; margin: 0 auto 20px; }
+
+/* ================================================================
+   DASHBOARD VIEW
+   ================================================================ */
+.dash-welcome { margin-bottom: 22px; }
+.dash-welcome-title { font-size: 24px; font-weight: 800; color: var(--c-n900); font-family: 'Sora', sans-serif; line-height: 1.2; }
+.dash-welcome-sub { font-size: 14px; color: var(--c-n500); margin-top: 4px; }
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+@media (max-width: 700px) { .dash-grid { grid-template-columns: 1fr; } }
+.dash-card { background: var(--surface-card); border: 1px solid var(--c-n150); border-radius: var(--r-xl); padding: 20px; transition: box-shadow var(--t-base), background .4s; }
+body.dark .dash-card { background: var(--c-n50); border-color: var(--c-n150); }
+.dash-card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--c-n400); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.dash-card-label i { font-size: 11px; color: var(--c-brand); }
+.dash-card-value { font-size: 28px; font-weight: 800; color: var(--c-n900); font-family: 'Sora', sans-serif; }
+.dash-card-sub { font-size: 12px; color: var(--c-n500); margin-top: 4px; }
+.dash-active-card { background: linear-gradient(135deg, var(--c-brand-bg) 0%, rgba(31,122,79,.05) 100%); border-color: var(--c-brand-bdr); cursor: pointer; }
+.dash-active-card:hover { box-shadow: var(--shadow-md); border-color: var(--c-brand); }
+.dash-active-name { font-size: 18px; font-weight: 800; color: var(--c-brand-dark); font-family: 'Sora', sans-serif; margin-bottom: 3px; }
+.dash-active-meta { font-size: 12px; color: var(--c-brand); font-weight: 500; }
+.dash-action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.dash-recent-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--c-n400); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.dash-recent-label::after { content: ''; flex: 1; height: 1px; background: var(--c-n150); }
+.dash-sync-row { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: var(--surface-card); border: 1px solid var(--c-n150); border-radius: var(--r-md); font-size: 12px; color: var(--c-n500); }
+body.dark .dash-sync-row { background: var(--c-n50); border-color: var(--c-n150); }
+.dash-sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-n300); flex-shrink: 0; }
+.dash-sync-dot.synced { background: var(--c-success); }
+.dash-sync-dot.local { background: var(--c-n400); }
+
+/* ================================================================
+   PLACEHOLDER VIEWS (plan, lab, reports)
+   ================================================================ */
+.view-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; text-align: center; color: var(--c-n400); gap: 12px; }
+.view-placeholder-icon { font-size: 36px; opacity: .3; }
+.view-placeholder h3 { font-size: 18px; font-weight: 700; color: var(--c-n600); margin: 0; }
+.view-placeholder p { font-size: 13px; max-width: 300px; margin: 0; color: var(--c-n400); }
+.view-placeholder .badge-coming { display: inline-block; padding: 3px 10px; border-radius: 20px; background: var(--c-n100); color: var(--c-n500); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+
+/* ================================================================
+   GLASS ENTRY OVERLAY
+   ================================================================ */
+.entry-overlay { position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center; background: rgba(11,43,31,.72); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); opacity: 0; pointer-events: none; transition: opacity 250ms cubic-bezier(.16,1,.3,1); }
+.entry-overlay.entry-visible { opacity: 1; pointer-events: all; }
+.entry-card { background: rgba(255,255,255,.11); border: 1px solid rgba(255,255,255,.15); border-radius: 22px; padding: 44px 40px 36px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 32px 80px rgba(0,0,0,.32); backdrop-filter: blur(6px); }
+.entry-logo { margin-bottom: 6px; }
+.entry-tagline { font-size: 13px; color: rgba(255,255,255,.55); margin-bottom: 32px; font-weight: 500; letter-spacing: .01em; }
+.entry-divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; color: rgba(255,255,255,.3); font-size: 11px; font-weight: 600; }
+.entry-divider::before, .entry-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.15); }
+.entry-btn-primary { width: 100%; padding: 13px; background: var(--c-brand); color: #fff; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background var(--t-fast), transform var(--t-fast); margin-bottom: 10px; }
+.entry-btn-primary:hover { background: var(--c-brand-hover); transform: translateY(-1px); }
+.entry-btn-local { width: 100%; padding: 12px; background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.15); border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background var(--t-fast); }
+.entry-btn-local:hover { background: rgba(255,255,255,.14); }
+.entry-btn-local:focus-visible, .entry-btn-primary:focus-visible { outline: 2px solid rgba(255,255,255,.6); outline-offset: 2px; }
+.entry-local-note { font-size: 11px; color: rgba(255,255,255,.35); margin-top: 8px; }
+
 .case-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
 .back-link { font-size: 13px; font-weight: 600; color: var(--c-n500); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color var(--t-fast); border-radius: 6px; padding: 4px 6px; margin: -4px -6px; }
 .back-link:hover { color: var(--c-n800); background: var(--c-n100); }
@@ -739,14 +832,13 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   </svg>
 </div>
     <nav class="sidebar-nav" id="sidebarNav" role="menubar">
-      <button class="nav-item" type="button" role="menuitem"><i class="fa-solid fa-house" aria-hidden="true"></i> Dashboard</button>
-      <button class="nav-item" type="button" role="menuitem"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i> Cases</button>
-      <button class="nav-item" type="button" role="menuitem"><i class="fa-regular fa-user" aria-hidden="true"></i> Patients</button>
-      <button class="nav-item active" type="button" role="menuitem" aria-current="page"><i class="fa-regular fa-lightbulb" aria-hidden="true"></i> AI Clinical Insight</button>
-      <div class="nav-label" aria-hidden="true">Management</div>
-      <button class="nav-item" type="button" role="menuitem"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Orders</button>
-      <button class="nav-item" type="button" role="menuitem"><i class="fa-regular fa-message" aria-hidden="true"></i> Messages</button>
-      <button class="nav-item" type="button" role="menuitem"><i class="fa-solid fa-gear" aria-hidden="true"></i> Settings</button>
+      <button class="nav-item" type="button" role="menuitem" data-view="dashboard" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house" aria-hidden="true"></i> Dashboard</button>
+      <button class="nav-item" type="button" role="menuitem" data-view="cases" onclick="navigateTo('cases')"><i class="fa-solid fa-folder-open" aria-hidden="true"></i> Cases</button>
+      <div class="nav-label" aria-hidden="true">Clinical</div>
+      <button class="nav-item active" type="button" role="menuitem" data-view="insight" onclick="navigateTo('insight')" aria-current="page"><i class="fa-solid fa-brain" aria-hidden="true"></i> AI Insight</button>
+      <button class="nav-item" type="button" role="menuitem" data-view="plan" onclick="navigateTo('plan')"><i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Treatment Plan</button>
+      <button class="nav-item" type="button" role="menuitem" data-view="lab" onclick="navigateTo('lab')"><i class="fa-solid fa-flask" aria-hidden="true"></i> Lab &amp; Mfg</button>
+      <button class="nav-item" type="button" role="menuitem" data-view="reports" onclick="navigateTo('reports')"><i class="fa-solid fa-file-medical" aria-hidden="true"></i> Reports</button>
     </nav>
     <!-- Patient List -->
     <div class="patient-section" aria-label="Patient list">
@@ -1018,7 +1110,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       </div>
     </header>
 
-<div class="page" role="region" aria-label="Case analysis">
+<div class="page">
+  <!-- ── AI Clinical Insight View ───────────────────────────── -->
+  <div class="view-panel view-active view-visible" id="viewInsight" data-view="insight" role="region" aria-label="AI Clinical Workspace">
   <div class="case-nav">
     <a href="#" class="back-link" aria-label="Back to cases"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Cases</a>
     <div class="case-meta">
@@ -1028,14 +1122,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     </div>
   </div>
 
-  <div class="workflow" role="list" aria-label="Workflow steps">
-    <span class="wf-step wf-done" role="listitem"><i class="fa-solid fa-scanner-keyboard" style="font-size:10px" aria-hidden="true"></i> Scan</span>
-    <span class="wf-arrow" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
-    <span class="wf-step wf-active" role="listitem" aria-current="step"><i class="fa-solid fa-brain" style="font-size:10px" aria-hidden="true"></i> AI Insight</span>
-    <span class="wf-arrow" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
-    <span class="wf-step wf-pending" role="listitem"><i class="fa-solid fa-pen-ruler" style="font-size:10px" aria-hidden="true"></i> Treatment Plan</span>
-    <span class="wf-arrow" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
-    <span class="wf-step wf-pending" role="listitem"><i class="fa-solid fa-flask" style="font-size:10px" aria-hidden="true"></i> Lab &amp; Mfg</span>
+  <div class="workflow" id="workflowBar" role="list" aria-label="Workflow steps">
+    <!-- Populated dynamically by renderWorkflowBar() — derived from real patient S state -->
   </div>
 
   <div class="grid3">
@@ -1325,9 +1413,114 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     <div class="feat-card" role="listitem"><span class="feat-icon" aria-hidden="true">⚖️</span><div><div class="feat-title">Compare Options</div><div class="feat-desc">Side-by-side comparison for informed clinical decisions.</div></div></div>
     <div class="feat-card" role="listitem"><span class="feat-icon" aria-hidden="true">👨‍⚕️</span><div><div class="feat-title">Dentist in Control</div><div class="feat-desc">Final decision always remains with the dentist.</div></div></div>
   </div>
-</div>
+  </div><!-- /viewInsight -->
+
+  <!-- ── Dashboard View ──────────────────────────────────────── -->
+  <div class="view-panel" id="viewDashboard" data-view="dashboard" role="region" aria-label="Dashboard">
+    <div class="dash-welcome">
+      <div class="dash-welcome-title" id="dashGreeting">Good morning</div>
+      <div class="dash-welcome-sub">Here's your clinical workspace overview.</div>
+    </div>
+    <div class="dash-grid">
+      <div class="dash-card dash-active-card" onclick="navigateTo('insight')" tabindex="0" role="button" aria-label="Open active patient" onkeydown="if(event.key==='Enter'||event.key===' '){navigateTo('insight')}">
+        <div class="dash-card-label"><i class="fa-solid fa-brain" aria-hidden="true"></i> Active Patient</div>
+        <div class="dash-active-name" id="dashActiveName">—</div>
+        <div class="dash-active-meta" id="dashActiveMeta">Tap to open AI Insight</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-label"><i class="fa-solid fa-users" aria-hidden="true"></i> Total Cases</div>
+        <div class="dash-card-value" id="dashTotalCases">—</div>
+        <div class="dash-card-sub">patients in local workspace</div>
+      </div>
+    </div>
+    <div class="dash-action-row">
+      <button class="btn btn-pri" type="button" onclick="openNewPatientModal()"><i class="fa-solid fa-plus" aria-hidden="true"></i> New Patient</button>
+      <button class="btn btn-sec" type="button" onclick="navigateTo('cases')"><i class="fa-solid fa-folder-open" aria-hidden="true"></i> View All Cases</button>
+      <button class="btn btn-sec" type="button" onclick="navigateTo('insight')"><i class="fa-solid fa-brain" aria-hidden="true"></i> AI Insight</button>
+    </div>
+    <div class="dash-recent-label">Recent Cases</div>
+    <div class="cases-grid" id="dashRecentGrid">
+      <!-- Populated by renderDashboardView() -->
+    </div>
+    <div style="margin-top:20px;">
+      <div class="dash-sync-row" id="dashSyncRow">
+        <span class="dash-sync-dot local" id="dashSyncDot" aria-hidden="true"></span>
+        <span id="dashSyncLabel">Local mode — sign in to sync across devices</span>
+        <button class="btn-sm" style="margin-left:auto;" onclick="openAuthModal()">Sign In</button>
+      </div>
+    </div>
+  </div><!-- /viewDashboard -->
+
+  <!-- ── Cases View ──────────────────────────────────────────── -->
+  <div class="view-panel" id="viewCases" data-view="cases" role="region" aria-label="Cases">
+    <div class="cases-header">
+      <h2 class="cases-title">Cases</h2>
+      <div class="cases-search" role="search">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input type="search" id="casesSearchInput" placeholder="Search patients…" aria-label="Search cases" oninput="filterCasesView(this.value)" />
+      </div>
+    </div>
+    <div id="casesViewContent">
+      <!-- Populated by renderCasesView() -->
+    </div>
+  </div><!-- /viewCases -->
+
+  <!-- ── Treatment Plan View ──────────────────────────────────── -->
+  <div class="view-panel" id="viewPlan" data-view="plan" role="region" aria-label="Treatment Plan">
+    <div class="view-placeholder">
+      <div class="view-placeholder-icon"><i class="fa-solid fa-pen-ruler" aria-hidden="true"></i></div>
+      <h3>Treatment Plan</h3>
+      <p>Structured treatment planning and scheduling — coming in Wave 8C.</p>
+      <span class="badge-coming">Coming Soon</span>
+    </div>
+  </div><!-- /viewPlan -->
+
+  <!-- ── Lab & Manufacturing View ────────────────────────────── -->
+  <div class="view-panel" id="viewLab" data-view="lab" role="region" aria-label="Lab and Manufacturing">
+    <div class="view-placeholder">
+      <div class="view-placeholder-icon"><i class="fa-solid fa-flask" aria-hidden="true"></i></div>
+      <h3>Lab &amp; Manufacturing</h3>
+      <p>Lab orders, tracking, and manufacturing status — coming in a future wave.</p>
+      <span class="badge-coming">Coming Soon</span>
+    </div>
+  </div><!-- /viewLab -->
+
+  <!-- ── Reports View ─────────────────────────────────────────── -->
+  <div class="view-panel" id="viewReports" data-view="reports" role="region" aria-label="Reports">
+    <div class="view-placeholder">
+      <div class="view-placeholder-icon"><i class="fa-solid fa-file-medical" aria-hidden="true"></i></div>
+      <h3>Reports</h3>
+      <p>Clinical report history and export — use the Report button in AI Insight to generate a report now.</p>
+      <span class="badge-coming">Coming Soon</span>
+    </div>
+  </div><!-- /viewReports -->
+
+</div><!-- /.page -->
 
   </main>
+
+  <!-- ── Glass Entry Overlay ─────────────────────────────────── -->
+  <div class="entry-overlay" id="entryOverlay" role="dialog" aria-modal="true" aria-labelledby="entryTitle" aria-describedby="entryDesc">
+    <div class="entry-card">
+      <div class="entry-logo" aria-label="denai">
+        <svg viewBox="0 0 520 88" height="28" fill="none" aria-hidden="true">
+          <path fill="white" d="M 8 4 L 8 68 L 30.2 68 C 46.8 68 59 56.8 59 43.4 C 59 30.0 46.8 19.6 30.2 19.6 L 30.2 27.2 C 42.4 27.2 51 34.4 51 43.4 C 51 52.4 42.4 60.4 30.2 60.4 L 16 60.4 L 16 26.0 C 16 22.2 12.6 19.6 8.8 20.4 L 8 20.6 Z"/>
+          <path fill="white" d="M 109 43.4 C 109 30.2 98.4 19.6 85.4 19.6 C 72.2 19.6 62 30.2 62 43.4 C 62 56.8 72.2 68 85.4 68 C 94.6 68 102.6 63.0 107.0 55.6 L 99.2 51.8 C 96.6 56.4 91.4 59.4 85.4 59.4 C 77.0 59.4 70.4 53.2 69.6 45.2 L 109 45.2 Z M 69.8 38.6 C 71.0 31.2 77.4 26.4 85.4 26.4 C 93.2 26.4 99.4 31.2 100.6 38.6 Z"/>
+          <path fill="white" d="M 113 68 L 113 20.0 L 121 20.0 L 121 26.4 C 124.6 22.0 130.2 19.6 136.8 19.6 C 148.6 19.6 157 27.8 157 40.2 L 157 68 L 149 68 L 149 41.4 C 149 32.6 144.0 27.2 136.2 27.2 C 128.2 27.2 121 33.0 121 43.0 L 121 68 Z"/>
+          <path fill="white" d="M 196.6 68 L 196.6 61.8 C 193.4 65.6 188.4 68 182.4 68 C 172.0 68 164.4 61.4 164.4 52.6 C 164.4 43.6 172.2 37.6 183.2 37.6 L 196.6 37.6 L 196.6 35.4 C 196.6 29.6 192.4 26.4 185.8 26.4 C 180.6 26.4 176.0 28.8 173.4 33.2 L 166.6 29.0 C 170.4 22.8 177.6 19.6 185.8 19.6 C 196.6 19.6 204.6 25.6 204.6 36.2 L 204.6 68 Z M 183.8 45.2 C 177.2 45.2 172.8 48.4 172.8 52.8 C 172.8 57.0 176.8 60.0 183.0 60.0 C 190.4 60.0 196.6 55.2 196.6 48.2 L 196.6 45.2 Z"/>
+          <rect x="212" y="20" width="8" height="48" fill="white"/>
+          <rect x="212.9" y="9.8" width="7.2" height="7.2" rx="1.8" fill="rgba(255,255,255,.6)"/>
+        </svg>
+      </div>
+      <div class="entry-tagline" id="entryDesc">Clinical Decision Support Platform</div>
+      <button class="entry-btn-primary" type="button" onclick="openAuthModal();continueLocally();" aria-label="Sign in or create an account">Sign In / Create Account</button>
+      <div class="entry-divider">or</div>
+      <button class="entry-btn-local" type="button" id="continueLocallyBtn" onclick="continueLocally()" aria-label="Continue using denai locally without an account">
+        <i class="fa-solid fa-arrow-right" style="font-size:11px;margin-right:4px;" aria-hidden="true"></i> Continue Locally
+      </button>
+      <div class="entry-local-note">No account needed · Data stays on your device</div>
+    </div>
+  </div><!-- /entryOverlay -->
 
   <!-- Save Modal -->
 
@@ -1659,12 +1852,238 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   // UISTATE — ephemeral session-only UI flags (never persisted)
   // ================================================================
   const UIState = {
-    editing:     false,  // edit form active
-    whyOpen:     false,  // why-panel accordion expanded
-    historyOpen: false,  // history accordion expanded
+    view:        'insight', // active primary view
+    editing:     false,     // edit form active
+    whyOpen:     false,     // why-panel accordion expanded
+    historyOpen: false,     // history accordion expanded
   };
   function setUIState(patch) {
     Object.assign(UIState, patch);
+  }
+
+  // ================================================================
+  // NAVIGATION — view-state routing (no URL hash, no framework)
+  // ================================================================
+  const _VALID_VIEWS = ['dashboard', 'cases', 'insight', 'plan', 'lab', 'reports'];
+  const _TOPBAR_CFG = {
+    dashboard: { icon: 'fa-house',        title: 'Dashboard',          sub: 'Workspace Overview' },
+    cases:     { icon: 'fa-folder-open',  title: 'Cases',              sub: 'Patient Management' },
+    insight:   { icon: 'fa-brain',        title: 'AI Clinical Insight', sub: '' },
+    plan:      { icon: 'fa-pen-ruler',    title: 'Treatment Plan',     sub: '' },
+    lab:       { icon: 'fa-flask',        title: 'Lab & Manufacturing', sub: '' },
+    reports:   { icon: 'fa-file-medical', title: 'Reports',            sub: '' },
+  };
+
+  function navigateTo(viewName) {
+    const view = _VALID_VIEWS.includes(viewName) ? viewName : 'insight';
+
+    // 1. Hide all active panels (remove active + visible classes)
+    document.querySelectorAll('.view-panel.view-active').forEach(p => {
+      p.classList.remove('view-visible');
+      // Brief delay before hiding so fade-out can play, but keep layout simple:
+      // just remove classes immediately for snap-feel; fade-in on the new panel
+      p.classList.remove('view-active');
+    });
+
+    // 2. Show target panel
+    const panelId = 'view' + view.charAt(0).toUpperCase() + view.slice(1);
+    const panel = document.getElementById(panelId);
+    if (panel) {
+      const pageEl = document.querySelector('.page');
+      if (pageEl) pageEl.scrollTop = 0;
+      panel.classList.add('view-active');
+      requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('view-visible')));
+    }
+
+    // 3. Update UIState
+    setUIState({ view });
+
+    // 4. Update sidebar nav active state
+    document.querySelectorAll('#sidebarNav .nav-item').forEach(btn => {
+      const isActive = btn.dataset.view === view;
+      btn.classList.toggle('active', isActive);
+      if (isActive) btn.setAttribute('aria-current', 'page');
+      else btn.removeAttribute('aria-current');
+    });
+
+    // 5. Update topbar title and icon
+    const cfg = _TOPBAR_CFG[view] || _TOPBAR_CFG.insight;
+    const iconEl = document.querySelector('.topbar-icon i');
+    const titleEl = document.querySelector('.topbar-title');
+    if (iconEl) iconEl.className = 'fa-solid ' + cfg.icon;
+    if (titleEl) titleEl.textContent = cfg.title;
+    document.title = cfg.title + ' — denai';
+
+    // 6. Render view-specific content
+    if (view === 'cases')     renderCasesView();
+    if (view === 'dashboard') renderDashboardView();
+
+    // 7. Close mobile sidebar
+    if (window.innerWidth <= 900) closeSidebar();
+  }
+
+  // ================================================================
+  // WORKFLOW BAR — derived from real patient S state (no hardcoding)
+  // ================================================================
+  const _WF_STAGES = [
+    { id: 'scan',    icon: 'fa-scanner-keyboard', label: 'Scan' },
+    { id: 'insight', icon: 'fa-brain',             label: 'AI Insight' },
+    { id: 'plan',    icon: 'fa-pen-ruler',          label: 'Treatment Plan' },
+    { id: 'lab',     icon: 'fa-flask',              label: 'Lab & Mfg' },
+  ];
+
+  function _getWorkflowStage() {
+    if (!S.condition) return 'scan';
+    if (S.planApproved) return S.labStatus ? 'lab' : 'plan';
+    return 'insight';
+  }
+
+  function renderWorkflowBar() {
+    const el = document.getElementById('workflowBar');
+    if (!el) return;
+    const activeId = _getWorkflowStage();
+    const activeIdx = _WF_STAGES.findIndex(s => s.id === activeId);
+    el.innerHTML = _WF_STAGES.map((cfg, i) => {
+      const isDone   = i < activeIdx;
+      const isActive = i === activeIdx;
+      const cls  = isActive ? 'wf-active' : isDone ? 'wf-done' : 'wf-pending';
+      const aria = isActive ? ' aria-current="step"' : '';
+      const arrow = i > 0 ? '<span class="wf-arrow" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>' : '';
+      return `${arrow}<span class="wf-step ${cls}" role="listitem"${aria}><i class="fa-solid ${cfg.icon}" style="font-size:10px" aria-hidden="true"></i> ${cfg.label}</span>`;
+    }).join('');
+  }
+
+  // ================================================================
+  // CASES VIEW RENDERER
+  // ================================================================
+  let _casesFilter = '';
+
+  function filterCasesView(query) {
+    _casesFilter = (query || '').toLowerCase().trim();
+    renderCasesView();
+  }
+
+  function renderCasesView() {
+    const container = document.getElementById('casesViewContent');
+    if (!container) return;
+    const allPatients = loadAllPatients() || [];
+    const filtered = _casesFilter
+      ? allPatients.filter(p => (p.name || '').toLowerCase().includes(_casesFilter) || (p.condition || '').toLowerCase().includes(_casesFilter) || (p.caseNum || '').toLowerCase().includes(_casesFilter))
+      : allPatients;
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<div class="cases-empty"><div class="cases-empty-icon"><i class="fa-solid fa-folder-open" aria-hidden="true"></i></div>${_casesFilter ? '<h3>No matches</h3><p>No patients match your search.</p>' : '<h3>No patients yet</h3><p>Add your first patient to begin a clinical insight session.</p>'}<button class="btn btn-pri" type="button" onclick="openNewPatientModal()" style="margin-top:4px;"><i class="fa-solid fa-plus"></i> New Patient</button></div>`;
+      return;
+    }
+
+    // Split into active (current patient) + rest, sorted by most recent
+    const activeId = S.id;
+    const active   = filtered.filter(p => p.id === activeId);
+    const others   = filtered.filter(p => p.id !== activeId);
+
+    const renderCard = (p) => {
+      const initials = (p.name || 'P').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+      const qs = _quickScore(p);
+      const score = qs !== null ? qs + '%' : '—';
+      const isActive = p.id === activeId;
+      const caseNum = p.caseNum || '';
+      const cond = p.condition || '';
+      const tooth = p.tooth || '';
+      return `<div class="case-card${isActive ? ' case-active' : ''}" role="listitem" tabindex="0" onclick="openCase('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCase('${p.id}')}" aria-label="Open case for ${escapeHtml(p.name||'')}${isActive?' (active)':''}">
+        <div class="case-card-av">${initials}</div>
+        <div class="case-card-info">
+          <div class="case-card-name">${escapeHtml(p.name||'Unknown')}</div>
+          <div class="case-card-meta">${escapeHtml(caseNum)}${caseNum && cond ? ' · ' : ''}${escapeHtml(cond)}${tooth ? ' · ' + escapeHtml(tooth) : ''}</div>
+          <div class="case-card-stage"><i class="fa-solid fa-brain" style="font-size:9px"></i> In Analysis</div>
+        </div>
+        <div class="case-card-score">${score}</div>
+      </div>`;
+    };
+
+    let html = '';
+    if (active.length > 0) {
+      html += '<div class="cases-section-label">Active Patient</div><div class="cases-grid">' + active.map(renderCard).join('') + '</div>';
+    }
+    if (others.length > 0) {
+      html += '<div class="cases-section-label">' + (active.length > 0 ? 'Other Cases' : 'All Cases') + '</div><div class="cases-grid">' + others.map(renderCard).join('') + '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  function openCase(id) {
+    switchPatient(id);
+    navigateTo('insight');
+  }
+
+  // ================================================================
+  // DASHBOARD VIEW RENDERER
+  // ================================================================
+  function renderDashboardView() {
+    // Greeting
+    const hour = new Date().getHours();
+    const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    const greetEl = document.getElementById('dashGreeting');
+    if (greetEl) greetEl.textContent = greet;
+
+    // Active patient card
+    const nameEl = document.getElementById('dashActiveName');
+    const metaEl = document.getElementById('dashActiveMeta');
+    if (nameEl) nameEl.textContent = S.name || '—';
+    if (metaEl) metaEl.textContent = (S.tooth || '') + (S.condition ? ' · ' + S.condition : '') || 'Open to continue analysis';
+
+    // Total cases count
+    const total = (loadAllPatients() || []).length;
+    const totalEl = document.getElementById('dashTotalCases');
+    if (totalEl) totalEl.textContent = total;
+
+    // Recent cases grid (last 4, excluding active)
+    const recGrid = document.getElementById('dashRecentGrid');
+    if (recGrid) {
+      const all = loadAllPatients() || [];
+      const recent = all.slice(-4).reverse();
+      if (recent.length === 0) {
+        recGrid.innerHTML = '<div style="color:var(--c-n400);font-size:13px;padding:12px 0;">No recent cases yet.</div>';
+      } else {
+        recGrid.innerHTML = recent.map(p => {
+          const initials = (p.name || 'P').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+          const qs = _quickScore(p);
+          const score = qs !== null ? qs + '%' : '—';
+          const isActive = p.id === S.id;
+          return `<div class="case-card${isActive ? ' case-active' : ''}" tabindex="0" role="listitem" onclick="openCase('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCase('${p.id}')}" aria-label="${escapeHtml(p.name||'')}">
+            <div class="case-card-av">${initials}</div>
+            <div class="case-card-info">
+              <div class="case-card-name">${escapeHtml(p.name||'Unknown')}</div>
+              <div class="case-card-meta">${escapeHtml(p.condition||'')}${p.tooth ? ' · ' + escapeHtml(p.tooth) : ''}</div>
+            </div>
+            <div class="case-card-score">${score}</div>
+          </div>`;
+        }).join('');
+      }
+    }
+
+    // Sync status row
+    const dot   = document.getElementById('dashSyncDot');
+    const label = document.getElementById('dashSyncLabel');
+    if (typeof denaiAuth !== 'undefined' && denaiAuth.isSignedIn()) {
+      if (dot)   { dot.classList.remove('local'); dot.classList.add('synced'); }
+      const session = denaiAuth.getSession();
+      const email = session && session.user ? session.user.email : 'Cloud';
+      if (label) label.textContent = 'Synced — signed in as ' + email;
+    } else {
+      if (dot)   { dot.classList.remove('synced'); dot.classList.add('local'); }
+      if (label) label.textContent = 'Local mode — sign in to sync across devices';
+    }
+  }
+
+  // ================================================================
+  // GLASS ENTRY OVERLAY
+  // ================================================================
+  function continueLocally() {
+    localStorage.setItem('denaiEntryDismissed_v1', '1');
+    const overlay = document.getElementById('entryOverlay');
+    if (!overlay) return;
+    overlay.classList.remove('entry-visible');
+    overlay.addEventListener('transitionend', () => { overlay.style.display = 'none'; }, { once: true });
   }
 
   // ================================================================
@@ -2319,6 +2738,12 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     // Update case number in header
     const caseNumEl = document.querySelector('.case-num');
     if (caseNumEl) caseNumEl.textContent = state.caseNum || 'Case #4587';
+    // Update topbar patient subtitle
+    const patSubEl = document.getElementById('topbarPatientName');
+    if (patSubEl && state.name) {
+      const agePart = state.age ? ', ' + state.age : '';
+      patSubEl.innerHTML = `<svg class="heartbeat-svg" viewBox="0 0 30 12" aria-hidden="true" focusable="false"><polyline points="0,6 4,6 6,2 8,10 10,6 30,6" class="heartbeat-path"/></svg> ${escapeHtml(state.name + agePart)}`;
+    }
   }
 
   // ── Compound mode: summary banner showing both site recommendations ─
@@ -3456,7 +3881,7 @@ buildEditForm();
 updateSliderPositions();
 initClinicalNotes();
 History.render();
-setTimeout(() => { render(S); showToast(`Switched to ${S.name}`, 'info'); }, 300);
+setTimeout(() => { render(S); renderWorkflowBar(); showToast(`Switched to ${S.name}`, 'info'); }, 300);
 renderPatientList();
 if (window.innerWidth <= 900) closeSidebar();
 // Update case number in UI
@@ -3966,6 +4391,7 @@ if ($('resetModal').style.display==='flex') closeResetModal();
 if ($('shortcutsModal').style.display==='flex') closeShortcutsModal();
 if ($('newPatientModal').style.display==='flex') closeNewPatientModal();
 if ($('deletePatientModal').style.display==='flex') closeDeletePatient();
+const eo = $('entryOverlay'); if (eo && eo.classList.contains('entry-visible')) continueLocally();
 },
 'ctrl+1': () => selectTx('implant'),
 'ctrl+2': () => selectTx('bridge'),
@@ -3990,14 +4416,8 @@ const action = SHORTCUTS[key];
 if (action) { e.preventDefault(); action(); }
 });
 
-// Sidebar nav
-$$('#sidebarNav .nav-item').forEach(btn => {
-btn.addEventListener('click', () => {
-$$('#sidebarNav .nav-item').forEach(x => { x.classList.remove('active'); x.removeAttribute('aria-current'); });
-btn.classList.add('active'); btn.setAttribute('aria-current','page');
-if (window.innerWidth <= 900) closeSidebar();
-});
-});
+// Sidebar nav — navigation is handled via onclick="navigateTo(...)" attributes on each button.
+// No delegation loop needed; navigateTo() manages active state centrally.
 $('sidebarOverlay').addEventListener('click', closeSidebar);
 
 // AI Card Event Delegation
@@ -4106,7 +4526,17 @@ initClinicalNotes();
 History.render();
 
 render(S);
+renderWorkflowBar();
 if (calcAI(S)) { setTimeout(() => { if (!UIState.whyOpen) toggleWhy(); }, 800); }
+
+// Show glass entry overlay on first visit (flag not set yet)
+if (!localStorage.getItem('denaiEntryDismissed_v1')) {
+  const overlay = document.getElementById('entryOverlay');
+  if (overlay) {
+    overlay.style.display = 'flex';
+    requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('entry-visible')));
+  }
+}
 
 // Restore multi-tooth UI state from saved state
 if (S.multiTooth && S.condition === 'Missing tooth') {
