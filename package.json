@@ -5,8 +5,8 @@
   "description": "denai — Clinical Insight Interface",
   "scripts": {
     "test:engine": "playwright test tests/ci/engine.spec.js",
-    "test:smoke":  "playwright test tests/ci/smoke.spec.js",
-    "test:ci":     "playwright test tests/ci/"
+    "test:smoke": "playwright test tests/ci/smoke.spec.js",
+    "test:ci": "playwright test tests/ci/ tests/e2e/"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0"

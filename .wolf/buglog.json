@@ -1320,6 +1320,22 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-05-16T13:17:18.916Z"
+    },
+    {
+      "id": "bug-083",
+      "timestamp": "2026-05-16T14:33:10.081Z",
+      "error_message": "Incorrect value in code",
+      "file": "playwright.config.js",
+      "root_cause": "Had './tests/ci'",
+      "fix": "Changed to './tests'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-16T14:33:10.081Z"
     }
   ]
 }
