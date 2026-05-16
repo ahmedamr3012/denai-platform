@@ -49,7 +49,7 @@
   <script src="src/render/patientPanel.js?v=2.0.0"></script>
   <script src="src/render/riskPanel.js?v=2.0.0"></script>
   <!-- Wave 7B: Auth foundation — Supabase CDN must precede authModule.js -->
-  <!-- TODO: Pin to a specific version before production. Current: @2.39.7 -->
+  <!-- TODO: To upgrade Supabase: bump version here + run npm run test:ci before deploying. Pinned: @2.39.7 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
   <script src="src/auth/authModule.js?v=2.0.0"></script>
   <!-- Wave 7D: Cloud write path — serializer must precede syncQueue -->
