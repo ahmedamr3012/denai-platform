@@ -24,6 +24,9 @@ window.denaiSerializer = (function () {
     'multiTooth', 'tooth2', 'abutmentQuality',
     'multiSite', 'site2Tooth', 'site2Condition', 'site2Structure', 'site2EndoStatus',
     'costImplant', 'costBridge', 'costBoneGraft', 'costCrown', 'costRCT', 'costPostCore',
+    // Wave 8C: workflow continuity — synced so plan/lab state follows patient across devices
+    'planApproved', 'labStatus',
+    // lastAccessed and reportHistory are intentionally excluded: device-local + large array
   ];
 
   // serializePatient — pure function. Never mutates src. Tolerates missing fields.

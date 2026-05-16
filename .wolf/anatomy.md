@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-16T00:11:53.360Z
-> Files: 9 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-16T07:54:01.823Z
+> Files: 11 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~81082 tok)
+- `index.html` — denai — Clinical Insight (~94579 tok)
 
 ## .claude/
 
@@ -42,9 +42,11 @@
 
 ## src/styles/components/
 
+- `toast.css` — Styles: 5 rules (~294 tok)
 
 ## src/styles/tokens/
 
+- `motion-tokens.css` — Styles: 5 vars (~223 tok)
 
 ## src/styles/utilities/
 
@@ -53,7 +55,7 @@
 
 - `cloudSync.js` — Wave 7E+7F+7G: `denaiCloudSync` IIFE. `hydrate()` selects `notes_enc`, decrypts before merge (`decryptedNotesMap` threaded through). Tombstone cleanup (Pass 3). Public API: hydrate, getLastHydratedAt. (~400 tok)
 - `prefsSync.js` — Wave 7F+7G: `denaiPrefs` IIFE. Wave 7G adds `notesKeySalt` to prefs; `_triggerPassphrasePrompt()` calls `window.denaiShowNotesPassphrasePrompt`. Public API: init, get, save, hydrate. (~200 tok)
-- `serializer.js` — Wave 7D: `denaiSerializer` IIFE. Explicit 28-field allowlist → `state` JSONB. Strips `notes`/`activeSite`. `notes_enc` is a separate DB column handled in syncQueue, not here. (~90 tok)
+- `serializer.js` — src/sync/serializer.js (~627 tok)
 - `syncQueue.js` — Wave 7D–7G: `denaiSyncQueue` IIFE. Stores `rawNotes` at enqueue; encrypts via `denaiNotesEnc` at flush, adds `notes_enc` as top-level upsert column. Public API: init, enqueue, enqueueSoftDelete, flush, hasPendingFor, getStatus, getQueueLength, getLastSyncedAt. (~480 tok)
 
 ## src/utils/

@@ -7,9 +7,10 @@
    ================================================================ */
 
 :root {
-  --t-fast:   .15s ease;
-  --t-base:   .25s cubic-bezier(.4,0,.2,1);
-  --t-spring: .5s cubic-bezier(.16,1,.3,1);
+  --t-fast:   .14s cubic-bezier(.16,1,.3,1);
+  --t-base:   .22s cubic-bezier(.16,1,.3,1);
+  --t-spring: .45s cubic-bezier(.16,1,.3,1);
+  --t-slow:   .4s  cubic-bezier(.16,1,.3,1);
 
-  --transition-card: transform var(--t-base), box-shadow var(--t-base), opacity var(--t-base);
+  --transition-card: transform var(--t-base), box-shadow var(--t-base), border-color var(--t-base);
 }
