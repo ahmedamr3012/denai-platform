@@ -116,6 +116,16 @@
 - **Endocrown ceiling is 94, standard crown ceiling is 96.** Endocrown will never outscore a well-supported standard crown under VIABLE classification. In `endocrown-viable`, the standard crown wins at 96 while endocrown ties crown_core at 94. The test asserts endocrown's slot (crown field) range 88-95, not that it wins.
 - **age<18 deferral added to calcAI.js (2026-05-16):** Patients under 18 get `implant -= 15.0; conf -= 15` to model skeletal immaturity. Bridge becomes preferred. Only affects calcAI (single/multi missing tooth paths). The existing `age<40` bonus (+0.6) still applies first; the deferral then overrides it net.
 
+## Key Learnings — UX (Phase 5, 2026-05-17)
+
+- **`href="#"` back-links are broken in SPA:** The case-nav "Back to Cases" used `href="#"` which scrolls to page top instead of navigating. Fix: `href="javascript:void(0)" onclick="navigateTo('cases')"`.
+- **Status pill / workflow state must be updated dynamically in `renderMainPanels`:** The `#caseStatusPill` element was hardcoded "In Analysis" in HTML. Add an `id` and update it from `_getWorkflowStage()` in `renderMainPanels`. Map: `scan`→"New Case", `insight`→"In Analysis", `plan`→"Plan Approved", `lab`→"Lab Sent"/"Lab Received".
+- **`_getPatientStageBadge` must handle all `labStatus` values explicitly:** `if (p.labStatus)` catches both 'pending' and 'received' under one case. When `labStatus==='received'` the correct label is "Lab Received" not "Lab Sent". Always check received before the generic truthy check.
+- **`aria-labelledby` must reference an id that actually exists:** Entry overlay had `aria-labelledby="entryTitle"` but no element with `id="entryTitle"`. Used `entryDesc` (the tagline element) instead. Before writing `aria-labelledby`, verify the target id is in the DOM.
+- **"Regenerate" in report history is misleading:** `generateReport()` creates a new report from *current* patient state, not the historical one. Label changed to "Re-run Report" — transparent that it reflects current, not archived, state.
+- **Lab "Next Step" CTA when received should navigate to Reports, not AI Insight:** After lab restoration is received, the clinical next action is to generate a delivery report. CTA changed from `navigateTo('insight')` / "AI Insight" to `navigateTo('reports')` / "Go to Reports".
+- **Hardcoded fallback strings in dynamic UI are production bugs:** `state.caseNum || 'Case #4587'` shows a fake case number. Always use a neutral placeholder like `'—'` when real data is absent.
+
 ## Do-Not-Repeat
 
 - [2026-05-15] **`const`/`let` top-level classic-script declarations are NOT `window.*` properties.** In Playwright (and in browsers), `window.X` only resolves for `var` declarations and `function` declarations at script top level. `const ClinicalEngine = ...` makes `ClinicalEngine` available in the global scope but NOT as `window.ClinicalEngine`. Use `typeof X !== 'undefined'` (not `window.X`) when checking for `const`/`let` globals in `page.waitForFunction` or `page.evaluate`. For CI test sentinels, prefer a known function declaration (`window.render`) over `const` globals.

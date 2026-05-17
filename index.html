@@ -1249,10 +1249,10 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   <!-- ── AI Clinical Insight View ───────────────────────────── -->
   <div class="view-panel view-active view-visible" id="viewInsight" data-view="insight" role="region" aria-label="AI Clinical Workspace">
   <div class="case-nav">
-    <a href="#" class="back-link" aria-label="Back to cases"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Cases</a>
+    <a href="javascript:void(0)" class="back-link" onclick="navigateTo('cases')" aria-label="Back to cases"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Cases</a>
     <div class="case-meta">
       <span class="case-num">Case #4587</span>
-      <span class="status-pill status-active" aria-label="Status: In Analysis">In Analysis</span>
+      <span class="status-pill status-active" id="caseStatusPill" aria-label="Status: In Analysis">In Analysis</span>
       <span class="case-time" aria-label="Last updated today at 10:42 AM">Last updated: Today, 10:42 AM</span>
     </div>
   </div>
@@ -1645,7 +1645,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   </main>
 
   <!-- ── Glass Entry Overlay ─────────────────────────────────── -->
-  <div class="entry-overlay" id="entryOverlay" role="dialog" aria-modal="true" aria-labelledby="entryTitle" aria-describedby="entryDesc">
+  <div class="entry-overlay" id="entryOverlay" role="dialog" aria-modal="true" aria-labelledby="entryDesc">
     <div class="entry-card">
       <div class="entry-logo" role="img" aria-label="denai">
         <svg viewBox="0 0 520 88" height="28" fill="none" aria-hidden="true">
@@ -2175,6 +2175,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   function _getPatientStageBadge(p) {
     if (!p.condition) return { icon: 'fa-scanner-keyboard', label: 'New', cls: 'stage-new' };
     if (p.planApproved) {
+      if (p.labStatus === 'received') return { icon: 'fa-circle-check', label: 'Lab Received', cls: 'stage-lab' };
       if (p.labStatus) return { icon: 'fa-flask', label: 'Lab Sent', cls: 'stage-lab' };
       return { icon: 'fa-pen-ruler', label: 'Plan Approved', cls: 'stage-plan' };
     }
@@ -2378,7 +2379,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           <div class="report-item-name">${escapeHtml(r.name || '')} — ${typeLabel}</div>
           <div class="report-item-meta">${dateStr} at ${timeStr}${r.caseNum ? ' · ' + escapeHtml(r.caseNum) : ''}</div>
         </div>
-        <button class="btn btn-sec" type="button" onclick="generateReport()" title="Regenerate report"><i class="fa-solid fa-rotate-right" style="color:var(--c-n400)" aria-hidden="true"></i> Regenerate</button>
+        <button class="btn btn-sec" type="button" onclick="generateReport()" title="Re-run report for current patient state"><i class="fa-solid fa-rotate-right" style="color:var(--c-n400)" aria-hidden="true"></i> Re-run Report</button>
       </div>`;
     }).join('') + `</div>`;
   }
@@ -2800,7 +2801,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
                 <div class="plan-banner-title">Schedule Delivery</div>
                 <div class="plan-banner-sub">Lab restoration ready. Generate a delivery report from AI Insight.</div>
               </div>
-              <button class="btn-action btn-action-approve" type="button" onclick="navigateTo('insight')"><i class="fa-solid fa-brain" aria-hidden="true"></i> AI Insight</button>
+              <button class="btn-action btn-action-approve" type="button" onclick="navigateTo('reports')"><i class="fa-solid fa-file-medical" aria-hidden="true"></i> Go to Reports</button>
             </div>
           </div>` : ''}
         </div>
@@ -3470,7 +3471,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     }, 'dentalSvg', 'SVG');
     // Update case number in header
     const caseNumEl = document.querySelector('.case-num');
-    if (caseNumEl) caseNumEl.textContent = state.caseNum || 'Case #4587';
+    if (caseNumEl) caseNumEl.textContent = state.caseNum || '—';
     // Update case time with real lastAccessed timestamp
     const caseTimeEl = document.querySelector('.case-time');
     if (caseTimeEl) {
@@ -3478,6 +3479,14 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       const timeText = rel ? 'Opened ' + rel : '';
       caseTimeEl.textContent = timeText;
       caseTimeEl.setAttribute('aria-label', timeText);
+    }
+    // Update workflow status pill
+    const statusPillEl = document.getElementById('caseStatusPill');
+    if (statusPillEl) {
+      const wfStage = _getWorkflowStage();
+      const stageLabel = wfStage === 'scan' ? 'New Case' : wfStage === 'plan' ? 'Plan Approved' : wfStage === 'lab' ? (S.labStatus === 'received' ? 'Lab Received' : 'Lab Sent') : 'In Analysis';
+      statusPillEl.textContent = stageLabel;
+      statusPillEl.setAttribute('aria-label', 'Status: ' + stageLabel);
     }
     // Update topbar patient subtitle
     const patSubEl = document.getElementById('topbarPatientName');

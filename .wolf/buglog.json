@@ -1617,6 +1617,38 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-05-17T09:22:52.739Z"
+    },
+    {
+      "id": "bug-101",
+      "timestamp": "2026-05-17T09:34:18.326Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \" class=\"",
+      "fix": "Changed to \"javascript:void(0)\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-05-17T09:35:12.511Z"
+    },
+    {
+      "id": "bug-102",
+      "timestamp": "2026-05-17T09:35:01.153Z",
+      "error_message": "Wrong return value",
+      "file": "index.html",
+      "root_cause": "Was returning: { icon: 'fa-flask', label: 'Lab Sent', cls: 'stage",
+      "fix": "Now returns: { icon: 'fa-circle-check', label: 'Lab Received', ",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T09:35:01.153Z"
     }
   ]
 }
