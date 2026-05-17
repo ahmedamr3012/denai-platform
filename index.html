@@ -568,7 +568,10 @@ body.dark .dental-wrap { background: var(--c-n50); border-color: var(--c-n150); 
 body.dark .note-strip { background: #0a2a1a; border-color: #1a4a2a; }
 
 /* Clinical Notes */
-.notes-area { width: 100%; min-height: 60px; resize: vertical; font-size: 12px; line-height: 1.5; }
+.notes-area { width: 100%; min-height: 60px; resize: vertical; font-size: 12px; line-height: 1.5; background: var(--surface-card); border: 1px solid var(--c-n150); border-radius: var(--r-sm); padding: 8px 10px; color: var(--c-n800); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color var(--t-fast), box-shadow var(--t-fast); }
+.notes-area:focus { border-color: var(--c-brand); box-shadow: 0 0 0 3px rgba(var(--c-brand-rgb),.08); }
+.notes-area::placeholder { color: var(--c-n300); }
+body.dark .notes-area { background: var(--c-n50); border-color: var(--c-n200); }
 .notes-meta { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--c-n400); margin-top: 4px; }
 
 /* ================================================================
@@ -1366,7 +1369,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           <label for="clinicalNotes" style="font-size:11px;font-weight:700;color:var(--c-n500);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px;">Clinical Notes</label>
           <textarea id="clinicalNotes" class="notes-area" placeholder="Add clinical observations, patient concerns, or follow-up notes..." aria-label="Clinical notes"></textarea>
           <div class="notes-meta">
-            <span style="display:flex;align-items:center;gap:4px;"><span id="notesStatus">Auto-saved</span><span id="notesEncText" style="display:none;color:var(--c-n300);pointer-events:none;user-select:none;" aria-live="polite">· encrypted</span></span>
+            <span id="notesStatus">Auto-saved</span>
             <span id="notesCount">0 chars</span>
           </div>
         </div>
@@ -5066,11 +5069,6 @@ function initClinicalNotes() {
   if (!_notesInputBound) {
     textarea.addEventListener('input', _handleNotesInput);
     _notesInputBound = true;
-  }
-  const encText = $('notesEncText');
-  if (encText) {
-    const isEncrypted = typeof denaiNotesEnc !== 'undefined' && denaiNotesEnc.hasKey();
-    encText.style.display = isEncrypted ? 'inline' : 'none';
   }
 }
 
