@@ -1537,6 +1537,38 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-05-16T19:10:49.055Z"
+    },
+    {
+      "id": "bug-096",
+      "timestamp": "2026-05-17T08:58:14.938Z",
+      "error_message": "CSS fix: --focus-ring",
+      "file": "src/styles/tokens/focus-tokens.css",
+      "root_cause": "--focus-ring: 0 0 0 3px rgba(31,122,79,.35) → 0 0 0 3px rgba(var(--c-brand-rgb),.35)",
+      "fix": "Changed --focus-ring: 0 0 0 3px rgba(31,122,79,.35) → 0 0 0 3px rgba(var(--c-brand-rgb),.35)",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "css"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-17T08:58:16.100Z"
+    },
+    {
+      "id": "bug-097",
+      "timestamp": "2026-05-17T08:58:21.182Z",
+      "error_message": "CSS fix: --shadow-brand",
+      "file": "src/styles/tokens/shadow-tokens.css",
+      "root_cause": "--shadow-brand: 0 4px 20px rgba(31,122,79,.18) → 0 4px 20px rgba(var(--c-brand-rgb),.18)",
+      "fix": "Changed --shadow-brand: 0 4px 20px rgba(31,122,79,.18) → 0 4px 20px rgba(var(--c-brand-rgb),.18)",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "css"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-17T09:01:43.730Z"
     }
   ]
 }

@@ -7,9 +7,9 @@
    ================================================================ */
 
 :root {
-  --focus-ring: 0 0 0 3px rgba(31,122,79,.35);
+  --focus-ring: 0 0 0 3px rgba(var(--c-brand-rgb),.35);
 }
 
 body.dark {
-  --focus-ring: 0 0 0 3px rgba(42,156,103,.45);
+  --focus-ring: 0 0 0 3px rgba(var(--c-brand-rgb-2),.45);
 }

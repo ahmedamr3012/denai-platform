@@ -49,7 +49,7 @@
             <div class="cost-row${bri4_10yr === lowestCost ? ' cost-best' : ''}"><span>Bridge 4-unit 10-yr</span><span style="font-weight:700;color:${bri4_10yr===lowestCost?'var(--c-brand)':'var(--c-n700)'}">$${bri4_10yr.toLocaleString()}${bri4_10yr===lowestCost?' ✓':''}</span></div>
             <div class="cost-row${cant_10yr === lowestCost ? ' cost-best' : ''}"><span>Cantilever 10-yr</span><span style="font-weight:700;color:${cant_10yr===lowestCost?'var(--c-brand)':'var(--c-n700)'}">$${cant_10yr.toLocaleString()}${cant_10yr===lowestCost?' ✓':''}</span></div>
           </div>
-          <div style="padding:10px 12px;background:var(--c-brand-bg);border-radius:var(--r-md);border:1.5px solid rgba(31,122,79,.2);font-size:12px;color:var(--c-brand);font-weight:600">
+          <div style="padding:10px 12px;background:var(--c-brand-bg);border-radius:var(--r-md);border:1.5px solid rgba(var(--c-brand-rgb),.2);font-size:12px;color:var(--c-brand);font-weight:600">
             ★ Lowest 10-yr cost: ${bri4_10yr < imp2_10yr && bri4_10yr < cant_10yr ? '4-Unit Bridge ($' + bri4_10yr.toLocaleString() + ')' : imp2_10yr < cant_10yr ? '2 Implants ($' + imp2_10yr.toLocaleString() + ')' : 'Cantilever ($' + cant_10yr.toLocaleString() + ')'}
           </div>
         </div>`;

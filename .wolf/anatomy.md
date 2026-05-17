@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-16T19:11:16.018Z
-> Files: 25 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-17T09:01:43.714Z
+> Files: 30 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~95080 tok)
+- `index.html` — denai — Clinical Insight (~95203 tok)
 - `playwright.config.js` (~337 tok)
 
 ## .claude/
@@ -38,6 +38,7 @@
 
 ## src/render/
 
+- `costGraphPanel.js` — ================================================================ (~5356 tok)
 - `patientPanel.js` — ================================================================ (~952 tok)
 - `riskPanel.js` — renderRisk: _applyRiskCompact (~1659 tok)
 
@@ -46,11 +47,15 @@
 
 ## src/styles/components/
 
+- `cards.css` — Styles: 71 rules (~4250 tok)
 - `toast.css` — Styles: 5 rules (~294 tok)
 
 ## src/styles/tokens/
 
+- `brand-tokens.css` — Styles: 14 vars (~206 tok)
+- `focus-tokens.css` — Styles: 2 vars (~198 tok)
 - `motion-tokens.css` — Styles: 5 vars (~223 tok)
+- `shadow-tokens.css` — Styles: 10 vars (~295 tok)
 
 ## src/styles/utilities/
 

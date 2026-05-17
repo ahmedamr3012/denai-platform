@@ -10,6 +10,8 @@
   --c-brand-bg:    #EDF6F1;
   --c-brand-bdr:   #c5dfd0;
   --c-brand-dark:  #0B2B1F;
+  --c-brand-rgb:   31, 122, 79;
+  --c-brand-rgb-2: 42, 156, 103;
 }
 
 body.dark {
