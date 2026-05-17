@@ -1837,6 +1837,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     // Wave 8E: lab manufacturing notes — local-only (device-specific workflow notes)
     labNotes: '',
     lastView: null,         // LOCAL ONLY — last navigated patient-scoped view; not synced
+    wfHistory: [],          // LOCAL ONLY — structured workflow milestone events; not synced
   });
   // ================================================================
   // BRAND CONFIG — single source of truth for all branding
@@ -2149,6 +2150,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (view === 'reports')   renderReportsView();
     if (view === 'plan')      renderPlanView();
     if (view === 'lab')       renderLabView();
+    if (view === 'insight')   _checkEmitAnalysisCompleted();
 
     // 8. Persist last view for workspace restoration on refresh
     try { sessionStorage.setItem('denaiLastView_v1', view); } catch {}
@@ -2208,6 +2210,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   function approvePlan() {
     S.planApproved = true;
+    _emitWfEvent('plan_approved');
     saveState(); renderWorkflowBar();
     if (UIState.view === 'plan') renderPlanView();
     if (UIState.view === 'lab')  renderLabView();
@@ -2216,6 +2219,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   function sendToLab() {
     S.labStatus = 'pending';
+    _emitWfEvent('lab_sent');
     saveState(); renderWorkflowBar();
     if (UIState.view === 'lab')  renderLabView();
     if (UIState.view === 'plan') renderPlanView();
@@ -2224,6 +2228,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   function markLabReceived() {
     S.labStatus = 'received';
+    _emitWfEvent('lab_received');
     saveState(); renderWorkflowBar();
     if (UIState.view === 'lab') renderLabView();
     showToast('Lab restoration received', 'success');
@@ -2232,6 +2237,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   function reopenPlanning() {
     S.planApproved = false;
     S.labStatus = null;
+    _emitWfEvent('plan_reopened');
     saveState(); renderWorkflowBar();
     if (UIState.view === 'plan') renderPlanView();
     if (UIState.view === 'lab')  renderLabView();
@@ -2264,6 +2270,41 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (p.planApproved && !p.labStatus) return 'urg-waiting';
     if (!p.condition)                    return 'urg-new';
     return '';
+  }
+
+  function _emitWfEvent(type, meta) {
+    if (!Array.isArray(S.wfHistory)) S.wfHistory = [];
+    const last = S.wfHistory[0];
+    if (last && last.type === type && Date.now() - last.ts < 5000) return;
+    const ev = { type, ts: Date.now() };
+    if (meta) ev.meta = meta;
+    S.wfHistory.unshift(ev);
+    if (S.wfHistory.length > 60) S.wfHistory = S.wfHistory.slice(0, 60);
+    saveState();
+  }
+
+  function _synthesizeWfBaseline(p) {
+    const evs = [];
+    if (p.labStatus === 'received') {
+      evs.push({ type: 'lab_received',  ts: null, synthetic: true });
+      evs.push({ type: 'lab_sent',      ts: null, synthetic: true });
+      evs.push({ type: 'plan_approved', ts: null, synthetic: true });
+    } else if (p.labStatus) {
+      evs.push({ type: 'lab_sent',      ts: null, synthetic: true });
+      evs.push({ type: 'plan_approved', ts: null, synthetic: true });
+    } else if (p.planApproved) {
+      evs.push({ type: 'plan_approved', ts: null, synthetic: true });
+    }
+    return evs;
+  }
+
+  function _checkEmitAnalysisCompleted() {
+    try {
+      const _ai = calcAI(S);
+      if (_ai && _ai.rec && !(S.wfHistory || []).some(e => e.type === 'analysis_completed')) {
+        _emitWfEvent('analysis_completed', { rec: _ai.rec, conf: _ai.conf });
+      }
+    } catch {}
   }
 
   function _relativeTime(ts) {
@@ -4113,6 +4154,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       if (!Array.isArray(S.reportHistory)) S.reportHistory = [];
       S.reportHistory.unshift(rec);
       if (S.reportHistory.length > 20) S.reportHistory = S.reportHistory.slice(0, 20);
+      _emitWfEvent('report_generated');
       saveState();
     };
 
@@ -5437,6 +5479,7 @@ History.render();
 
 render(S);
 renderWorkflowBar();
+_checkEmitAnalysisCompleted();
 // B5: insight is the default active view — initialize workflow shell visibility
 const _initShell = document.getElementById('patientWorkflowShell');
 const _initPage  = document.querySelector('.page');

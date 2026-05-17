@@ -1869,6 +1869,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-17T16:22:56.675Z"
+    },
+    {
+      "id": "bug-116",
+      "timestamp": "2026-05-17T16:48:40.204Z",
+      "error_message": "Missing error handling in _getCaseUrgency",
+      "file": "index.html",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T16:48:40.204Z"
     }
   ]
 }
