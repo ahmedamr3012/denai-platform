@@ -1917,6 +1917,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-17T17:31:05.038Z"
+    },
+    {
+      "id": "bug-119",
+      "timestamp": "2026-05-17T20:22:21.825Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: m < 1",
+      "fix": "Added guard clause: if (m < 1)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T20:22:21.825Z"
+    },
+    {
+      "id": "bug-120",
+      "timestamp": "2026-05-17T20:33:40.784Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: rawWf.length > 0",
+      "fix": "Added guard clause: if (rawWf.length > 0)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T20:33:40.784Z"
     }
   ]
 }

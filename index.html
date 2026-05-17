@@ -436,6 +436,23 @@ body.dark .dash-pipeline-strip { background: var(--c-n50); border-color: var(--c
 .report-item-info { flex: 1; min-width: 0; }
 .report-item-name { font-size: 14px; font-weight: 600; color: var(--c-n700); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .report-item-meta { font-size: 12px; color: var(--c-n400); margin-top: 2px; }
+/* Workflow timeline — Phase 1C */
+.wf-tl-section { margin-bottom: 24px; max-width: 700px; }
+.wf-tl-section-title { font-size: 11px; font-weight: 700; color: var(--c-n400); text-transform: uppercase; letter-spacing: .07em; margin: 0 0 14px; }
+.wf-timeline { list-style: none; margin: 0; padding: 0; }
+.wf-tl-item { display: flex; gap: 12px; }
+.wf-tl-indicator { display: flex; flex-direction: column; align-items: center; width: 12px; flex-shrink: 0; }
+.wf-tl-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c-brand); flex-shrink: 0; margin-top: 3px; }
+.wf-tl-dot.wf-tl-synthetic { background: var(--c-n300); }
+.wf-tl-connector { width: 1px; background: var(--c-n200); flex: 1; min-height: 10px; margin: 3px 0; }
+.wf-tl-content { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex: 1; padding-bottom: 12px; }
+.wf-tl-item:last-child .wf-tl-content { padding-bottom: 0; }
+.wf-tl-label { font-size: 12px; font-weight: 500; color: var(--c-n700); line-height: 1.4; }
+.wf-tl-time { font-size: 11px; color: var(--c-n400); white-space: nowrap; flex-shrink: 0; }
+/* Workflow shell activity summary — Phase 1C Phase 3 */
+#wfActivitySummary { min-height: 18px; margin: 2px 0 4px; }
+.wf-activity-row { display: inline-flex; align-items: baseline; gap: 4px; font-size: 11px; color: var(--c-n400); }
+.wf-activity-prefix { font-weight: 600; }
 /* Stage badge variant colors */
 .stage-plan { background: #fef3c7; color: #92400e; border-color: #fde68a; }
 .stage-lab  { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
@@ -1289,6 +1306,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     <div class="workflow" id="workflowBar" role="list" aria-label="Workflow steps">
       <!-- Populated dynamically by renderWorkflowBar() — derived from real patient S state -->
     </div>
+    <div id="wfActivitySummary" aria-live="polite"></div>
     <div class="workflow-actions" id="workflowActions" aria-label="Workflow actions">
       <!-- Populated dynamically by renderWorkflowActions() -->
     </div>
@@ -2194,6 +2212,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       return `${arrow}<span class="wf-step ${cls}" role="listitem"${aria}><i class="fa-solid ${cfg.icon}" style="font-size:10px" aria-hidden="true"></i> ${cfg.label}</span>`;
     }).join('');
     renderWorkflowActions();
+    renderWfActivitySummary();
   }
 
   function renderWorkflowActions() {
@@ -2301,6 +2320,83 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       evs.push({ type: 'plan_approved', ts: null, synthetic: true });
     }
     return evs;
+  }
+
+  function _wfEventLabel(type) {
+    return ({
+      analysis_completed: 'AI Analysis Completed',
+      plan_approved:      'Treatment Plan Approved',
+      plan_reopened:      'Planning Reopened',
+      lab_sent:           'Sent to Laboratory',
+      lab_received:       'Lab Restoration Received',
+      report_generated:   'Report Generated',
+    })[type] || type;
+  }
+
+  function _wfTimestamp(ts) {
+    const diff = Date.now() - ts;
+    const m = Math.floor(diff / 60000);
+    if (m < 1)  return 'just now';
+    if (m < 60) return m + 'm ago';
+    const h = Math.floor(m / 60);
+    if (h < 24) return h + 'h ago';
+    const d = Math.floor(h / 24);
+    if (d === 1) return 'Yesterday';
+    if (d < 7)  return d + 'd ago';
+    return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  function _renderWfTimeline(events) {
+    if (!events || events.length === 0) return '';
+    const items = events.map((ev, i) => {
+      const label   = _wfEventLabel(ev.type);
+      const time    = ev.synthetic ? 'Previously' : _wfTimestamp(ev.ts);
+      const dotCls  = ev.synthetic ? ' wf-tl-synthetic' : '';
+      const hasLine = i < events.length - 1;
+      return `<li class="wf-tl-item">` +
+        `<div class="wf-tl-indicator" aria-hidden="true">` +
+          `<div class="wf-tl-dot${dotCls}"></div>` +
+          (hasLine ? `<div class="wf-tl-connector"></div>` : '') +
+        `</div>` +
+        `<div class="wf-tl-content">` +
+          `<span class="wf-tl-label">${escapeHtml(label)}</span>` +
+          `<span class="wf-tl-time">${escapeHtml(time)}</span>` +
+        `</div>` +
+      `</li>`;
+    }).join('');
+    return `<div class="wf-tl-section">` +
+      `<h3 class="wf-tl-section-title">Case Progress</h3>` +
+      `<ol class="wf-timeline" aria-label="Case progress timeline">${items}</ol>` +
+    `</div>`;
+  }
+
+  function _getLatestWorkflowEvent() {
+    const rawWf = Array.isArray(S.wfHistory) ? S.wfHistory : [];
+    if (rawWf.length > 0) return rawWf[0]; // wfHistory is newest-first
+    const baseline = _synthesizeWfBaseline(S);
+    return baseline.length > 0 ? baseline[0] : null; // also newest-first
+  }
+
+  function renderWfActivitySummary() {
+    const el = document.getElementById('wfActivitySummary');
+    if (!el) return;
+    const ev = _getLatestWorkflowEvent();
+    if (!ev) { el.innerHTML = ''; return; }
+    let content;
+    if (ev.synthetic) {
+      const calmText = {
+        plan_approved: 'Previously approved',
+        lab_sent:      'Existing lab case',
+        lab_received:  'Previously received from lab',
+      };
+      const text = calmText[ev.type] || 'Previously';
+      content = `<span class="wf-activity-row"><span class="wf-activity-prefix">Last activity:</span> <span>${escapeHtml(text)}</span></span>`;
+    } else {
+      const label = _wfEventLabel(ev.type);
+      const when  = _wfTimestamp(ev.ts);
+      content = `<span class="wf-activity-row"><span class="wf-activity-prefix">Last activity:</span> <span>${escapeHtml(label)} &middot; ${escapeHtml(when)}</span></span>`;
+    }
+    el.innerHTML = content;
   }
 
   function _checkEmitAnalysisCompleted() {
@@ -2545,30 +2641,42 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (nameEl) nameEl.textContent = S.name || 'current patient';
     const container = document.getElementById('reportsViewContent');
     if (!container) return;
+
+    // Build workflow timeline: real events (oldest→newest) or synthetic baseline
+    const rawWf    = Array.isArray(S.wfHistory) ? S.wfHistory : [];
+    const wfEvents = rawWf.length > 0
+      ? [...rawWf].reverse()
+      : _synthesizeWfBaseline(S).reverse();
+    const timelineHtml = _renderWfTimeline(wfEvents);
+
+    // Report history list or empty state
     const history = Array.isArray(S.reportHistory) ? S.reportHistory : [];
+    let reportsHtml;
     if (history.length === 0) {
-      container.innerHTML = `<div class="cases-empty">
+      reportsHtml = `<div class="cases-empty">
         <div class="cases-empty-icon"><i class="fa-solid fa-file-medical" aria-hidden="true"></i></div>
         <h3>No reports yet</h3>
         <p>Reports generated from AI Insight appear here for reference and re-export.</p>
         <button class="btn btn-pri" type="button" onclick="navigateTo('insight')" style="margin-top:4px;"><i class="fa-solid fa-brain" aria-hidden="true"></i> AI Insight</button>
       </div>`;
-      return;
+    } else {
+      reportsHtml = `<div class="reports-list">` + history.map(r => {
+        const dt = new Date(r.ts);
+        const dateStr = dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        const timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        const typeLabel = r.type === 'compound' ? 'Multi-Site Report' : 'Clinical Report';
+        return `<div class="report-item">
+          <div class="report-item-icon"><i class="fa-solid fa-file-medical" aria-hidden="true"></i></div>
+          <div class="report-item-info">
+            <div class="report-item-name">${escapeHtml(r.name || '')} — ${typeLabel}</div>
+            <div class="report-item-meta">${dateStr} at ${timeStr}${r.caseNum ? ' · ' + escapeHtml(r.caseNum) : ''}</div>
+          </div>
+          <button class="btn btn-sec" type="button" onclick="generateReport()" title="Re-run report for current patient state"><i class="fa-solid fa-rotate-right" style="color:var(--c-n400)" aria-hidden="true"></i> Re-run Report</button>
+        </div>`;
+      }).join('') + `</div>`;
     }
-    container.innerHTML = `<div class="reports-list">` + history.map(r => {
-      const dt = new Date(r.ts);
-      const dateStr = dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-      const timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      const typeLabel = r.type === 'compound' ? 'Multi-Site Report' : 'Clinical Report';
-      return `<div class="report-item">
-        <div class="report-item-icon"><i class="fa-solid fa-file-medical" aria-hidden="true"></i></div>
-        <div class="report-item-info">
-          <div class="report-item-name">${escapeHtml(r.name || '')} — ${typeLabel}</div>
-          <div class="report-item-meta">${dateStr} at ${timeStr}${r.caseNum ? ' · ' + escapeHtml(r.caseNum) : ''}</div>
-        </div>
-        <button class="btn btn-sec" type="button" onclick="generateReport()" title="Re-run report for current patient state"><i class="fa-solid fa-rotate-right" style="color:var(--c-n400)" aria-hidden="true"></i> Re-run Report</button>
-      </div>`;
-    }).join('') + `</div>`;
+
+    container.innerHTML = timelineHtml + reportsHtml;
   }
 
   // ================================================================
