@@ -1649,6 +1649,226 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-17T09:35:01.153Z"
+    },
+    {
+      "id": "bug-103",
+      "timestamp": "2026-05-17T15:12:09.787Z",
+      "error_message": "Wrong reference: allPts should be allPatients",
+      "file": "index.html",
+      "root_cause": "Used \"allPts\" instead of \"allPatients\"",
+      "fix": "Changed allPts → allPatients",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T15:12:09.787Z"
+    },
+    {
+      "id": "bug-104",
+      "timestamp": "2026-05-17T15:16:31.401Z",
+      "error_message": "Wrong return value",
+      "file": "index.html",
+      "root_cause": "Was returning: `<div class=\"patient-item${isActive ? ' active-pat",
+      "fix": "Now returns: `<div class=\"patient-item${isActive ? ' active-pat",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T15:16:31.401Z"
+    },
+    {
+      "id": "bug-105",
+      "timestamp": "2026-05-17T15:16:40.726Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 6→8 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T15:16:40.726Z"
+    },
+    {
+      "id": "bug-106",
+      "timestamp": "2026-05-17T15:25:44.574Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 12→18 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T15:25:44.574Z"
+    },
+    {
+      "id": "bug-107",
+      "timestamp": "2026-05-17T00:00:00.000Z",
+      "error_message": "axe color-contrast WCAG AA failure on entry overlay: 4 nodes failing (entry-tagline #entryDesc, .entry-btn-primary, .entry-divider, .entry-local-note)",
+      "file": "index.html",
+      "root_cause": ".entry-overlay background was rgba(11,43,31,.72) — composited card background ~rgb(94,117,108). White text on that gives ~4.51:1 (borderline fail). Semi-transparent text rgba(255,255,255,.95) on same background gives ~4.27:1 (clear fail). backdrop-filter prevents axe from computing correctly so it uses CSS-only composition.",
+      "fix": "Changed .entry-overlay background from rgba(11,43,31,.72) to rgba(11,43,31,.88). Composited card background now ~rgb(62,88,78). White text contrast rises to ~6.77:1.",
+      "tags": [
+        "a11y",
+        "wcag",
+        "color-contrast",
+        "css",
+        "entry-overlay"
+      ],
+      "related_bugs": [
+        "bug-090",
+        "bug-091",
+        "bug-093"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T00:00:00.000Z"
+    },
+    {
+      "id": "bug-108",
+      "timestamp": "2026-05-17T15:42:36.635Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: totalEl",
+      "fix": "Added guard clause: if (totalEl)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T15:42:36.635Z"
+    },
+    {
+      "id": "bug-109",
+      "timestamp": "2026-05-17T15:47:48.397Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 12→29 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T15:47:48.397Z"
+    },
+    {
+      "id": "bug-110",
+      "timestamp": "2026-05-17T16:01:36.562Z",
+      "error_message": "Wrong condition in logic",
+      "file": "index.html",
+      "root_cause": "Condition was: if (calcAI(S)",
+      "fix": "Changed to: if (_initShell)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T16:01:36.562Z"
+    },
+    {
+      "id": "bug-111",
+      "timestamp": "2026-05-17T16:06:56.900Z",
+      "error_message": "Wrong reference: n400 should be n600",
+      "file": "index.html",
+      "root_cause": "Used \"n400\" instead of \"n600\"",
+      "fix": "Changed n400 → n600",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T16:06:56.900Z"
+    },
+    {
+      "id": "bug-112",
+      "timestamp": "2026-05-17T17:00:00.000Z",
+      "error_message": "axe color-contrast WCAG AA failure on .wf-pending after B5 shared shell elevation: 2 nodes failing (.wf-pending:nth-child(5) and :nth-child(7))",
+      "file": "index.html",
+      "root_cause": ".wf-pending used --c-n400 (#9CA3AF) which gives 2.14:1 contrast ratio against --surface-page (#EEF2EF). Previously masked because axe's background traversal behaves differently inside .view-panel elements that have opacity:0/transform CSS (stacking context isolation). Once #workflowBar was moved to #patientWorkflowShell (a plain div with no transform/opacity context), axe correctly computed the actual page background and detected the failure.",
+      "fix": "Changed .wf-pending color from var(--c-n400) to var(--c-n600) (#4B5563). Contrast on light page = 5.92:1 (WCAG AA requires 4.5:1). Pending steps remain visually subdued vs. done (brand green) and active (white on brand bg). Dark mode --c-n600 is light gray on near-black — high contrast.",
+      "tags": [
+        "a11y",
+        "wcag",
+        "color-contrast",
+        "wf-pending",
+        "B5",
+        "css"
+      ],
+      "related_bugs": [
+        "bug-091",
+        "bug-111"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T17:00:00.000Z"
+    },
+    {
+      "id": "bug-113",
+      "timestamp": "2026-05-17T16:21:59.954Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: p.labStatus === 'received'",
+      "fix": "Added guard clause: if (p.labStatus === 'received')",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T16:21:59.954Z"
+    },
+    {
+      "id": "bug-114",
+      "timestamp": "2026-05-17T16:22:25.919Z",
+      "error_message": "Wrong return value",
+      "file": "index.html",
+      "root_cause": "Was returning: `<div class=\"case-card${isActive ? ' case-active' ",
+      "fix": "Now returns: `<div class=\"case-card${isActive ? ' case-active' ",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-17T16:22:42.074Z"
+    },
+    {
+      "id": "bug-115",
+      "timestamp": "2026-05-17T16:22:56.675Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had 'fa-flask'",
+      "fix": "Changed to 'urg-received'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T16:22:56.675Z"
     }
   ]
 }

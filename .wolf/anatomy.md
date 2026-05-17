@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-17T10:19:24.684Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-17T16:23:06.224Z
 > Files: 30 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~95743 tok)
+- `index.html` — denai — Clinical Insight (~98423 tok)
 - `playwright.config.js` (~337 tok)
 
 ## .claude/

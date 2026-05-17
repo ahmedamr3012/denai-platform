@@ -140,7 +140,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Sora', sans-serif; }
 .sidebar-logo { height: var(--topbar-h); display: flex; align-items: center; padding: 0 18px; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.07); flex-shrink: 0; position: relative; z-index: 1; }
 .logo-text { font-family: 'Sora', sans-serif; font-size: 25px; font-weight: 800; color: #fff; letter-spacing: -.5px; }
 .logo-ai { font-size: 9px; background: var(--c-brand); color: #fff; padding: 3px 7px; border-radius: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
-.sidebar-nav { padding: 10px 8px; flex: 1; display: flex; flex-direction: column; gap: 2px; position: relative; z-index: 1; overflow-y: auto; }
+.sidebar-nav { padding: 10px 8px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 2px; position: relative; z-index: 1; overflow-y: auto; min-height: 0; }
 .nav-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: rgba(255,255,255,.28); padding: 14px 10px 5px; }
 .nav-item {
   display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: 10px;
@@ -153,7 +153,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Sora', sans-serif; }
 .nav-item:focus-visible { outline: 2px solid var(--c-brand-lite); outline-offset: -2px; }
 .nav-item.active { color: #fff; background: rgba(var(--c-brand-rgb),.32); }
 .nav-item.active::before { content: ''; position: absolute; left: 0; top: 7px; bottom: 7px; width: 3px; background: var(--c-brand-lite); border-radius: 0 3px 3px 0; }
-.sidebar-user { padding: 13px 14px; border-top: 1px solid rgba(255,255,255,.07); display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; z-index: 1; transition: background var(--t-fast); }
+.sidebar-user { padding: 13px 14px; border-top: 1px solid rgba(255,255,255,.07); display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; z-index: 1; transition: background var(--t-fast); flex-shrink: 0; }
 .sidebar-user:hover { background: rgba(255,255,255,.05); }
 .sidebar-user:focus-visible { outline: 2px solid var(--c-brand-lite); outline-offset: -2px; border-radius: 4px; }
 .user-av { width: 35px; height: 35px; border-radius: 9px; background: rgba(var(--c-brand-rgb),.4); border: 1px solid rgba(var(--c-brand-rgb),.55); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0; }
@@ -168,11 +168,11 @@ body.dark .auth-tab { color: var(--c-n400); }
 body.dark .auth-tab-active { color: var(--c-brand-lite) !important; border-bottom-color: var(--c-brand-lite) !important; }
 
 /* ── Patient List ─────────────────────────────────────── */
-.patient-section { padding: 0 8px 8px; position: relative; z-index: 1; flex-shrink: 0; }
+.patient-section { padding: 0 8px 8px; position: relative; z-index: 1; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 .patient-section-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 6px 5px; }
 .patient-section-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: rgba(255,255,255,.28); }
 .patient-count-badge { font-size: 9px; background: rgba(var(--c-brand-rgb),.4); color: rgba(255,255,255,.7); padding: 1px 6px; border-radius: 10px; font-weight: 700; }
-.patient-list { display: flex; flex-direction: column; gap: 2px; max-height: 190px; overflow-y: auto; }
+.patient-list { display: flex; flex-direction: column; gap: 2px; flex: 1; min-height: 0; overflow-y: auto; }
 /* ── Custom scrollbars — sidebar nav & patient list ───────
    Matches the dark sidebar theme, invisible track, green thumb */
 .sidebar-nav,
@@ -215,6 +215,10 @@ body.dark .auth-tab-active { color: var(--c-brand-lite) !important; border-botto
 .patient-delete-btn { width: 18px; height: 18px; border-radius: 4px; background: none; border: none; cursor: pointer; color: rgba(255,255,255,.2); font-size: 10px; display: flex; align-items: center; justify-content: center; transition: all var(--t-fast); flex-shrink: 0; opacity: 0; padding: 0; }
 .patient-item:hover .patient-delete-btn { opacity: 1; }
 .patient-delete-btn:hover { background: rgba(239,68,68,.25); color: #f87171; }
+.patient-stage-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: rgba(var(--c-brand-rgb-2),.65); }
+.patient-stage-dot.stage-new  { background: rgba(255,255,255,.22); }
+.patient-stage-dot.stage-plan { background: rgba(251,191,36,.80); }
+.patient-stage-dot.stage-lab  { background: rgba(96,165,250,.80); }
 .btn-add-patient { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 7px; border-radius: 9px; background: rgba(var(--c-brand-rgb),.2); border: 1px dashed rgba(var(--c-brand-rgb),.4); color: rgba(255,255,255,.5); font-size: 11px; font-weight: 600; cursor: pointer; transition: all var(--t-fast); font-family: 'DM Sans', sans-serif; margin-top: 5px; }
 .btn-add-patient:hover { background: rgba(var(--c-brand-rgb),.35); border-color: rgba(var(--c-brand-rgb),.7); color: rgba(255,255,255,.85); }
 .btn-add-patient:focus-visible { outline: 2px solid var(--c-brand-lite); outline-offset: -2px; }
@@ -326,6 +330,14 @@ body.dark .case-card { background: var(--c-n50); border-color: var(--c-n150); }
 .cases-empty-icon { font-size: 40px; margin-bottom: 14px; opacity: .4; }
 .cases-empty h3 { font-size: 18px; font-weight: 700; color: var(--c-n700); margin-bottom: 6px; }
 .cases-empty p { font-size: 13px; max-width: 280px; margin: 0 auto 20px; }
+.cases-filter-bar { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+.cases-tab { padding: 5px 13px; border-radius: var(--r-xl); font-size: 11.5px; font-weight: 600; border: 1px solid var(--c-n150); background: var(--surface-card); color: var(--c-n500); cursor: pointer; transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast); font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+.cases-tab:hover { border-color: var(--c-n300); color: var(--c-n700); }
+.cases-tab.active { background: var(--c-brand); border-color: var(--c-brand); color: #fff; }
+.cases-tab:focus-visible { outline: 2px solid var(--c-brand); outline-offset: 2px; }
+body.dark .cases-tab { background: var(--c-n100); border-color: var(--c-n200); color: var(--c-n500); }
+body.dark .cases-tab:hover { border-color: var(--c-n300); color: var(--c-n700); }
+body.dark .cases-tab.active { background: var(--c-brand); border-color: var(--c-brand); color: #fff; }
 
 /* ================================================================
    DASHBOARD VIEW
@@ -354,6 +366,13 @@ body.dark .dash-sync-row { background: var(--c-n50); border-color: var(--c-n150)
 .dash-sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-n300); flex-shrink: 0; }
 .dash-sync-dot.synced { background: var(--c-success); }
 .dash-sync-dot.local { background: var(--c-n400); }
+.dash-pipeline-strip { display: flex; align-items: stretch; margin-bottom: 20px; background: var(--surface-card); border: 1px solid var(--c-n150); border-radius: var(--r-xl); overflow: hidden; transition: background .4s, border-color .4s; }
+body.dark .dash-pipeline-strip { background: var(--c-n50); border-color: var(--c-n150); }
+.dash-pipeline-stat { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 14px 8px; }
+.dash-pipeline-num { font-size: 20px; font-weight: 800; color: var(--c-n900); font-family: 'Sora', sans-serif; line-height: 1; transition: color .3s; }
+.dash-pipeline-num.zero { color: var(--c-n300); }
+.dash-pipeline-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c-n400); white-space: nowrap; }
+.dash-pipeline-div { width: 1px; background: var(--c-n150); flex-shrink: 0; align-self: stretch; transition: background .4s; }
 
 /* ================================================================
    PLACEHOLDER VIEWS (plan, lab, reports)
@@ -367,7 +386,7 @@ body.dark .dash-sync-row { background: var(--c-n50); border-color: var(--c-n150)
 /* ================================================================
    GLASS ENTRY OVERLAY
    ================================================================ */
-.entry-overlay { position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center; background: rgba(11,43,31,.72); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); opacity: 0; pointer-events: none; transition: opacity 250ms cubic-bezier(.16,1,.3,1); }
+.entry-overlay { position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center; background: rgba(11,43,31,.88); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); opacity: 0; pointer-events: none; transition: opacity 250ms cubic-bezier(.16,1,.3,1); }
 .entry-overlay.entry-visible { opacity: 1; pointer-events: all; }
 .entry-card { background: rgba(255,255,255,.11); border: 1px solid rgba(255,255,255,.15); border-radius: 22px; padding: 44px 40px 36px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 32px 80px rgba(0,0,0,.32); backdrop-filter: blur(6px); }
 .entry-logo { margin-bottom: 6px; }
@@ -394,9 +413,12 @@ body.dark .dash-sync-row { background: var(--c-n50); border-color: var(--c-n150)
 .wf-step { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 20px; }
 .wf-done { color: var(--c-brand); }
 .wf-active { background: var(--c-brand); color: white; box-shadow: 0 2px 8px rgba(var(--c-brand-rgb),.22); }
-.wf-pending { color: var(--c-n400); }
+.wf-pending { color: var(--c-n600); }
 .wf-arrow { color: var(--c-n300); font-size: 8px; }
 .workflow-actions { display: flex; align-items: center; gap: 8px; margin-top: 0; margin-bottom: 20px; flex-wrap: wrap; min-height: 28px; }
+#patientWorkflowShell { padding: 22px 26px 0; display: none; }
+#patientWorkflowShell.wf-shell-visible { display: block; }
+.page.wf-shell-visible .view-panel { padding-top: 0; }
 .btn-action { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; transition: transform var(--t-fast), box-shadow var(--t-fast), background var(--t-fast), opacity var(--t-fast); font-family: 'DM Sans', sans-serif; }
 .btn-action:active { transform: translateY(0) scale(.97); }
 .btn-action-approve { background: var(--c-brand); color: #fff; box-shadow: 0 2px 8px rgba(var(--c-brand-rgb),.22); }
@@ -509,6 +531,15 @@ body.dark .lab-notes { background: var(--c-n50); color: var(--c-n700); }
 .dash-attn-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; flex-shrink: 0; white-space: nowrap; }
 .attn-lab-ready { background: #eff6ff; color: #1d4ed8; }
 .attn-lab-back  { background: rgba(var(--c-brand-rgb),.10); color: var(--c-brand); }
+.attn-new       { background: #fef3c7; color: #92400e; }
+/* Phase 1C — Workflow Urgency Semantics */
+.urg-received { --_urg-c: rgba(var(--c-brand-rgb), .72); }
+.urg-waiting  { --_urg-c: rgba(37, 99, 235, .60); }
+.urg-new      { --_urg-c: rgba(245, 158, 11, .58); }
+.case-card.urg-received, .case-card.urg-waiting, .case-card.urg-new { box-shadow: inset 3px 0 0 var(--_urg-c); }
+.case-card.urg-received:hover, .case-card.urg-waiting:hover, .case-card.urg-new:hover { box-shadow: var(--shadow-md), inset 3px 0 0 var(--_urg-c); }
+.dash-attention-item.urg-received, .dash-attention-item.urg-waiting, .dash-attention-item.urg-new { box-shadow: var(--shadow-xs), inset 3px 0 0 var(--_urg-c); }
+.dash-attention-item.urg-received:hover, .dash-attention-item.urg-waiting:hover, .dash-attention-item.urg-new:hover { box-shadow: var(--shadow-sm), inset 3px 0 0 var(--_urg-c); }
 .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px; }
 @media (max-width: 1120px) { .grid3 { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 700px) { .grid3 { grid-template-columns: 1fr; } }
@@ -1248,6 +1279,15 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     </header>
 
 <div class="page">
+  <!-- ── Persistent Patient Workflow Context (insight / plan / lab / reports) ────── -->
+  <div id="patientWorkflowShell">
+    <div class="workflow" id="workflowBar" role="list" aria-label="Workflow steps">
+      <!-- Populated dynamically by renderWorkflowBar() — derived from real patient S state -->
+    </div>
+    <div class="workflow-actions" id="workflowActions" aria-label="Workflow actions">
+      <!-- Populated dynamically by renderWorkflowActions() -->
+    </div>
+  </div>
   <!-- ── AI Clinical Insight View ───────────────────────────── -->
   <div class="view-panel view-active view-visible" id="viewInsight" data-view="insight" role="region" aria-label="AI Clinical Workspace">
   <div class="case-nav">
@@ -1257,13 +1297,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <span class="status-pill status-active" id="caseStatusPill" aria-label="Status: In Analysis">In Analysis</span>
       <span class="case-time" aria-label="Last updated today at 10:42 AM">Last updated: Today, 10:42 AM</span>
     </div>
-  </div>
-
-  <div class="workflow" id="workflowBar" role="list" aria-label="Workflow steps">
-    <!-- Populated dynamically by renderWorkflowBar() — derived from real patient S state -->
-  </div>
-  <div class="workflow-actions" id="workflowActions" aria-label="Workflow actions">
-    <!-- Populated dynamically by renderWorkflowActions() -->
   </div>
 
   <div class="grid3">
@@ -1573,6 +1606,27 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <div class="dash-card-sub">patients in local workspace</div>
       </div>
     </div>
+    <div class="dash-pipeline-strip" role="list" aria-label="Clinic pipeline overview">
+      <div class="dash-pipeline-stat" role="listitem" aria-label="New cases">
+        <div class="dash-pipeline-num" id="pipeNewCount">—</div>
+        <div class="dash-pipeline-label">New</div>
+      </div>
+      <div class="dash-pipeline-div" aria-hidden="true"></div>
+      <div class="dash-pipeline-stat" role="listitem" aria-label="Cases in analysis">
+        <div class="dash-pipeline-num" id="pipeAnalysisCount">—</div>
+        <div class="dash-pipeline-label">In Analysis</div>
+      </div>
+      <div class="dash-pipeline-div" aria-hidden="true"></div>
+      <div class="dash-pipeline-stat" role="listitem" aria-label="Cases at lab">
+        <div class="dash-pipeline-num" id="pipeAtLabCount">—</div>
+        <div class="dash-pipeline-label">At Lab</div>
+      </div>
+      <div class="dash-pipeline-div" aria-hidden="true"></div>
+      <div class="dash-pipeline-stat" role="listitem" aria-label="Cases delivered">
+        <div class="dash-pipeline-num" id="pipeDeliveredCount">—</div>
+        <div class="dash-pipeline-label">Delivered</div>
+      </div>
+    </div>
     <div class="dash-action-row">
       <button class="btn btn-pri" type="button" onclick="openNewPatientModal()"><i class="fa-solid fa-plus" aria-hidden="true"></i> New Patient</button>
       <button class="btn btn-sec" type="button" onclick="navigateTo('cases')"><i class="fa-solid fa-folder-open" aria-hidden="true"></i> View All Cases</button>
@@ -1605,6 +1659,13 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
         <input type="search" id="casesSearchInput" placeholder="Search patients…" aria-label="Search cases" oninput="filterCasesView(this.value)" />
       </div>
+    </div>
+    <div class="cases-filter-bar" role="tablist" aria-label="Filter cases by stage">
+      <button class="cases-tab active" role="tab" data-stage="all"       aria-selected="true"  onclick="setCasesStageFilter('all')">All</button>
+      <button class="cases-tab"        role="tab" data-stage="new"       aria-selected="false" onclick="setCasesStageFilter('new')">New</button>
+      <button class="cases-tab"        role="tab" data-stage="analysis"  aria-selected="false" onclick="setCasesStageFilter('analysis')">In Analysis</button>
+      <button class="cases-tab"        role="tab" data-stage="lab"       aria-selected="false" onclick="setCasesStageFilter('lab')">At Lab</button>
+      <button class="cases-tab"        role="tab" data-stage="delivered" aria-selected="false" onclick="setCasesStageFilter('delivered')">Delivered</button>
     </div>
     <div id="casesViewContent">
       <!-- Populated by renderCasesView() -->
@@ -1775,6 +1836,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     reportHistory: [],     // [{ ts, name, type, caseNum }] — last 20, local-only
     // Wave 8E: lab manufacturing notes — local-only (device-specific workflow notes)
     labNotes: '',
+    lastView: null,         // LOCAL ONLY — last navigated patient-scoped view; not synced
   });
   // ================================================================
   // BRAND CONFIG — single source of truth for all branding
@@ -2049,6 +2111,13 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('view-visible')));
     }
 
+    // 2.5. Show/hide persistent workflow context bar (patient-scoped views only)
+    const _wfShell = document.getElementById('patientWorkflowShell');
+    const _isPatientView = ['insight', 'plan', 'lab', 'reports'].includes(view);
+    if (_wfShell) _wfShell.classList.toggle('wf-shell-visible', _isPatientView);
+    const _pgEl = document.querySelector('.page');
+    if (_pgEl) _pgEl.classList.toggle('wf-shell-visible', _isPatientView);
+
     // 3. Update UIState
     setUIState({ view });
 
@@ -2068,17 +2137,23 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (titleEl) titleEl.textContent = cfg.title;
     document.title = cfg.title + ' — denai';
 
-    // 6. Render view-specific content
+    // 6. Track last patient-scoped view for per-patient workflow continuity
+    if (['insight', 'plan', 'lab', 'reports'].includes(view)) {
+      S.lastView = view;
+      saveState();
+    }
+
+    // 7. Render view-specific content
     if (view === 'cases')     renderCasesView();
     if (view === 'dashboard') renderDashboardView();
     if (view === 'reports')   renderReportsView();
     if (view === 'plan')      renderPlanView();
     if (view === 'lab')       renderLabView();
 
-    // 7. Persist last view for workspace restoration on refresh
+    // 8. Persist last view for workspace restoration on refresh
     try { sessionStorage.setItem('denaiLastView_v1', view); } catch {}
 
-    // 8. Close mobile sidebar
+    // 9. Close mobile sidebar
     if (window.innerWidth <= 900) closeSidebar();
   }
 
@@ -2184,6 +2259,13 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     return { icon: 'fa-brain', label: 'In Analysis', cls: '' };
   }
 
+  function _getCaseUrgency(p) {
+    if (p.labStatus === 'received')      return 'urg-received';
+    if (p.planApproved && !p.labStatus) return 'urg-waiting';
+    if (!p.condition)                    return 'urg-new';
+    return '';
+  }
+
   function _relativeTime(ts) {
     if (!ts) return '';
     const diff = Date.now() - ts;
@@ -2201,9 +2283,20 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   // CASES VIEW RENDERER
   // ================================================================
   let _casesFilter = '';
+  let _casesStageFilter = 'all';
 
   function filterCasesView(query) {
     _casesFilter = (query || '').toLowerCase().trim();
+    renderCasesView();
+  }
+
+  function setCasesStageFilter(stage) {
+    _casesStageFilter = stage || 'all';
+    document.querySelectorAll('.cases-tab').forEach(btn => {
+      const on = btn.dataset.stage === _casesStageFilter;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-selected', String(on));
+    });
     renderCasesView();
   }
 
@@ -2211,12 +2304,29 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const container = document.getElementById('casesViewContent');
     if (!container) return;
     const allPatients = loadAllPatients() || [];
-    const filtered = _casesFilter
+
+    // Text search filter
+    const textFiltered = _casesFilter
       ? allPatients.filter(p => (p.name || '').toLowerCase().includes(_casesFilter) || (p.condition || '').toLowerCase().includes(_casesFilter) || (p.caseNum || '').toLowerCase().includes(_casesFilter))
       : allPatients;
 
+    // Stage filter (combined with text search)
+    const stageFilter = {
+      new:       p => !p.condition,
+      analysis:  p => p.condition && !p.planApproved,
+      lab:       p => p.planApproved && p.labStatus && p.labStatus !== 'received',
+      delivered: p => p.labStatus === 'received',
+    };
+    const filtered = _casesStageFilter !== 'all' && stageFilter[_casesStageFilter]
+      ? textFiltered.filter(stageFilter[_casesStageFilter])
+      : textFiltered;
+
     if (filtered.length === 0) {
-      container.innerHTML = `<div class="cases-empty"><div class="cases-empty-icon"><i class="fa-solid fa-folder-open" aria-hidden="true"></i></div>${_casesFilter ? '<h3>No results</h3><p>No patients match that search.</p>' : '<h3>No cases yet</h3><p>Add your first patient to begin.</p>'}<button class="btn btn-pri" type="button" onclick="openNewPatientModal()" style="margin-top:4px;"><i class="fa-solid fa-plus"></i> New Patient</button></div>`;
+      const noTotal  = allPatients.length === 0;
+      const hasStage = _casesStageFilter !== 'all';
+      const h = noTotal ? 'No cases yet' : hasStage ? 'No cases in this stage' : 'No results';
+      const p = noTotal ? 'Add your first patient to begin.' : hasStage ? 'Try selecting a different filter or clear the search.' : 'No patients match that search.';
+      container.innerHTML = `<div class="cases-empty"><div class="cases-empty-icon"><i class="fa-solid fa-folder-open" aria-hidden="true"></i></div><h3>${h}</h3><p>${p}</p>${noTotal ? '<button class="btn btn-pri" type="button" onclick="openNewPatientModal()" style="margin-top:4px;"><i class="fa-solid fa-plus"></i> New Patient</button>' : ''}</div>`;
       return;
     }
 
@@ -2234,8 +2344,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       const cond = p.condition || '';
       const tooth = p.tooth || '';
       const badge = _getPatientStageBadge(p);
+      const urgency = _getCaseUrgency(p);
       const lastStr = p.lastAccessed ? _relativeTime(p.lastAccessed) : '';
-      return `<div class="case-card${isActive ? ' case-active' : ''}" role="listitem" tabindex="0" onclick="openCase('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCase('${p.id}')}" aria-label="Open case for ${escapeHtml(p.name||'')}${isActive?' (active)':''}">
+      return `<div class="case-card${isActive ? ' case-active' : ''}${urgency ? ' ' + urgency : ''}" role="listitem" tabindex="0" onclick="openCase('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCase('${p.id}')}" aria-label="Open case for ${escapeHtml(p.name||'')}${isActive?' (active)':''}">
         <div class="case-card-av">${initials}</div>
         <div class="case-card-info">
           <div class="case-card-name">${escapeHtml(p.name||'Unknown')}</div>
@@ -2258,7 +2369,14 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   function openCase(id) {
     switchPatient(id);
-    navigateTo('insight');
+    let dest = S.lastView;
+    if (!dest) {
+      if      (S.labStatus === 'received')         dest = 'reports';
+      else if (S.planApproved && S.labStatus)      dest = 'lab';
+      else if (S.planApproved && !S.labStatus)     dest = 'plan';
+      else                                          dest = 'insight';
+    }
+    navigateTo(dest);
   }
 
   // ================================================================
@@ -2271,6 +2389,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const greetEl = document.getElementById('dashGreeting');
     if (greetEl) greetEl.textContent = greet;
 
+    // Single load — reused by all sections below
+    const allPatients = loadAllPatients() || [];
+
     // Active patient card
     const nameEl = document.getElementById('dashActiveName');
     const metaEl = document.getElementById('dashActiveMeta');
@@ -2278,15 +2399,29 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (metaEl) metaEl.textContent = (S.tooth || '') + (S.condition ? ' · ' + S.condition : '') || 'Open to continue analysis';
 
     // Total cases count
-    const total = (loadAllPatients() || []).length;
     const totalEl = document.getElementById('dashTotalCases');
-    if (totalEl) totalEl.textContent = total;
+    if (totalEl) totalEl.textContent = allPatients.length;
 
-    // Recent cases grid (last 4, excluding active)
+    // Pipeline stats strip — B4: clinic-wide workflow stage counts
+    const cNew       = allPatients.filter(p => !p.condition).length;
+    const cAnalysis  = allPatients.filter(p => p.condition && !p.planApproved).length;
+    const cAtLab     = allPatients.filter(p => p.planApproved && p.labStatus && p.labStatus !== 'received').length;
+    const cDelivered = allPatients.filter(p => p.labStatus === 'received').length;
+    const _setPipe = (id, count) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = count;
+      el.className = 'dash-pipeline-num' + (count === 0 ? ' zero' : '');
+    };
+    _setPipe('pipeNewCount',      cNew);
+    _setPipe('pipeAnalysisCount', cAnalysis);
+    _setPipe('pipeAtLabCount',    cAtLab);
+    _setPipe('pipeDeliveredCount', cDelivered);
+
+    // Recent cases grid (last 4)
     const recGrid = document.getElementById('dashRecentGrid');
     if (recGrid) {
-      const all = loadAllPatients() || [];
-      const recent = [...all].sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0)).slice(0, 4);
+      const recent = [...allPatients].sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0)).slice(0, 4);
       if (recent.length === 0) {
         recGrid.innerHTML = '<div style="color:var(--c-n400);font-size:13px;padding:12px 0;line-height:1.5;">Recently opened cases will appear here.</div>';
       } else {
@@ -2295,11 +2430,14 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           const qs = _quickScore(p);
           const score = qs !== null ? qs + '%' : '—';
           const isActive = p.id === S.id;
-          return `<div class="case-card${isActive ? ' case-active' : ''}" tabindex="0" role="listitem" onclick="openCase('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCase('${p.id}')}" aria-label="${escapeHtml(p.name||'')}">
+          const badge = _getPatientStageBadge(p);
+          const urgency = _getCaseUrgency(p);
+          return `<div class="case-card${isActive ? ' case-active' : ''}${urgency ? ' ' + urgency : ''}" tabindex="0" role="listitem" onclick="openCase('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCase('${p.id}')}" aria-label="${escapeHtml(p.name||'')}">
             <div class="case-card-av">${initials}</div>
             <div class="case-card-info">
               <div class="case-card-name">${escapeHtml(p.name||'Unknown')}</div>
               <div class="case-card-meta">${escapeHtml(p.condition||'')}${p.tooth ? ' · ' + escapeHtml(p.tooth) : ''}</div>
+              <div class="case-card-stage ${badge.cls}"><i class="fa-solid ${badge.icon}" style="font-size:9px" aria-hidden="true"></i> ${badge.label}</div>
             </div>
             <div class="case-card-score">${score}</div>
           </div>`;
@@ -2311,19 +2449,20 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const attentionSection = document.getElementById('dashAttentionSection');
     const attentionList    = document.getElementById('dashAttentionList');
     if (attentionSection && attentionList) {
-      const allPts = loadAllPatients() || [];
-      const labReady = allPts.filter(p => p.planApproved && !p.labStatus);
-      const labBack  = allPts.filter(p => p.labStatus === 'received');
+      const labReady   = allPatients.filter(p => p.planApproved && !p.labStatus);
+      const labBack    = allPatients.filter(p => p.labStatus === 'received');
+      const noAnalysis = allPatients.filter(p => !p.condition);
       const items = [
-        ...labReady.map(p => ({ p, icon: 'fa-flask',        color: '#2563eb', label: 'Ready to send to lab',          badgeCls: 'attn-lab-ready', badge: 'Lab' })),
-        ...labBack.map(p =>  ({ p, icon: 'fa-circle-check', color: 'var(--c-brand)', label: 'Lab received — schedule delivery', badgeCls: 'attn-lab-back',  badge: 'Delivery' })),
-      ].slice(0, 5);
+        ...labBack.map(p =>    ({ p, icon: 'fa-circle-check',       color: 'var(--c-brand)', label: 'Lab received — schedule delivery', badgeCls: 'attn-lab-back',  badge: 'Delivery', urgCls: 'urg-received' })),
+        ...labReady.map(p =>   ({ p, icon: 'fa-flask',              color: '#2563eb',        label: 'Ready to send to lab',            badgeCls: 'attn-lab-ready', badge: 'Lab',      urgCls: 'urg-waiting'  })),
+        ...noAnalysis.map(p => ({ p, icon: 'fa-circle-exclamation', color: '#f59e0b',        label: 'New — no analysis started',       badgeCls: 'attn-new',       badge: 'New',      urgCls: 'urg-new'      })),
+      ].slice(0, 8);
       if (items.length === 0) {
         attentionSection.style.display = 'none';
       } else {
         attentionSection.style.display = 'block';
-        attentionList.innerHTML = items.map(({ p, icon, color, label: attnLabel, badgeCls, badge }) =>
-          `<div class="dash-attention-item" role="button" tabindex="0"
+        attentionList.innerHTML = items.map(({ p, icon, color, label: attnLabel, badgeCls, badge, urgCls }) =>
+          `<div class="dash-attention-item ${urgCls}" role="button" tabindex="0"
               onclick="openCase('${p.id}')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCase('${p.id}')}"
               aria-label="${escapeHtml(p.name||'')} — ${attnLabel}">
@@ -4608,7 +4747,8 @@ const initials = (p.name || 'P').split(' ').map(w => w[0]).join('').slice(0,2).t
 const isActive = p.id === activeId;
 const qs = _quickScore(p);
 const score = qs !== null ? qs + '%' : '—';
-return `<div class="patient-item${isActive ? ' active-patient' : ''}" role="listitem" tabindex="0" data-pid="${p.id}" onclick="switchPatient('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPatient('${p.id}')}" aria-label="${escapeHtml(p.name||'')}, ${escapeHtml(p.caseNum||'')}${isActive?' (current)':''}"> <div class="patient-avatar">${initials}</div> <div class="patient-info"> <div class="patient-item-name">${escapeHtml(p.name||'Unknown')}</div> <div class="patient-item-meta">${escapeHtml(p.caseNum||'')} · ${score}</div> </div> <button class="patient-delete-btn" type="button" onclick="event.stopPropagation();openDeletePatient('${p.id}','${escapeHtml(p.name||'this patient')}')" aria-label="Delete ${escapeHtml(p.name||'patient')}" title="Delete patient" ${list.length <= 1 ? 'disabled style="display:none"' : ''}> <i class="fa-solid fa-xmark"></i> </button> </div>`;
+const stageDot = _getPatientStageBadge(p);
+return `<div class="patient-item${isActive ? ' active-patient' : ''}" role="listitem" tabindex="0" data-pid="${p.id}" onclick="switchPatient('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPatient('${p.id}')}" aria-label="${escapeHtml(p.name||'')}, ${escapeHtml(p.caseNum||'')}${isActive?' (current)':''}"> <div class="patient-avatar">${initials}</div> <div class="patient-info"> <div class="patient-item-name">${escapeHtml(p.name||'Unknown')}</div> <div class="patient-item-meta">${escapeHtml(p.caseNum||'')} · ${score}</div> </div> <span class="patient-stage-dot ${stageDot.cls}" aria-hidden="true"></span> <button class="patient-delete-btn" type="button" onclick="event.stopPropagation();openDeletePatient('${p.id}','${escapeHtml(p.name||'this patient')}')" aria-label="Delete ${escapeHtml(p.name||'patient')}" title="Delete patient" ${list.length <= 1 ? 'disabled style="display:none"' : ''}> <i class="fa-solid fa-xmark"></i> </button> </div>`;
 }).join('');
 }
 
@@ -4651,7 +4791,7 @@ renderPatientList();
 if (window.innerWidth <= 900) closeSidebar();
 // Update case number in UI
 const caseNumEl = document.querySelector('.case-num');
-if (caseNumEl) caseNumEl.textContent = S.caseNum || 'Case #4587';
+if (caseNumEl) caseNumEl.textContent = S.caseNum || '—';
 }
 
 // ── New Patient Modal ──────────────────────────────────────
@@ -5297,6 +5437,11 @@ History.render();
 
 render(S);
 renderWorkflowBar();
+// B5: insight is the default active view — initialize workflow shell visibility
+const _initShell = document.getElementById('patientWorkflowShell');
+const _initPage  = document.querySelector('.page');
+if (_initShell) _initShell.classList.add('wf-shell-visible');
+if (_initPage)  _initPage.classList.add('wf-shell-visible');
 if (calcAI(S)) { setTimeout(() => { if (!UIState.whyOpen) toggleWhy(); }, 800); }
 
 // Stamp lastAccessed for the initially loaded patient
