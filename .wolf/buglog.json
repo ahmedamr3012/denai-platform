@@ -1569,6 +1569,54 @@
       "related_bugs": [],
       "occurrences": 3,
       "last_seen": "2026-05-17T09:01:43.730Z"
+    },
+    {
+      "id": "bug-098",
+      "timestamp": "2026-05-17T09:21:57.281Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"width=device-width, initial-scale=1.0\"",
+      "fix": "Changed to \"width=device-width, initial-scale=1.0, viewport-f",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T09:21:57.281Z"
+    },
+    {
+      "id": "bug-099",
+      "timestamp": "2026-05-17T09:22:03.428Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "index.html",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T09:22:03.428Z"
+    },
+    {
+      "id": "bug-100",
+      "timestamp": "2026-05-17T09:22:12.314Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→10 lines (2 removed) | Also: name: 'denai',; background_color: '#EEF2EF',",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-17T09:22:52.739Z"
     }
   ]
 }

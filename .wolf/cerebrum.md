@@ -8,6 +8,15 @@
 
 <!-- How the user likes things done. Code style, tools, patterns, communication. -->
 
+## Key Learnings — PWA
+
+- **Phase 4 PWA Polish (2026-05-17):** Safe-area insets require `viewport-fit=cover` in viewport meta — without it, `env(safe-area-inset-*)` always resolves to 0. Topbar uses `min-height + padding-top: env(safe-area-inset-top)` instead of `height` to accommodate notch on iPhone standalone. `.view-panel` uses `padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px))`. Mobile fixed sidebar gets `padding-top: env(safe-area-inset-top)` inside the `@media (max-width: 900px)` block.
+- **Dark flash prevention pattern:** Add inline `<script>` in `<head>` (before any CSS link) that reads `dandyDarkMode` from localStorage and sets `document.documentElement.style.background = '#0B2B1F'` + `colorScheme = 'dark'`. This sets the html-level bg before body renders. Body's `transition: background .4s` smooths the transition when `body.dark` is applied later by `applyDarkMode()`. No CSS selectors needed.
+- **PWA manifest: `background_color` must match `--c-brand-bg` token (`#EDF6F1`):** Was `#EEF2EF` (off). Correct value is `#EDF6F1`. Add `scope: './'`, `lang: 'en'`, `id: './'`, `prefer_related_applications: false`. Icon needs two entries: `purpose: 'any'` and `purpose: 'maskable'` (maskable icon centers content in safe zone — no rounded corners, no transparency).
+- **`* { -webkit-tap-highlight-color: transparent; }` is safe for clinical PWAs:** Removes grey iOS tap flash without affecting keyboard focus states or `focus-visible` outlines. Add at top of CSS block.
+- **`height: 100dvh`** (dynamic viewport height) prevents layout shift on mobile when address bar appears/disappears. Use `height: 100vh; height: 100dvh;` — browsers that don't support `dvh` fall back to `vh`. `100dvh` = exact visible viewport height.
+- **`.page overscroll-behavior-y: contain`** prevents the iOS rubber-band bounce from propagating from the `.page` scroll container to the whole window — keeps scroll within the panel. Pair with `overscroll-behavior: none` on body.
+
 ## Key Learnings
 
 - **Project:** denai — single-file clinical app (`index.html`, ~102k tok). All CSS is inline `<style>`. Token extraction pattern: create `src/styles/tokens/<group>-tokens.css`, add `<link>` before `<style>`, remove declarations from `:root` and `body.dark`.
