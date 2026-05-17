@@ -130,10 +130,32 @@
       return;
     }
     if (ai?.isMultiTooth) return;
-    if (ai?.treatmentMode === 'restorative') return;
     // PERF#2: remove empty-state without wiping SVG
     const _emptyState = container.querySelector('.empty-state');
     if (_emptyState) _emptyState.remove();
+
+    // Chart header + legend — created once per container
+    if (!container.querySelector('.graph-header')) {
+      const header = document.createElement('div');
+      header.className = 'graph-header';
+      header.innerHTML =
+        '<span class="graph-title">Outcome Projection</span>' +
+        '<div class="graph-legend">' +
+          '<span class="graph-legend-item"><span class="graph-legend-dot" style="background:var(--c-brand)"></span><span class="graph-legend-label">Implant</span></span>' +
+          '<span class="graph-legend-item"><span class="graph-legend-dot" style="background:#f59e0b"></span><span class="graph-legend-label">Bridge</span></span>' +
+          '<span class="graph-legend-item graph-legend-crown" style="display:none"><span class="graph-legend-dot" style="background:#3b82f6"></span><span class="graph-legend-label">Crown</span></span>' +
+        '</div>';
+      container.insertBefore(header, container.firstChild);
+    }
+
+    // Sync legend labels with active treatment options
+    const _legendLabels = container.querySelectorAll('.graph-legend-label');
+    if (_legendLabels.length >= 3) {
+      const rl = ai.restorativeLabels;
+      _legendLabels[0].textContent = rl?.slot1?.label || 'Implant';
+      _legendLabels[1].textContent = rl?.slot2?.label || 'Bridge';
+      _legendLabels[2].textContent = rl?.slot3?.label || 'Crown';
+    }
 
     const width = 300, height = 120, padding = 30;
     const years = Array.from({length: 15}, (_,i) => i+1);
@@ -189,13 +211,6 @@
       bridgeEnd.classList.add('bridge-end'); bridgeEnd.setAttribute('r', '3.5'); bridgeEnd.setAttribute('fill', '#f59e0b');
       svg.appendChild(bridgeEnd);
 
-      const implantLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      implantLabel.classList.add('implant-label'); implantLabel.setAttribute('fill', '#1F7A4F'); implantLabel.setAttribute('font-size', '9'); implantLabel.setAttribute('font-weight', '700'); implantLabel.textContent = 'Implant';
-      svg.appendChild(implantLabel);
-      const bridgeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      bridgeLabel.classList.add('bridge-label'); bridgeLabel.setAttribute('fill', '#f59e0b'); bridgeLabel.setAttribute('font-size', '9'); bridgeLabel.setAttribute('font-weight', '700'); bridgeLabel.textContent = 'Bridge';
-      svg.appendChild(bridgeLabel);
-
       // Crown line elements
       const crownLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
       crownLine.classList.add('crown-line'); crownLine.setAttribute('fill','none'); crownLine.setAttribute('stroke','#3b82f6'); crownLine.setAttribute('stroke-width','2'); crownLine.setAttribute('stroke-dasharray','4,3');
@@ -203,9 +218,6 @@
       const crownEnd = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       crownEnd.classList.add('crown-end'); crownEnd.setAttribute('r','3'); crownEnd.setAttribute('fill','#3b82f6');
       svg.appendChild(crownEnd);
-      const crownLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      crownLabel.classList.add('crown-label'); crownLabel.setAttribute('fill','#3b82f6'); crownLabel.setAttribute('font-size','9'); crownLabel.setAttribute('font-weight','700'); crownLabel.textContent = 'Crown';
-      svg.appendChild(crownLabel);
     }
 
     svg.querySelector('.implant-line').setAttribute('points', implantPoints.map((v,i) => `${scaleX(i)},${scaleY(v)}`).join(' '));
@@ -218,35 +230,19 @@
     svg.querySelector('.bridge-start').setAttribute('cy', scaleY(bridgePoints[0]));
     svg.querySelector('.bridge-end').setAttribute('cx', scaleX(lastIndex));
     svg.querySelector('.bridge-end').setAttribute('cy', scaleY(bridgePoints[lastIndex]));
-    // Update line labels based on mode
-    const implantLabelEl = svg.querySelector('.implant-label');
-    const bridgeLabelEl  = svg.querySelector('.bridge-label');
-    const crownLabelEl   = svg.querySelector('.crown-label');
-    if (ai.treatmentMode === 'restorative' && ai.restorativeLabels) {
-      if (implantLabelEl) implantLabelEl.textContent = ai.restorativeLabels.slot1.label.split(' ')[0];
-      if (bridgeLabelEl)  bridgeLabelEl.textContent  = ai.restorativeLabels.slot2.label.split(' ')[0];
-      if (crownLabelEl)   crownLabelEl.textContent   = ai.restorativeLabels.slot3.label.split(' ')[0];
-    } else if (ai.isMultiTooth) {
-      if (implantLabelEl) implantLabelEl.textContent = '2 Impl.';
-      if (bridgeLabelEl)  bridgeLabelEl.textContent  = '4-Unit';
-      if (crownLabelEl)   crownLabelEl.textContent   = 'Cantilever';
-    } else {
-      if (implantLabelEl) implantLabelEl.textContent = 'Implant';
-      if (bridgeLabelEl)  bridgeLabelEl.textContent  = 'Bridge';
-      if (crownLabelEl)   crownLabelEl.textContent   = 'Crown';
-    }
-    // Crown line update — reuse crownLabelEl from label-update block above
-    const crownLineEl = svg.querySelector('.crown-line');
-    const crownEndEl  = svg.querySelector('.crown-end');
+    // Crown line update
+    const crownLineEl    = svg.querySelector('.crown-line');
+    const crownEndEl     = svg.querySelector('.crown-end');
+    const crownLegendItem = container.querySelector('.graph-legend-crown');
     if (ai.crownViable && ai.crown > 0) {
       const crownPoints = years.map(y => Math.max(58, ai.crown - (y * 0.55)));
       crownLineEl.setAttribute('points', crownPoints.map((v,i) => `${scaleX(i)},${scaleY(v)}`).join(' '));
-      crownLineEl.style.display = ''; crownEndEl.style.display = ''; crownLabelEl.style.display = '';
+      crownLineEl.style.display = ''; crownEndEl.style.display = '';
       crownEndEl.setAttribute('cx', scaleX(lastIndex));
       crownEndEl.setAttribute('cy', scaleY(crownPoints[lastIndex]));
-      crownLabelEl.setAttribute('x', scaleX(lastIndex - 2));
-      crownLabelEl.setAttribute('y', scaleY(crownPoints[lastIndex]) + 14);
+      if (crownLegendItem) crownLegendItem.style.display = '';
     } else {
-      crownLineEl.style.display = 'none'; crownEndEl.style.display = 'none'; crownLabelEl.style.display = 'none';
+      crownLineEl.style.display = 'none'; crownEndEl.style.display = 'none';
+      if (crownLegendItem) crownLegendItem.style.display = 'none';
     }
   }

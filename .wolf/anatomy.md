@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-17T16:49:44.212Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-17T17:31:05.024Z
 > Files: 30 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~98873 tok)
+- `index.html` — denai — Clinical Insight (~99003 tok)
 - `playwright.config.js` (~337 tok)
 
 ## .claude/
@@ -38,7 +38,7 @@
 
 ## src/render/
 
-- `costGraphPanel.js` — ================================================================ (~5356 tok)
+- `costGraphPanel.js` — ================================================================ (~5120 tok)
 - `patientPanel.js` — ================================================================ (~952 tok)
 - `riskPanel.js` — renderRisk: _applyRiskCompact (~1659 tok)
 
