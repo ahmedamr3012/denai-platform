@@ -527,8 +527,7 @@ body.dark .card { background: var(--c-n50); border-color: var(--c-n150); }
 .card-title { font-size: 14px; font-weight: 700; color: var(--c-n900); display: flex; align-items: center; gap: 8px; }
 .card-title i { color: var(--c-brand); font-size: 12px; }
 .card-body { padding: 18px 20px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
-.ai-card { border-top: 3px solid var(--c-brand); position: relative; }
-.ai-card::before { content: ''; position: absolute; top: 0; right: 0; width: 130px; height: 130px; background: radial-gradient(circle, rgba(var(--c-brand-rgb),.07) 0%, transparent 70%); border-radius: 0 var(--r-xl) 0 0; pointer-events: none; z-index: 0; }
+.ai-card { position: relative; box-shadow: var(--shadow-sm), inset 0 3px 0 var(--c-brand); }
 
 /* ================================================================
    PATIENT INFO & EDIT FORM
@@ -1367,7 +1366,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           <label for="clinicalNotes" style="font-size:11px;font-weight:700;color:var(--c-n500);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px;">Clinical Notes</label>
           <textarea id="clinicalNotes" class="notes-area" placeholder="Add clinical observations, patient concerns, or follow-up notes..." aria-label="Clinical notes"></textarea>
           <div class="notes-meta">
-            <span id="notesStatus">Auto-saved</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span id="notesStatus">Auto-saved</span><span id="notesEncText" style="display:none;color:var(--c-n300);pointer-events:none;user-select:none;" aria-live="polite">· encrypted</span></span>
             <span id="notesCount">0 chars</span>
           </div>
         </div>
@@ -5067,6 +5066,11 @@ function initClinicalNotes() {
   if (!_notesInputBound) {
     textarea.addEventListener('input', _handleNotesInput);
     _notesInputBound = true;
+  }
+  const encText = $('notesEncText');
+  if (encText) {
+    const isEncrypted = typeof denaiNotesEnc !== 'undefined' && denaiNotesEnc.hasKey();
+    encText.style.display = isEncrypted ? 'inline' : 'none';
   }
 }
 
