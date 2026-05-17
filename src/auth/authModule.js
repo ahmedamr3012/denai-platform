@@ -44,7 +44,7 @@ window.denaiAuth = (function () {
       dot.title = 'Auth error — working offline';
     } else {
       dot.style.background = 'rgba(255,255,255,0.2)';
-      dot.title = 'Local mode — sign in to sync';
+      dot.title = 'Local-only mode';
     }
   }
 
@@ -54,13 +54,13 @@ window.denaiAuth = (function () {
     if (!nameEl || !planEl) return;
     if (_status === 'signed-in' && _email) {
       nameEl.textContent = _email.split('@')[0];
-      planEl.textContent = '☁ Synced';
+      planEl.textContent = '☁ Cloud sync active';
     } else if (_status === 'reconnecting') {
       nameEl.textContent = 'Reconnecting…';
       planEl.textContent = '';
     } else {
       nameEl.textContent = 'Local mode';
-      planEl.textContent = 'Sign in to sync';
+      planEl.textContent = 'Local-only mode';
     }
   }
 

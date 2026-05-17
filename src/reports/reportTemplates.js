@@ -14,9 +14,9 @@
   <div class="rpt-brand"><div>
     <div style="display:flex;align-items:center;gap:10px">
       <div class="rpt-logo">denai</div>
-      <div class="rpt-logo-badge">AI Co‑Pilot</div>
+      <div class="rpt-logo-badge">AI Workflow</div>
     </div>
-    <div class="rpt-tagline">Clinical Decision Support Platform</div>
+    <div class="rpt-tagline">AI-Assisted Clinical Workflow</div>
   </div></div>
   <div class="rpt-meta-box">
     <div class="rpt-case-num">${escapeHtml(cfg.caseNumber)}</div>
@@ -33,27 +33,25 @@
       <text x="32" y="37" text-anchor="middle" font-family="Sora,sans-serif" font-size="13" font-weight="800" fill="#1F7A4F">${cfg.conf}%</text>
     </svg>
     <div>
-      <div class="conf-label">AI Confidence Score</div>
+      <div class="conf-label">Recommendation Strength</div>
       <div class="conf-value">${cfg.conf}%</div>
       <div class="conf-level" style="background:${confC}">${cfg.confLevel}</div>
     </div>
   </div>
   <div class="conf-rec-box">
-    <div class="conf-rec-label">AI Recommendation</div>
+    <div class="conf-rec-label">AI-Generated Recommendation</div>
     <div class="conf-rec-val">${escapeHtml(cfg.aiRec)}</div>
     <div class="conf-rec-sub">${escapeHtml(cfg.recSub || '')}</div>
     <div class="conf-rec-sub" style="margin-top:3px">Patient: <strong>${escapeHtml(cfg.patientName)}</strong></div>
   </div>
 </div>
 ${bodyHTML}
-<div class="section">
-  <div class="disclaimer"><strong>⚠️ Clinical Disclaimer</strong>
-    ${BRAND.disclaimer}
+<div class="rpt-footer" style="flex-direction:column;gap:6px;padding-top:14px;padding-bottom:14px">
+  <span style="font-size:10px;color:#9CA3AF;text-align:center;line-height:1.6;width:100%">${BRAND.disclaimer}</span>
+  <div style="display:flex;justify-content:space-between;width:100%">
+    <span>${BRAND.footerLine} · <strong>${escapeHtml(cfg.caseNumber)}</strong> · ${escapeHtml(cfg.patientName)}</span>
+    <span>${cfg.date}</span>
   </div>
-</div>
-<div class="rpt-footer">
-  <span>${BRAND.footerLine} · <strong>${escapeHtml(cfg.caseNumber)}</strong> · ${escapeHtml(cfg.patientName)}</span>
-  <span>${cfg.date}</span>
 </div>
 <div class="no-print">
   <button class="print-btn" onclick="window.print()">🖨️ &nbsp;Save as PDF / Print</button>

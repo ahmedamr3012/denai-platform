@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-17T21:18:02.778Z
-> Files: 30 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-17T21:46:25.082Z
+> Files: 31 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~104067 tok)
+- `index.html` — denai — Clinical Insight (~104675 tok)
 - `playwright.config.js` (~337 tok)
 
 ## .claude/
@@ -31,7 +31,7 @@
 
 ## src/auth/
 
-- `authModule.js` — src/auth/authModule.js (~2328 tok)
+- `authModule.js` — src/auth/authModule.js (~2327 tok)
 
 ## src/db/
 
@@ -44,6 +44,7 @@
 
 ## src/reports/
 
+- `reportTemplates.js` — ── Shared report shell (header + CSS + footer wrapper) ───────── (~2302 tok)
 
 ## src/styles/components/
 

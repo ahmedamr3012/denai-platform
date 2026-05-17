@@ -1997,6 +1997,86 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-05-17T21:08:22.234Z"
+    },
+    {
+      "id": "bug-124",
+      "timestamp": "2026-05-17T21:31:49.633Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had 'Clinical Decision Support Platform'",
+      "fix": "Changed to 'AI-Assisted Clinical Workflow Platform'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 7,
+      "last_seen": "2026-05-17T21:33:45.628Z"
+    },
+    {
+      "id": "bug-125",
+      "timestamp": "2026-05-17T21:32:20.981Z",
+      "error_message": "Wrong reference: 32px should be 10px",
+      "file": "index.html",
+      "root_cause": "Used \"32px\" instead of \"10px\"",
+      "fix": "Changed 32px → 10px",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-17T21:33:51.570Z"
+    },
+    {
+      "id": "bug-126",
+      "timestamp": "2026-05-17T21:34:29.542Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/reports/reportTemplates.js",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 10→8 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T21:34:29.542Z"
+    },
+    {
+      "id": "bug-127",
+      "timestamp": "2026-05-17T21:44:15.256Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/auth/authModule.js",
+      "root_cause": "Had 'Local mode — sign in to sync'",
+      "fix": "Changed to 'Local-only mode'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T21:44:15.256Z"
+    },
+    {
+      "id": "bug-128",
+      "timestamp": "2026-05-17T21:44:42.465Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"why-toggle\"",
+      "fix": "Changed to \"ai-inputs\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-05-17T21:46:25.094Z"
     }
   ]
 }
