@@ -1,0 +1,1 @@
+| 00:09 | Phase 2B — Help Layer: UIState.helpOpen, toggleHelp(key), .help-trigger+.disclosure-body CSS, 3 disclosure points (conf/caseClass/approvePlan), badge-hide cleanup, switchPatient reset | index.html | 6/6 CI pass (11.6s) | ~60 tok |

@@ -453,6 +453,18 @@ body.dark .dash-pipeline-strip { background: var(--c-n50); border-color: var(--c
 #wfActivitySummary { min-height: 18px; margin: 2px 0 4px; }
 .wf-activity-row { display: inline-flex; align-items: baseline; gap: 4px; font-size: 11px; color: var(--c-n400); }
 .wf-activity-prefix { font-weight: 600; }
+/* Workflow shell guidance + cases staleness — Phase 2A */
+.wf-guidance-text { font-size: 11px; color: var(--c-n400); line-height: 1.4; margin: 0 0 4px; display: block; }
+.case-stale { font-size: 10.5px; color: var(--c-n400); margin-top: 3px; }
+/* Help Layer — Phase 2B */
+.help-trigger { display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%; background:none; border:1px solid var(--c-n300); color:var(--c-n400); font-size:9px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; line-height:1; padding:0; transition:border-color var(--t-fast),color var(--t-fast); vertical-align:middle; flex-shrink:0; }
+.help-trigger:hover { border-color:var(--c-brand); color:var(--c-brand); }
+.help-trigger:focus-visible { outline:2px solid var(--c-brand); outline-offset:1px; box-shadow:var(--focus-ring); }
+.help-trigger[aria-expanded="true"] { border-color:var(--c-brand); color:var(--c-brand); background:rgba(var(--c-brand-rgb),.08); }
+.disclosure-body { max-height:0; overflow:hidden; opacity:0; transition:max-height .35s cubic-bezier(.16,1,.3,1), opacity .25s ease; }
+.disclosure-body.open { max-height:200px; opacity:1; }
+.disclosure-text { font-size:11px; color:var(--c-n500); line-height:1.5; padding:8px 10px; background:var(--c-n50); border-radius:var(--r-md); border-left:2px solid var(--c-n200); margin-top:6px; display:block; }
+body.dark .disclosure-text { background:var(--c-n100); border-left-color:var(--c-n300); }
 /* Stage badge variant colors */
 .stage-plan { background: #fef3c7; color: #92400e; border-color: #fde68a; }
 .stage-lab  { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
@@ -1195,6 +1207,21 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
             <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="importAllData();closeAuthModal();">⬆ Import</button>
           </div>
         </div>
+        <!-- Phase 2C: Report Issue -->
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--c-n200);">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <p style="font-size:11px;font-weight:600;color:var(--c-n400);text-transform:uppercase;letter-spacing:.05em;margin:0;">Report Issue</p>
+            <button id="helpTrig_reportIssue_local" class="help-trigger" type="button" onclick="toggleReportIssue()" aria-expanded="false" aria-controls="helpBody_reportIssue_local" aria-label="Expand issue report">?</button>
+          </div>
+          <div class="disclosure-body" id="helpBody_reportIssue_local" role="region" aria-label="Report issue">
+            <p style="font-size:11px;color:var(--c-n500);margin:8px 0;line-height:1.5;">Includes workflow state and technical diagnostics. No patient names, notes, or clinical data are included.</p>
+            <textarea id="diagDescLocal" placeholder="Optional: briefly describe the issue…" rows="3" aria-label="Issue description" style="width:100%;box-sizing:border-box;font-size:12px;font-family:inherit;color:var(--c-n700);background:var(--surface-card);border:1px solid var(--c-n200);border-radius:6px;padding:8px;resize:none;outline:none;"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="downloadDiagnosticFile('diagDescLocal')">⬇ Download Diagnostic</button>
+              <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="sendDiagnosticEmail('diagDescLocal')">✉ Send via Email</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Sign-up panel (hidden by default) -->
@@ -1237,11 +1264,26 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         </div>
 
         <!-- Data management -->
-        <div style="margin-bottom:16px;">
+        <div style="margin-bottom:12px;">
           <p style="font-size:11px;font-weight:600;color:var(--c-n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Data</p>
           <div style="display:flex;gap:8px;">
             <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="exportAllData();closeAuthModal();">⬇ Export All</button>
             <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="importAllData();closeAuthModal();">⬆ Import</button>
+          </div>
+        </div>
+        <!-- Phase 2C: Report Issue -->
+        <div style="margin-bottom:16px;padding-top:12px;border-top:1px solid var(--c-n200);">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <p style="font-size:11px;font-weight:600;color:var(--c-n400);text-transform:uppercase;letter-spacing:.05em;margin:0;">Report Issue</p>
+            <button id="helpTrig_reportIssue_signedIn" class="help-trigger" type="button" onclick="toggleReportIssue()" aria-expanded="false" aria-controls="helpBody_reportIssue_signedIn" aria-label="Expand issue report">?</button>
+          </div>
+          <div class="disclosure-body" id="helpBody_reportIssue_signedIn" role="region" aria-label="Report issue">
+            <p style="font-size:11px;color:var(--c-n500);margin:8px 0;line-height:1.5;">Includes workflow state and technical diagnostics. No patient names, notes, or clinical data are included.</p>
+            <textarea id="diagDescSignedIn" placeholder="Optional: briefly describe the issue…" rows="3" aria-label="Issue description" style="width:100%;box-sizing:border-box;font-size:12px;font-family:inherit;color:var(--c-n700);background:var(--surface-card);border:1px solid var(--c-n200);border-radius:6px;padding:8px;resize:none;outline:none;"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="downloadDiagnosticFile('diagDescSignedIn')">⬇ Download Diagnostic</button>
+              <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="sendDiagnosticEmail('diagDescSignedIn')">✉ Send via Email</button>
+            </div>
           </div>
         </div>
 
@@ -1307,6 +1349,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <!-- Populated dynamically by renderWorkflowBar() — derived from real patient S state -->
     </div>
     <div id="wfActivitySummary" aria-live="polite"></div>
+    <div id="wfGuidance" aria-live="polite"></div>
     <div class="workflow-actions" id="workflowActions" aria-label="Workflow actions">
       <!-- Populated dynamically by renderWorkflowActions() -->
     </div>
@@ -1456,6 +1499,10 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <span class="caseclass-icon" id="caseClassIcon" aria-hidden="true">●</span>
         <span id="caseClassLabel">Restorable</span>
         <span class="caseclass-note" id="caseClassNote"></span>
+        <button class="help-trigger" id="helpTrig_caseClass" type="button" onclick="toggleHelp('caseClass')" aria-expanded="false" aria-controls="helpBody_caseClass" aria-label="What does this classification mean?">?</button>
+      </div>
+      <div class="disclosure-body" id="helpBody_caseClass" role="region" aria-label="Classification explanation" style="margin:0 16px;">
+        <span class="disclosure-text">Classification reflects the restorative viability of the tooth based on remaining structure, endodontic status, and bone support. Viable teeth favor conservative restoration; Compromised teeth require careful clinical judgment; Hopeless indicates extraction is the recommended pathway. Classification influences how the AI weights each treatment option.</span>
       </div>
       <div class="card-body" id="aiCardBody" style="position:relative;z-index:1;" aria-live="polite" aria-atomic="false">
         <!-- Preview Mode Banner -->
@@ -2096,6 +2143,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     editing:     false,     // edit form active
     whyOpen:     false,     // why-panel accordion expanded
     historyOpen: false,     // history accordion expanded
+    helpOpen:    {},        // inline help disclosure state (key → boolean)
   };
   function setUIState(patch) {
     Object.assign(UIState, patch);
@@ -2213,6 +2261,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     }).join('');
     renderWorkflowActions();
     renderWfActivitySummary();
+    renderWfGuidance();
   }
 
   function renderWorkflowActions() {
@@ -2221,7 +2270,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (!S.condition) { el.innerHTML = ''; return; }
     let html = '';
     if (!S.planApproved) {
-      html = `<button class="btn-action btn-action-approve" type="button" onclick="approvePlan()"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Approve Plan</button>`;
+      const _apOpen = !!(UIState.helpOpen && UIState.helpOpen['approvePlan']);
+      html = `<button class="btn-action btn-action-approve" type="button" onclick="approvePlan()"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Approve Plan</button><button class="help-trigger" id="helpTrig_approvePlan" type="button" onclick="toggleHelp('approvePlan')" aria-expanded="${_apOpen ? 'true' : 'false'}" aria-controls="helpBody_approvePlan" aria-label="What does approving mean?" style="margin-left:6px;">?</button><div class="disclosure-body${_apOpen ? ' open' : ''}" id="helpBody_approvePlan" role="region"><span class="disclosure-text">Approving the plan commits the current planning phase and enables the laboratory workflow to begin. Planning can be reopened at any time if clinical adjustments are needed.</span></div>`;
     } else if (!S.labStatus) {
       html = `<button class="btn-action btn-action-lab" type="button" onclick="sendToLab()"><i class="fa-solid fa-flask" aria-hidden="true"></i> Send to Lab</button>
               <button class="btn-action btn-action-reopen" type="button" onclick="reopenPlanning()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reopen Planning</button>`;
@@ -2294,6 +2344,15 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (p.planApproved && !p.labStatus) return 'urg-waiting';
     if (!p.condition)                    return 'urg-new';
     return '';
+  }
+
+  function _getStalenessText(p) {
+    if (!p.condition || p.labStatus === 'received' || !p.lastAccessed) return '';
+    const days = Math.floor((Date.now() - p.lastAccessed) / 86400000);
+    if (days < 7) return '';
+    if (!p.planApproved) return days + ' days in analysis';
+    if (!p.labStatus)    return days + ' days awaiting lab';
+    return days + ' days awaiting delivery';
   }
 
   function _emitWfEvent(type, meta) {
@@ -2399,6 +2458,46 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     el.innerHTML = content;
   }
 
+  function _deriveGuidanceContext(p) {
+    if (!p.condition) return { shell: null };
+    const reportCount = Array.isArray(p.reportHistory) ? p.reportHistory.length : 0;
+    const latestEv    = _getLatestWorkflowEvent(); // reads S — same patient in all call sites
+    // Fully complete: lab received + report generated → silent
+    if (p.labStatus === 'received' && reportCount > 0) return { shell: null };
+    // Lab received, no report yet
+    if (p.labStatus === 'received') {
+      return { shell: 'Lab restoration received — a delivery report is ready to generate.' };
+    }
+    // Lab sent, awaiting return
+    if (p.labStatus) {
+      return { shell: 'Case is at the laboratory — awaiting restoration delivery.' };
+    }
+    // Plan approved, lab not started
+    if (p.planApproved) {
+      return { shell: 'Treatment plan approved — laboratory workflow has not started.' };
+    }
+    // Planning explicitly reopened — use latestEv to surface this specific forward-looking state
+    if (latestEv && latestEv.type === 'plan_reopened') {
+      return { shell: 'Planning reopened — AI analysis is available for review.' };
+    }
+    // Condition present, analysis completed, plan not yet approved
+    const hasAnalysis = (Array.isArray(p.wfHistory) ? p.wfHistory : [])
+      .some(e => e.type === 'analysis_completed');
+    if (hasAnalysis) {
+      return { shell: 'Case analysis completed and ready for treatment planning.' };
+    }
+    return { shell: null };
+  }
+
+  function renderWfGuidance() {
+    const el = document.getElementById('wfGuidance');
+    if (!el) return;
+    const ctx = _deriveGuidanceContext(S);
+    el.innerHTML = ctx.shell
+      ? '<span class="wf-guidance-text">' + escapeHtml(ctx.shell) + '</span>'
+      : '';
+  }
+
   function _checkEmitAnalysisCompleted() {
     try {
       const _ai = calcAI(S);
@@ -2487,13 +2586,15 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       const tooth = p.tooth || '';
       const badge = _getPatientStageBadge(p);
       const urgency = _getCaseUrgency(p);
-      const lastStr = p.lastAccessed ? _relativeTime(p.lastAccessed) : '';
+      const lastStr   = p.lastAccessed ? _relativeTime(p.lastAccessed) : '';
+      const staleText = _getStalenessText(p);
       return `<div class="case-card${isActive ? ' case-active' : ''}${urgency ? ' ' + urgency : ''}" role="listitem" tabindex="0" onclick="openCase('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCase('${p.id}')}" aria-label="Open case for ${escapeHtml(p.name||'')}${isActive?' (active)':''}">
         <div class="case-card-av">${initials}</div>
         <div class="case-card-info">
           <div class="case-card-name">${escapeHtml(p.name||'Unknown')}</div>
           <div class="case-card-meta">${escapeHtml(caseNum)}${caseNum && cond ? ' · ' : ''}${escapeHtml(cond)}${tooth ? ' · ' + escapeHtml(tooth) : ''}${lastStr ? ' · ' + lastStr : ''}</div>
           <div class="case-card-stage ${badge.cls}"><i class="fa-solid ${badge.icon}" style="font-size:9px" aria-hidden="true"></i> ${badge.label}</div>
+          ${staleText ? '<div class="case-stale">' + escapeHtml(staleText) + '</div>' : ''}
         </div>
         <div class="case-card-score">${score}</div>
       </div>`;
@@ -3229,7 +3330,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       </button>
       <div class="metrics-row">
         <div class="metric-card" aria-label="Confidence level">
-          <div class="metric-lbl">Confidence</div>
+          <div class="metric-lbl" style="display:flex;align-items:center;gap:5px;">Confidence <button class="help-trigger" id="helpTrig_conf" type="button" onclick="toggleHelp('conf')" aria-expanded="${UIState.helpOpen.conf ? 'true' : 'false'}" aria-controls="helpBody_conf" aria-label="What does confidence mean?">?</button></div>
           <div class="liquid-ring-wrap" aria-hidden="true">
             <svg width="56" height="56" viewBox="0 0 56 56" focusable="false">
               <circle cx="28" cy="28" r="23" class="ring-track"/>
@@ -3245,6 +3346,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           <div class="metric-sub" id="successSub">Based on 12,400+ similar cases</div>
           <div class="prog-bar" aria-hidden="true"><div class="prog-fill" id="successBar" style="width:85%"></div></div>
         </div>
+      </div>
+      <div class="disclosure-body${UIState.helpOpen.conf ? ' open' : ''}" id="helpBody_conf" role="region" aria-label="Confidence explanation">
+        <span class="disclosure-text">Confidence reflects how reliably similar clinical profiles have correlated with this recommendation in the denai dataset. A lower score signals case complexity or competing factors — not that the recommendation is clinically inappropriate. This is not a diagnostic certainty metric.</span>
       </div>
       <button class="why-toggle" id="whyToggle" type="button" aria-expanded="false" aria-controls="whyBody">
         💡 Why this recommendation? <span class="chevron" aria-hidden="true">▾</span>
@@ -3480,6 +3584,13 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         if (noteEl) noteEl.textContent = ai.caseClass.notes || info.note;
       } else {
         badge.style.display = 'none';
+        if (UIState.helpOpen.caseClass) {
+          UIState.helpOpen.caseClass = false;
+          const _hbc = document.getElementById('helpBody_caseClass');
+          if (_hbc) _hbc.classList.remove('open');
+          const _htc = document.getElementById('helpTrig_caseClass');
+          if (_htc) _htc.setAttribute('aria-expanded','false');
+        }
       }
     }
 
@@ -4758,6 +4869,75 @@ const toggle = $('historyToggle'), body = $('historyBody');
 if (toggle) toggle.setAttribute('aria-expanded', UIState.historyOpen?'true':'false');
 if (body) body.classList.toggle('open', UIState.historyOpen);
 }
+function toggleHelp(key) {
+UIState.helpOpen[key] = !UIState.helpOpen[key];
+const body = document.getElementById('helpBody_' + key);
+const trig = document.getElementById('helpTrig_' + key);
+if (body) body.classList.toggle('open', !!UIState.helpOpen[key]);
+if (trig) trig.setAttribute('aria-expanded', String(!!UIState.helpOpen[key]));
+}
+// Phase 2C: toggles both panel instances in sync (only one visible at a time)
+function toggleReportIssue() {
+const open = !(UIState.helpOpen && UIState.helpOpen['reportIssue']);
+UIState.helpOpen['reportIssue'] = open;
+['helpBody_reportIssue_local','helpBody_reportIssue_signedIn'].forEach(function(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open', open);
+});
+['helpTrig_reportIssue_local','helpTrig_reportIssue_signedIn'].forEach(function(id) {
+  const el = document.getElementById(id);
+  if (el) el.setAttribute('aria-expanded', String(open));
+});
+}
+// Phase 2C: Explicit allowlist — no PHI. Safe operational metadata only.
+// Excluded: patient name, tooth, notes, condition, bone, IDs, clinical measurements.
+function _buildDiagnosticPayload(description) {
+var stage = 'scan';
+if (S.planApproved && S.labStatus === 'received') stage = 'delivered';
+else if (S.planApproved && S.labStatus) stage = 'lab';
+else if (S.planApproved) stage = 'plan';
+else if (S.condition) stage = 'insight';
+const eventTypes = Array.isArray(S.wfHistory) ? S.wfHistory.slice(0,5).map(function(e) { return e.type; }) : [];
+return {
+  type:             'diagnostic-report',
+  phi_included:     false,
+  generatedAt:      new Date().toISOString(),
+  appVersion:       '2.0',
+  userAgent:        navigator.userAgent,
+  platform:         navigator.platform,
+  screenSize:       window.innerWidth + 'x' + window.innerHeight,
+  currentView:      UIState.view,
+  workflowStage:    stage,
+  patientCount:     (loadAllPatients() || []).length,
+  authStatus:       (typeof denaiAuth      !== 'undefined') ? denaiAuth.getStatus()           : 'local',
+  syncQueueLength:  (typeof denaiSyncQueue !== 'undefined') ? denaiSyncQueue.getQueueLength() : 0,
+  syncQueueStatus:  (typeof denaiSyncQueue !== 'undefined') ? denaiSyncQueue.getStatus()      : 'local',
+  notesEncActive:   (typeof denaiNotesEnc  !== 'undefined') ? denaiNotesEnc.hasKey()          : false,
+  recentEventTypes: eventTypes,
+  userDescription:  (description || '').slice(0, 500),
+};
+}
+function downloadDiagnosticFile(textareaId) {
+const descEl = document.getElementById(textareaId);
+const desc = descEl ? descEl.value.trim() : '';
+const payload = _buildDiagnosticPayload(desc);
+const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+const url  = URL.createObjectURL(blob);
+const a    = document.createElement('a');
+a.href     = url;
+a.download = 'denai-diagnostic-' + new Date().toISOString().replace(/[:.]/g,'-') + '.json';
+a.click();
+CleanupRegistry.timer(function() { URL.revokeObjectURL(url); }, 500);
+showToast('Diagnostic file downloaded', 'success');
+}
+function sendDiagnosticEmail(textareaId) {
+const descEl = document.getElementById(textareaId);
+const desc = descEl ? descEl.value.trim() : '';
+const payload = _buildDiagnosticPayload(desc);
+const subject = encodeURIComponent('SANITIZED DIAGNOSTIC — NO PATIENT DATA');
+const body    = encodeURIComponent(JSON.stringify(payload, null, 2));
+window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
+}
 function handleBeforeUnload(e) { e.preventDefault(); e.returnValue = ''; }
 function enterEdit() {
 setUIState({ editing: true }); buildEditForm();
@@ -4928,6 +5108,9 @@ if (_msBtn) { _msBtn.classList.remove('active'); _msBtn.setAttribute('aria-press
 const _s2w = $('site2Wrap');      if (_s2w) _s2w.style.display = 'none';
 const _stabs = $('siteTabsWrap'); if (_stabs) _stabs.style.display = 'none';
 const _cban = $('compoundBanner'); if (_cban) _cban.style.display = 'none';
+setUIState({ helpOpen: {} });
+document.querySelectorAll('.disclosure-body.open').forEach(function(el) { el.classList.remove('open'); });
+document.querySelectorAll('.help-trigger[aria-expanded="true"]').forEach(function(el) { el.setAttribute('aria-expanded','false'); });
 tempState = { ...S };
 setActivePatientId(id);
 showSkeleton('aiCardBody');

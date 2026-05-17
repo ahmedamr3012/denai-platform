@@ -1949,6 +1949,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-17T20:33:40.784Z"
+    },
+    {
+      "id": "bug-121",
+      "timestamp": "2026-05-17T20:54:16.947Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"workflow-actions\"",
+      "fix": "Changed to \"wfGuidance\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T20:54:16.947Z"
+    },
+    {
+      "id": "bug-122",
+      "timestamp": "2026-05-17T20:54:44.449Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: !p.condition",
+      "fix": "Added guard clause: if (!p.condition)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-17T20:54:44.449Z"
+    },
+    {
+      "id": "bug-123",
+      "timestamp": "2026-05-17T21:07:42.996Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"liquid-ring-wrap\"",
+      "fix": "Changed to \"display:flex;align-items:center;gap:5px;\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-17T21:08:22.234Z"
     }
   ]
 }
