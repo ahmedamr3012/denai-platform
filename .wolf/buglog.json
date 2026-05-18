@@ -2618,6 +2618,22 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-05-18T14:18:09.723Z"
+    },
+    {
+      "id": "bug-160",
+      "timestamp": "2026-05-18T15:14:58.726Z",
+      "error_message": "Wrong reference: Based should be div",
+      "file": "index.html",
+      "root_cause": "Used \"Based\" instead of \"div\"",
+      "fix": "Changed Based → div",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-18T15:15:15.980Z"
     }
   ]
 }

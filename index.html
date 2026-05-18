@@ -3493,7 +3493,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <div class="metric-card" aria-label="Estimated success rate">
           <div class="metric-lbl">Est. Success</div>
           <div class="metric-big" id="successVal" aria-live="polite">85%</div>
-          <div class="metric-sub" id="successSub">Based on 12,400+ similar cases</div>
+          <div class="metric-sub" id="successSub">—</div>
           <div class="prog-bar" aria-hidden="true"><div class="prog-fill" id="successBar" style="width:85%"></div></div>
         </div>
       </div>
@@ -4554,7 +4554,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         showToast('Popup blocked — downloading report instead','error');
         const a = document.createElement('a'); a.href=url; a.download=`${BRAND.reportPrefix}-${escapeHtml(S.name).replace(/\s+/g,'-')}.html`; a.click();
       } else { showToast(successMsg, 'success'); }
-      CleanupRegistry.timer(() => URL.revokeObjectURL(url), 1200);
+      CleanupRegistry.timer(() => URL.revokeObjectURL(url), 5000);
       if (btn) setTimeout(() => { btn.classList.remove('btn-loading'); btn.innerHTML = '<i class="fa-solid fa-print" style="color:var(--c-n400)" aria-hidden="true"></i> Report'; }, 800);
       // Persist a record to reportHistory (local-only, capped at 20)
       const rec = { ts: Date.now(), name: S.name || '', type: S.multiSite ? 'compound' : 'single', caseNum: S.caseNum || '' };
@@ -4845,7 +4845,7 @@ caseId: S.caseNum || 'Case 1',
 exportedAt: new Date().toISOString(),
 patient: { name: S.name, age: S.age, gender: S.gender, tooth: S.tooth, condition: S.condition },
 clinical: { bone: S.bone, hygiene: S.hygiene, occlusion: S.occlusion, smoking: S.smoking || 'Non-smoker', diabetes: S.diabetes || 'None', remainingStructure: S.remainingStructure || 'Good', endodonticStatus: S.endodonticStatus || 'No RCT needed', parafunction: S.parafunction || 'None' },
-aiAnalysis: ai ? { implant: ai.implant, bridge: ai.bridge, crown: ai.crown, confidence: ai.conf, recommendation: ai.rec, risks: { peri: ai.peri, bone: ai.boneR, occlusion: ai.occR } } : null,
+aiAnalysis: ai ? { implant: ai.implant, bridge: ai.bridge, crown: ai.crown, recommendationStrength: ai.conf, recommendation: ai.rec, risks: { peri: ai.peri, bone: ai.boneR, occlusion: ai.occR } } : null,
 crownAnalysis: (ai && ai.crownViable) ? { crown: ai.crown, crownViable: ai.crownViable, crownWarning: ai.crownWarning, crownRisks: ai.crownRisks, materialRecommendation: getCrownMaterial(S), hiddenCosts: { rct: S.endodonticStatus === 'Needs RCT' ? (S.costRCT||1000) : 0, postCore: S.remainingStructure !== 'Good' ? (S.costPostCore||400) : 0 } } : null,
 treatment: { selected: S.tx, costs: computeCosts(S, ai) },
 notes: S.notes || '',
@@ -6267,6 +6267,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // MODULE: tests.js — #6 Unit tests for calcAI() (100% branch coverage)
 // Run: window.DandyTests.run() in console
 // ================================================================
+if (window.location.hostname === 'localhost' || window.location.protocol === 'file:') {
 window.DandyTests = (() => {
 let passed = 0, failed = 0, results = [];
 const assert = (label, actual, expected, comparator) => {
@@ -6386,8 +6387,6 @@ function run() {
 return { run };
 
 })();
-// Auto-run in development (non-production)
-if (window.location.hostname === 'localhost' || window.location.protocol === 'file:') {
 requestIdleCallback ? requestIdleCallback(() => window.DandyTests.run()) : setTimeout(() => window.DandyTests.run(), 2000);
 }
 </script>
