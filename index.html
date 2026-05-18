@@ -1189,7 +1189,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <p id="deletePatientDesc" style="font-size:13px;color:var(--c-n500);margin-bottom:20px;">This will permanently remove this patient and all their data.</p>
       <div style="display:flex;gap:10px;">
         <button class="btn btn-sec" type="button" id="cancelDeletePatientBtn" style="flex:1;justify-content:center;">Cancel</button>
-        <button class="btn btn-pri" type="button" id="confirmDeletePatientBtn" style="flex:1;justify-content:center;background:var(--c-danger);box-shadow:0 4px 20px rgba(239,68,68,.25);">Delete</button>
+        <button class="btn btn-pri" type="button" id="confirmDeletePatientBtn" style="flex:1;justify-content:center;background:var(--c-danger);box-shadow:0 4px 20px rgba(239,68,68,.25);">Delete Patient</button>
       </div>
     </div>
   </div>
@@ -1226,8 +1226,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--c-n200);">
           <p style="font-size:11px;font-weight:600;color:var(--c-n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Data Portability</p>
           <div style="display:flex;gap:8px;">
-            <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="exportAllData();closeAuthModal();">⬇ Export All</button>
-            <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="importAllData();closeAuthModal();">⬆ Import</button>
+            <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="exportAllData();closeAuthModal();">⬇ Export Backup</button>
+            <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="importAllData();closeAuthModal();">⬆ Import Backup</button>
           </div>
         </div>
         <!-- Phase 2C: Report Issue -->
@@ -1292,8 +1292,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <div style="margin-bottom:12px;">
           <p style="font-size:11px;font-weight:600;color:var(--c-n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Data</p>
           <div style="display:flex;gap:8px;">
-            <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="exportAllData();closeAuthModal();">⬇ Export All</button>
-            <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="importAllData();closeAuthModal();">⬆ Import</button>
+            <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="exportAllData();closeAuthModal();">⬇ Export Backup</button>
+            <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;font-size:12px;" onclick="importAllData();closeAuthModal();">⬆ Import Backup</button>
           </div>
         </div>
         <!-- Phase 2C: Report Issue -->
@@ -1323,7 +1323,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   <!-- Wave 7G: Notes encryption passphrase prompt -->
   <div class="modal-ov" id="notesPassphraseModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="notesPassphraseHeading">
-    <div class="modal-box" role="document" style="max-width:360px;text-align:left;">
+    <div class="modal-box" id="notesPassphraseModalBox" role="document" style="max-width:360px;text-align:left;">
+      <button type="button" class="modal-close-btn" id="closeNotesPassphraseBtn" aria-label="Close dialog">×</button>
       <h3 id="notesPassphraseHeading" style="font-size:16px;font-weight:700;color:var(--c-n900);margin-bottom:4px;">Sync Clinical Notes</h3>
       <p id="notesPassphraseDesc" style="font-size:13px;color:var(--c-n500);margin-bottom:8px;">Enter your notes passphrase to decrypt and sync clinical notes across devices.</p>
       <p id="notesPassphraseWarning" style="display:none;font-size:12px;color:var(--c-n500);margin:0 0 14px;line-height:1.5;padding:8px 10px;background:rgba(0,0,0,.04);border-radius:6px;">If you lose this passphrase, your encrypted notes cannot be recovered — there is no reset option.</p>
@@ -5836,6 +5837,8 @@ if ($('resetModal').style.display==='flex') closeResetModal();
 if ($('shortcutsModal').style.display==='flex') closeShortcutsModal();
 if ($('newPatientModal').style.display==='flex') closeNewPatientModal();
 if ($('deletePatientModal').style.display==='flex') closeDeletePatient();
+if ($('authModal').style.display==='flex') closeAuthModal();
+if ($('notesPassphraseModal').style.display==='flex') closeNotesPassphraseModal();
 const eo = $('entryOverlay'); if (eo && eo.classList.contains('entry-visible')) continueLocally();
 },
 'ctrl+1': () => selectTx('implant'),
@@ -6085,6 +6088,9 @@ $('confirmDeletePatientBtn')?.addEventListener('click', confirmDeletePatient);
 $('authModal')?.addEventListener('click', closeAuthModal);
 $('authModalBox')?.addEventListener('click', e => e.stopPropagation());
 $('closeAuthModalBtn')?.addEventListener('click', closeAuthModal);
+$('notesPassphraseModal')?.addEventListener('click', closeNotesPassphraseModal);
+$('notesPassphraseModalBox')?.addEventListener('click', e => e.stopPropagation());
+$('closeNotesPassphraseBtn')?.addEventListener('click', closeNotesPassphraseModal);
 $('authSignInBtn')?.addEventListener('click', async () => {
   if (typeof denaiAuth === 'undefined') { showToast('Auth service not loaded', 'error'); return; }
   const email    = $('authSignInEmail')?.value.trim();

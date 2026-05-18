@@ -2634,6 +2634,22 @@
       "related_bugs": [],
       "occurrences": 3,
       "last_seen": "2026-05-18T15:15:15.980Z"
+    },
+    {
+      "id": "bug-161",
+      "timestamp": "2026-05-18T15:30:22.920Z",
+      "error_message": "Wrong reference: button should be Patient",
+      "file": "index.html",
+      "root_cause": "Used \"button\" instead of \"Patient\"",
+      "fix": "Changed button → Patient",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-18T15:30:45.029Z"
     }
   ]
 }
