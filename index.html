@@ -772,8 +772,7 @@ body.dark .card:hover {
 /* ── Compound banner: card-grade ───────────────────────────────── */
 .compound-banner { border-width: 1.5px; border-radius: var(--r-md); }
 
-/* ── Card header backdrop ───────────────────────────────────────── */
-.card-header { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+/* ── Card header backdrop — removed (opaque bg; blur was imperceptible + layer cost) ── */
 
 /* ── Multi-tooth bar: more refined toggle buttons ──────────────── */
 .multi-tooth-toggle.active {
@@ -863,9 +862,11 @@ body.dark .cost-best { background: #1a3a2a; border-color: #2a5a3a; }
    ================================================================ */
 .graph-container { margin-top: 0.5rem; background: var(--c-n50); border: 1px solid var(--c-n100); border-radius: var(--r-lg); padding: 10px; }
 .graph-svg { width: 100%; height: auto; }
-.graph-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.graph-title { font-size: 10px; font-weight: 600; color: var(--c-n400); text-transform: uppercase; letter-spacing: .06em; }
-.graph-legend { display: flex; gap: 10px; }
+.graph-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; gap: 8px; }
+.graph-title-group { display: flex; flex-direction: column; gap: 2px; }
+.graph-title { font-size: 12px; font-weight: 700; color: var(--c-n800); }
+.graph-subtitle { font-size: 9.5px; color: var(--c-n400); }
+.graph-legend { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .graph-legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; color: var(--c-n600); }
 .graph-legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
@@ -6042,7 +6043,7 @@ const link = document.getElementById('pwaManifest');
 if (link) link.href = url;
 // Service Worker (inline — app shell cache strategy)
 if ('serviceWorker' in navigator) {
-const swCode = `const CACHE = 'denai-v2.0'; const SHELL = ['./']; self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)))); self.addEventListener('fetch',   e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => new Response('Offline', {status:503}))))); self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));`;
+const swCode = `const CACHE = 'denai-v2.0'; const SHELL = ['./']; const _c = d => d === 'style' || d === 'script' || d === 'font'; self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)))); self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => { if (r) return r; return fetch(e.request).then(res => { if (res.ok && _c(e.request.destination)) try { caches.open(CACHE).then(c => c.put(e.request, res.clone())); } catch {} return res; }).catch(() => new Response('Offline', {status:503})); }))); self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));`;
 const swBlob = new Blob([swCode], { type: 'application/javascript' });
 const swUrl  = URL.createObjectURL(swBlob);
 navigator.serviceWorker.register(swUrl).catch(() => {});

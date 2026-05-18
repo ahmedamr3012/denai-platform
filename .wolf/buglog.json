@@ -2917,10 +2917,65 @@
       "file": "src/styles/components/modal.css",
       "root_cause": ".modal-box had no max-height or overflow-y constraint. On short-viewport devices (iPhone SE portrait ~667px) the newPatient and auth modals can exceed viewport height. Overlay align-items:center pushes overflow off-screen. close button (padding:4px 6px) was 28px tall — below 44px WCAG touch target.",
       "fix": "Added max-height: calc(100vh - 48px) + max-height: calc(100svh - 48px) + overflow-y: auto to .modal-box. Increased .modal-close-btn padding from 4px 6px to 8px 10px (touch-safe ~38px). Added @media (max-height:640px) block: overlay align-items:flex-start + padding top to keep close button reachable; modal padding reduced to 24px 22px.",
-      "tags": ["wave4b", "modal", "responsive", "touch", "mobile", "accessibility"],
+      "tags": [
+        "wave4b",
+        "modal",
+        "responsive",
+        "touch",
+        "mobile",
+        "accessibility"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-18T21:00:00.000Z"
+    },
+    {
+      "id": "bug-178",
+      "timestamp": "2026-05-18T19:58:25.276Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: r",
+      "fix": "Added guard clause: if (r)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T19:58:25.276Z"
+    },
+    {
+      "id": "bug-179",
+      "timestamp": "2026-05-18T20:25:22.302Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/render/costGraphPanel.js",
+      "root_cause": "75 lines replaced/restructured",
+      "fix": "Rewrote 127→247 lines (75 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T20:25:22.302Z"
+    },
+    {
+      "id": "bug-180",
+      "timestamp": "2026-05-18T20:45:03.014Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/render/costGraphPanel.js",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T20:45:03.014Z"
     }
   ]
 }

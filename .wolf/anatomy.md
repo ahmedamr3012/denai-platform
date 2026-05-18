@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-18T19:13:38.829Z
-> Files: 38 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-18T20:45:02.998Z
+> Files: 37 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~109790 tok)
+- `index.html` — denai — Clinical Insight (~109874 tok)
 - `playwright.config.js` (~337 tok)
 - `privacy.html` — Phase 3C-ii: standalone static privacy policy page. Self-contained HTML with trust.css + dark-mode flash prevention. Links to terms.html. (~2720 tok)
 - `terms.html` — Phase 3C-iii: standalone static terms of service page. Mirrors privacy.html architecture. tp-is-not list for "what denai is not" section. Links to privacy.html. (~3150 tok)
@@ -43,7 +43,7 @@
 
 ## src/render/
 
-- `costGraphPanel.js` — ================================================================ (~5120 tok)
+- `costGraphPanel.js` — ================================================================ (~6656 tok)
 - `patientPanel.js` — ================================================================ (~952 tok)
 - `riskPanel.js` — renderRisk: _applyRiskCompact (~1659 tok)
 
@@ -58,7 +58,6 @@
 ## src/styles/components/
 
 - `cards.css` — Styles: 71 rules (~4250 tok)
-- `modal.css` — Styles: 12 rules (~720 tok). Wave 4B: max-height+overflow-y on .modal-box; .modal-close-btn touch-safe padding; @media (max-height:640px) short-viewport alignment block.
 - `toast.css` — Styles: 5 rules (~294 tok)
 
 ## src/styles/tokens/
