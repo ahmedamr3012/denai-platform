@@ -1038,7 +1038,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   <aside class="sidebar" id="sidebar" aria-label="Main navigation">
     <div class="sidebar-logo" aria-label="denai">
   <svg width="28" height="28" viewBox="0 0 48 48" fill="none" aria-label="denai icon mark" style="flex-shrink: 0;">
-    <rect width="48" height="48" rx="10.5" fill="var(--c-brand-dark)"/>
+    <rect width="48" height="48" rx="10.5" fill="var(--surface-sidebar)"/>
     <path fill-rule="evenodd" fill="white" d="M 7.8 7.6 L 17.8 7.6 A 15.2 16.4 0 0 1 17.8 40.4 L 7.8 40.4 Z M 17.8 14.4 A 9.2 9.8 0 0 1 17.8 33.6 Z"/>
     <rect x="19.4" y="20.8" width="4.8" height="4.8" rx="1.4" fill="var(--c-brand-lite)"/>
   </svg>
@@ -1385,7 +1385,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   <div class="case-nav">
     <a href="javascript:void(0)" class="back-link" onclick="navigateTo('cases')" aria-label="Back to cases"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Cases</a>
     <div class="case-meta">
-      <span class="case-num">Case #4587</span>
+      <span class="case-num">Case 1</span>
       <span class="status-pill status-active" id="caseStatusPill" aria-label="Status: In Analysis">In Analysis</span>
       <span class="case-time" aria-label="Last updated today at 10:42 AM">Last updated: Today, 10:42 AM</span>
     </div>
@@ -1839,7 +1839,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <button type="button" class="modal-close-btn" onclick="closeModal()" aria-label="Close dialog">×</button>
       <div style="font-size:46px;margin-bottom:14px;" aria-hidden="true">☁️</div>
       <h3 id="modalTitle" style="font-size:22px;font-weight:800;color:var(--c-n900);margin-bottom:8px;">Draft Saved!</h3>
-      <p id="modalDesc" style="font-size:14px;color:var(--c-n500);margin-bottom:22px;">Case #4587 successfully saved to cloud.</p>
+      <p id="modalDesc" style="font-size:14px;color:var(--c-n500);margin-bottom:22px;">Your case was successfully saved to the cloud.</p>
       <button class="btn btn-pri" type="button" style="width:100%;justify-content:center;" id="modalOkBtn">OK</button>
     </div>
   </div>
@@ -2028,7 +2028,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   function genId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
   function genCaseNum() {
     const pts = loadAllPatients() || [];
-    return '#' + (4587 + pts.length);
+    return 'Case ' + (pts.length + 1);
   }
 
   function loadAllPatients() {
@@ -2070,7 +2070,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       } catch {
         localStorage.removeItem(STORAGE_KEY);  // DATA#2: clear unparseable state
       }
-      const first = { ...existing, id: genId(), caseNum: '#4587' };
+      const first = { ...existing, id: genId(), caseNum: 'Case 1' };
       list = [first];
       saveAllPatients(list);
       setActivePatientId(first.id);
@@ -3369,6 +3369,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const body = $('aiCardBody');
     if (!body || (body.dataset.built === '1' && !force)) return;  // BUG#2: force-rebuild on condition change
     body.dataset.built = '1';
+    body.removeAttribute('aria-busy');  // clear skeleton aria-busy before injecting real structure
     body.innerHTML = `
       <div class="crown-warning-banner" id="crownWarningBanner" role="alert" aria-live="polite">
         <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
@@ -3509,6 +3510,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <div class="skeleton skeleton-text w40"></div>
         <div class="skeleton skeleton-bar"></div>
       </div>`;
+    // Skeleton replaces the card's real DOM structure. Clear the built flag so
+    // the next buildAICardStructure() call rebuilds instead of returning early.
+    delete el.dataset.built;
   }
   function showMetricSkeleton() {
     const confEl = $('confVal'); const sucEl = $('successVal');
@@ -4445,8 +4449,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (btn) { btn.classList.add('btn-loading'); btn.innerHTML = '<i class="fa-solid fa-spinner" aria-hidden="true"></i> Generating…'; }
     const reportDate = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
     const reportTime = new Date().toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
-    const _rawCase = S.caseNum || 'Case #4587';
-    const caseNumber = /^[#\w\-\s]{1,25}$/.test(_rawCase) ? escapeHtml(_rawCase) : 'Case #4587';
+    const _rawCase = S.caseNum || 'Case 1';
+    const caseNumber = /^[#\w\-\s]{1,25}$/.test(_rawCase) ? escapeHtml(_rawCase) : 'Case 1';
 
     const openReport = (html, successMsg) => {
       const blob = new Blob([html], { type: 'text/html' });
@@ -4743,7 +4747,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 function exportCaseData() {
 const ai = calcAI(S);
 const exportData = {
-caseId: S.caseNum || '4587',
+caseId: S.caseNum || 'Case 1',
 exportedAt: new Date().toISOString(),
 patient: { name: S.name, age: S.age, gender: S.gender, tooth: S.tooth, condition: S.condition },
 clinical: { bone: S.bone, hygiene: S.hygiene, occlusion: S.occlusion, smoking: S.smoking || 'Non-smoker', diabetes: S.diabetes || 'None', remainingStructure: S.remainingStructure || 'Good', endodonticStatus: S.endodonticStatus || 'No RCT needed', parafunction: S.parafunction || 'None' },
@@ -4757,7 +4761,7 @@ const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'applicatio
 const url = URL.createObjectURL(blob);
 const a = document.createElement('a');
 a.href = url;
-a.download = `${BRAND.exportPrefix}-${(S.caseNum || '#4587').replace('#', '')}-${S.name.replace(/\s+/g,'-')}.json`;
+a.download = `${BRAND.exportPrefix}-${(S.caseNum || 'Case 1').replace('#', '').replace(/\s+/g, '-')}-${S.name.replace(/\s+/g,'-')}.json`;
 a.click();
 CleanupRegistry.timer(() => URL.revokeObjectURL(url), 500);
 showToast('Case data exported as JSON','success');
@@ -5060,7 +5064,7 @@ const finalEndodontic = condition === 'Missing tooth' ? 'No RCT needed' : endodo
 setState({ name, age, gender, tooth, condition, bone, occlusion, hygiene, smoking, diabetes, parafunction, remainingStructure: finalRemaining, endodonticStatus: finalEndodontic });
 // Preserve patient identity
 if (!S.id) S.id = genId();
-if (!S.caseNum) S.caseNum = '#4587';
+if (!S.caseNum) S.caseNum = 'Case 1';
 tempState = { ...S };
 // BUG#3: auto-switch when crown becomes non-viable after edit
 if (S.tx === 'crown') {

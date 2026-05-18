@@ -2350,6 +2350,74 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-18T00:00:00.000Z"
+    },
+    {
+      "id": "bug-144",
+      "timestamp": "2026-05-18T10:49:59.815Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"var(--c-brand-dark)\"",
+      "fix": "Changed to \"var(--surface-sidebar)\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 6,
+      "last_seen": "2026-05-18T10:51:17.738Z"
+    },
+    {
+      "id": "bug-145",
+      "timestamp": "2026-05-18T10:50:32.000Z",
+      "error_message": "Wrong return value",
+      "file": "index.html",
+      "root_cause": "Was returning: '#' + (4587 + pts.length);",
+      "fix": "Now returns: 'Case ' + (pts.length + 1);",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T10:50:32.000Z"
+    },
+    {
+      "id": "bug-146",
+      "timestamp": "2026-05-18T10:51:26.504Z",
+      "error_message": "Wrong reference: 4587 should be 1",
+      "file": "index.html",
+      "root_cause": "Used \"4587\" instead of \"1\"",
+      "fix": "Changed 4587 → 1",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T10:51:26.504Z"
+    },
+    {
+      "id": "bug-147",
+      "timestamp": "2026-05-18T00:00:00.000Z",
+      "error_message": "AI Clinical Insight panel stuck in skeleton/loading state after new case creation or patient switch",
+      "file": "index.html",
+      "root_cause": "showSkeleton(\"aiCardBody\") replaces innerHTML with skeleton markup but never clears aiCardBody.dataset.built. When render() fires 300ms later via switchPatient() setTimeout, buildAICardStructure() sees built===1 and returns early. updateAICard(ai) then silently fails because all its DOM targets (ringFill, confVal, recBanner, etc.) no longer exist -- replaced by skeleton divs. Skeleton stays indefinitely.",
+      "fix": "(1) Added delete el.dataset.built in showSkeleton() after innerHTML replacement -- skeleton destroys the real structure so next buildAICardStructure() must rebuild. (2) Added body.removeAttribute(aria-busy) in buildAICardStructure() before innerHTML injection -- clears skeleton aria-busy that would persist on rebuilt card.",
+      "tags": [
+        "render-desync",
+        "skeleton",
+        "patient-switch",
+        "ai-card",
+        "dataset.built",
+        "switchPatient",
+        "buildAICardStructure"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T00:00:00.000Z"
     }
   ]
 }
