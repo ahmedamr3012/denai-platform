@@ -2452,6 +2452,42 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-18T00:00:00.000Z"
+    },
+    {
+      "id": "bug-150",
+      "timestamp": "2026-05-18T13:27:47.837Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→11 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T13:27:47.837Z"
+    },
+    {
+      "id": "bug-151",
+      "timestamp": "2026-05-18T00:00:00.000Z",
+      "error_message": "Case numbering starts at Case 2 for fresh users — bootstrap offset of one",
+      "file": "index.html",
+      "root_cause": "initPatients() always assigned caseNum: 'Case 1' to the seed patient regardless of whether it was a migrated real patient or the DEFAULT_STATE demo patient. On a fresh install (no STORAGE_KEY), the demo 'Mohamed A.' occupies Case 1. The user's first real patient via confirmNewPatient() calls genCaseNum() which finds Case 1 already in the list → returns Case 2. Migrated users are unaffected (their seed IS their real first patient).",
+      "fix": "1. initPatients(): added isMigration flag. Fresh users get caseNum: null on the demo seed; migrated users keep caseNum: 'Case 1'. 2. saveState(): lazy caseNum assignment — if capturedCaseNum is null, genCaseNum() is called synchronously and S.caseNum is updated in-memory immediately to prevent double-assignment on rapid saves. 3. renderPatientList(): fixed orphan bullet in meta line when caseNum is null (was showing ' · 87%', now shows '87%').",
+      "tags": [
+        "case-numbering",
+        "bootstrap",
+        "fresh-install",
+        "genCaseNum",
+        "initPatients",
+        "saveState",
+        "demo-seed"
+      ],
+      "related_bugs": ["bug-148"],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T00:00:00.000Z"
     }
   ]
 }

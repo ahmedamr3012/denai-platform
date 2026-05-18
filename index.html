@@ -2064,6 +2064,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (!list || list.length === 0) {
       // Migrate existing single-patient state
       let existing = { ...DEFAULT_STATE };
+      let isMigration = false;
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
@@ -2073,12 +2074,15 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
             localStorage.removeItem(STORAGE_KEY);
           } else {
             existing = { ...DEFAULT_STATE, ...parsed };
+            isMigration = true;
           }
         }
       } catch {
         localStorage.removeItem(STORAGE_KEY);  // DATA#2: clear unparseable state
       }
-      const first = { ...existing, id: genId(), caseNum: 'Case 1' };
+      // Migration: existing patient keeps Case 1 (it's their real first patient).
+      // Fresh install: demo seed gets no caseNum — first patient they create will be Case 1.
+      const first = { ...existing, id: genId(), caseNum: isMigration ? 'Case 1' : null };
       list = [first];
       saveAllPatients(list);
       setActivePatientId(first.id);
@@ -2136,8 +2140,15 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   let _saveStateTimer = null;
   function saveState() {
     const serializable = { ...S };
-    const capturedId      = S.id;       // stable patient identity at call time
-    const capturedCaseNum = S.caseNum;  // prevents S.id/caseNum read at debounce-fire time (race)
+    const capturedId = S.id;
+    // Lazy caseNum assignment: demo seed starts with null; assign the next available
+    // number on first save so the user's first created patient claims Case 1 instead.
+    let capturedCaseNum = S.caseNum;
+    if (!capturedCaseNum) {
+      capturedCaseNum = genCaseNum();
+      S.caseNum = capturedCaseNum;          // update in-memory to prevent double-assign on rapid saves
+      serializable.caseNum = capturedCaseNum;
+    }
     showSaveIndicator('saving');
     if (_saveStateTimer) clearTimeout(_saveStateTimer);
     _saveStateTimer = setTimeout(() => {
@@ -5180,7 +5191,7 @@ const isActive = p.id === activeId;
 const qs = _quickScore(p);
 const score = qs !== null ? qs + '%' : '—';
 const stageDot = _getPatientStageBadge(p);
-return `<div class="patient-item${isActive ? ' active-patient' : ''}" role="listitem" tabindex="0" data-pid="${p.id}" onclick="switchPatient('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPatient('${p.id}')}" aria-label="${escapeHtml(p.name||'')}, ${escapeHtml(p.caseNum||'')}${isActive?' (current)':''}"> <div class="patient-avatar">${initials}</div> <div class="patient-info"> <div class="patient-item-name">${escapeHtml(p.name||'Unknown')}</div> <div class="patient-item-meta">${escapeHtml(p.caseNum||'')} · ${score}</div> </div> <span class="patient-stage-dot ${stageDot.cls}" aria-hidden="true"></span> <button class="patient-delete-btn" type="button" onclick="event.stopPropagation();openDeletePatient('${p.id}','${escapeHtml(p.name||'this patient')}')" aria-label="Delete ${escapeHtml(p.name||'patient')}" title="Delete patient" ${list.length <= 1 ? 'disabled style="display:none"' : ''}> <i class="fa-solid fa-xmark"></i> </button> </div>`;
+return `<div class="patient-item${isActive ? ' active-patient' : ''}" role="listitem" tabindex="0" data-pid="${p.id}" onclick="switchPatient('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPatient('${p.id}')}" aria-label="${escapeHtml(p.name||'')}, ${escapeHtml(p.caseNum||'')}${isActive?' (current)':''}"> <div class="patient-avatar">${initials}</div> <div class="patient-info"> <div class="patient-item-name">${escapeHtml(p.name||'Unknown')}</div> <div class="patient-item-meta">${p.caseNum ? escapeHtml(p.caseNum) + ' · ' : ''}${score}</div> </div> <span class="patient-stage-dot ${stageDot.cls}" aria-hidden="true"></span> <button class="patient-delete-btn" type="button" onclick="event.stopPropagation();openDeletePatient('${p.id}','${escapeHtml(p.name||'this patient')}')" aria-label="Delete ${escapeHtml(p.name||'patient')}" title="Delete patient" ${list.length <= 1 ? 'disabled style="display:none"' : ''}> <i class="fa-solid fa-xmark"></i> </button> </div>`;
 }).join('');
 }
 
