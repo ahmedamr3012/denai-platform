@@ -24,15 +24,17 @@
 
 window.denaiSyncQueue = (function () {
 
-  var QUEUE_KEY    = 'denaiSyncQueue_v1';
-  var MAX_ATTEMPTS = 5;
-  var FLUSH_DELAY  = 500; // ms — batches rapid successive saveState() calls
+  var QUEUE_KEY          = 'denaiSyncQueue_v1';
+  var MAX_ATTEMPTS       = 5;
+  var FLUSH_DELAY        = 500; // ms — batches rapid successive saveState() calls
+  var STALE_THRESHOLD_MS = 30 * 60 * 1000; // 30 min — op pending with failures for this long = stalled
 
   var _queue          = [];
   var _flushing       = false;
   var _flushTimer     = null;
-  var _status         = 'local'; // 'local' | 'syncing' | 'synced' | 'error'
+  var _status         = 'local'; // 'local' | 'syncing' | 'synced' | 'partial' | 'error'
   var _lastSyncedAt   = null;    // ISO string — set after each fully successful flush
+  var _abandonedCount = 0;       // ops that exceeded MAX_ATTEMPTS — never reached cloud
 
   // ── Queue persistence ─────────────────────────────────────────────────────
 
@@ -54,6 +56,14 @@ window.denaiSyncQueue = (function () {
   // Updates #authUserPlan only when signed in.
   // authModule owns this element in local mode; syncQueue owns it after sign-in.
 
+  // Returns true if any queued op has failed at least once and has been waiting > STALE_THRESHOLD_MS.
+  function _hasStaleOps() {
+    var now = Date.now();
+    return _queue.some(function(op) {
+      return op.attempts > 0 && (now - op.local_ts) > STALE_THRESHOLD_MS;
+    });
+  }
+
   function _setStatus(status) {
     _status = status;
     try {
@@ -61,11 +71,15 @@ window.denaiSyncQueue = (function () {
       var el = document.getElementById('authUserPlan');
       if (!el) return;
       if (status === 'syncing') {
-        el.textContent = '↑ Syncing…';     // ↑ Syncing…
+        el.textContent = '↑ Syncing…';
       } else if (status === 'synced') {
-        el.textContent = '☁ Synced';             // ☁ Synced
+        el.textContent = '☁ Synced';
+      } else if (status === 'partial') {
+        // Queue drained but some ops were silently abandoned after MAX_ATTEMPTS.
+        el.textContent = '↯ Partial sync';
       } else if (status === 'error') {
-        el.textContent = '⚠ Sync error';         // ⚠ Sync error
+        // Distinguish fresh failure from a stalled queue (failing for 30+ min).
+        el.textContent = _hasStaleOps() ? '⚠ Sync stalled' : '⚠ Sync error';
       }
     } catch (e) {}
   }
@@ -191,40 +205,43 @@ window.denaiSyncQueue = (function () {
     if (!session || !session.user) return;
 
     _flushing = true;
-    _setStatus('syncing');
+    try {
+      _setStatus('syncing');
 
-    var userId      = session.user.id;
-    var toProcess   = _queue.slice(); // snapshot — avoid mutation during async loop
-    var anyError    = false;
+      var userId      = session.user.id;
+      var toProcess   = _queue.slice(); // snapshot — avoid mutation during async loop
+      var anyError    = false;
 
-    for (var i = 0; i < toProcess.length; i++) {
-      var op = toProcess[i];
+      for (var i = 0; i < toProcess.length; i++) {
+        var op = toProcess[i];
 
-      if (op.attempts >= MAX_ATTEMPTS) {
-        // Silently abandon. The op had MAX_ATTEMPTS chances.
-        _queue = _queue.filter(function (q) { return q.id !== op.id; });
-        console.warn('[denaiSync] abandoned after ' + MAX_ATTEMPTS + ' attempts — patient:', op.patient_id, 'type:', op.type);
-        continue;
+        if (op.attempts >= MAX_ATTEMPTS) {
+          _queue = _queue.filter(function (q) { return q.id !== op.id; });
+          _abandonedCount++;
+          console.warn('[denaiSync] abandoned after ' + MAX_ATTEMPTS + ' attempts — patient:', op.patient_id, 'type:', op.type);
+          continue;
+        }
+
+        var ok = await _executeOp(client, userId, op);
+        if (ok) {
+          _queue = _queue.filter(function (q) { return q.id !== op.id; });
+        } else {
+          var qi = _queue.findIndex(function (q) { return q.id === op.id; });
+          if (qi >= 0) _queue[qi].attempts += 1;
+          anyError = true;
+        }
       }
 
-      var ok = await _executeOp(client, userId, op);
-      if (ok) {
-        _queue = _queue.filter(function (q) { return q.id !== op.id; });
-      } else {
-        var qi = _queue.findIndex(function (q) { return q.id === op.id; });
-        if (qi >= 0) _queue[qi].attempts += 1;
-        anyError = true;
+      _saveQueue();
+
+      if (_queue.length === 0) {
+        _setStatus(_abandonedCount > 0 ? 'partial' : 'synced');
+        _lastSyncedAt = new Date().toISOString();
+      } else if (anyError) {
+        _setStatus('error');
       }
-    }
-
-    _saveQueue();
-    _flushing = false;
-
-    if (_queue.length === 0) {
-      _setStatus('synced');
-      _lastSyncedAt = new Date().toISOString();
-    } else if (anyError) {
-      _setStatus('error');
+    } finally {
+      _flushing = false;
     }
   }
 
@@ -296,9 +313,10 @@ window.denaiSyncQueue = (function () {
     window.addEventListener('online', function () { flush(); });
   }
 
-  function getStatus()        { return _status; }
-  function getQueueLength()   { return _queue.length; }
-  function getLastSyncedAt()  { return _lastSyncedAt; }
+  function getStatus()          { return _status; }
+  function getQueueLength()     { return _queue.length; }
+  function getLastSyncedAt()    { return _lastSyncedAt; }
+  function getAbandonedCount()  { return _abandonedCount; }
   // hasPendingFor — used by cloudSync merge engine to detect in-flight local edits.
   // Returns true if an unsent upsert exists for patientId — cloud must not overwrite it.
   function hasPendingFor(patientId) {
@@ -308,14 +326,15 @@ window.denaiSyncQueue = (function () {
   }
 
   return Object.freeze({
-    init:              init,
-    enqueue:           enqueue,
-    enqueueSoftDelete: enqueueSoftDelete,
-    flush:             flush,
-    hasPendingFor:     hasPendingFor,
-    getStatus:         getStatus,
-    getQueueLength:    getQueueLength,
-    getLastSyncedAt:   getLastSyncedAt,
+    init:               init,
+    enqueue:            enqueue,
+    enqueueSoftDelete:  enqueueSoftDelete,
+    flush:              flush,
+    hasPendingFor:      hasPendingFor,
+    getStatus:          getStatus,
+    getQueueLength:     getQueueLength,
+    getLastSyncedAt:    getLastSyncedAt,
+    getAbandonedCount:  getAbandonedCount,
   });
 
 })();

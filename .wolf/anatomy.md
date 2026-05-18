@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-18T09:02:22.616Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-18T10:32:02.901Z
 > Files: 37 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~105243 tok)
+- `index.html` — denai — Clinical Insight (~106201 tok)
 - `playwright.config.js` (~337 tok)
 - `privacy.html` — Phase 3C-ii: standalone static privacy policy page. Self-contained HTML with trust.css + dark-mode flash prevention. Links to terms.html. (~2720 tok)
 - `terms.html` — Phase 3C-iii: standalone static terms of service page. Mirrors privacy.html architecture. tp-is-not list for "what denai is not" section. Links to privacy.html. (~3150 tok)
@@ -75,7 +75,7 @@
 - `cloudSync.js` — Wave 7E+7F+7G: `denaiCloudSync` IIFE. `hydrate()` selects `notes_enc`, decrypts before merge (`decryptedNotesMap` threaded through). Tombstone cleanup (Pass 3). Public API: hydrate, getLastHydratedAt. (~400 tok)
 - `prefsSync.js` — Wave 7F+7G: `denaiPrefs` IIFE. Wave 7G adds `notesKeySalt` to prefs; `_triggerPassphrasePrompt()` calls `window.denaiShowNotesPassphrasePrompt`. Public API: init, get, save, hydrate. (~200 tok)
 - `serializer.js` — src/sync/serializer.js (~627 tok)
-- `syncQueue.js` — Wave 7D–7G: `denaiSyncQueue` IIFE. Stores `rawNotes` at enqueue; encrypts via `denaiNotesEnc` at flush, adds `notes_enc` as top-level upsert column. Public API: init, enqueue, enqueueSoftDelete, flush, hasPendingFor, getStatus, getQueueLength, getLastSyncedAt. (~480 tok)
+- `syncQueue.js` — src/sync/syncQueue.js (~3713 tok)
 
 ## src/utils/
 

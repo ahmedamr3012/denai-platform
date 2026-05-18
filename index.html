@@ -1325,7 +1325,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   <div class="modal-ov" id="notesPassphraseModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="notesPassphraseHeading">
     <div class="modal-box" role="document" style="max-width:360px;text-align:left;">
       <h3 id="notesPassphraseHeading" style="font-size:16px;font-weight:700;color:var(--c-n900);margin-bottom:4px;">Sync Clinical Notes</h3>
-      <p id="notesPassphraseDesc" style="font-size:13px;color:var(--c-n500);margin-bottom:14px;">Enter your notes passphrase to decrypt and sync clinical notes across devices.</p>
+      <p id="notesPassphraseDesc" style="font-size:13px;color:var(--c-n500);margin-bottom:8px;">Enter your notes passphrase to decrypt and sync clinical notes across devices.</p>
+      <p id="notesPassphraseWarning" style="display:none;font-size:12px;color:var(--c-n500);margin:0 0 14px;line-height:1.5;padding:8px 10px;background:rgba(0,0,0,.04);border-radius:6px;">If you lose this passphrase, your encrypted notes cannot be recovered — there is no reset option.</p>
       <div style="margin-bottom:10px;">
         <label class="np-label" for="notesPassphraseInput">Passphrase</label>
         <input class="np-input" id="notesPassphraseInput" type="password" placeholder="••••••••" autocomplete="off"/>
@@ -2039,7 +2040,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   }
 
   function saveAllPatients(list) {
-    safeStorageSet(PATIENTS_KEY, JSON.stringify(list));
+    return safeStorageSet(PATIENTS_KEY, JSON.stringify(list));
   }
 
   function getActivePatientId() {
@@ -2127,26 +2128,32 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   let _saveStateTimer = null;
   function saveState() {
     const serializable = { ...S };
+    const capturedId      = S.id;       // stable patient identity at call time
+    const capturedCaseNum = S.caseNum;  // prevents S.id/caseNum read at debounce-fire time (race)
     showSaveIndicator('saving');
     if (_saveStateTimer) clearTimeout(_saveStateTimer);
     _saveStateTimer = setTimeout(() => {
       try {
         let list = loadAllPatients() || [];
-        const idx = list.findIndex(p => p.id === S.id);
-        const updated = { ...serializable, id: S.id, caseNum: S.caseNum };
+        const idx = list.findIndex(p => p.id === capturedId);
+        const updated = { ...serializable, id: capturedId, caseNum: capturedCaseNum };
         if (idx >= 0) list[idx] = updated;
         else list.push(updated);
-        saveAllPatients(list);
-        setActivePatientId(S.id);
-        showSaveIndicator('saved');
-        renderPatientList();
-        // Wave 7D: enqueue cloud upsert after successful localStorage write.
-        // Inner try-catch isolates sync failures from local persistence path.
-        try {
-          if (typeof denaiSyncQueue !== 'undefined') {
-            denaiSyncQueue.enqueue({ type: 'upsert', patientId: S.id, payload: updated, history: History.load(S.id) });
-          }
-        } catch (e) {}
+        const persisted = saveAllPatients(list);
+        if (persisted) {
+          setActivePatientId(capturedId);
+          showSaveIndicator('saved');
+          renderPatientList();
+          // Wave 7D: enqueue cloud upsert after successful localStorage write.
+          // Inner try-catch isolates sync failures from local persistence path.
+          try {
+            if (typeof denaiSyncQueue !== 'undefined') {
+              denaiSyncQueue.enqueue({ type: 'upsert', patientId: capturedId, payload: updated, history: History.load(capturedId) });
+            }
+          } catch (e) {}
+        }
+        // If !persisted: toast already fired from safeStorageSet; indicator stays
+        // in 'saving' state — a persistent signal that the write failed.
       } catch(e) { console.warn('State persistence failed:', e.message); }
       _saveStateTimer = null;
     }, 200);
@@ -2355,6 +2362,20 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     S.labNotes = el.value;
     saveState();
     showToast('Notes saved', 'success');
+  }
+
+  let _labNotesDebounce = null;
+  function _handleLabNotesInput() {
+    const el = document.getElementById('labNotesArea');
+    if (!el) return;
+    showSaveIndicator('saving');
+    if (_labNotesDebounce) clearTimeout(_labNotesDebounce);
+    const _labNotePatient = S.id;
+    _labNotesDebounce = setTimeout(() => {
+      if (S.id !== _labNotePatient) return; // abort if patient switched mid-debounce
+      S.labNotes = el.value;
+      saveState();
+    }, 800);
   }
 
   // ================================================================
@@ -3234,6 +3255,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         </div>
       </div>
     </div>`;
+    // Wire auto-save; textarea is recreated on each render so listener is always fresh
+    const labNotesTa = container.querySelector('#labNotesArea');
+    if (labNotesTa) labNotesTa.addEventListener('input', _handleLabNotesInput);
   }
 
   // ================================================================
@@ -4411,7 +4435,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     .no-print{padding:20px 36px;text-align:center;border-top:1px solid #E5E7EB;background:#fff}
     .print-btn{background:linear-gradient(135deg,#1F7A4F,#2a9c67);color:#fff;border:none;padding:13px 32px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(var(--c-brand-rgb),.3);transition:opacity .2s}
     .print-btn:hover{opacity:.9}
-    @media print{body{background:#fff}.page-wrap{box-shadow:none;max-width:none}.no-print{display:none}.section{padding:16px 28px}.rpt-header{padding:20px 28px}}
+    @media print{body{background:#fff}.page-wrap{box-shadow:none;max-width:none}.no-print{display:none}.section{padding:16px 28px;break-inside:avoid;page-break-inside:avoid}.conf-banner{break-inside:avoid;page-break-inside:avoid}.opt-card{break-inside:avoid;page-break-inside:avoid}.cost-card{break-inside:avoid;page-break-inside:avoid}.rpt-header{padding:20px 28px}}
     @media(max-width:640px){.patient-grid{grid-template-columns:1fr 1fr}.options-grid,.cost-compare,.risk-grid{grid-template-columns:1fr}.conf-banner{flex-direction:column}.conf-rec-box{border-left:none;border-top:1px solid #E5E7EB;min-width:unset}.rpt-header{flex-direction:column;gap:14px;text-align:center}.rpt-meta-box{text-align:center}.section{padding:16px 18px}.no-print{padding:16px 18px}}
   `;
 
@@ -5150,6 +5174,19 @@ return `<div class="patient-item${isActive ? ' active-patient' : ''}" role="list
 
 function switchPatient(id) {
 if (id === S.id) { if (window.innerWidth <= 900) closeSidebar(); return; }
+// Auto-flush any pending debounced edits for the outgoing patient.
+// Captures textarea value into S NOW (before Object.assign replaces S.id),
+// so the 200ms saveState timer fires with the correct old-patient identity.
+let _preSwitch = false;
+if (_notesDebounce) {
+  clearTimeout(_notesDebounce); _notesDebounce = null;
+  const _ta = $('clinicalNotes'); if (_ta) { S.notes = DOMPurify.sanitize(_ta.value); _preSwitch = true; }
+}
+if (_labNotesDebounce) {
+  clearTimeout(_labNotesDebounce); _labNotesDebounce = null;
+  const _la = $('labNotesArea'); if (_la) { S.labNotes = _la.value; _preSwitch = true; }
+}
+if (_preSwitch) saveState(); // captures old S.id + updated notes before Object.assign below
 const list = loadAllPatients() || [];
 const target = list.find(p => p.id === id);
 if (!target) return;
@@ -5300,6 +5337,8 @@ try {
     denaiSyncQueue.enqueueSoftDelete(_pendingDeleteId);
   }
 } catch (e) {}
+// Remove per-patient history key immediately — prevents orphaned accumulation.
+try { localStorage.removeItem(HISTORY_KEY + '_' + _pendingDeleteId); } catch {}
 list = list.filter(p => p.id !== _pendingDeleteId);
 saveAllPatients(list);
 closeDeletePatient();
@@ -5368,6 +5407,7 @@ function denaiShowNotesPassphrasePrompt(salt) {
   if (h) h.textContent = 'Sync Clinical Notes';
   if (d) d.textContent = 'Enter your notes passphrase to decrypt and sync clinical notes across devices.';
   if (b) b.textContent = 'Unlock Notes';
+  const _w = $('notesPassphraseWarning'); if (_w) _w.style.display = 'none';
   const modal = $('notesPassphraseModal');
   if (modal) modal.style.display = 'flex';
   setTimeout(() => { const inp = $('notesPassphraseInput'); if (inp) inp.focus(); }, 80);
@@ -5394,6 +5434,7 @@ function setupNotesEncryption() {
   if (h) h.textContent = 'Set Up Notes Encryption';
   if (d) d.textContent = 'Create a passphrase to encrypt your clinical notes before syncing to the cloud.';
   if (b) b.textContent = 'Set Passphrase';
+  const w = $('notesPassphraseWarning'); if (w) w.style.display = '';
   const errEl = $('notesPassphraseError'); if (errEl) errEl.style.display = 'none';
   const inp = $('notesPassphraseInput'); if (inp) inp.value = '';
   const modal = $('notesPassphraseModal');
@@ -5827,6 +5868,26 @@ navigator.serviceWorker.register(swUrl).catch(() => {});
 }
 })();
 
+// Silent startup cleanup — removes history keys for patients no longer in the list.
+// Conservative: skips if patient list is absent or empty to avoid accidental wipes.
+function _cleanOrphanedHistoryKeys() {
+  try {
+    const patients = loadAllPatients();
+    if (!patients || patients.length === 0) return;
+    const activeIds = new Set(patients.map(function(p) { return p.id; }));
+    const prefix = HISTORY_KEY + '_';
+    const toRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(prefix)) {
+        const pid = k.slice(prefix.length);
+        if (!activeIds.has(pid)) toRemove.push(k);
+      }
+    }
+    toRemove.forEach(function(k) { try { localStorage.removeItem(k); } catch {} });
+  } catch (e) {}
+}
+
 (function init() {
 buildDentalSVG();
 buildEditForm();
@@ -5849,6 +5910,7 @@ if (calcAI(S)) { setTimeout(() => { if (!UIState.whyOpen) toggleWhy(); }, 800); 
 // Stamp lastAccessed for the initially loaded patient
 S.lastAccessed = Date.now();
 saveState();
+_cleanOrphanedHistoryKeys();
 
 // Restore last view from previous session (workspace continuity)
 const _restoredView = sessionStorage.getItem('denaiLastView_v1');
@@ -6080,6 +6142,7 @@ window.addEventListener('beforeunload', () => {
   if (_saveStateTimer) clearTimeout(_saveStateTimer);
   if (_sliderDebounceTimer) clearTimeout(_sliderDebounceTimer);
   if (_notesDebounce) clearTimeout(_notesDebounce);
+  if (_labNotesDebounce) clearTimeout(_labNotesDebounce);
   if (_typewriterTimer) clearInterval(_typewriterTimer);
   for (const id of Object.keys(_rafIds)) cancelAnimationFrame(_rafIds[id]);
   if (_matFadeTimer) { clearTimeout(_matFadeTimer); _matFadeTimer = null; }
