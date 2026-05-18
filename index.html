@@ -1363,7 +1363,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <button class="dark-toggle" id="darkToggleBtn" type="button" aria-label="Toggle dark mode"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
         <button class="btn btn-sec" type="button" id="shortcutsBtn" aria-label="Keyboard shortcuts (Ctrl+?)"><i class="fa-solid fa-keyboard" style="color:var(--c-n400)" aria-hidden="true"></i></button>
         <button class="btn btn-sec" type="button" id="reportBtn"><i class="fa-solid fa-print" style="color:var(--c-n400)" aria-hidden="true"></i> Report</button>
-        <button class="btn btn-sec" type="button" id="saveDraftBtn"><i class="fa-regular fa-floppy-disk" style="color:var(--c-n400)" aria-hidden="true"></i> Save Draft</button>
+        <button class="btn btn-sec" type="button" id="saveDraftBtn"><i class="fa-regular fa-floppy-disk" style="color:var(--c-n400)" aria-hidden="true"></i> Save</button>
         <button class="btn btn-pri" type="button" id="createCaseBtn"><i class="fa-solid fa-plus" aria-hidden="true"></i> Create Case</button>
       </div>
     </header>
@@ -1676,12 +1676,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     </div>
   </div>
 
-  <div class="features" role="list" aria-label="Key capabilities">
-    <div class="feat-card" role="listitem"><span class="feat-icon" aria-hidden="true">📊</span><div><div class="feat-title">Data-Driven Insights</div><div class="feat-desc">AI analyzes clinical data, scans &amp; historical outcomes.</div></div></div>
-    <div class="feat-card" role="listitem"><span class="feat-icon" aria-hidden="true">💬</span><div><div class="feat-title">Explainable AI</div><div class="feat-desc">Clear reasoning &amp; risk indicators behind every suggestion.</div></div></div>
-    <div class="feat-card" role="listitem"><span class="feat-icon" aria-hidden="true">⚖️</span><div><div class="feat-title">Compare Options</div><div class="feat-desc">Side-by-side comparison for informed clinical decisions.</div></div></div>
-    <div class="feat-card" role="listitem"><span class="feat-icon" aria-hidden="true">👨‍⚕️</span><div><div class="feat-title">Dentist in Control</div><div class="feat-desc">Final decision always remains with the dentist.</div></div></div>
-  </div>
   </div><!-- /viewInsight -->
 
   <!-- ── Dashboard View ──────────────────────────────────────── -->
@@ -1691,7 +1685,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <div class="dash-welcome-sub">Here's your clinical workspace overview.</div>
     </div>
     <div class="dash-grid">
-      <div class="dash-card dash-active-card" onclick="navigateTo('insight')" tabindex="0" role="button" aria-label="Open active patient" onkeydown="if(event.key==='Enter'||event.key===' '){navigateTo('insight')}">
+      <div class="dash-card dash-active-card" onclick="openCase(S.id)" tabindex="0" role="button" aria-label="Open active patient" onkeydown="if(event.key==='Enter'||event.key===' '){openCase(S.id)}">
         <div class="dash-card-label"><i class="fa-solid fa-brain" aria-hidden="true"></i> Active Patient</div>
         <div class="dash-active-name" id="dashActiveName">—</div>
         <div class="dash-active-meta" id="dashActiveMeta">Tap to open AI Insight</div>
@@ -1741,7 +1735,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     <div style="margin-top:20px;">
       <div class="dash-sync-row" id="dashSyncRow">
         <span class="dash-sync-dot local" id="dashSyncDot" aria-hidden="true"></span>
-        <span id="dashSyncLabel">Local mode — sign in to sync across devices</span>
+        <span id="dashSyncLabel">Local-only · Data stays on this device</span>
         <button class="btn-sm" style="margin-left:auto;" onclick="openAuthModal()">Sign In</button>
       </div>
     </div>
@@ -1770,6 +1764,12 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   <!-- ── Treatment Plan View ──────────────────────────────────── -->
   <div class="view-panel" id="viewPlan" data-view="plan" role="region" aria-label="Treatment Plan">
+  <div class="case-nav">
+    <a href="javascript:void(0)" class="back-link" onclick="navigateTo('cases')" aria-label="Back to cases"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Cases</a>
+    <div class="case-meta">
+      <span class="case-num" id="planCaseNum">—</span>
+    </div>
+  </div>
     <div class="view-section-header" style="margin-bottom:20px;">
       <h2 style="font-size:18px;font-weight:700;color:var(--c-n700);margin:0 0 4px;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-pen-ruler" style="color:var(--c-brand)" aria-hidden="true"></i> Treatment Plan</h2>
       <p style="font-size:13px;color:var(--c-n400);margin:0;">Clinical treatment plan for <strong id="planPatientName" style="color:var(--c-n600);">—</strong></p>
@@ -1781,6 +1781,12 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   <!-- ── Lab & Manufacturing View ────────────────────────────── -->
   <div class="view-panel" id="viewLab" data-view="lab" role="region" aria-label="Lab and Manufacturing">
+  <div class="case-nav">
+    <a href="javascript:void(0)" class="back-link" onclick="navigateTo('cases')" aria-label="Back to cases"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Cases</a>
+    <div class="case-meta">
+      <span class="case-num" id="labCaseNum">—</span>
+    </div>
+  </div>
     <div class="view-section-header" style="margin-bottom:20px;">
       <h2 style="font-size:18px;font-weight:700;color:var(--c-n700);margin:0 0 4px;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-flask" style="color:#2563eb" aria-hidden="true"></i> Lab &amp; Manufacturing</h2>
       <p style="font-size:13px;color:var(--c-n400);margin:0;">Lab workflow for <strong id="labPatientName" style="color:var(--c-n600);">—</strong></p>
@@ -1792,6 +1798,12 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   <!-- ── Reports View ─────────────────────────────────────────── -->
   <div class="view-panel" id="viewReports" data-view="reports" role="region" aria-label="Reports">
+  <div class="case-nav">
+    <a href="javascript:void(0)" class="back-link" onclick="navigateTo('cases')" aria-label="Back to cases"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Cases</a>
+    <div class="case-meta">
+      <span class="case-num" id="reportsCaseNum">—</span>
+    </div>
+  </div>
     <div class="view-section-header" style="margin-bottom:20px;">
       <h2 style="font-size:18px;font-weight:700;color:var(--c-n700);margin:0 0 4px;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-file-medical" style="color:var(--c-brand)" aria-hidden="true"></i> Reports</h2>
       <p style="font-size:13px;color:var(--c-n400);margin:0;">Generated clinical reports for <strong id="reportsPatientName" style="color:var(--c-n600);">—</strong></p>
@@ -1837,10 +1849,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   <div class="modal-ov" id="saveModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
     <div class="modal-box" id="modalBoxInner" role="document">
       <button type="button" class="modal-close-btn" onclick="closeModal()" aria-label="Close dialog">×</button>
-      <div style="font-size:46px;margin-bottom:14px;" aria-hidden="true">☁️</div>
-      <h3 id="modalTitle" style="font-size:22px;font-weight:800;color:var(--c-n900);margin-bottom:8px;">Draft Saved!</h3>
-      <p id="modalDesc" style="font-size:14px;color:var(--c-n500);margin-bottom:22px;">Your case was successfully saved to the cloud.</p>
-      <button class="btn btn-pri" type="button" style="width:100%;justify-content:center;" id="modalOkBtn">OK</button>
+      <h3 id="modalTitle" style="font-size:18px;font-weight:700;color:var(--c-n800);margin-bottom:8px;">Case Saved</h3>
+      <p id="modalDesc" style="font-size:13px;color:var(--c-n500);margin-bottom:22px;">Case data saved to your local workspace.</p>
+      <button class="btn btn-pri" type="button" style="width:100%;justify-content:center;" id="modalOkBtn">Done</button>
     </div>
   </div>
 
@@ -1934,6 +1945,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     // Wave 8C: workflow continuity fields (migration-safe — existing patients default via merge)
     planApproved: false,
     labStatus: null,       // null | 'pending' | 'received'
+    caseDelivered: false,  // delivery closure marker — synced (follows case across devices)
     lastAccessed: null,    // epoch ms — updated on open/switch, used for sorting
     reportHistory: [],     // [{ ts, name, type, caseNum }] — last 20, local-only
     // Wave 8E: lab manufacturing notes — local-only (device-specific workflow notes)
@@ -2291,15 +2303,19 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   // WORKFLOW BAR — derived from real patient S state (no hardcoding)
   // ================================================================
   const _WF_STAGES = [
-    { id: 'scan',    icon: 'fa-scanner-keyboard', label: 'Scan' },
-    { id: 'insight', icon: 'fa-brain',             label: 'AI Insight' },
-    { id: 'plan',    icon: 'fa-pen-ruler',          label: 'Treatment Plan' },
-    { id: 'lab',     icon: 'fa-flask',              label: 'Lab & Mfg' },
+    { id: 'scan',     icon: 'fa-scanner-keyboard', label: 'Scan' },
+    { id: 'insight',  icon: 'fa-brain',             label: 'AI Insight' },
+    { id: 'plan',     icon: 'fa-pen-ruler',          label: 'Treatment Plan' },
+    { id: 'lab',      icon: 'fa-flask',              label: 'Lab & Mfg' },
+    { id: 'delivery', icon: 'fa-calendar-check',     label: 'Delivery' },
   ];
 
   function _getWorkflowStage() {
-    if (!S.condition) return 'scan';
-    if (S.planApproved) return S.labStatus ? 'lab' : 'plan';
+    if (S.caseDelivered)                              return 'complete';
+    if (!S.condition)                                 return 'scan';
+    if (S.planApproved && S.labStatus === 'received') return 'delivery';
+    if (S.planApproved && S.labStatus)                return 'lab';
+    if (S.planApproved)                               return 'plan';
     return 'insight';
   }
 
@@ -2307,10 +2323,11 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const el = document.getElementById('workflowBar');
     if (!el) return;
     const activeId = _getWorkflowStage();
-    const activeIdx = _WF_STAGES.findIndex(s => s.id === activeId);
+    const isComplete = activeId === 'complete';
+    const activeIdx = isComplete ? _WF_STAGES.length : _WF_STAGES.findIndex(s => s.id === activeId);
     el.innerHTML = _WF_STAGES.map((cfg, i) => {
       const isDone   = i < activeIdx;
-      const isActive = i === activeIdx;
+      const isActive = !isComplete && i === activeIdx;
       const cls  = isActive ? 'wf-active' : isDone ? 'wf-done' : 'wf-pending';
       const aria = isActive ? ' aria-current="step"' : '';
       const arrow = i > 0 ? '<span class="wf-arrow" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>' : '';
@@ -2326,14 +2343,21 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (!el) return;
     if (!S.condition) { el.innerHTML = ''; return; }
     let html = '';
-    if (!S.planApproved) {
+    if (S.caseDelivered) {
+      html = `<span class="wf-sent-badge" style="background:rgba(var(--c-brand-rgb),.1);border-color:rgba(var(--c-brand-rgb),.3);color:var(--c-brand);"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Delivered</span>
+              <button class="btn-action btn-action-reopen" type="button" onclick="reopenDelivery()" style="margin-left:6px;"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reopen Case</button>`;
+    } else if (!S.planApproved) {
       const _apOpen = !!(UIState.helpOpen && UIState.helpOpen['approvePlan']);
-      html = `<button class="btn-action btn-action-approve" type="button" onclick="approvePlan()"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Mark Ready for Lab</button><button class="help-trigger" id="helpTrig_approvePlan" type="button" onclick="toggleHelp('approvePlan')" aria-expanded="${_apOpen ? 'true' : 'false'}" aria-controls="helpBody_approvePlan" aria-label="What does this action do?" style="margin-left:6px;">?</button><div class="disclosure-body${_apOpen ? ' open' : ''}" id="helpBody_approvePlan" role="region"><span class="disclosure-text">Marking ready for lab commits the current planning phase and starts the laboratory workflow. This is a workflow marker — clinical decisions remain with the treating clinician. Planning can be reopened at any time if adjustments are needed.</span></div>`;
+      html = `<button class="btn-action btn-action-reopen" type="button" onclick="navigateTo('plan')"><i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Review Plan</button><button class="btn-action btn-action-approve" type="button" onclick="approvePlan()" style="margin-left:6px;"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Mark Ready for Lab</button><button class="help-trigger" id="helpTrig_approvePlan" type="button" onclick="toggleHelp('approvePlan')" aria-expanded="${_apOpen ? 'true' : 'false'}" aria-controls="helpBody_approvePlan" aria-label="What does this action do?" style="margin-left:6px;">?</button><div class="disclosure-body${_apOpen ? ' open' : ''}" id="helpBody_approvePlan" role="region"><span class="disclosure-text">Marking ready for lab commits the current planning phase and starts the laboratory workflow. This is a workflow marker — clinical decisions remain with the treating clinician. Planning can be reopened at any time if adjustments are needed.</span></div>`;
     } else if (!S.labStatus) {
       html = `<button class="btn-action btn-action-lab" type="button" onclick="sendToLab()"><i class="fa-solid fa-flask" aria-hidden="true"></i> Send to Lab</button>
               <button class="btn-action btn-action-reopen" type="button" onclick="reopenPlanning()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reopen Planning</button>`;
+    } else if (S.labStatus === 'received') {
+      html = `<button class="btn-action btn-action-approve" type="button" onclick="navigateTo('reports')"><i class="fa-solid fa-file-medical" aria-hidden="true"></i> Go to Reports</button>
+              <button class="btn-action btn-action-approve" type="button" onclick="markDelivered()" style="margin-left:6px;"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Mark Delivered</button>
+              <button class="btn-action btn-action-reopen" type="button" onclick="reopenPlanning()" style="margin-left:6px;"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reopen Planning</button>`;
     } else {
-      html = `<span class="wf-sent-badge"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Lab ${S.labStatus === 'received' ? 'Received' : 'Sent'}</span>
+      html = `<span class="wf-sent-badge"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Lab Sent</span>
               <button class="btn-action btn-action-reopen" type="button" onclick="reopenPlanning()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reopen Planning</button>`;
     }
     el.innerHTML = html;
@@ -2375,6 +2399,23 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     showToast('Planning reopened', 'info');
   }
 
+  function markDelivered() {
+    S.caseDelivered = true;
+    _emitWfEvent('case_delivered');
+    saveState(); renderWorkflowBar();
+    if (UIState.view === 'lab')     renderLabView();
+    if (UIState.view === 'reports') renderReportsView();
+    showToast('Case marked as delivered', 'success');
+  }
+
+  function reopenDelivery() {
+    S.caseDelivered = false;
+    saveState(); renderWorkflowBar();
+    if (UIState.view === 'lab')     renderLabView();
+    if (UIState.view === 'reports') renderReportsView();
+    showToast('Case reopened', 'info');
+  }
+
   function saveLabNotes() {
     const el = document.getElementById('labNotesArea');
     if (!el) return;
@@ -2387,13 +2428,15 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   function _handleLabNotesInput() {
     const el = document.getElementById('labNotesArea');
     if (!el) return;
-    showSaveIndicator('saving');
+    const statusEl = document.getElementById('labNotesStatus');
+    if (statusEl) statusEl.textContent = 'Saving…';
     if (_labNotesDebounce) clearTimeout(_labNotesDebounce);
     const _labNotePatient = S.id;
     _labNotesDebounce = setTimeout(() => {
       if (S.id !== _labNotePatient) return; // abort if patient switched mid-debounce
       S.labNotes = el.value;
       saveState();
+      if (statusEl) statusEl.textContent = 'Auto-saved';
     }, 800);
   }
 
@@ -2401,6 +2444,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   // WORKFLOW HELPERS
   // ================================================================
   function _getPatientStageBadge(p) {
+    if (p.caseDelivered) return { icon: 'fa-circle-check', label: 'Delivered', cls: 'stage-delivered' };
     if (!p.condition) return { icon: 'fa-scanner-keyboard', label: 'New', cls: 'stage-new' };
     if (p.planApproved) {
       if (p.labStatus === 'received') return { icon: 'fa-circle-check', label: 'Lab Received', cls: 'stage-lab' };
@@ -2411,19 +2455,21 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   }
 
   function _getCaseUrgency(p) {
-    if (p.labStatus === 'received')      return 'urg-received';
+    if (p.caseDelivered)                return '';
+    if (p.labStatus === 'received')     return 'urg-received';
     if (p.planApproved && !p.labStatus) return 'urg-waiting';
-    if (!p.condition)                    return 'urg-new';
+    if (!p.condition)                   return 'urg-new';
     return '';
   }
 
   function _getStalenessText(p) {
-    if (!p.condition || p.labStatus === 'received' || !p.lastAccessed) return '';
+    if (p.caseDelivered || !p.condition || !p.lastAccessed) return '';
     const days = Math.floor((Date.now() - p.lastAccessed) / 86400000);
     if (days < 7) return '';
-    if (!p.planApproved) return days + ' days in analysis';
-    if (!p.labStatus)    return days + ' days awaiting lab';
-    return days + ' days awaiting delivery';
+    if (!p.planApproved)              return days + ' days in analysis';
+    if (!p.labStatus)                 return days + ' days awaiting lab';
+    if (p.labStatus === 'received')   return days + ' days awaiting delivery';
+    return days + ' days at lab';
   }
 
   function _emitWfEvent(type, meta) {
@@ -2460,6 +2506,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       lab_sent:           'Sent to Laboratory',
       lab_received:       'Lab Restoration Received',
       report_generated:   'Report Generated',
+      case_delivered:     'Case Delivered',
     })[type] || type;
   }
 
@@ -2533,7 +2580,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (!p.condition) return { shell: null };
     const reportCount = Array.isArray(p.reportHistory) ? p.reportHistory.length : 0;
     const latestEv    = _getLatestWorkflowEvent(); // reads S — same patient in all call sites
-    // Fully complete: lab received + report generated → silent
+    // Delivered: case closed — quiet completion message
+    if (p.caseDelivered) return { shell: 'Case delivered — workflow record preserved locally.' };
+    // Fully complete: lab received + report generated → silent (delivery not yet confirmed)
     if (p.labStatus === 'received' && reportCount > 0) return { shell: null };
     // Lab received, no report yet
     if (p.labStatus === 'received') {
@@ -2625,9 +2674,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     // Stage filter (combined with text search)
     const stageFilter = {
       new:       p => !p.condition,
-      analysis:  p => p.condition && !p.planApproved,
-      lab:       p => p.planApproved && p.labStatus && p.labStatus !== 'received',
-      delivered: p => p.labStatus === 'received',
+      analysis:  p => p.condition && !p.planApproved && !p.caseDelivered,
+      lab:       p => p.planApproved && p.labStatus && !p.caseDelivered,
+      delivered: p => p.caseDelivered || p.labStatus === 'received',
     };
     const filtered = _casesStageFilter !== 'all' && stageFilter[_casesStageFilter]
       ? textFiltered.filter(stageFilter[_casesStageFilter])
@@ -2685,12 +2734,21 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     switchPatient(id);
     let dest = S.lastView;
     if (!dest) {
-      if      (S.labStatus === 'received')         dest = 'reports';
-      else if (S.planApproved && S.labStatus)      dest = 'lab';
-      else if (S.planApproved && !S.labStatus)     dest = 'plan';
-      else                                          dest = 'insight';
+      if      (S.caseDelivered)                    dest = 'reports';
+      else if (S.labStatus === 'received')          dest = 'reports';
+      else if (S.planApproved && S.labStatus)       dest = 'lab';
+      else if (S.planApproved && !S.labStatus)      dest = 'plan';
+      else                                           dest = 'insight';
     }
     navigateTo(dest);
+  }
+
+  // Shared topbar subtitle update for all patient-scoped views (Plan/Lab/Reports/Insight)
+  function _updateTopbarPatient() {
+    const patSubEl = document.getElementById('topbarPatientName');
+    if (!patSubEl || !S.name) return;
+    const agePart = S.age ? ', ' + S.age : '';
+    patSubEl.innerHTML = `<svg class="heartbeat-svg" viewBox="0 0 30 12" aria-hidden="true" focusable="false"><polyline points="0,6 4,6 6,2 8,10 10,6 30,6" class="heartbeat-path"/></svg> ${escapeHtml(S.name + agePart)}`;
   }
 
   // ================================================================
@@ -2706,21 +2764,24 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     // Single load — reused by all sections below
     const allPatients = loadAllPatients() || [];
 
-    // Active patient card
+    // Active patient card — show workflow-aware continuity text based on lastView
     const nameEl = document.getElementById('dashActiveName');
     const metaEl = document.getElementById('dashActiveMeta');
     if (nameEl) nameEl.textContent = S.name || '—';
-    if (metaEl) metaEl.textContent = (S.tooth || '') + (S.condition ? ' · ' + S.condition : '') || 'Open to continue analysis';
+    if (metaEl) {
+      const _viewLabels = { insight: 'Continue in AI Insight', plan: 'Continue in Treatment Plan', lab: 'Continue in Lab Workflow', reports: 'Continue in Reports' };
+      metaEl.textContent = S.lastView ? (_viewLabels[S.lastView] || 'Continue in AI Insight') : (S.condition ? 'Continue in AI Insight' : 'Start analysis in AI Insight');
+    }
 
     // Total cases count
     const totalEl = document.getElementById('dashTotalCases');
     if (totalEl) totalEl.textContent = allPatients.length;
 
     // Pipeline stats strip — B4: clinic-wide workflow stage counts
-    const cNew       = allPatients.filter(p => !p.condition).length;
-    const cAnalysis  = allPatients.filter(p => p.condition && !p.planApproved).length;
-    const cAtLab     = allPatients.filter(p => p.planApproved && p.labStatus && p.labStatus !== 'received').length;
-    const cDelivered = allPatients.filter(p => p.labStatus === 'received').length;
+    const cNew       = allPatients.filter(p => !p.condition && !p.caseDelivered).length;
+    const cAnalysis  = allPatients.filter(p => p.condition && !p.planApproved && !p.caseDelivered).length;
+    const cAtLab     = allPatients.filter(p => p.planApproved && p.labStatus && !p.caseDelivered).length;
+    const cDelivered = allPatients.filter(p => p.caseDelivered || p.labStatus === 'received').length;
     const _setPipe = (id, count) => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -2763,9 +2824,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const attentionSection = document.getElementById('dashAttentionSection');
     const attentionList    = document.getElementById('dashAttentionList');
     if (attentionSection && attentionList) {
-      const labReady   = allPatients.filter(p => p.planApproved && !p.labStatus);
-      const labBack    = allPatients.filter(p => p.labStatus === 'received');
-      const noAnalysis = allPatients.filter(p => !p.condition);
+      const labReady   = allPatients.filter(p => p.planApproved && !p.labStatus && !p.caseDelivered);
+      const labBack    = allPatients.filter(p => p.labStatus === 'received' && !p.caseDelivered);
+      const noAnalysis = allPatients.filter(p => !p.condition && !p.caseDelivered);
       const items = [
         ...labBack.map(p =>    ({ p, icon: 'fa-circle-check',       color: 'var(--c-brand)', label: 'Lab received — schedule delivery', badgeCls: 'attn-lab-back',  badge: 'Delivery', urgCls: 'urg-received' })),
         ...labReady.map(p =>   ({ p, icon: 'fa-flask',              color: '#2563eb',        label: 'Ready to send to lab',            badgeCls: 'attn-lab-ready', badge: 'Lab',      urgCls: 'urg-waiting'  })),
@@ -2801,7 +2862,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       if (label) label.textContent = 'Synced — signed in as ' + email;
     } else {
       if (dot)   { dot.classList.remove('synced'); dot.classList.add('local'); }
-      if (label) label.textContent = 'Local mode — sign in to sync across devices';
+      if (label) label.textContent = 'Local-only · Data stays on this device';
     }
   }
 
@@ -2809,6 +2870,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   // REPORTS VIEW RENDERER
   // ================================================================
   function renderReportsView() {
+    _updateTopbarPatient();
+    const cnEl = document.getElementById('reportsCaseNum');
+    if (cnEl) cnEl.textContent = S.caseNum || '—';
     const nameEl = document.getElementById('reportsPatientName');
     if (nameEl) nameEl.textContent = S.name || 'current patient';
     const container = document.getElementById('reportsViewContent');
@@ -2825,14 +2889,19 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const history = Array.isArray(S.reportHistory) ? S.reportHistory : [];
     let reportsHtml;
     if (history.length === 0) {
+      const _canGenerate = !!S.condition;
       reportsHtml = `<div class="cases-empty">
         <div class="cases-empty-icon"><i class="fa-solid fa-file-medical" aria-hidden="true"></i></div>
         <h3>No reports yet</h3>
-        <p>Reports generated from AI Insight appear here for reference and re-export.</p>
-        <button class="btn btn-pri" type="button" onclick="navigateTo('insight')" style="margin-top:4px;"><i class="fa-solid fa-brain" aria-hidden="true"></i> AI Insight</button>
+        <p>${_canGenerate ? 'Generate a clinical report from the current patient assessment.' : 'Complete the patient assessment in AI Insight before generating a report.'}</p>
+        ${_canGenerate
+          ? `<button class="btn btn-pri" type="button" onclick="generateReport()" style="margin-top:4px;"><i class="fa-solid fa-file-medical" aria-hidden="true"></i> Generate Report</button>`
+          : `<button class="btn btn-sec" type="button" onclick="navigateTo('insight')" style="margin-top:4px;"><i class="fa-solid fa-brain" aria-hidden="true"></i> Complete Assessment First</button>`
+        }
       </div>`;
     } else {
-      reportsHtml = `<div class="reports-list">` + history.map(r => {
+      reportsHtml = `<p style="font-size:11px;color:var(--c-n400);margin:0 0 12px;">Reports open in a new tab and are not stored. Generating a new report reflects current patient data.</p>
+      <div class="reports-list">` + history.map(r => {
         const dt = new Date(r.ts);
         const dateStr = dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
         const timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
@@ -2841,9 +2910,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           <div class="report-item-icon"><i class="fa-solid fa-file-medical" aria-hidden="true"></i></div>
           <div class="report-item-info">
             <div class="report-item-name">${escapeHtml(r.name || '')} — ${typeLabel}</div>
-            <div class="report-item-meta">${dateStr} at ${timeStr}${r.caseNum ? ' · ' + escapeHtml(r.caseNum) : ''}</div>
+            <div class="report-item-meta">Generated ${dateStr} at ${timeStr}${r.caseNum ? ' · ' + escapeHtml(r.caseNum) : ''}</div>
           </div>
-          <button class="btn btn-sec" type="button" onclick="generateReport()" title="Re-run report for current patient state"><i class="fa-solid fa-rotate-right" style="color:var(--c-n400)" aria-hidden="true"></i> Re-run Report</button>
+          <button class="btn btn-sec" type="button" onclick="generateReport()" title="Generate a new report from current patient state"><i class="fa-solid fa-file-medical" style="color:var(--c-n400)" aria-hidden="true"></i> Generate Report</button>
         </div>`;
       }).join('') + `</div>`;
     }
@@ -2997,6 +3066,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   }
 
   function renderPlanView() {
+    _updateTopbarPatient();
+    const cnEl = document.getElementById('planCaseNum');
+    if (cnEl) cnEl.textContent = S.caseNum || '—';
     const nameEl = document.getElementById('planPatientName');
     if (nameEl) nameEl.textContent = S.name || 'current patient';
     const container = document.getElementById('planViewContent');
@@ -3148,6 +3220,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   // ================================================================
 
   function renderLabView() {
+    _updateTopbarPatient();
+    const cnEl = document.getElementById('labCaseNum');
+    if (cnEl) cnEl.textContent = S.caseNum || '—';
     const nameEl = document.getElementById('labPatientName');
     if (nameEl) nameEl.textContent = S.name || 'current patient';
     const container = document.getElementById('labViewContent');
@@ -3256,8 +3331,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           <div class="plan-section">
             <div class="plan-section-title">Manufacturing Notes</div>
             <textarea class="lab-notes" id="labNotesArea" placeholder="Shade, dimensions, special instructions…" aria-label="Manufacturing notes">${escapeHtml(S.labNotes || '')}</textarea>
-            <div style="text-align:right;margin-top:6px;">
-              <button class="btn-sm" type="button" onclick="saveLabNotes()"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save Notes</button>
+            <div class="notes-meta" style="margin-top:6px;">
+              <span id="labNotesStatus" style="font-size:11px;color:var(--c-n400);">Auto-saved</span>
             </div>
           </div>
           ${labStatus === 'received' ? `<div class="plan-section">
@@ -3266,7 +3341,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
               <div class="plan-banner-icon"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i></div>
               <div class="plan-banner-text">
                 <div class="plan-banner-title">Schedule Delivery</div>
-                <div class="plan-banner-sub">Lab restoration ready. Generate a delivery report from AI Insight.</div>
+                <div class="plan-banner-sub">Lab restoration ready. Generate a delivery report from the Reports view.</div>
               </div>
               <button class="btn-action btn-action-approve" type="button" onclick="navigateTo('reports')"><i class="fa-solid fa-file-medical" aria-hidden="true"></i> Go to Reports</button>
             </div>
@@ -3998,7 +4073,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const statusPillEl = document.getElementById('caseStatusPill');
     if (statusPillEl) {
       const wfStage = _getWorkflowStage();
-      const stageLabel = wfStage === 'scan' ? 'New Case' : wfStage === 'plan' ? 'Plan Approved' : wfStage === 'lab' ? (S.labStatus === 'received' ? 'Lab Received' : 'Lab Sent') : 'In Analysis';
+      const stageLabel = wfStage === 'scan' ? 'New Case' : wfStage === 'insight' ? 'In Analysis' : wfStage === 'plan' ? 'Plan Approved' : wfStage === 'lab' ? 'Lab Sent' : wfStage === 'delivery' ? 'Lab Received' : 'In Analysis';
       statusPillEl.textContent = stageLabel;
       statusPillEl.setAttribute('aria-label', 'Status: ' + stageLabel);
     }

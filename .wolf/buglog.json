@@ -2485,9 +2485,139 @@
         "saveState",
         "demo-seed"
       ],
-      "related_bugs": ["bug-148"],
+      "related_bugs": [
+        "bug-148"
+      ],
       "occurrences": 1,
       "last_seen": "2026-05-18T00:00:00.000Z"
+    },
+    {
+      "id": "bug-152",
+      "timestamp": "2026-05-18T13:52:56.868Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 12→15 lines (6 removed) | Also: // Active patient card; if (metaEl) metaEl.textContent = (S.tooth || '') + | Also: <p>Reports generated from AI Insight appear here f; <button class=\"btn btn-pri\" type=\"button\" onclick=",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-18T13:56:23.084Z"
+    },
+    {
+      "id": "bug-153",
+      "timestamp": "2026-05-18T13:53:20.235Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"><i class=\"",
+      "fix": "Changed to 'plan'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-18T13:56:39.386Z"
+    },
+    {
+      "id": "bug-154",
+      "timestamp": "2026-05-18T13:54:31.590Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: !patSubEl || !S.name",
+      "fix": "Added guard clause: if (!patSubEl || !S.name)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T13:54:31.590Z"
+    },
+    {
+      "id": "bug-155",
+      "timestamp": "2026-05-18T13:54:38.571Z",
+      "error_message": "Wrong condition in logic",
+      "file": "index.html",
+      "root_cause": "Condition was: if (nameEl)",
+      "fix": "Changed to: if (cnEl)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-18T13:54:50.741Z"
+    },
+    {
+      "id": "bug-156",
+      "timestamp": "2026-05-18T14:13:18.725Z",
+      "error_message": "Wrong reference: Draft should be button",
+      "file": "index.html",
+      "root_cause": "Used \"Draft\" instead of \"button\"",
+      "fix": "Changed Draft → button",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T14:13:18.725Z"
+    },
+    {
+      "id": "bug-157",
+      "timestamp": "2026-05-18T14:13:54.864Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had 'Local mode — sign in to sync across devices'",
+      "fix": "Changed to 'Local-only · Data stays on this device'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T14:13:54.864Z"
+    },
+    {
+      "id": "bug-158",
+      "timestamp": "2026-05-18T14:15:47.940Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 17→24 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T14:15:47.940Z"
+    },
+    {
+      "id": "bug-159",
+      "timestamp": "2026-05-18T14:17:58.899Z",
+      "error_message": "Wrong operator: !== should be ||",
+      "file": "index.html",
+      "root_cause": "Used \"!==\" instead of \"||\"",
+      "fix": "Changed operator !== → ||",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-18T14:18:09.723Z"
     }
   ]
 }
