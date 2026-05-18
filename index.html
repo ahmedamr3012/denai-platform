@@ -2028,7 +2028,15 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   function genId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
   function genCaseNum() {
     const pts = loadAllPatients() || [];
-    return 'Case ' + (pts.length + 1);
+    // Max-based: find the highest sequential N among existing "Case N" patients
+    // and return N+1.  Count-based (pts.length + 1) breaks after any deletion —
+    // the list shrinks and the same number gets reissued to the next created patient.
+    const maxN = pts.reduce((max, p) => {
+      if (!p.caseNum || !p.caseNum.startsWith('Case ')) return max;
+      const n = parseInt(p.caseNum.slice(5), 10);
+      return Number.isFinite(n) && n > max ? n : max;
+    }, 0);
+    return 'Case ' + (maxN + 1);
   }
 
   function loadAllPatients() {

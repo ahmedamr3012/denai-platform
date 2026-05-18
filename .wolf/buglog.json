@@ -2418,6 +2418,40 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-18T00:00:00.000Z"
+    },
+    {
+      "id": "bug-148",
+      "timestamp": "2026-05-18T11:50:09.812Z",
+      "error_message": "Wrong return value",
+      "file": "index.html",
+      "root_cause": "Was returning: 'Case ' + (pts.length + 1);",
+      "fix": "Now returns: N+1.  Count-based (pts.length + 1) breaks after an",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T11:50:09.812Z"
+    },
+    {
+      "id": "bug-148",
+      "timestamp": "2026-05-18T00:00:00.000Z",
+      "error_message": "First created cases may both display Case 2 — duplicate case numbering after patient deletion",
+      "file": "index.html",
+      "root_cause": "genCaseNum() used pts.length + 1 (count-based). Deleting any patient shrinks the list, so the count-based formula reissues a previously assigned number. Example: seed (Case 1) + A (Case 2) = 2 patients. Delete seed → 1 patient. Create B → pts.length + 1 = 2 → Case 2 again. Duplicate.",
+      "fix": "Changed genCaseNum() from count-based (pts.length + 1) to max-based: reduce over all existing patients to find the highest N in any Case N caseNum, then return Case N+1. Non-Case-N formats (old #4587 format, undefined, etc.) contribute 0 to the max. Deletion-safe, import-safe, deterministic.",
+      "tags": [
+        "case-numbering",
+        "genCaseNum",
+        "deletion",
+        "duplicate",
+        "count-vs-max"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T00:00:00.000Z"
     }
   ]
 }
