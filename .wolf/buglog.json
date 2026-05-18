@@ -2650,6 +2650,277 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-05-18T15:30:45.029Z"
+    },
+    {
+      "id": "bug-162",
+      "timestamp": "2026-05-18T18:25:04.648Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "index.html",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: // Flush unsaved textarea content into S before emergency wr; if (_notesDebounce) { | Also: // Multi-tab safety: detect when another tab writes patient ; // Does not fire in the tab that made the change — only in o",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-18T18:25:55.852Z"
+    },
+    {
+      "id": "bug-163",
+      "timestamp": "2026-05-18T19:10:00.000Z",
+      "error_message": "Silent data loss: PATIENTS_KEY corrupt JSON silently wiped all patient data on next session start",
+      "file": "index.html",
+      "root_cause": "loadAllPatients() caught JSON.parse exceptions and returned null. initPatients() treated null the same as 'no patients', fell through to fresh-install migration, creating a seed patient and overwriting the corrupted key. All patient records were lost without any user warning.",
+      "fix": "Added _patientsCorrupted flag set in loadAllPatients() catch block. In init() IIFE after render(S), shows error toast if flag is true: 'Patient data was unreadable — starting fresh. Export backup once stable.'",
+      "tags": [
+        "data-loss",
+        "localStorage",
+        "corruption",
+        "silent-failure",
+        "wave2",
+        "blocking"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T19:10:00.000Z"
+    },
+    {
+      "id": "bug-164",
+      "timestamp": "2026-05-18T19:10:00.000Z",
+      "error_message": "Data loss: tab close within 200ms debounce window cancelled pending saveState() write and discarded last patient edit",
+      "file": "index.html",
+      "root_cause": "beforeunload handler called clearTimeout(_saveStateTimer) which cancelled the pending 200ms debounced save. Any field edit or notes change made in the last 200ms before tab close was silently lost. Notes debounce (800ms) also cleared without flushing textarea content to S.",
+      "fix": "beforeunload now: (1) if _notesDebounce active, flushes textarea → S.notes via DOMPurify; (2) if _labNotesDebounce active, flushes labNotesArea → S.labNotes; (3) if _saveStateTimer active, cancels timer and executes a synchronous emergency write using current S state via loadAllPatients/saveAllPatients/setActivePatientId.",
+      "tags": [
+        "data-loss",
+        "beforeunload",
+        "debounce",
+        "saveState",
+        "wave2",
+        "recommended"
+      ],
+      "related_bugs": [
+        "bug-134"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T19:10:00.000Z"
+    },
+    {
+      "id": "bug-165",
+      "timestamp": "2026-05-18T18:38:46.637Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"font-size:18px;font-weight:800;color:var(--c-n900",
+      "fix": "Changed to \"authSignUpHeading\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-18T18:38:52.342Z"
+    },
+    {
+      "id": "bug-166",
+      "timestamp": "2026-05-18T18:41:54.384Z",
+      "error_message": "Null/undefined access in ",
+      "file": "index.html",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: function openResetModal() { _modalTrigger = document.activeE | Also: function openShortcutsModal() { _modalTrigger = document.act",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-18T18:42:05.866Z"
+    },
+    {
+      "id": "bug-167",
+      "timestamp": "2026-05-18T18:43:04.511Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→4 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T18:43:04.511Z"
+    },
+    {
+      "id": "bug-168",
+      "timestamp": "2026-05-18T18:43:40.113Z",
+      "error_message": "CSS fix: prefers-reduced-motion",
+      "file": "src/styles/components/modal.css",
+      "root_cause": "prefers-reduced-motion: no-preference) { → reduce) {",
+      "fix": "Changed prefers-reduced-motion: no-preference) { → reduce) {",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "css"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T18:43:40.113Z"
+    },
+    {
+      "id": "bug-169",
+      "timestamp": "2026-05-18T20:00:00.000Z",
+      "error_message": "role=menubar on sidebar nav with role=menuitem on buttons — ARIA violation, screen readers expect arrow-key nav that never fires",
+      "file": "index.html",
+      "root_cause": "The <nav id=sidebarNav> had role=menubar and all 6 buttons had role=menuitem. menubar requires roving tabindex + arrow-key focus management that was never implemented. Tab navigation through the nav would cause screen readers to announce incorrect semantics.",
+      "fix": "Removed role=menubar from the <nav> and role=menuitem from all 6 nav buttons. Added aria-label=Application to the <nav>. The <aside aria-label='Main navigation'> already provides the landmark; no extra role needed.",
+      "tags": [
+        "blocking",
+        "aria",
+        "navigation",
+        "wave3",
+        "screen-reader"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T20:00:00.000Z"
+    },
+    {
+      "id": "bug-170",
+      "timestamp": "2026-05-18T20:00:00.000Z",
+      "error_message": "7 modal close functions did not restore focus to the element that triggered the modal",
+      "file": "index.html",
+      "root_cause": "Only saveModal used the _modalTrigger save+restore pattern. All other modals (newPatient, deletePatient, auth, reset, shortcuts, notesPassphrase) set display:none without returning focus, causing keyboard users to lose their position in the document.",
+      "fix": "Extended _modalTrigger = document.activeElement to all open* functions and if (_modalTrigger) { _modalTrigger.focus(); _modalTrigger = null; } to all close* functions. Modals that navigate on confirm (confirmNewPatient, confirmDeletePatient) still briefly restore but navigation then moves focus appropriately.",
+      "tags": [
+        "blocking",
+        "focus-management",
+        "modal",
+        "keyboard",
+        "wave3"
+      ],
+      "related_bugs": [
+        "bug-171"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T20:00:00.000Z"
+    },
+    {
+      "id": "bug-171",
+      "timestamp": "2026-05-18T20:00:00.000Z",
+      "error_message": "Entry overlay (role=dialog aria-modal=true) had no focus trap and did not move focus on show",
+      "file": "index.html",
+      "root_cause": "trapFocus() was called for 7 modals at init but not for #entryOverlay. The overlay blocks all app interaction visually but Tab would still cycle through the hidden app elements behind it. Also, when the overlay appeared no focus was moved into it, leaving keyboard users stranded on body.",
+      "fix": "Added trapFocus('entryOverlay') to the init focus-trap block. Updated the entry-visible show code to focus the first focusable element after the rAF delay. Updated continueLocally() to focus #createCaseBtn (or #addPatientBtn fallback) after overlay fades out.",
+      "tags": [
+        "blocking",
+        "focus-trap",
+        "dialog",
+        "keyboard",
+        "wave3"
+      ],
+      "related_bugs": [
+        "bug-170"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T20:00:00.000Z"
+    },
+    {
+      "id": "bug-172",
+      "timestamp": "2026-05-18T19:00:11.430Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 8→14 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T19:00:11.430Z"
+    },
+    {
+      "id": "bug-173",
+      "timestamp": "2026-05-18T19:00:44.849Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had ')}</select></div>`",
+      "fix": "Changed to ')}</select></div>\n      <div class=\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T19:00:44.849Z"
+    },
+    {
+      "id": "bug-174",
+      "timestamp": "2026-05-18T19:00:58.411Z",
+      "error_message": "Null/undefined access in ",
+      "file": "index.html",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T19:00:58.411Z"
+    },
+    {
+      "id": "bug-175",
+      "timestamp": "2026-05-18T20:00:00.000Z",
+      "error_message": "reopenDelivery() does not emit a wfHistory event — delivery reopening is invisible in the case timeline",
+      "file": "index.html",
+      "root_cause": "All other workflow transitions (approvePlan, sendToLab, markLabReceived, reopenPlanning, markDelivered) call _emitWfEvent(). reopenDelivery() was the only exception — the delivery reopen had no timeline record.",
+      "fix": "Added _emitWfEvent('delivery_reopened') to reopenDelivery(). Added 'delivery_reopened: Case Reopened After Delivery' to _wfEventLabel(). W4A-T4 audit finding.",
+      "tags": [
+        "wave4a",
+        "workflow-continuity",
+        "wfHistory",
+        "schema-gap"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T20:00:00.000Z"
+    },
+    {
+      "id": "bug-176",
+      "timestamp": "2026-05-18T19:13:04.068Z",
+      "error_message": "CSS fix: top, right, padding",
+      "file": "src/styles/components/modal.css",
+      "root_cause": "top: 12px → 10px; right: 14px → 12px; padding: 4px 6px → 8px 10px",
+      "fix": "Changed top: 12px → 10px; right: 14px → 12px; padding: 4px 6px → 8px 10px",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "css"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T19:13:04.068Z"
+    },
+    {
+      "id": "bug-177",
+      "timestamp": "2026-05-18T21:00:00.000Z",
+      "error_message": "Modal vertical overflow on short viewports — close button unreachable, content clipped below screen",
+      "file": "src/styles/components/modal.css",
+      "root_cause": ".modal-box had no max-height or overflow-y constraint. On short-viewport devices (iPhone SE portrait ~667px) the newPatient and auth modals can exceed viewport height. Overlay align-items:center pushes overflow off-screen. close button (padding:4px 6px) was 28px tall — below 44px WCAG touch target.",
+      "fix": "Added max-height: calc(100vh - 48px) + max-height: calc(100svh - 48px) + overflow-y: auto to .modal-box. Increased .modal-close-btn padding from 4px 6px to 8px 10px (touch-safe ~38px). Added @media (max-height:640px) block: overlay align-items:flex-start + padding top to keep close button reachable; modal padding reduced to 24px 22px.",
+      "tags": ["wave4b", "modal", "responsive", "touch", "mobile", "accessibility"],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T21:00:00.000Z"
     }
   ]
 }

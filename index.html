@@ -245,7 +245,19 @@ body.dark .topbar { background: rgba(26,29,33,.94); border-color: var(--c-n150);
 .heartbeat-svg { width: 24px; height: 18px; flex-shrink: 0; }
 .heartbeat-path { stroke: var(--c-success); stroke-width: 2; fill: none; stroke-linecap: round; stroke-dasharray: 40; stroke-dashoffset: 40; animation: ecgDraw 2.4s cubic-bezier(.4,0,.6,1) infinite; animation-delay: 1.2s; }
 @keyframes ecgDraw { 0%,15% { stroke-dashoffset: 40; } 55% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -40; } }
-@media (prefers-reduced-motion: reduce) { .heartbeat-path { animation: none; stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .heartbeat-path { animation: none; stroke-dashoffset: 0; }
+  /* Suppress entry-point and card entrance animations */
+  .card, .case-card, .dash-card { animation: none; }
+  /* Suppress save-dot pulse */
+  .save-dot { animation: none; }
+  /* View panel transitions: snap instead of slide */
+  .view-panel.view-visible { transition: none; }
+  /* Disclosure expand: snap instead of height/opacity tween */
+  .disclosure-body { transition: none; }
+  /* Entry overlay fade: snap */
+  .entry-overlay { transition: none; }
+}
 .topbar-actions { display: flex; gap: 8px; align-items: center; }
 .btn { display: inline-flex; align-items: center; gap: 7px; padding: 8px 16px; border-radius: var(--r-md); font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--t-base); border: none; outline: none; font-family: 'DM Sans', sans-serif; position: relative; overflow: hidden; }
 .btn::after { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,.35); transform: translate(-50%,-50%); transition: width .55s ease, height .55s ease, opacity .55s ease; }
@@ -1029,6 +1041,40 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 .btn-loading i { animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ================================================================
+   WAVE 4B — Mobile & Interaction Polish
+   Surgical responsive additions. No existing rules overwritten.
+   ================================================================ */
+
+/* ── W4B-T3: Touch targets — applied only at ≤900px (drawer/touch mode) ──
+   WCAG 2.5.5 recommends ≥44px touch target height for primary actions.
+   nav-item: 9px→11px padding → ~37px (sidebar nav items)
+   patient-item: 7px→9px padding → ~33px (patient switcher)
+   btn-action: 6px→9px padding → ~36px (core workflow buttons) ── */
+@media (max-width: 900px) {
+  .nav-item     { padding: 11px 11px; }
+  .patient-item { padding: 9px 9px; }
+  .btn-action   { padding: 9px 14px; font-size: 13px; }
+}
+
+/* ── W4B-T2/T1: Narrow-width horizontal padding reduction ──
+   At ≤640px (narrow laptop / portrait tablet), 26px side padding
+   consumes too much of the viewport. Reduce to 16px. ── */
+@media (max-width: 640px) {
+  .view-panel           { padding-left: 16px; padding-right: 16px; }
+  #patientWorkflowShell { padding-left: 16px; padding-right: 16px; }
+  .cases-search         { flex: 1 1 100%; }
+}
+
+/* ── W4B-T5: Pipeline strip — prevent label overflow at very narrow widths ──
+   "In Analysis" at 10px with letter-spacing .08em overflows at <400px.
+   Reduce font-size and strip letter-spacing to collapse gracefully. ── */
+@media (max-width: 480px) {
+  .dash-pipeline-stat  { padding: 10px 4px; }
+  .dash-pipeline-label { letter-spacing: 0; font-size: 9px; }
+  .entry-card          { padding: 32px 22px 26px; }
+}
+
   </style>
 </head>
 <body>
@@ -1051,14 +1097,14 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     <rect x="212.9" y="9.8" width="7.2" height="7.2" rx="1.8" fill="var(--c-brand-lite)"/>
   </svg>
 </div>
-    <nav class="sidebar-nav" id="sidebarNav" role="menubar">
-      <button class="nav-item" type="button" role="menuitem" data-view="dashboard" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house" aria-hidden="true"></i> Dashboard</button>
-      <button class="nav-item" type="button" role="menuitem" data-view="cases" onclick="navigateTo('cases')"><i class="fa-solid fa-folder-open" aria-hidden="true"></i> Cases</button>
+    <nav class="sidebar-nav" id="sidebarNav" aria-label="Application">
+      <button class="nav-item" type="button" data-view="dashboard" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house" aria-hidden="true"></i> Dashboard</button>
+      <button class="nav-item" type="button" data-view="cases" onclick="navigateTo('cases')"><i class="fa-solid fa-folder-open" aria-hidden="true"></i> Cases</button>
       <div class="nav-label" aria-hidden="true">Clinical</div>
-      <button class="nav-item active" type="button" role="menuitem" data-view="insight" onclick="navigateTo('insight')" aria-current="page"><i class="fa-solid fa-brain" aria-hidden="true"></i> AI Insight</button>
-      <button class="nav-item" type="button" role="menuitem" data-view="plan" onclick="navigateTo('plan')"><i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Treatment Plan</button>
-      <button class="nav-item" type="button" role="menuitem" data-view="lab" onclick="navigateTo('lab')"><i class="fa-solid fa-flask" aria-hidden="true"></i> Lab &amp; Mfg</button>
-      <button class="nav-item" type="button" role="menuitem" data-view="reports" onclick="navigateTo('reports')"><i class="fa-solid fa-file-medical" aria-hidden="true"></i> Reports</button>
+      <button class="nav-item active" type="button" data-view="insight" onclick="navigateTo('insight')" aria-current="page"><i class="fa-solid fa-brain" aria-hidden="true"></i> AI Insight</button>
+      <button class="nav-item" type="button" data-view="plan" onclick="navigateTo('plan')"><i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Treatment Plan</button>
+      <button class="nav-item" type="button" data-view="lab" onclick="navigateTo('lab')"><i class="fa-solid fa-flask" aria-hidden="true"></i> Lab &amp; Mfg</button>
+      <button class="nav-item" type="button" data-view="reports" onclick="navigateTo('reports')"><i class="fa-solid fa-file-medical" aria-hidden="true"></i> Reports</button>
     </nav>
     <!-- Patient List -->
     <div class="patient-section" aria-label="Patient list">
@@ -1250,7 +1296,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
       <!-- Sign-up panel (hidden by default) -->
       <div id="authPanelSignUp" style="display:none;">
-        <h3 style="font-size:18px;font-weight:800;color:var(--c-n900);margin-bottom:4px;">Create account</h3>
+        <h3 id="authSignUpHeading" style="font-size:18px;font-weight:800;color:var(--c-n900);margin-bottom:4px;">Create account</h3>
         <p style="font-size:13px;color:var(--c-n500);margin-bottom:18px;">Back up your patients and sync across devices.</p>
         <div style="margin-bottom:12px;">
           <label class="np-label" for="authSignUpEmail">Email</label>
@@ -1271,7 +1317,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
       <!-- Signed-in panel (hidden by default) -->
       <div id="authPanelSignedIn" style="display:none;">
-        <h3 style="font-size:18px;font-weight:800;color:var(--c-n900);margin-bottom:4px;">Account</h3>
+        <h3 id="authSignedInHeading" style="font-size:18px;font-weight:800;color:var(--c-n900);margin-bottom:4px;">Account</h3>
         <p id="authSignedInEmail" style="font-size:13px;color:var(--c-n500);margin-bottom:12px;">Signed in</p>
 
         <!-- Sync status row -->
@@ -1516,8 +1562,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     <div class="card ai-card">
       <div class="card-header">
         <h2 class="card-title"><i class="fa-solid fa-brain" aria-hidden="true"></i> 2. AI Clinical Insight</h2>
-        <div class="tt" role="tooltip">
-          <i class="fa-solid fa-circle-info" role="button" style="font-size:17px;color:var(--c-n300);transition:color var(--t-fast)" tabindex="0" aria-label="How AI works"></i>
+        <div class="tt">
+          <button type="button" style="background:none;border:none;padding:0;cursor:help;color:var(--c-n300);font-size:17px;line-height:1;display:inline-flex;transition:color var(--t-fast);border-radius:50%;" aria-label="How AI analysis works"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></button>
           <span class="tt-pop" role="tooltip">AI analyzes clinical data, intraoral scans,<br>bone condition &amp; historical denai case outcomes</span>
         </div>
       </div>
@@ -1943,6 +1989,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     costImplant: 4500, costBridge: 3500, costBoneGraft: 1500,
     costCrown: 1200, costRCT: 1000, costPostCore: 400,
     notes: '',
+    serviceDate: null,     // ISO date (YYYY-MM-DD) — date case was opened; synced as clinical record metadata
     // Wave 8C: workflow continuity fields (migration-safe — existing patients default via merge)
     planApproved: false,
     labStatus: null,       // null | 'pending' | 'received'
@@ -2052,12 +2099,16 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     return 'Case ' + (maxN + 1);
   }
 
+  let _patientsCorrupted = false; // set when PATIENTS_KEY exists but fails JSON.parse
   function loadAllPatients() {
     try {
       const raw = localStorage.getItem(PATIENTS_KEY);
       if (!raw) return null;
       return JSON.parse(raw);
-    } catch { return null; }
+    } catch {
+      _patientsCorrupted = true;
+      return null;
+    }
   }
 
   function saveAllPatients(list) {
@@ -2411,6 +2462,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   function reopenDelivery() {
     S.caseDelivered = false;
+    _emitWfEvent('delivery_reopened');
     saveState(); renderWorkflowBar();
     if (UIState.view === 'lab')     renderLabView();
     if (UIState.view === 'reports') renderReportsView();
@@ -2501,13 +2553,14 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   function _wfEventLabel(type) {
     return ({
-      analysis_completed: 'AI Analysis Completed',
-      plan_approved:      'Treatment Plan Approved',
-      plan_reopened:      'Planning Reopened',
-      lab_sent:           'Sent to Laboratory',
-      lab_received:       'Lab Restoration Received',
-      report_generated:   'Report Generated',
-      case_delivered:     'Case Delivered',
+      analysis_completed:  'AI Analysis Completed',
+      plan_approved:       'Treatment Plan Approved',
+      plan_reopened:       'Planning Reopened',
+      lab_sent:            'Sent to Laboratory',
+      lab_received:        'Lab Restoration Received',
+      report_generated:    'Report Generated',
+      case_delivered:      'Case Delivered',
+      delivery_reopened:   'Case Reopened After Delivery',
     })[type] || type;
   }
 
@@ -3363,7 +3416,12 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const overlay = document.getElementById('entryOverlay');
     if (!overlay) return;
     overlay.classList.remove('entry-visible');
-    overlay.addEventListener('transitionend', () => { overlay.style.display = 'none'; }, { once: true });
+    overlay.addEventListener('transitionend', () => {
+      overlay.style.display = 'none';
+      // Return focus to the first meaningful topbar action after overlay closes.
+      const target = document.getElementById('createCaseBtn') || document.getElementById('addPatientBtn');
+      if (target) target.focus();
+    }, { once: true });
   }
 
   // ================================================================
@@ -4062,11 +4120,17 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     // Update case number in header
     const caseNumEl = document.querySelector('.case-num');
     if (caseNumEl) caseNumEl.textContent = state.caseNum || '—';
-    // Update case time with real lastAccessed timestamp
+    // Update case time — prefer serviceDate (creation date) over relative lastAccessed
     const caseTimeEl = document.querySelector('.case-time');
     if (caseTimeEl) {
-      const rel = state.lastAccessed ? _relativeTime(state.lastAccessed) : null;
-      const timeText = rel ? 'Opened ' + rel : '';
+      let timeText = '';
+      if (state.serviceDate) {
+        // Parse as local date (append T00:00:00 to avoid UTC-midnight-shift on some locales)
+        const d = new Date(state.serviceDate + 'T00:00:00');
+        timeText = 'Since ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      } else if (state.lastAccessed) {
+        timeText = 'Opened ' + _relativeTime(state.lastAccessed);
+      }
       caseTimeEl.textContent = timeText;
       caseTimeEl.setAttribute('aria-label', timeText);
     }
@@ -4284,7 +4348,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <div class="edit-label">Diabetes</div><div><select id="eDiabetes" style="width:100%" aria-label="Diabetes status"><option${(S.diabetes||'None')==='None'?' selected':''}>None</option><option${S.diabetes==='Controlled'?' selected':''}>Controlled</option><option${S.diabetes==='Uncontrolled'?' selected':''}>Uncontrolled</option></select><div style="font-size:10px;color:var(--c-n400);margin-top:2px;">Uncontrolled (HbA1c ≥7.5%) = 2–3× implant failure risk</div></div>
       <div class="edit-label">Parafunction</div><div><select id="eParafunction" style="width:100%" aria-label="Parafunctional habits">${['None','Clenching','Bruxism','Both'].map(v=>`<option${v===(S.parafunction||'None')?' selected':''}>${v}</option>`).join('')}</select><div style="font-size:10px;color:#d97706;margin-top:2px;">⚠ Bruxism = 60% crown failure rate</div></div>
       <div class="edit-label crown-conditional">Rem. Structure</div><div class="crown-conditional"><select id="eRemainingStructure" style="width:100%" aria-label="Remaining tooth structure">${['Good','Fair','Poor'].map(v=>`<option${v===(S.remainingStructure||'Good')?' selected':''}>${v}</option>`).join('')}</select><div style="font-size:10px;color:var(--c-n400);margin-top:2px;">≥2mm ferrule = Good; &lt;1mm = Poor</div></div>
-      <div class="edit-label crown-conditional">Endo Status</div><div class="crown-conditional"><select id="eEndodonticStatus" style="width:100%" aria-label="Endodontic status">${['No RCT needed','RCT done','Needs RCT'].map(v=>`<option${v===(S.endodonticStatus||'No RCT needed')?' selected':''}>${v}</option>`).join('')}</select></div>`;
+      <div class="edit-label crown-conditional">Endo Status</div><div class="crown-conditional"><select id="eEndodonticStatus" style="width:100%" aria-label="Endodontic status">${['No RCT needed','RCT done','Needs RCT'].map(v=>`<option${v===(S.endodonticStatus||'No RCT needed')?' selected':''}>${v}</option>`).join('')}</select></div>
+      <div class="edit-label">Case Date</div><div><input id="eSvcDate" type="date" value="${S.serviceDate||''}" style="width:100%" aria-label="Case opening date"/><div style="font-size:10px;color:var(--c-n400);margin-top:2px;">Date this case was first created</div></div>`;
     toggleCrownFields(S.condition);
   }
 
@@ -4844,7 +4909,7 @@ const ai = calcAI(S);
 const exportData = {
 caseId: S.caseNum || 'Case 1',
 exportedAt: new Date().toISOString(),
-patient: { name: S.name, age: S.age, gender: S.gender, tooth: S.tooth, condition: S.condition },
+patient: { name: S.name, age: S.age, gender: S.gender, tooth: S.tooth, condition: S.condition, serviceDate: S.serviceDate || null },
 clinical: { bone: S.bone, hygiene: S.hygiene, occlusion: S.occlusion, smoking: S.smoking || 'Non-smoker', diabetes: S.diabetes || 'None', remainingStructure: S.remainingStructure || 'Good', endodonticStatus: S.endodonticStatus || 'No RCT needed', parafunction: S.parafunction || 'None' },
 aiAnalysis: ai ? { implant: ai.implant, bridge: ai.bridge, crown: ai.crown, recommendationStrength: ai.conf, recommendation: ai.rec, risks: { peri: ai.peri, bone: ai.boneR, occlusion: ai.occR } } : null,
 crownAnalysis: (ai && ai.crownViable) ? { crown: ai.crown, crownViable: ai.crownViable, crownWarning: ai.crownWarning, crownRisks: ai.crownRisks, materialRecommendation: getCrownMaterial(S), hiddenCosts: { rct: S.endodonticStatus === 'Needs RCT' ? (S.costRCT||1000) : 0, postCore: S.remainingStructure !== 'Good' ? (S.costPostCore||400) : 0 } } : null,
@@ -5160,6 +5225,8 @@ setState({ name, age, gender, tooth, condition, bone, occlusion, hygiene, smokin
 // Preserve patient identity
 if (!S.id) S.id = genId();
 if (!S.caseNum) S.caseNum = 'Case 1';
+// serviceDate: outside StateValidator schema — set directly. null clears if user empties field.
+S.serviceDate = $('eSvcDate')?.value || S.serviceDate || null;
 tempState = { ...S };
 // BUG#3: auto-switch when crown becomes non-viable after edit
 if (S.tx === 'crown') {
@@ -5196,8 +5263,8 @@ showToast('Patient data saved successfully', 'success');
 function cancelEdit() { exitEdit(); }
 
 // Reset with confirmation
-function openResetModal() { $('resetModal').style.display = 'flex'; }
-function closeResetModal() { $('resetModal').style.display = 'none'; }
+function openResetModal() { _modalTrigger = document.activeElement; $('resetModal').style.display = 'flex'; setTimeout(() => $('resetModal').querySelector('.btn-sec')?.focus(), 80); }
+function closeResetModal() { $('resetModal').style.display = 'none'; if (_modalTrigger) { _modalTrigger.focus(); _modalTrigger = null; } }
 function confirmReset() {
 closeResetModal();
 Object.assign(S, DEFAULT_STATE); tempState = { ...S }; saveState();
@@ -5331,6 +5398,7 @@ if (caseNumEl) caseNumEl.textContent = S.caseNum || '—';
 
 // ── New Patient Modal ──────────────────────────────────────
 function openNewPatientModal() {
+_modalTrigger = document.activeElement;
 // Populate tooth select
 const sel = $('npTooth');
 if (sel && !sel.options.length) {
@@ -5372,6 +5440,7 @@ setTimeout(() => $('npName')?.focus(), 80);
 
 function closeNewPatientModal() {
 $('newPatientModal').style.display = 'none';
+if (_modalTrigger) { _modalTrigger.focus(); _modalTrigger = null; }
 }
 
 function confirmNewPatient() {
@@ -5383,6 +5452,7 @@ const newPatient = {
 ...DEFAULT_STATE,
 id: genId(),
 caseNum: genCaseNum(),
+serviceDate: new Date().toISOString().split('T')[0],
 name, age,
 gender:    $('npGender')?.value    || 'Male',
 tooth:     $('npTooth')?.value     || '#6',
@@ -5414,15 +5484,18 @@ showToast(`Patient ${name} added`, 'success');
 
 // ── Delete Patient ─────────────────────────────────────────
 function openDeletePatient(id, name) {
+_modalTrigger = document.activeElement;
 _pendingDeleteId = id;
 const desc = $('deletePatientDesc');
 if (desc) desc.textContent = `This will permanently remove "${name}" and all their data.`;
 $('deletePatientModal').style.display = 'flex';
+setTimeout(() => $('cancelDeletePatientBtn')?.focus(), 80);
 }
 
 function closeDeletePatient() {
 $('deletePatientModal').style.display = 'none';
 _pendingDeleteId = null;
+if (_modalTrigger) { _modalTrigger.focus(); _modalTrigger = null; }
 }
 
 function confirmDeletePatient() {
@@ -5497,6 +5570,7 @@ var _notesSetupMode   = false;
 function denaiShowNotesPassphrasePrompt(salt) {
   if (_notesPromptShown) return;
   if (typeof denaiNotesEnc !== 'undefined' && denaiNotesEnc.hasKey()) return;
+  _modalTrigger = document.activeElement;
   _notesPromptShown = true;
   _notesCurrentSalt = salt;
   _notesSetupMode   = false;
@@ -5521,6 +5595,7 @@ function denaiResetNotesPrompt() {
 // Called from account panel "Enable" button — first-time setup flow.
 function setupNotesEncryption() {
   if (typeof denaiNotesEnc === 'undefined') return;
+  _modalTrigger = document.activeElement;
   const salt = denaiNotesEnc.generateSalt();
   // Save salt locally + schedule cloud push so it persists and syncs to other devices.
   if (typeof denaiPrefs !== 'undefined') denaiPrefs.save({ notesKeySalt: salt });
@@ -5546,6 +5621,7 @@ function closeNotesPassphraseModal() {
   if (modal) modal.style.display = 'none';
   const inp = $('notesPassphraseInput'); if (inp) inp.value = '';
   const err = $('notesPassphraseError'); if (err) err.style.display = 'none';
+  if (_modalTrigger) { _modalTrigger.focus(); _modalTrigger = null; }
 }
 
 async function submitNotesPassphrase() {
@@ -5586,6 +5662,7 @@ async function submitNotesPassphrase() {
 // These functions are safe to call even if denaiAuth is unavailable.
 // ================================================================
 function openAuthModal() {
+_modalTrigger = document.activeElement;
 const status = (typeof denaiAuth !== 'undefined') ? denaiAuth.getStatus() : 'local';
 const tabRow = $('authTabRow');
 if (status === 'signed-in') {
@@ -5649,8 +5726,9 @@ if (status === 'signed-in') {
   if (tabRow) tabRow.style.display = 'flex';
 }
 $('authModal').style.display = 'flex';
+$('authModal').setAttribute('aria-labelledby', status === 'signed-in' ? 'authSignedInHeading' : 'authModalHeading');
 setTimeout(() => {
-  const first = status === 'signed-in' ? null : $('authSignInEmail');
+  const first = status === 'signed-in' ? $('authModal').querySelector('button') : $('authSignInEmail');
   if (first) first.focus();
 }, 80);
 }
@@ -5680,6 +5758,7 @@ $('authModal').style.display = 'none';
 const errSI = $('authSignInError'); if (errSI) errSI.style.display = 'none';
 const errSU = $('authSignUpError'); if (errSU) errSU.style.display = 'none';
 const sucSU = $('authSignUpSuccess'); if (sucSU) sucSU.style.display = 'none';
+if (_modalTrigger) { _modalTrigger.focus(); _modalTrigger = null; }
 }
 
 function showAuthTab(tab) {
@@ -5689,11 +5768,12 @@ if ($('authPanelSignedIn')) $('authPanelSignedIn').style.display = 'none';
 const btnSI = $('authTabSignIn'), btnSU = $('authTabSignUp');
 if (btnSI) { btnSI.classList.toggle('auth-tab-active', tab === 'signin'); }
 if (btnSU) { btnSU.classList.toggle('auth-tab-active', tab === 'signup'); }
+$('authModal').setAttribute('aria-labelledby', tab === 'signup' ? 'authSignUpHeading' : 'authModalHeading');
 }
 
 // Shortcuts modal
-function openShortcutsModal() { $('shortcutsModal').style.display = 'flex'; }
-function closeShortcutsModal() { $('shortcutsModal').style.display = 'none'; }
+function openShortcutsModal() { _modalTrigger = document.activeElement; $('shortcutsModal').style.display = 'flex'; setTimeout(() => $('shortcutsModal').querySelector('button')?.focus(), 80); }
+function closeShortcutsModal() { $('shortcutsModal').style.display = 'none'; if (_modalTrigger) { _modalTrigger.focus(); _modalTrigger = null; } }
 
 // ================================================================
 // AUTO-SAVE INDICATOR
@@ -6001,6 +6081,8 @@ History.render();
 render(S);
 renderWorkflowBar();
 _checkEmitAnalysisCompleted();
+// Warn if patient data was corrupted on load — flag set by loadAllPatients() catch block
+if (_patientsCorrupted) showToast('Patient data was unreadable — starting fresh. Export backup once stable.', 'error');
 // B5: insight is the default active view — initialize workflow shell visibility
 const _initShell = document.getElementById('patientWorkflowShell');
 const _initPage  = document.querySelector('.page');
@@ -6024,7 +6106,12 @@ if (!localStorage.getItem('denaiEntryDismissed_v1')) {
   const overlay = document.getElementById('entryOverlay');
   if (overlay) {
     overlay.style.display = 'flex';
-    requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('entry-visible')));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      overlay.classList.add('entry-visible');
+      // Move focus into the overlay so keyboard users are not stranded outside the dialog.
+      const firstFocusable = overlay.querySelector('button, [href], input, [tabindex]:not([tabindex="-1"])');
+      if (firstFocusable) firstFocusable.focus();
+    }));
   }
 }
 
@@ -6233,6 +6320,7 @@ trapFocus('newPatientModal');
 trapFocus('deletePatientModal');
 trapFocus('authModal');
 trapFocus('notesPassphraseModal');
+trapFocus('entryOverlay');
 
 renderPatientList();
 // Wave 7F: init preferences (synchronous — loads from localStorage, applies dark mode).
@@ -6242,14 +6330,47 @@ applyDarkMode();
 
 // Cleanup on page unload to prevent memory leaks
 window.addEventListener('beforeunload', () => {
+  // Flush unsaved textarea content into S before emergency write
+  if (_notesDebounce) {
+    clearTimeout(_notesDebounce); _notesDebounce = null;
+    const _buta = document.getElementById('clinicalNotes');
+    if (_buta && typeof DOMPurify !== 'undefined') S.notes = DOMPurify.sanitize(_buta.value);
+  }
+  if (_labNotesDebounce) {
+    clearTimeout(_labNotesDebounce); _labNotesDebounce = null;
+    const _bula = document.getElementById('labNotesArea');
+    if (_bula) S.labNotes = _bula.value;
+  }
+  // Emergency synchronous save: if a debounced write is pending, execute it now
+  // so data is not lost when the tab closes within the 200ms debounce window.
+  if (_saveStateTimer) {
+    clearTimeout(_saveStateTimer); _saveStateTimer = null;
+    try {
+      const _buSnap = { ...S };
+      const _buId   = S.id;
+      const _buCaseNum = S.caseNum || genCaseNum();
+      _buSnap.caseNum = _buCaseNum;
+      let _buList = loadAllPatients() || [];
+      const _buIdx = _buList.findIndex(p => p.id === _buId);
+      const _buUpdated = { ..._buSnap, id: _buId, caseNum: _buCaseNum };
+      if (_buIdx >= 0) _buList[_buIdx] = _buUpdated; else _buList.push(_buUpdated);
+      saveAllPatients(_buList);
+      setActivePatientId(_buId);
+    } catch (_buE) {}
+  }
   CleanupRegistry.cleanup();
-  if (_saveStateTimer) clearTimeout(_saveStateTimer);
   if (_sliderDebounceTimer) clearTimeout(_sliderDebounceTimer);
-  if (_notesDebounce) clearTimeout(_notesDebounce);
-  if (_labNotesDebounce) clearTimeout(_labNotesDebounce);
   if (_typewriterTimer) clearInterval(_typewriterTimer);
   for (const id of Object.keys(_rafIds)) cancelAnimationFrame(_rafIds[id]);
   if (_matFadeTimer) { clearTimeout(_matFadeTimer); _matFadeTimer = null; }
+});
+
+// Multi-tab safety: detect when another tab writes patient data and warn the user.
+// Does not fire in the tab that made the change — only in other open tabs.
+window.addEventListener('storage', function(e) {
+  if (e.key === PATIENTS_KEY && e.newValue !== null && e.newValue !== e.oldValue) {
+    try { showToast('Data was updated in another tab — reload to see the latest.', 'info'); } catch {}
+  }
 });
 
 })();

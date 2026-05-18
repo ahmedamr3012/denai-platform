@@ -26,6 +26,8 @@ window.denaiSerializer = (function () {
     'costImplant', 'costBridge', 'costBoneGraft', 'costCrown', 'costRCT', 'costPostCore',
     // Wave 8C: workflow continuity — synced so plan/lab state follows patient across devices
     'planApproved', 'labStatus', 'caseDelivered',
+    // Wave 4A: serviceDate — ISO date (YYYY-MM-DD) case was opened; synced as clinical record metadata
+    'serviceDate',
     // lastAccessed and reportHistory are intentionally excluded: device-local + large array
   ];
 
