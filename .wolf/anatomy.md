@@ -1,12 +1,14 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-17T21:46:25.082Z
-> Files: 31 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-18T09:02:22.616Z
+> Files: 37 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~104675 tok)
+- `index.html` — denai — Clinical Insight (~105243 tok)
 - `playwright.config.js` (~337 tok)
+- `privacy.html` — Phase 3C-ii: standalone static privacy policy page. Self-contained HTML with trust.css + dark-mode flash prevention. Links to terms.html. (~2720 tok)
+- `terms.html` — Phase 3C-iii: standalone static terms of service page. Mirrors privacy.html architecture. tp-is-not list for "what denai is not" section. Links to privacy.html. (~3150 tok)
 
 ## .claude/
 
@@ -20,7 +22,10 @@
 ## docs/
 
 - `deployment-validation.md` — denai — Deployment Validation Playbook (~2691 tok)
+- `privacy-policy.md` — denai — Privacy Policy (~1685 tok)
 - `release-checklist.md` — denai — Release Checklist (~2001 tok)
+- `terminology-governance.md` — Phase 3C-i: canonical term table, prohibited-phrase checklist, AI/workflow/privacy terminology rules, tone standard, review process (~3826 tok)
+- `terms-of-service.md` — denai — Terms of Service (~1979 tok)
 
 ## notes/
 
@@ -45,6 +50,10 @@
 ## src/reports/
 
 - `reportTemplates.js` — ── Shared report shell (header + CSS + footer wrapper) ───────── (~2302 tok)
+
+## src/styles/
+
+- `trust.css` — Phase 3C-iv: shared styles for privacy.html + terms.html. Self-contained CSS vars for light/dark mode (html.dark class + prefers-color-scheme). No dependency on app token files. (~1313 tok)
 
 ## src/styles/components/
 

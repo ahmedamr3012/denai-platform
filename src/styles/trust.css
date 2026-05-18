@@ -1,0 +1,235 @@
+/* ================================================================
+   TRUST PAGE — Shared styles for privacy.html and terms.html
+   Self-contained: no dependency on app token files.
+   Dark mode: html.dark class (set by inline head script) +
+              @media (prefers-color-scheme: dark) OS fallback.
+   ================================================================ */
+
+:root {
+  --tp-bg:      #EDF6F1;
+  --tp-surface: #fff;
+  --tp-text:    #111827;
+  --tp-muted:   #6B7280;
+  --tp-subtle:  #9CA3AF;
+  --tp-border:  #E5E7EB;
+  --tp-link:    #1F7A4F;
+  --tp-link-h:  #185f3e;
+  --tp-nav-bg:  #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tp-bg:      #0B2B1F;
+    --tp-surface: #1A2F24;
+    --tp-text:    #E0F2E9;
+    --tp-muted:   #9CA3AF;
+    --tp-subtle:  #6B7280;
+    --tp-border:  #2a5a3a;
+    --tp-link:    #2a9c67;
+    --tp-link-h:  #3bb77a;
+    --tp-nav-bg:  #0B2B1F;
+  }
+}
+
+html.dark {
+  --tp-bg:      #0B2B1F;
+  --tp-surface: #1A2F24;
+  --tp-text:    #E0F2E9;
+  --tp-muted:   #9CA3AF;
+  --tp-subtle:  #6B7280;
+  --tp-border:  #2a5a3a;
+  --tp-link:    #2a9c67;
+  --tp-link-h:  #3bb77a;
+  --tp-nav-bg:  #0B2B1F;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { background: var(--tp-bg); }
+
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  background: var(--tp-bg);
+  color: var(--tp-text);
+  line-height: 1.65;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ── Navigation bar ── */
+.tp-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--tp-nav-bg);
+  border-bottom: 1px solid var(--tp-border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tp-nav-back {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tp-link);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 140ms;
+}
+.tp-nav-back:hover { color: var(--tp-link-h); }
+
+.tp-nav-label {
+  font-size: 13px;
+  color: var(--tp-muted);
+  margin-left: auto;
+}
+
+/* ── Main reading area ── */
+.tp-main {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+/* ── Document typography ── */
+.tp-doc h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--tp-text);
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.tp-doc .tp-meta {
+  font-size: 12px;
+  color: var(--tp-subtle);
+  margin-bottom: 36px;
+}
+
+.tp-doc .tp-intro {
+  font-size: 14px;
+  color: var(--tp-muted);
+  margin-bottom: 36px;
+  line-height: 1.7;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--tp-border);
+}
+
+.tp-doc h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--tp-text);
+  margin-top: 36px;
+  margin-bottom: 10px;
+  letter-spacing: -.01em;
+}
+
+.tp-doc p {
+  font-size: 14px;
+  color: var(--tp-text);
+  margin-bottom: 12px;
+  line-height: 1.7;
+}
+
+.tp-doc p:last-child { margin-bottom: 0; }
+
+.tp-doc strong {
+  font-weight: 700;
+  color: var(--tp-text);
+}
+
+.tp-doc ul, .tp-doc ol {
+  margin-bottom: 12px;
+  padding-left: 22px;
+}
+
+.tp-doc li {
+  font-size: 14px;
+  color: var(--tp-text);
+  margin-bottom: 6px;
+  line-height: 1.65;
+}
+
+.tp-doc a {
+  color: var(--tp-link);
+  text-decoration: none;
+}
+.tp-doc a:hover {
+  color: var(--tp-link-h);
+  text-decoration: underline;
+}
+
+.tp-doc hr {
+  border: none;
+  border-top: 1px solid var(--tp-border);
+  margin: 28px 0;
+}
+
+/* "denai is not" styled block */
+.tp-is-not {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 12px;
+}
+.tp-is-not li {
+  padding: 10px 14px;
+  border: 1px solid var(--tp-border);
+  border-radius: 8px;
+  margin-bottom: 7px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.tp-is-not li strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+/* ── Footer ── */
+.tp-footer {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+  border-top: 1px solid var(--tp-border);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+
+.tp-footer-brand {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--tp-muted);
+  margin-right: auto;
+}
+
+.tp-footer a {
+  font-size: 12px;
+  color: var(--tp-link);
+  text-decoration: none;
+}
+.tp-footer a:hover {
+  color: var(--tp-link-h);
+  text-decoration: underline;
+}
+
+.tp-footer-sep {
+  font-size: 12px;
+  color: var(--tp-subtle);
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .tp-main  { padding: 32px 20px 60px; }
+  .tp-nav   { padding: 12px 20px; }
+  .tp-footer { padding: 20px 20px 36px; }
+  .tp-doc h1 { font-size: 22px; }
+  .tp-doc h2 { font-size: 14px; }
+}

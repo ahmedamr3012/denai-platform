@@ -2077,6 +2077,41 @@
       "related_bugs": [],
       "occurrences": 4,
       "last_seen": "2026-05-17T21:46:25.094Z"
+    },
+    {
+      "id": "bug-129",
+      "timestamp": "2026-05-18T09:02:17.601Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"Clinical decision support interface for dental pr",
+      "fix": "Changed to \"AI-assisted clinical workflow platform for dental",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": ["bug-130"],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T09:02:17.601Z"
+    },
+    {
+      "id": "bug-130",
+      "timestamp": "2026-05-18T09:15:00.000Z",
+      "error_message": "WCAG 2 AA color-contrast CI failure: .entry-trust-links > a links fail contrast threshold on entry overlay",
+      "file": "index.html",
+      "root_cause": ".entry-trust-links a had color: rgba(255,255,255,.55). The cerebrum already documented that text on the entry overlay (rgba(11,43,31,.88)) requires ≥.85 opacity — but the trust links added in Phase 3C-iv used .55 (below threshold). Composited: white*.55 on composited dark-green = insufficient contrast for 10px text (WCAG AA requires 4.5:1).",
+      "fix": "Changed .entry-trust-links a color from rgba(255,255,255,.55) to rgba(255,255,255,.85), matching the minimum documented in the cerebrum for entry overlay text.",
+      "tags": [
+        "a11y",
+        "wcag",
+        "color-contrast",
+        "css",
+        "entry-overlay",
+        "phase-3c"
+      ],
+      "related_bugs": ["bug-091", "bug-107", "bug-129"],
+      "occurrences": 1,
+      "last_seen": "2026-05-18T09:15:00.000Z"
     }
   ]
 }

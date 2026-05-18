@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — denai</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="src/styles/trust.css" />
+  <!-- Dark-mode flash prevention: match app's stored preference -->
+  <script>
+    try {
+      var _p = JSON.parse(localStorage.getItem('denaiPrefs_v1') || '{}');
+      var _d = _p.darkMode != null ? _p.darkMode : localStorage.getItem('dandyDarkMode') === 'true';
+      if (_d) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.style.background = '#0B2B1F';
+      }
+    } catch(e) {}
+  </script>
+</head>
+<body>
+
+  <nav class="tp-nav" aria-label="Page navigation">
+    <a class="tp-nav-back" href="index.html">&#8592; Back to denai</a>
+    <span class="tp-nav-label">Privacy Policy</span>
+  </nav>
+
+  <main class="tp-main">
+    <article class="tp-doc">
+
+      <h1>Privacy Policy</h1>
+      <p class="tp-meta">Last updated: 2026-05-18</p>
+
+      <p class="tp-intro">
+        This policy describes how denai stores, processes, and protects data entered during clinical workflow.
+        It is written for clinicians who use denai to organize patient care.
+      </p>
+
+      <h2>1. Introduction</h2>
+      <p>
+        denai is an AI-assisted clinical workflow tool for dental clinicians. By design, patient data remains
+        on your device unless you choose to enable cloud sync.
+      </p>
+      <p>
+        This local-first architecture means denai does not require an account, does not collect your patient
+        data by default, and does not transmit clinical information without your action. Signing in and enabling
+        cloud sync is entirely optional.
+      </p>
+      <p>
+        All data you enter — patient records, clinical inputs, workflow stages, and notes — is under your control.
+      </p>
+
+      <hr />
+
+      <h2>2. What denai stores locally</h2>
+      <p>
+        When you use denai without signing in, all data is stored in your browser's local storage on your device.
+        This includes:
+      </p>
+      <ul>
+        <li>Patient records and clinical inputs (tooth, bone, hygiene, and condition data)</li>
+        <li>Treatment pathway recommendations generated from those inputs</li>
+        <li>Workflow stage and history</li>
+        <li>Application preferences (theme, layout settings)</li>
+        <li>Clinical notes you enter</li>
+      </ul>
+      <p>
+        <strong>Local storage is managed by your browser.</strong> Clearing your browser's site data, or using
+        a browser's "clear history" feature, will permanently delete all local-only records. denai cannot
+        recover them. If you intend to use denai across devices or as a long-term record, enabling cloud sync
+        is recommended.
+      </p>
+      <p>
+        Local storage is not accessible to other websites and is not transmitted to denai or any third party
+        during normal use without cloud sync enabled.
+      </p>
+
+      <hr />
+
+      <h2>3. Optional cloud sync</h2>
+      <p>
+        Cloud sync is opt-in. It activates when you sign into a denai account. Once enabled, the following
+        data is synchronized to a cloud database:
+      </p>
+      <ul>
+        <li>Patient records and clinical state</li>
+        <li>Encrypted clinical notes (see Section 4)</li>
+        <li>Workflow stage (plan status, lab status)</li>
+        <li>Application preferences</li>
+      </ul>
+      <p>The following data is <strong>not</strong> synchronized and remains local only:</p>
+      <ul>
+        <li>Generated reports and report history</li>
+        <li>Lab notes and device-specific workflow annotations</li>
+        <li>Browser session state</li>
+      </ul>
+      <p>
+        Cloud sync depends on Supabase, a third-party cloud database platform (see Section 6). Availability is
+        subject to Supabase's infrastructure. denai does not guarantee uninterrupted cloud sync service.
+      </p>
+      <p>
+        Signing out does not delete your local data. Local records persist on the device independently of
+        account status.
+      </p>
+
+      <hr />
+
+      <h2>4. Encrypted clinical notes</h2>
+      <p>
+        Clinical notes are the most sensitive data you enter into denai. When cloud sync is enabled, notes are
+        encrypted on your device before upload.
+      </p>
+      <p>
+        <strong>How encryption works:</strong> Notes are encrypted using AES-GCM 256-bit symmetric encryption.
+        The encryption key is derived from a passphrase you set, using PBKDF2 with 100,000 iterations and
+        SHA-256. The passphrase is never transmitted to denai or Supabase. The derived key is held in memory
+        only and is cleared when you sign out.
+      </p>
+      <p>
+        <strong>What denai cannot access:</strong> denai and Supabase never receive your passphrase and cannot
+        decrypt your notes. The ciphertext stored in the cloud is opaque to us.
+      </p>
+      <p>
+        <strong>Passphrase loss is permanent.</strong> If you lose or forget your passphrase, encrypted notes
+        stored in cloud sync <strong>cannot be recovered</strong>. There is no recovery mechanism. Your locally
+        stored notes remain accessible on the device where they were entered, regardless of passphrase status.
+      </p>
+      <p>
+        Multi-device access to encrypted notes requires using the same passphrase on each device. Notes entered
+        before encryption was set up are stored without encryption in the cloud sync record for that patient.
+      </p>
+
+      <hr />
+
+      <h2>5. Accounts and authentication</h2>
+      <p>
+        Creating a denai account requires an email address and password. Authentication is managed by Supabase
+        Auth. When you sign in, a session token is stored in your browser to maintain your session across page
+        loads.
+      </p>
+      <p>
+        Your email address is used only for authentication. It is not used for marketing communications, shared
+        with advertising networks, or sold to third parties.
+      </p>
+
+      <hr />
+
+      <h2>6. Third-party services</h2>
+      <p>
+        <strong>Supabase</strong> is the only third-party service denai uses for cloud functionality. When cloud
+        sync is enabled, patient records and encrypted notes are stored in a Supabase-managed database. Supabase
+        processes this data under its own privacy policy and data processing terms, available at supabase.com.
+      </p>
+      <p>denai does not use:</p>
+      <ul>
+        <li>Analytics or usage-tracking services</li>
+        <li>Advertising or retargeting networks</li>
+        <li>Third-party AI inference services — all recommendation processing runs client-side on your device</li>
+        <li>Session recording or behavioral tracking tools</li>
+      </ul>
+      <p>
+        No patient data is transmitted to any AI provider, including Anthropic, OpenAI, or equivalent services.
+      </p>
+
+      <hr />
+
+      <h2>7. Data control and deletion</h2>
+      <p>
+        <strong>Exporting your data:</strong> You can export all local patient records as a JSON file at any time
+        from the account panel. This export includes all fields stored locally.
+      </p>
+      <p>
+        <strong>Signing out:</strong> Signing out clears your session token and encryption key. Your local
+        patient data is not affected.
+      </p>
+      <p>
+        <strong>Deleting a patient:</strong> Deleting a patient from a signed-in session propagates the deletion
+        to your cloud-synced records. The deletion is queued and executed on the next sync.
+      </p>
+      <p>
+        <strong>Clearing browser storage:</strong> Clearing your browser's site data removes all local-only
+        records permanently. Cloud-synced records are not affected and will re-sync on your next sign-in.
+      </p>
+      <p>
+        <strong>Account deletion:</strong> To delete your denai account and associated cloud records, contact
+        us at the address below. We will remove your account and cloud-stored data. Local records stored on
+        your device must be cleared separately through your browser.
+      </p>
+
+      <hr />
+
+      <h2>8. AI-generated recommendations</h2>
+      <p>
+        denai's recommendation engine analyzes clinical inputs — tooth position, bone level, hygiene status,
+        and related factors — to generate treatment pathway suggestions. This processing runs entirely on your
+        device. No clinical data is transmitted to an external AI service.
+      </p>
+      <p>
+        Recommendations are informational workflow aids. They are not diagnoses. They are not medical advice.
+        They do not substitute for clinical judgment. The treating clinician is responsible for evaluating all
+        recommendations in the context of individual patient care.
+      </p>
+
+      <hr />
+
+      <h2>9. Changes to this policy</h2>
+      <p>
+        This policy may be updated as denai's architecture or data practices evolve. The date at the top of
+        this document reflects the most recent revision. Continued use of denai after a policy update
+        constitutes acceptance of the revised terms.
+      </p>
+
+      <hr />
+
+      <h2>10. Contact</h2>
+      <p>For questions about this policy, data requests, or account deletion:</p>
+      <p><strong>Email:</strong> <em>(contact address published at launch)</em></p>
+      <p>See also: <a href="terms.html">Terms of Service</a></p>
+
+    </article>
+  </main>
+
+  <footer class="tp-footer">
+    <span class="tp-footer-brand">denai</span>
+    <a href="privacy.html" aria-current="page">Privacy Policy</a>
+    <span class="tp-footer-sep" aria-hidden="true">·</span>
+    <a href="terms.html">Terms of Service</a>
+    <span class="tp-footer-sep" aria-hidden="true">·</span>
+    <a href="index.html">Back to app</a>
+  </footer>
+
+</body>
+</html>

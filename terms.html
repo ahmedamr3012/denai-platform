@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service — denai</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="src/styles/trust.css" />
+  <!-- Dark-mode flash prevention: match app's stored preference -->
+  <script>
+    try {
+      var _p = JSON.parse(localStorage.getItem('denaiPrefs_v1') || '{}');
+      var _d = _p.darkMode != null ? _p.darkMode : localStorage.getItem('dandyDarkMode') === 'true';
+      if (_d) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.style.background = '#0B2B1F';
+      }
+    } catch(e) {}
+  </script>
+</head>
+<body>
+
+  <nav class="tp-nav" aria-label="Page navigation">
+    <a class="tp-nav-back" href="index.html">&#8592; Back to denai</a>
+    <span class="tp-nav-label">Terms of Service</span>
+  </nav>
+
+  <main class="tp-main">
+    <article class="tp-doc">
+
+      <h1>Terms of Service</h1>
+      <p class="tp-meta">Last updated: 2026-05-18</p>
+
+      <p class="tp-intro">
+        These terms govern your use of denai, an AI-assisted clinical workflow tool. By using denai, you agree
+        to these terms.
+      </p>
+
+      <h2>1. Introduction</h2>
+      <p>
+        These Terms of Service apply to all use of denai, including the web application, associated
+        browser-based tools, and optional cloud sync services.
+      </p>
+      <p>
+        denai is operated as a clinical workflow tool. It is designed for use by licensed dental clinicians and
+        qualified clinical staff as a workflow organization and planning aid. If you are using denai on behalf
+        of a clinic or practice, you represent that you are authorized to agree to these terms on its behalf.
+      </p>
+      <p>
+        By using denai, you agree to these terms and to our <a href="privacy.html">Privacy Policy</a>.
+      </p>
+
+      <hr />
+
+      <h2>2. What denai is</h2>
+      <p>
+        denai is an AI-assisted clinical workflow platform. It organizes clinical cases, generates treatment
+        pathway suggestions from clinician-provided inputs, and supports workflow progression from planning
+        through laboratory communication.
+      </p>
+      <p><strong>denai is not:</strong></p>
+      <ul class="tp-is-not">
+        <li>
+          <strong>A diagnostic system.</strong>
+          denai does not diagnose conditions. Nothing it generates constitutes a clinical diagnosis.
+        </li>
+        <li>
+          <strong>Medical advice.</strong>
+          No output from denai constitutes a clinical recommendation, treatment directive, or clinical
+          consultation in a medical or legal sense.
+        </li>
+        <li>
+          <strong>A medical device.</strong>
+          denai is not registered or cleared as a medical device in any jurisdiction.
+        </li>
+        <li>
+          <strong>An autonomous clinical authority.</strong>
+          denai does not make clinical decisions and is not designed to operate independently of the
+          treating clinician's judgment.
+        </li>
+      </ul>
+      <p>
+        denai is a tool. Clinical decisions — including the application, modification, or rejection of any
+        output denai produces — remain entirely with the licensed treating clinician.
+      </p>
+
+      <hr />
+
+      <h2>3. AI-generated recommendations</h2>
+      <p>
+        denai's recommendation engine analyzes structured clinical inputs — tooth position, bone level, hygiene
+        status, and related factors you provide — to generate treatment pathway suggestions. These suggestions
+        are produced by a programmatic inference model operating on the inputs entered.
+      </p>
+      <p>The following applies to all recommendations:</p>
+      <ul>
+        <li>
+          Recommendations are derived solely from the inputs you provide. They do not incorporate factors
+          outside those inputs, including direct clinical observation, patient history, contraindications, or
+          systemic health conditions.
+        </li>
+        <li>
+          Recommendations are expressed as a <strong>recommendation strength</strong>, not as a probability,
+          certainty percentage, or measure of clinical accuracy.
+        </li>
+        <li>
+          Recommendations are informational workflow aids. They are not diagnoses, treatment prescriptions, or
+          directives for patient care.
+        </li>
+        <li>
+          The recommendation engine runs entirely on your device. No clinical data is transmitted to any
+          external AI service to generate these outputs.
+        </li>
+      </ul>
+      <p>
+        denai does not warrant the accuracy, completeness, or clinical suitability of any recommendation
+        generated. Clinical suitability is evaluated and determined by the treating clinician.
+      </p>
+
+      <hr />
+
+      <h2>4. Clinician responsibility</h2>
+      <p>
+        The treating clinician retains full professional responsibility for all patient care decisions.
+      </p>
+      <p>
+        denai assists with workflow organization and generates informational pathway suggestions from the inputs
+        provided. It does not replace clinical training, clinical judgment, or the clinician-patient
+        relationship. A recommendation generated by denai is one input among many a clinician may choose to
+        consider — it is not an instruction.
+      </p>
+      <p>When using denai, you are responsible for:</p>
+      <ul>
+        <li>
+          Independently evaluating all AI-generated recommendations before applying them to any aspect of
+          patient care
+        </li>
+        <li>
+          Ensuring your use of denai complies with applicable professional, regulatory, and licensing
+          obligations in your jurisdiction
+        </li>
+        <li>
+          Verifying that the clinical inputs you enter are accurate and reflect the patient's presentation
+        </li>
+        <li>All clinical and professional outcomes associated with your patient care decisions</li>
+      </ul>
+
+      <hr />
+
+      <h2>5. Acceptable use</h2>
+      <p>
+        denai is intended for clinical workflow organization, case planning, and treatment pathway assistance
+        by licensed dental clinicians and qualified clinical staff. Educational and training use is permitted.
+      </p>
+      <p>You agree not to:</p>
+      <ul>
+        <li>
+          Use denai as the sole basis for any clinical decision, without independent professional evaluation
+        </li>
+        <li>
+          Use denai to provide clinical guidance to patients or third parties in place of a professional
+          clinical assessment
+        </li>
+        <li>
+          Attempt to reverse-engineer, decompile, or tamper with denai's software, data structures, or sync
+          infrastructure
+        </li>
+        <li>
+          Use denai for any unlawful purpose, or in a manner that violates applicable professional or
+          regulatory obligations
+        </li>
+        <li>
+          Attempt to disrupt, overload, or gain unauthorized access to cloud sync services or authentication
+          systems
+        </li>
+      </ul>
+
+      <hr />
+
+      <h2>6. Data and privacy</h2>
+      <p>
+        denai stores patient data locally in your browser by default. Cloud sync — including encrypted storage
+        of clinical notes — is optional and activates only when you sign into a denai account.
+      </p>
+      <p>
+        Our <a href="privacy.html">Privacy Policy</a> governs how data is stored, synced, and protected. The
+        key points:
+      </p>
+      <ul>
+        <li>Patient records remain on your device unless cloud sync is enabled</li>
+        <li>Clinical notes are encrypted on your device before upload; denai cannot read them</li>
+        <li>
+          Supabase provides cloud sync infrastructure and processes synced data under its own policies
+        </li>
+        <li>No clinical data is transmitted to external AI services</li>
+      </ul>
+
+      <hr />
+
+      <h2>7. Service availability</h2>
+      <p>
+        denai operates as a local-first application. Core functionality — case management, AI-generated
+        recommendations, and report generation — runs on your device and does not require network access.
+      </p>
+      <p>
+        Cloud sync depends on Supabase's infrastructure. denai does not guarantee uninterrupted cloud sync
+        availability. Service may be affected by maintenance windows, infrastructure outages, or changes to
+        third-party systems outside our control.
+      </p>
+      <p>
+        Local storage is managed by your browser. Clearing browser site data removes local-only records
+        permanently; denai cannot recover them. This is a property of how browser storage works, not a service
+        limitation we can mitigate.
+      </p>
+      <p>
+        denai is software. Bugs and unexpected behavior may occur. Issues can be reported via the contact
+        address below and will be addressed as resources allow. We do not offer a guaranteed response time or
+        service level.
+      </p>
+
+      <hr />
+
+      <h2>8. Limitation of liability</h2>
+      <p>denai is provided as a workflow assistance tool. We do not warrant:</p>
+      <ul>
+        <li>The accuracy, completeness, or clinical suitability of any AI-generated recommendation</li>
+        <li>Uninterrupted or error-free operation of any feature, including cloud sync</li>
+        <li>
+          That data stored in browser-based local storage will not be lost due to browser-managed storage
+          operations
+        </li>
+        <li>That cloud sync data will be available at any particular time</li>
+      </ul>
+      <p>
+        denai is not responsible for clinical decisions made using its recommendations, regardless of whether
+        those recommendations were followed, modified, or rejected. Clinical responsibility for patient care
+        remains with the treating clinician.
+      </p>
+      <p>
+        To the extent permitted by applicable law, denai is not liable for indirect, incidental, or
+        consequential losses arising from your use of the application, including loss of clinical records,
+        data loss from browser storage operations, or cloud sync interruptions.
+      </p>
+
+      <hr />
+
+      <h2>9. Changes to these terms</h2>
+      <p>
+        These terms may be updated as denai's features, architecture, or legal obligations evolve. The date at
+        the top of this document reflects the most recent revision. Continued use of denai after an update
+        constitutes acceptance of the revised terms.
+      </p>
+      <p>
+        Material changes affecting clinician responsibility or data handling will be noted in the revision date
+        and communicated where practicable.
+      </p>
+
+      <hr />
+
+      <h2>10. Contact</h2>
+      <p>For questions about these terms, data practices, or to report a concern:</p>
+      <p><strong>Email:</strong> <em>(contact address published at launch)</em></p>
+      <p>See also: <a href="privacy.html">Privacy Policy</a></p>
+
+    </article>
+  </main>
+
+  <footer class="tp-footer">
+    <span class="tp-footer-brand">denai</span>
+    <a href="privacy.html">Privacy Policy</a>
+    <span class="tp-footer-sep" aria-hidden="true">·</span>
+    <a href="terms.html" aria-current="page">Terms of Service</a>
+    <span class="tp-footer-sep" aria-hidden="true">·</span>
+    <a href="index.html">Back to app</a>
+  </footer>
+
+</body>
+</html>

@@ -28,7 +28,7 @@
   <!-- Dark mode flash prevention: apply dark background before first paint -->
   <script>(function(){try{if(localStorage.getItem('dandyDarkMode')==='true'){document.documentElement.style.background='#0B2B1F';document.documentElement.style.colorScheme='dark';}}catch(e){}}());</script>
   <meta property="og:title" content="denai — Clinical Insight" />
-  <meta property="og:description" content="Clinical decision support interface for dental professionals." />
+  <meta property="og:description" content="AI-assisted clinical workflow platform for dental professionals." />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary" />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
@@ -400,6 +400,19 @@ body.dark .dash-pipeline-strip { background: var(--c-n50); border-color: var(--c
 .entry-btn-local:hover { background: rgba(0,0,0,.42); }
 .entry-btn-local:focus-visible, .entry-btn-primary:focus-visible { outline: 2px solid rgba(255,255,255,.6); outline-offset: 2px; }
 .entry-local-note { font-size: 11px; color: rgba(255,255,255,.95); margin-top: 8px; }
+.entry-trust-links { font-size: 10px; margin-top: 10px; display: flex; gap: 8px; align-items: center; justify-content: center; }
+.entry-trust-links a { color: rgba(255,255,255,.85); text-decoration: none; transition: color var(--t-fast); }
+.entry-trust-links a:hover { color: rgba(255,255,255,.85); }
+.entry-trust-links a:focus-visible { outline: 2px solid rgba(255,255,255,.5); outline-offset: 2px; border-radius: 2px; }
+.entry-trust-links span { color: rgba(255,255,255,.3); }
+.sidebar-trust { padding: 6px 14px 10px; display: flex; gap: 8px; align-items: center; }
+.sidebar-trust a { font-size: 10px; color: rgba(255,255,255,.4); text-decoration: none; transition: color var(--t-fast); }
+.sidebar-trust a:hover { color: rgba(255,255,255,.7); }
+.sidebar-trust a:focus-visible { outline: 2px solid var(--c-brand-lite); outline-offset: 2px; border-radius: 2px; }
+.sidebar-trust span { font-size: 10px; color: rgba(255,255,255,.25); }
+.auth-trust-line { font-size: 11px; color: var(--c-n400); text-align: center; margin-top: 14px; line-height: 1.5; }
+.auth-trust-line a { color: var(--c-n500); text-decoration: none; }
+.auth-trust-line a:hover { color: var(--c-n700); text-decoration: underline; }
 
 .case-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
 .back-link { font-size: 13px; font-weight: 600; color: var(--c-n500); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color var(--t-fast); border-radius: 6px; padding: 4px 6px; margin: -4px -6px; }
@@ -1066,10 +1079,15 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   <div class="user-av" aria-hidden="true" id="authUserAvatar">Dr</div>
   <div>
     <div class="user-name" id="authUserName">Local mode</div>
-    <div class="user-plan" id="authUserPlan">Sign in to sync</div>
+    <div class="user-plan" id="authUserPlan">Local-only mode</div>
   </div>
   <span id="authStatusIndicator" aria-hidden="true" title="Local mode"
         style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);margin-left:auto;flex-shrink:0;transition:background 0.3s;"></span>
+</div>
+<div class="sidebar-trust">
+  <a href="privacy.html" target="_blank" rel="noopener">Privacy</a>
+  <span aria-hidden="true">·</span>
+  <a href="terms.html" target="_blank" rel="noopener">Terms</a>
 </div>
 
   </aside>
@@ -1227,6 +1245,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
             </div>
           </div>
         </div>
+        <p class="auth-trust-line">By signing in, you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
       </div>
 
       <!-- Sign-up panel (hidden by default) -->
@@ -1247,6 +1266,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;" onclick="closeAuthModal()">Cancel</button>
           <button class="btn btn-pri" type="button" id="authSignUpBtn" style="flex:1;justify-content:center;">Create Account</button>
         </div>
+        <p class="auth-trust-line">By creating an account, you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
       </div>
 
       <!-- Signed-in panel (hidden by default) -->
@@ -1803,6 +1823,11 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <i class="fa-solid fa-arrow-right" style="font-size:11px;margin-right:4px;" aria-hidden="true"></i> Continue Locally
       </button>
       <div class="entry-local-note">No account needed · Data stays on your device</div>
+      <div class="entry-trust-links">
+        <a href="terms.html" target="_blank" rel="noopener">Terms</a>
+        <span aria-hidden="true">·</span>
+        <a href="privacy.html" target="_blank" rel="noopener">Privacy</a>
+      </div>
     </div>
   </div><!-- /entryOverlay -->
 
@@ -3092,7 +3117,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       container.innerHTML = `<div class="lab-notready">
         <div class="plan-empty-icon"><i class="fa-solid fa-flask" aria-hidden="true"></i></div>
         <h3 style="font-size:16px;font-weight:700;color:var(--c-n600);margin:0 0 6px;">Plan not yet approved</h3>
-        <p style="font-size:13px;color:var(--c-n400);margin:0 0 16px;max-width:300px;">Approve the treatment plan before proceeding to lab &amp; manufacturing.</p>
+        <p style="font-size:13px;color:var(--c-n400);margin:0 0 16px;max-width:300px;">Mark the treatment plan ready for lab before proceeding to lab &amp; manufacturing.</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
           <button class="btn btn-pri" type="button" onclick="navigateTo('plan')"><i class="fa-solid fa-pen-ruler" aria-hidden="true"></i> Treatment Plan</button>
           <button class="btn btn-sec" type="button" onclick="approvePlan()"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Mark Ready for Lab</button>
