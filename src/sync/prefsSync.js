@@ -1,11 +1,12 @@
 // src/sync/prefsSync.js
 // Wave 7F: Preferences persistence + background cloud sync.
+// Wave C1: Extended with toothSystem, currency, pricing (clinic preferences foundation).
 //
 // LOCAL-FIRST INVARIANT: localStorage is always authoritative.
 // init() is synchronous — local prefs apply before any cloud fetch.
 // hydrate() is async and non-blocking — cloud failures silently degrade to local.
 //
-// Storage key: 'denaiPrefs_v1' (JSONB: { darkMode, _lastSyncedAt })
+// Storage key: 'denaiPrefs_v1' (JSONB: { darkMode, toothSystem, currency, pricing, _lastSyncedAt })
 // Backward compat: falls back to 'dandyDarkMode' on first load if denaiPrefs_v1 absent.
 //
 // DOM bridge: denaiPrefs cannot directly set `let darkMode` (a const/let in the
@@ -18,10 +19,18 @@ window.denaiPrefs = (function () {
   var LEGACY_DARK_KEY   = 'dandyDarkMode';
   var PREFS_SCHEMA_VER  = 1;
 
+  // Valid currency codes — avoids a direct dep on clinicPrefs.js's CURRENCY_CONFIG.
+  var _VALID_CURRENCIES = ['USD', 'EUR', 'CAD', 'EGP'];
+
   // Canonical preferences shape — extend here for future preferences.
+  // toothSystem, currency, pricing: Wave C1 additions.
+  // pricing: null = no clinic overrides set; formatters.js falls back to catalog defaults.
   var _prefs = {
     darkMode:     false,
     notesKeySalt: null, // Wave 7G: PBKDF2 salt (non-sensitive). Stored alongside prefs.
+    toothSystem:  'universal', // 'universal' | 'fdi' — display only
+    currency:     'USD',       // 'USD' | 'EUR' | 'CAD' | 'EGP' — display only
+    pricing:      null,        // { implant, bridge, boneGraft, crown, rct, postCore, annualCheckup }
   };
   // ISO string from the last cloud update_at we received.
   // Used for last-write-wins merge on next hydrate().
@@ -36,9 +45,15 @@ window.denaiPrefs = (function () {
       if (raw) {
         var parsed = JSON.parse(raw);
         if (parsed && typeof parsed === 'object') {
-          if (typeof parsed.darkMode === 'boolean')    _prefs.darkMode     = parsed.darkMode;
-          if (typeof parsed.notesKeySalt === 'string') _prefs.notesKeySalt = parsed.notesKeySalt;
-          if (typeof parsed._lastSyncedAt === 'string') _lastSyncedAt = parsed._lastSyncedAt;
+          if (typeof parsed.darkMode === 'boolean')     _prefs.darkMode     = parsed.darkMode;
+          if (typeof parsed.notesKeySalt === 'string')  _prefs.notesKeySalt = parsed.notesKeySalt;
+          if (typeof parsed._lastSyncedAt === 'string') _lastSyncedAt       = parsed._lastSyncedAt;
+          // Wave C1: clinic preferences
+          if (typeof parsed.toothSystem === 'string')   _prefs.toothSystem  = parsed.toothSystem;
+          if (typeof parsed.currency === 'string' && _VALID_CURRENCIES.indexOf(parsed.currency) !== -1) {
+            _prefs.currency = parsed.currency;
+          }
+          if (parsed.pricing && typeof parsed.pricing === 'object') _prefs.pricing = parsed.pricing;
           return; // loaded successfully — skip legacy fallback
         }
       }
@@ -57,6 +72,9 @@ window.denaiPrefs = (function () {
       localStorage.setItem(PREFS_KEY, JSON.stringify({
         darkMode:      _prefs.darkMode,
         notesKeySalt:  _prefs.notesKeySalt,
+        toothSystem:   _prefs.toothSystem,   // Wave C1
+        currency:      _prefs.currency,       // Wave C1
+        pricing:       _prefs.pricing,        // Wave C1 — null or pricing object
         _lastSyncedAt: _lastSyncedAt,
       }));
     } catch (e) {}
@@ -103,6 +121,9 @@ window.denaiPrefs = (function () {
         preferences: {
           darkMode:     _prefs.darkMode,
           notesKeySalt: _prefs.notesKeySalt,
+          toothSystem:  _prefs.toothSystem,  // Wave C1
+          currency:     _prefs.currency,      // Wave C1
+          pricing:      _prefs.pricing,       // Wave C1
           schema_ver:   PREFS_SCHEMA_VER,
         },
       }, { onConflict: 'user_id' });
@@ -164,6 +185,12 @@ window.denaiPrefs = (function () {
         // Cloud is newer — apply cloud preferences
         if (typeof cloudPrefs.darkMode === 'boolean')    _prefs.darkMode     = cloudPrefs.darkMode;
         if (typeof cloudPrefs.notesKeySalt === 'string') _prefs.notesKeySalt = cloudPrefs.notesKeySalt;
+        // Wave C1: clinic preferences from cloud
+        if (typeof cloudPrefs.toothSystem === 'string')  _prefs.toothSystem  = cloudPrefs.toothSystem;
+        if (typeof cloudPrefs.currency === 'string' && _VALID_CURRENCIES.indexOf(cloudPrefs.currency) !== -1) {
+          _prefs.currency = cloudPrefs.currency;
+        }
+        if (cloudPrefs.pricing && typeof cloudPrefs.pricing === 'object') _prefs.pricing = cloudPrefs.pricing;
         _lastSyncedAt = res.data.updated_at;
         _saveLocal();
         _applyToDom();
@@ -188,6 +215,15 @@ window.denaiPrefs = (function () {
       if (!patch || typeof patch !== 'object') return;
       if (typeof patch.darkMode === 'boolean')    _prefs.darkMode     = patch.darkMode;
       if (typeof patch.notesKeySalt === 'string') _prefs.notesKeySalt = patch.notesKeySalt;
+      // Wave C1: clinic preferences
+      if (typeof patch.toothSystem === 'string')  _prefs.toothSystem  = patch.toothSystem;
+      if (typeof patch.currency === 'string' && _VALID_CURRENCIES.indexOf(patch.currency) !== -1) {
+        _prefs.currency = patch.currency;
+      }
+      if (patch.pricing && typeof patch.pricing === 'object') {
+        // Merge patch into existing pricing object (partial update support)
+        _prefs.pricing = Object.assign({}, _prefs.pricing || {}, patch.pricing);
+      }
       _saveLocal();
       _applyToDom();
       _schedulePush();
@@ -196,10 +232,20 @@ window.denaiPrefs = (function () {
 
   // ── Public: init (synchronous) ────────────────────────────────────────────
   // Load from localStorage and apply immediately.
-  // Called from the app's (function init(){})() before applyDarkMode().
+  // Called from the DOMContentLoaded listener (prefsSync.js is defer-loaded,
+  // so init() cannot run inside the inline init() IIFE — denaiPrefs is undefined
+  // at that point). Must be called before denaiAuth.init() so that _lastSyncedAt
+  // is non-null before hydrate() runs its last-write-wins comparison.
 
   function init() {
     _loadLocal();
+    // Reconcile _prefs.darkMode with dandyDarkMode — the live toggle state is
+    // authoritative. denaiPrefs_v1.darkMode may lag if save() was called with
+    // a non-darkMode patch before init() ran (e.g. save({ notesKeySalt })).
+    try {
+      var _raw = localStorage.getItem(LEGACY_DARK_KEY);
+      if (_raw !== null) _prefs.darkMode = _raw === 'true';
+    } catch (e) {}
     _applyToDom();
   }
 

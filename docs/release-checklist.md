@@ -37,13 +37,13 @@ npm run test:ci
 - [ ] Confirm the version string matches the intended release version
 - [ ] Confirm no CDN URLs (`fonts.googleapis.com`, `cdnjs.cloudflare.com`) were versioned — they must not be
 
-**Count check:** 19 CSS links + 16 JS scripts = 35 versioned references total.
-*(Wave 7B added `src/auth/authModule.js?v=2.0.0`. Wave 7D added `src/sync/serializer.js?v=2.0.0` and `src/sync/syncQueue.js?v=2.0.0`. Wave 7E added `src/sync/cloudSync.js?v=2.0.0`. Wave 7F added `src/sync/prefsSync.js?v=2.0.0`. Wave 7G added `src/utils/notesEncryption.js?v=2.0.0`.)*
+**Count check:** 20 CSS links + 30 JS scripts = 50 versioned references total.
+*(Wave 7B added `src/auth/authModule.js`. Wave 7D added `serializer.js` + `syncQueue.js`. Wave 7E added `cloudSync.js`. Wave 7F added `prefsSync.js`. Wave 7G added `notesEncryption.js`. Beta hardening added `betaObserver.js` + `diagPanel.js` + `diagnostics.css`. Wave C1 added `src/constants/clinicPrefs.js` + `src/utils/formatters.js`.)*
 
 ```
-# Quick grep to confirm version string is present on all 35 first-party refs:
+# Quick grep to confirm version string is present on all 50 first-party refs:
 grep -c "?v=" index.html
-# Expected: 35
+# Expected: 50
 ```
 
 ### 4. Manual browser validation — Chrome (latest)

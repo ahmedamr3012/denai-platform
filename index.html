@@ -57,6 +57,9 @@
   <script src="src/ai/calcAI.js?v=2.0.0"></script>
   <script src="src/utils/formatting.js?v=2.0.0"></script>
   <script src="src/constants/brand.js?v=2.0.0"></script>
+  <!-- Wave C1: Clinic preferences foundation — clinicPrefs must precede formatters -->
+  <script src="src/constants/clinicPrefs.js?v=2.0.0"></script>
+  <script src="src/utils/formatters.js?v=2.0.0"></script>
   <script src="src/utils/costEngine.js?v=2.0.0"></script>
   <script src="src/ai/clinicalEngine.js?v=2.0.0"></script>
   <script src="src/reports/reportTemplates.js?v=2.0.0"></script>
@@ -4540,17 +4543,17 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       const recDisplay = recLabels[rec] || '2 Implants';
       const optCards = [
         rptOptCard({ label:'2 Implants', score:implant2, isRec:rec==='implant2', rateLabel:'10-Year Success Rate', rows:[
-          {label:'Approach', value:'One implant per site'},{label:'Initial Cost',value:`$${(costs.implant2||0).toLocaleString()}`},
+          {label:'Approach', value:'One implant per site'},{label:'Initial Cost',value:formatCurrency(costs.implant2||0)},
           {label:'Longevity',value:'20–25 years'},{label:'Recovery',value:'3–6 months'},
           {label:'Bone Stim.',value:'Both sites ✓'},{label:'Adjacent Teeth',value:'Independent ✓'},
         ]}),
         rptOptCard({ label:'4-Unit Bridge', score:bridge4, isRec:rec==='bridge4', rateLabel:'10-Year Success Rate', rows:[
-          {label:'Span', value:'4-unit fixed bridge'},{label:'Initial Cost',value:`$${(costs.bridge4||0).toLocaleString()}`},
+          {label:'Span', value:'4-unit fixed bridge'},{label:'Initial Cost',value:formatCurrency(costs.bridge4||0)},
           {label:'Longevity',value:'10–15 years'},{label:'Recovery',value:'2–4 weeks'},
           {label:'Bone Stim.',value:'None — resorption'},{label:'Abutments',value:ai.abutmentCompromised?'Compromised ⚠':'Good ✓'},
         ]}),
         rptOptCard({ label:'Impl. + Cantilever', score:cantilever, isRec:rec==='cantilever', rateLabel:'10-Year Success Rate', rows:[
-          {label:'Approach', value:'One implant + cantilever'},{label:'Initial Cost',value:`$${(costs.cantilever||0).toLocaleString()}`},
+          {label:'Approach', value:'One implant + cantilever'},{label:'Initial Cost',value:formatCurrency(costs.cantilever||0)},
           {label:'Longevity',value:'15–20 years'},{label:'Recovery',value:'3–6 months'},
           {label:'Bone Stim.',value:'One site'},{label:'Adjacent Teeth',value:'Independent ✓'},
         ]}),
@@ -4619,13 +4622,13 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       const PRES={onlay:'Yes — minimal prep',crown:'Preserved ✓',crown_core:'Preserved ✓',crown_adv:'Preserved ✓',splinted:'Preserved ✓',endocrown:'Preserved ✓',extract_impl:'No — extraction'};
       const opts=[s1&&rptOptCard({label:slot1.label,score:ai.implant,isRec:ai.rec==='implant',rateLabel:'Success Rate',rows:[
         {label:'Approach',value:slot1.sub},{label:'Longevity',value:LONGEV[s1.id]||'—'},{label:'Recovery',value:RECOV[s1.id]||'—'},{label:'Tooth Preserved',value:PRES[s1.id]||'—'},
-        {label:'Est. Cost',value:ai.restorativeCosts?.slot1?`$${Math.round(ai.restorativeCosts.slot1).toLocaleString()}`:'—'},
+        {label:'Est. Cost',value:ai.restorativeCosts?.slot1?formatCurrency(ai.restorativeCosts.slot1):'—'},
       ]}),s2&&rptOptCard({label:slot2.label,score:ai.bridge,isRec:ai.rec==='bridge',rateLabel:'Success Rate',rows:[
         {label:'Approach',value:slot2.sub},{label:'Longevity',value:LONGEV[s2.id]||'—'},{label:'Recovery',value:RECOV[s2.id]||'—'},{label:'Tooth Preserved',value:PRES[s2.id]||'—'},
-        {label:'Est. Cost',value:ai.restorativeCosts?.slot2?`$${Math.round(ai.restorativeCosts.slot2).toLocaleString()}`:'—'},
+        {label:'Est. Cost',value:ai.restorativeCosts?.slot2?formatCurrency(ai.restorativeCosts.slot2):'—'},
       ]}),s3&&rptOptCard({label:slot3.label,score:ai.crown,isRec:ai.rec==='crown',rateLabel:'Success Rate',rows:[
         {label:'Approach',value:slot3.sub},{label:'Longevity',value:LONGEV[s3.id]||'—'},{label:'Recovery',value:RECOV[s3.id]||'—'},{label:'Tooth Preserved',value:PRES[s3.id]||'—'},
-        {label:'Est. Cost',value:ai.restorativeCosts?.slot3?`$${Math.round(ai.restorativeCosts.slot3).toLocaleString()}`:'—'},
+        {label:'Est. Cost',value:ai.restorativeCosts?.slot3?formatCurrency(ai.restorativeCosts.slot3):'—'},
       ]})].filter(Boolean).join('');
       return `<div class="section"><div class="sec-title">Restorative Options — ${escapeHtml(ai.caseClass?.label||'')}</div><div class="options-grid">${opts}</div></div>`;
     })() : `
@@ -4637,8 +4640,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <div class="opt-card-body">
         <div class="opt-rate">${implantRate.toFixed(1)}%</div><div class="opt-rate-label">10-Year Success Rate</div>
         <div class="opt-row"><span class="opt-row-label">Material</span><span class="opt-row-val">${implantMaterial}</span></div>
-        <div class="opt-row"><span class="opt-row-label">Initial Cost</span><span class="opt-row-val">$${Math.round(implantCost).toLocaleString()}${S.bone==='Poor'?' (+graft)':''}</span></div>
-        <div class="opt-row"><span class="opt-row-label">10-Yr Total</span><span class="opt-row-val">$${Math.round(implant10yr).toLocaleString()}</span></div>
+        <div class="opt-row"><span class="opt-row-label">Initial Cost</span><span class="opt-row-val">${formatCurrency(implantCost)}${S.bone==='Poor'?' (+graft)':''}</span></div>
+        <div class="opt-row"><span class="opt-row-label">10-Yr Total</span><span class="opt-row-val">${formatCurrency(implant10yr)}</span></div>
         <div class="opt-row"><span class="opt-row-label">Longevity</span><span class="opt-row-val">20–25 years</span></div>
         <div class="opt-row"><span class="opt-row-label">Recovery</span><span class="opt-row-val">3–6 months</span></div>
         <div class="opt-row"><span class="opt-row-label">Risk Level</span><span class="opt-row-val">${implantRisk}</span></div>
@@ -4649,8 +4652,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <div class="opt-card-body">
         <div class="opt-rate">${bridgeRate.toFixed(1)}%</div><div class="opt-rate-label">10-Year Success Rate</div>
         <div class="opt-row"><span class="opt-row-label">Material</span><span class="opt-row-val">${bridgeMaterial}</span></div>
-        <div class="opt-row"><span class="opt-row-label">Initial Cost</span><span class="opt-row-val">$${Math.round(bridgeCost).toLocaleString()}</span></div>
-        <div class="opt-row"><span class="opt-row-label">10-Yr Total</span><span class="opt-row-val">$${Math.round(bridge10yr).toLocaleString()}</span></div>
+        <div class="opt-row"><span class="opt-row-label">Initial Cost</span><span class="opt-row-val">${formatCurrency(bridgeCost)}</span></div>
+        <div class="opt-row"><span class="opt-row-label">10-Yr Total</span><span class="opt-row-val">${formatCurrency(bridge10yr)}</span></div>
         <div class="opt-row"><span class="opt-row-label">Longevity</span><span class="opt-row-val">10–15 years</span></div>
         <div class="opt-row"><span class="opt-row-label">Recovery</span><span class="opt-row-val">2–4 weeks</span></div>
         <div class="opt-row"><span class="opt-row-label">Risk Level</span><span class="opt-row-val">${bridgeRisk}</span></div>
@@ -4661,8 +4664,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <div class="opt-card-body">
         <div class="opt-rate">${crownRate.toFixed(1)}%</div><div class="opt-rate-label">10-Year Success Rate</div>
         <div class="opt-row"><span class="opt-row-label">Material</span><span class="opt-row-val">${crownMaterial}</span></div>
-        <div class="opt-row"><span class="opt-row-label">Initial Cost</span><span class="opt-row-val">$${Math.round(crownCost).toLocaleString()}${needsRCT?' (+RCT)':''}</span></div>
-        <div class="opt-row"><span class="opt-row-label">10-Yr Total</span><span class="opt-row-val">$${Math.round(crown10yr).toLocaleString()}</span></div>
+        <div class="opt-row"><span class="opt-row-label">Initial Cost</span><span class="opt-row-val">${formatCurrency(crownCost)}${needsRCT?' (+RCT)':''}</span></div>
+        <div class="opt-row"><span class="opt-row-label">10-Yr Total</span><span class="opt-row-val">${formatCurrency(crown10yr)}</span></div>
         <div class="opt-row"><span class="opt-row-label">Longevity</span><span class="opt-row-val">10–20 years</span></div>
         <div class="opt-row"><span class="opt-row-label">Recovery</span><span class="opt-row-val">${needsRCT?'3–4 wks':'1–2 wks'}</span></div>
         <div class="opt-row"><span class="opt-row-label">Tooth Preserved</span><span class="opt-row-val" style="color:#16a34a;font-weight:700">Yes ✓</span></div>
@@ -4672,18 +4675,18 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     <div class="section"><div class="sec-title">10-Year Cost Analysis</div>
     <div class="cost-compare" style="grid-template-columns:${ai.crownViable?'1fr 1fr 1fr':'1fr 1fr'}">
       <div class="cost-card ${bestValue==='Implant'?'winner':''}"><div class="cost-card-title">Implant — 10-Year Total</div>
-        <div class="cost-big">$${Math.round(implant10yr).toLocaleString()}</div>
-        <div class="cost-note">Initial: $${Math.round(implantCost).toLocaleString()} · Checkups: $3,000<br>Crown replacement risk: ~$${implantCrownRiskAmt.toLocaleString()} (12%)</div>
+        <div class="cost-big">${formatCurrency(implant10yr)}</div>
+        <div class="cost-note">Initial: ${formatCurrency(implantCost)} · Checkups: ${formatCurrency(3000)}<br>Crown replacement risk: ~${formatCurrency(implantCrownRiskAmt)} (12%)</div>
         ${bestValue==='Implant'?'<div class="cost-badge">★ Best Value</div>':''}
       </div>
       <div class="cost-card ${bestValue==='Bridge'?'winner':''}"><div class="cost-card-title">Bridge — 10-Year Total</div>
-        <div class="cost-big">$${Math.round(bridge10yr).toLocaleString()}</div>
-        <div class="cost-note">Initial: $${Math.round(bridgeCost).toLocaleString()} · Checkups: $3,000<br>Replacement risk: ~$${bridgeReplaceAmt.toLocaleString()} (28%)</div>
+        <div class="cost-big">${formatCurrency(bridge10yr)}</div>
+        <div class="cost-note">Initial: ${formatCurrency(bridgeCost)} · Checkups: ${formatCurrency(3000)}<br>Replacement risk: ~${formatCurrency(bridgeReplaceAmt)} (28%)</div>
         ${bestValue==='Bridge'?'<div class="cost-badge">★ Best Value</div>':''}
       </div>
       ${ai.crownViable ? `<div class="cost-card ${bestValue==='Crown'?'winner':''}"><div class="cost-card-title">Crown — 10-Year Total</div>
-        <div class="cost-big">$${Math.round(crown10yr).toLocaleString()}</div>
-        <div class="cost-note">Initial: $${Math.round(crownCost).toLocaleString()} · Checkups: $3,000${needsRCT?'<br>Includes RCT: $1,000':''}</div>
+        <div class="cost-big">${formatCurrency(crown10yr)}</div>
+        <div class="cost-note">Initial: ${formatCurrency(crownCost)} · Checkups: ${formatCurrency(3000)}${needsRCT?'<br>Includes RCT: ' + formatCurrency(1000):''}</div>
         ${bestValue==='Crown'?'<div class="cost-badge">★ Best Value</div>':''}
       </div>` : ''}
     </div></div>`;
@@ -6109,9 +6112,8 @@ trapFocus('notesPassphraseModal');
 trapFocus('entryOverlay');
 
 renderPatientList();
-// Wave 7F: init preferences (synchronous — loads from localStorage, applies dark mode).
-// Called before applyDarkMode() so cloud-restored prefs take precedence on first paint.
-if (typeof denaiPrefs !== 'undefined') { denaiPrefs.init(); }
+// prefsSync.js is defer-loaded; denaiPrefs is not yet defined here.
+// denaiPrefs.init() is called in the DOMContentLoaded listener below.
 applyDarkMode();
 
 // Cleanup on page unload to prevent memory leaks
@@ -6166,6 +6168,12 @@ window.addEventListener('storage', function(e) {
 // inline script) but before DOMContentLoaded. This listener therefore runs
 // with denaiAuth and denaiSyncQueue guaranteed to be defined.
 document.addEventListener('DOMContentLoaded', function () {
+  // Wave 7F: Prefs init — loads _prefs from localStorage, reconciles darkMode with
+  // dandyDarkMode, and loads _lastSyncedAt so hydrate() LWW comparison is correct.
+  // Must run BEFORE denaiAuth.init() so _lastSyncedAt is non-null when hydrate() fires.
+  if (typeof denaiPrefs !== 'undefined') {
+    denaiPrefs.init();
+  }
   // Wave 7B: Auth init — silently degrades to local mode on any failure.
   if (typeof denaiAuth !== 'undefined') {
     denaiAuth.init().catch(function () {});

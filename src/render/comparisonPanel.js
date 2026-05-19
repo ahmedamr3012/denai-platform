@@ -234,9 +234,9 @@
           `${ai.crown.toFixed(1)}%${scoreBadge(ai.crown)}`,
           ai.implant === bestScore],
         ['Initial Cost',
-          rc.slot1 ? `$${Math.round(rc.slot1).toLocaleString()}<span class="comp-badge">✓ Lowest</span>` : '—',
-          rc.slot2 ? `$${Math.round(rc.slot2).toLocaleString()}` : '—',
-          rc.slot3 ? `$${Math.round(rc.slot3).toLocaleString()}` : '—',
+          rc.slot1 ? `${formatCurrency(rc.slot1)}<span class="comp-badge">✓ Lowest</span>` : '—',
+          rc.slot2 ? `${formatCurrency(rc.slot2)}` : '—',
+          rc.slot3 ? `${formatCurrency(rc.slot3)}` : '—',
           true],
         ['Longevity', LONGEVITY[s1?.id]||'—', LONGEVITY[s2?.id]||'—', LONGEVITY[s3?.id]||'—',
           (s3?.id === 'extract_impl')],
@@ -275,7 +275,7 @@
       const recBadge = (opt) => rec === opt ? '<span class="comp-badge">✓ Rec</span>' : (ideal === opt ? '<span class="comp-badge">✦ Ideal</span>' : '');
       const rows = [
         ['Success Rate',    `${implant2.toFixed(1)}%${badge(impBest)}`,   `${bridge4.toFixed(1)}%${badge(briBest)}`,  `${cantilever.toFixed(1)}%${badge(cntBest)}`,  impBest],
-        ['Initial Cost',    `$${costs.implant2.toLocaleString()}`,        `$${costs.bridge4.toLocaleString()}`,        `$${costs.cantilever.toLocaleString()}`,        false],
+        ['Initial Cost',    `${formatCurrency(costs.implant2)}`,        `${formatCurrency(costs.bridge4)}`,        `${formatCurrency(costs.cantilever)}`,        false],
         ['Longevity',       '20–25 yrs<span class="comp-badge">✓</span>', '10–15 yrs',                                '15–20 yrs',                                    true],
         ['Adjacent Teeth',  'Independent<span class="comp-badge">✓</span>','Requires grinding','Independent<span class="comp-badge">✓</span>', true],
         ['Bone Stim.',      'Both sites<span class="comp-badge">✓</span>', 'None — resorption', 'One site only',       true],
@@ -296,8 +296,8 @@
     const { implantInitial, bridgeInitialAdjusted, crownInitial, needsRCT, implant10yr, bridge10yr, crown10yr } = computeCosts(state, ai);
     const crownViable = ai.crownViable && ai.crown > 0;
     const crownSucStr = crownViable ? `${ai.crown.toFixed(1)}%` : 'N/A';
-    const crownCostStr = crownViable ? `$${Math.round(crownInitial).toLocaleString()}${needsRCT ? ' (+RCT)' : ''}` : 'N/A';
-    const crown10yrStr = crownViable ? `$${Math.round(crown10yr).toLocaleString()}` : 'N/A';
+    const crownCostStr = crownViable ? formatCurrency(crownInitial) + (needsRCT ? ' (+RCT)' : '') : 'N/A';
+    const crown10yrStr = crownViable ? formatCurrency(crown10yr) : 'N/A';
 
     // Best scores for highlighting
     const scores = [ai.implant, ai.bridge, crownViable ? ai.crown : 0];
@@ -319,12 +319,12 @@
         crownViable ? `${crownSucStr}${crownBestScore?'<span class="comp-badge">✓ Best</span>':''}` : '—',
         implantBestScore],
       ['Initial Cost',
-        `$${Math.round(implantInitial).toLocaleString()}`,
-        `$${Math.round(bridgeInitialAdjusted).toLocaleString()}`,
+        `${formatCurrency(implantInitial)}`,
+        `${formatCurrency(bridgeInitialAdjusted)}`,
         crownViable ? crownCostStr + '<span class="comp-badge">✓ Lowest</span>' : '—', false],
       ['10‑Year Cost',
-        `$${Math.round(implant10yr).toLocaleString()}${implantBestCost?'<span class="comp-badge">✓ Best</span>':''}`,
-        `$${Math.round(bridge10yr).toLocaleString()}${bridgeBestCost?'<span class="comp-badge">✓ Best</span>':''}`,
+        `${formatCurrency(implant10yr)}${implantBestCost?'<span class="comp-badge">✓ Best</span>':''}`,
+        `${formatCurrency(bridge10yr)}${bridgeBestCost?'<span class="comp-badge">✓ Best</span>':''}`,
         crownViable ? `${crown10yrStr}${crownBestCost?'<span class="comp-badge">✓ Best</span>':''}` : '—',
         implantBestCost],
       ['Longevity', '20‑25 years<span class="comp-badge">✓ Best</span>', '10‑15 years',

@@ -2,7 +2,7 @@
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-05-12
+> Last updated: 2026-05-20
 
 ## User Preferences
 
@@ -318,6 +318,24 @@
 - **`_relativeTime` naming collision in original code (pre-existing):** Two `function _relativeTime` declarations existed in the inline script — one epoch-based (~line 2685), one ISO-string-based (~line 5671). Due to function hoisting, the SECOND (ISO string) version always won. The epoch version was dead code. Wave 1 removed the dead epoch version; only the ISO string version remains. For Wave 2+ cleanup: consider renaming `_relativeTime(isoString)` to something unambiguous like `_syncAgo`.
 - **`_wfTimestamp` is safe to extract — no collision:** Only one definition existed in the original inline script. Extracted to `src/utils/time.js`. Function declaration semantics: available globally before the inline script runs.
 - **Wave 1 extraction checklist before extracting a `const`:** (1) grep for other definitions of the same name in ALL files; (2) check if it's used by any existing external scripts; (3) verify external scripts using it load AFTER the new constants file; (4) confirm no IIFE-scoped shadows exist.
+
+## Key Learnings — Wave C1 Clinic Preferences Foundation (2026-05-20)
+
+- **`prefsSync.js` (defer) must NOT import from `clinicPrefs.js` (blocking) by name:** Even though blocking scripts execute before deferred ones, creating a named cross-file dependency from a defer script to a blocking script creates fragile coupling. Use a local guard (`_VALID_CURRENCIES` array in prefsSync.js) instead of referencing `CURRENCY_CONFIG` directly. The formatting/display logic belongs in `formatters.js`; `prefsSync.js` is a dumb storage layer.
+- **`pricing: null` in `_prefs` means "use catalog defaults" — never default to a copy of the catalog in prefsSync:** If `_prefs.pricing` starts as a copy of `CLINIC_PREF_DEFAULTS.pricing`, it gets serialized and stored to localStorage on every save, bloating storage even when no pricing changes were made. `null` is the sentinel for "untouched, use catalog defaults". `getClinicPrice()` in formatters.js reads `denaiPrefs.get('pricing')?.[id]` first and falls back to the catalog.
+- **All clinic preference formatters must use `typeof denaiPrefs !== 'undefined'` guard:** `formatters.js` is a blocking script; `denaiPrefs` is defined in a deferred script. If any formatter is accidentally called at script parse time (not inside a function), `denaiPrefs` would be undefined. The guard makes all formatters callable in any context with sensible fallbacks.
+- **`extract_impl` slot3 in ClinicalEngine has a hardcoded `4500` fallback:** `bySlot['crown']?.id === 'extract_impl' ? 4500` does NOT use `c.costs.crown` or `state.costImplant`. This is the one cost origin not connected to the per-patient state field chain. Noted for Wave C3 fix: should use `c.state.costImplant || 4500`.
+- **Verified current versioned asset count: 48 (before Wave C1) → 50 (after Wave C1):** The release-checklist.md was stale at 35. Correct count was 48 = 20 CSS + 28 JS. Wave C1 adds 2 JS files → 50. Always grep `index.html` for `?v=` count to verify before updating the checklist.
+- **FDI map load order: Universal #1=#8 maps to FDI 18=11 in upper-right quadrant (not 11=18).** Upper-right reads inward from wisdom tooth (#1=18) to central incisor (#8=11). Upper-left mirrors: central incisor (#9=21) to wisdom tooth (#16=28). Lower jaw continues: lower-left wisdom (#17=38) to lower-right wisdom (#32=48). Verify against standard FDI notation before any changes.
+
+## Key Learnings — Wave C2 Currency Formatting Layer (2026-05-20)
+
+- **Wave C2 scope: 3 files, zero runtime changes.** All monetary presentation migrated to `formatCurrency()`: `costGraphPanel.js` (26 sites), `comparisonPanel.js` (10 sites), `index.html` report generation (18 sites). No computeCosts, AI logic, or scoring touched.
+- **`formatCurrency(amount)` does `Math.round` internally — no pre-rounding needed at call sites.** Replace `$${Math.round(x).toLocaleString()}` with just `formatCurrency(x)`. Handles null/undefined/NaN with 'N/A' fallback.
+- **`~$` and `+$` prefixes: compose with template literals.** `~${formatCurrency(x)}` for approximate amounts; `+${formatCurrency(x)}` for additive amounts (e.g. bone graft). The symbol is inside the return value.
+- **Hardcoded descriptive text amounts in rendered HTML ARE currency surfaces.** `$1,000` (RCT), `$400` (post/core), `$150` (checkup), `$3,000` (10-yr checkup total) — all replaced with `formatCurrency()`. Exception: `reasons.push()` strings in calcAI.js are informational prose inside AI reasoning, not display formatting.
+- **String-concatenated cost labels need wrapper pattern.** `'4-Unit Bridge ($' + x.toLocaleString() + ')'` → `'4-Unit Bridge (' + formatCurrency(x) + ')'`. Parentheses are display wrappers, not part of the currency value.
+- **Report generation functions call `formatCurrency` safely at runtime (not parse time).** Report functions execute on user interaction — by then all deferred scripts including `denaiPrefs` have long initialized. No `typeof denaiPrefs !== 'undefined'` guard needed at the call site (it's inside the function in formatters.js).
 
 ## Do-Not-Repeat
 
