@@ -3000,10 +3000,32 @@
       "file": "index.html",
       "root_cause": "confirmReset() called Object.assign(S, DEFAULT_STATE) which overwrote identity fields present in DEFAULT_STATE: name, age, gender, serviceDate. Only id and caseNum survived because they are absent from DEFAULT_STATE.",
       "fix": "Snapshot the 7 identity fields (id, name, age, gender, caseNum, serviceDate, lastAccessed) before Object.assign(S, DEFAULT_STATE), then restore them after. Only clinical workflow state (tooth, condition, bone, hygiene, notes, planApproved, labStatus, etc.) is reset.",
-      "tags": ["patient-identity", "reset", "state-integrity", "DEFAULT_STATE", "critical"],
+      "tags": [
+        "patient-identity",
+        "reset",
+        "state-integrity",
+        "DEFAULT_STATE",
+        "critical"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-19T00:00:00.000Z"
+    },
+    {
+      "id": "bug-183",
+      "timestamp": "2026-05-19T16:20:25.408Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/render/patientPanel.js",
+      "root_cause": "Had \"fa-solid fa-sparkles\"",
+      "fix": "Changed to \"fa-solid fa-hand-sparkles\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-19T16:20:25.408Z"
     }
   ]
 }

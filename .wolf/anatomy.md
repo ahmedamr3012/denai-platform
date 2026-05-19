@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-19T10:07:46.530Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-19T16:20:25.337Z
 > Files: 37 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -44,7 +44,7 @@
 ## src/render/
 
 - `costGraphPanel.js` — ================================================================ (~6656 tok)
-- `patientPanel.js` — ================================================================ (~952 tok)
+- `patientPanel.js` — ================================================================ (~954 tok)
 - `riskPanel.js` — renderRisk: _applyRiskCompact (~1659 tok)
 
 ## src/reports/
