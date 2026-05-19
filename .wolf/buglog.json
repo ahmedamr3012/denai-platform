@@ -3058,6 +3058,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-19T17:04:22.798Z"
+    },
+    {
+      "id": "bug-186",
+      "timestamp": "2026-05-19T18:30:31.974Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had `<div class=\"",
+      "fix": "Changed to ' · <span style=\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-19T18:30:31.974Z"
+    },
+    {
+      "id": "bug-187",
+      "timestamp": "2026-05-19T18:35:07.013Z",
+      "error_message": "Wrong reference: n400 should be n600",
+      "file": "index.html",
+      "root_cause": "Used \"n400\" instead of \"n600\"",
+      "fix": "Changed n400 → n600",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-19T18:35:07.013Z"
     }
   ]
 }

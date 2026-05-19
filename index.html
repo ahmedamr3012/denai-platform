@@ -51,7 +51,9 @@
   <link rel="stylesheet" href="src/styles/components/history.css?v=2.0.0" />
   <link rel="stylesheet" href="src/styles/components/modal.css?v=2.0.0" />
   <link rel="stylesheet" href="src/styles/components/cards.css?v=2.0.0" />
+  <link rel="stylesheet" href="src/styles/components/diagnostics.css?v=2.0.0" />
   <link rel="stylesheet" href="src/styles/utilities/print.css?v=2.0.0" />
+  <script src="src/utils/betaObserver.js?v=2.0.0"></script>
   <script src="src/ai/calcAI.js?v=2.0.0"></script>
   <script src="src/utils/formatting.js?v=2.0.0"></script>
   <script src="src/constants/brand.js?v=2.0.0"></script>
@@ -72,6 +74,7 @@
   <script src="src/utils/caseHelpers.js?v=2.0.0"></script>
   <script src="src/render/timeline.js?v=2.0.0"></script>
   <script src="src/render/planFragments.js?v=2.0.0"></script>
+  <script src="src/utils/diagPanel.js?v=2.0.0"></script>
   <!-- Wave 7B: Auth foundation — Supabase CDN must precede authModule.js -->
   <!-- TODO: To upgrade Supabase: bump version here + run npm run test:ci before deploying. Pinned: @2.39.7 -->
   <!-- Phase 4: defer preserves load order (Supabase → authModule → sync chain) but moves
@@ -490,7 +493,7 @@ body.dark .dash-pipeline-strip { background: var(--c-n50); border-color: var(--c
 .wf-activity-row { display: inline-flex; align-items: baseline; gap: 4px; font-size: 11px; color: var(--c-n400); }
 .wf-activity-prefix { font-weight: 600; }
 /* Workflow shell guidance + cases staleness — Phase 2A */
-.wf-guidance-text { font-size: 11px; color: var(--c-n400); line-height: 1.4; margin: 0 0 4px; display: block; }
+.wf-guidance-text { font-size: 11px; color: var(--c-n600); line-height: 1.4; margin: 0 0 4px; display: block; }
 .case-stale { font-size: 10.5px; color: var(--c-n400); margin-top: 3px; }
 /* Help Layer — Phase 2B */
 .help-trigger { display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%; background:none; border:1px solid var(--c-n300); color:var(--c-n400); font-size:9px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; line-height:1; padding:0; transition:border-color var(--t-fast),color var(--t-fast); vertical-align:middle; flex-shrink:0; }
@@ -2179,6 +2182,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     } catch (e) {
       if (e && (e.name === 'QuotaExceededError' || e.code === 22)) {
         try { showToast('Storage full — please export & clear old cases', 'error'); } catch {}
+      } else {
+        try { showToast('Save failed — check browser storage settings', 'error'); } catch {}
       }
       return false;
     }
@@ -2376,7 +2381,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
               <button class="btn-action btn-action-reopen" type="button" onclick="reopenPlanning()" style="margin-left:6px;"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reopen Planning</button>`;
     } else {
       html = `<span class="wf-sent-badge"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Lab Sent</span>
-              <button class="btn-action btn-action-reopen" type="button" onclick="reopenPlanning()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reopen Planning</button>`;
+              <button class="btn-action btn-action-approve" type="button" onclick="markLabReceived()" style="margin-left:6px;"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Mark Lab Received</button>
+              <button class="btn-action btn-action-reopen" type="button" onclick="reopenPlanning()" style="margin-left:6px;"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reopen Planning</button>`;
     }
     el.innerHTML = html;
   }
@@ -2532,7 +2538,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (hasAnalysis) {
       return { shell: 'Case analysis completed and ready for treatment planning.' };
     }
-    return { shell: null };
+    // No condition yet — first-use or new case with no assessment started
+    return { shell: 'Open AI Insight and select the tooth and condition to begin case analysis.' };
   }
 
   function renderWfGuidance() {
@@ -5132,7 +5139,8 @@ const isActive = p.id === activeId;
 const qs = _quickScore(p);
 const score = qs !== null ? qs + '%' : '—';
 const stageDot = _getPatientStageBadge(p);
-return `<div class="patient-item${isActive ? ' active-patient' : ''}" role="listitem" tabindex="0" data-pid="${p.id}" onclick="switchPatient('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPatient('${p.id}')}" aria-label="${escapeHtml(p.name||'')}, ${escapeHtml(p.caseNum||'')}${isActive?' (current)':''}"> <div class="patient-avatar">${initials}</div> <div class="patient-info"> <div class="patient-item-name">${escapeHtml(p.name||'Unknown')}</div> <div class="patient-item-meta">${p.caseNum ? escapeHtml(p.caseNum) + ' · ' : ''}${score}</div> </div> <span class="patient-stage-dot ${stageDot.cls}" aria-hidden="true"></span> <button class="patient-delete-btn" type="button" onclick="event.stopPropagation();openDeletePatient('${p.id}','${escapeHtml(p.name||'this patient')}')" aria-label="Delete ${escapeHtml(p.name||'patient')}" title="Delete patient" ${list.length <= 1 ? 'disabled style="display:none"' : ''}> <i class="fa-solid fa-xmark"></i> </button> </div>`;
+const demoLabel = !p.caseNum ? ' · <span style="color:var(--c-n300);font-style:italic;">demo</span>' : '';
+return `<div class="patient-item${isActive ? ' active-patient' : ''}" role="listitem" tabindex="0" data-pid="${p.id}" onclick="switchPatient('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPatient('${p.id}')}" aria-label="${escapeHtml(p.name||'')}, ${escapeHtml(p.caseNum||'')}${isActive?' (current)':''}"> <div class="patient-avatar">${initials}</div> <div class="patient-info"> <div class="patient-item-name">${escapeHtml(p.name||'Unknown')}</div> <div class="patient-item-meta">${p.caseNum ? escapeHtml(p.caseNum) + ' · ' : ''}${score}${demoLabel}</div> </div> <span class="patient-stage-dot ${stageDot.cls}" aria-hidden="true"></span> <button class="patient-delete-btn" type="button" onclick="event.stopPropagation();openDeletePatient('${p.id}','${escapeHtml(p.name||'this patient')}')" aria-label="Delete ${escapeHtml(p.name||'patient')}" title="Delete patient" ${list.length <= 1 ? 'disabled style="display:none"' : ''}> <i class="fa-solid fa-xmark"></i> </button> </div>`;
 }).join('');
 }
 
