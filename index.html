@@ -1910,7 +1910,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <button type="button" class="modal-close-btn" onclick="closeResetModal()" aria-label="Close dialog">×</button>
       <div style="font-size:46px;margin-bottom:14px;" aria-hidden="true">⚠️</div>
       <h3 id="resetModalTitle" style="font-size:22px;font-weight:800;color:var(--c-n900);margin-bottom:8px;">Reset Case?</h3>
-      <p style="font-size:14px;color:var(--c-n500);margin-bottom:22px;">This will reset all patient data and clinical notes to default values. This action cannot be undone.</p>
+      <p style="font-size:14px;color:var(--c-n500);margin-bottom:22px;">This will reset the clinical workflow state for this case (tooth selection, conditions, notes, plan status). Patient identity and case number will be preserved. This action cannot be undone.</p>
       <div style="display:flex;gap:10px;">
         <button class="btn btn-sec" type="button" style="flex:1;justify-content:center;" onclick="closeResetModal()">Cancel</button>
         <button class="btn btn-pri" type="button" style="flex:1;justify-content:center;background:var(--c-danger);box-shadow:0 4px 20px rgba(239,68,68,.25);" onclick="confirmReset()">Reset</button>
@@ -5268,7 +5268,13 @@ function openResetModal() { _modalTrigger = document.activeElement; $('resetModa
 function closeResetModal() { $('resetModal').style.display = 'none'; if (_modalTrigger) { _modalTrigger.focus(); _modalTrigger = null; } }
 function confirmReset() {
 closeResetModal();
-Object.assign(S, DEFAULT_STATE); tempState = { ...S }; saveState();
+// Preserve patient identity — only clinical workflow state resets
+const _id = S.id, _name = S.name, _age = S.age, _gender = S.gender,
+      _caseNum = S.caseNum, _serviceDate = S.serviceDate, _lastAccessed = S.lastAccessed;
+Object.assign(S, DEFAULT_STATE);
+S.id = _id; S.name = _name; S.age = _age; S.gender = _gender;
+S.caseNum = _caseNum; S.serviceDate = _serviceDate; S.lastAccessed = _lastAccessed;
+tempState = { ...S }; saveState();
 if (UIState.editing) cancelEdit();
 // Reset multi-tooth UI
 const _mt = $('multiToothToggle');
@@ -5284,8 +5290,8 @@ const _ban = $('compoundBanner'); if (_ban) _ban.style.display = 'none';
 buildEditForm();
 render(S);
 updateSliderPositions();
-History.add('Case reset', 'Reset to default values');
-showToast('Case reset to default values','info');
+History.add('Case reset', 'Clinical workflow state reset');
+showToast('Clinical workflow state reset','info');
 }
 
 function toggleSidebar() {

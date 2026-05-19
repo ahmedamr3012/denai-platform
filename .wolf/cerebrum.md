@@ -291,6 +291,8 @@
 <!-- Mistakes made and corrected. Each entry prevents the same mistake recurring. -->
 <!-- Format: [YYYY-MM-DD] Description of what went wrong and what to do instead. -->
 
+- [2026-05-19] **`confirmReset()` must preserve identity fields before applying `DEFAULT_STATE`.** `DEFAULT_STATE` contains `name`, `age`, `gender`, and `serviceDate` — `Object.assign(S, DEFAULT_STATE)` overwrites them. `id` and `caseNum` are NOT in `DEFAULT_STATE` so they survive by accident, not by design. Fix: snapshot `{ id, name, age, gender, caseNum, serviceDate, lastAccessed }` before the assign, restore after. Never use `DEFAULT_STATE` as a live patient replacement source — it is a bootstrap/template only.
+
 - [2026-05-14] **Dual-definition pattern is ONLY safe for `function` declarations, not `const`/`let`.** `function` declarations hoist and silently overwrite; `const`/`let` at top-level of a classic script cannot be re-declared — a second `const X` in the inline script block throws `SyntaxError: Identifier 'X' has already been declared` at parse time, crashing the entire app. For modules containing `const`/`let` globals, collapse Steps B+C into a single atomic operation: insert script tag and remove inline declarations in the same edit session, with no intermediate state.
 
 ## Decision Log

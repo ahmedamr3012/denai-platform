@@ -2976,6 +2976,34 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-18T20:45:03.014Z"
+    },
+    {
+      "id": "bug-181",
+      "timestamp": "2026-05-19T10:07:46.544Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had 'Reset to default values'",
+      "fix": "Changed to 'Clinical workflow state reset'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-19T10:07:46.544Z"
+    },
+    {
+      "id": "bug-182",
+      "timestamp": "2026-05-19T00:00:00.000Z",
+      "error_message": "Reset button replaces current patient (e.g. Sara, age 20) with DEFAULT_STATE demo seed (Mohamed A., age 45)",
+      "file": "index.html",
+      "root_cause": "confirmReset() called Object.assign(S, DEFAULT_STATE) which overwrote identity fields present in DEFAULT_STATE: name, age, gender, serviceDate. Only id and caseNum survived because they are absent from DEFAULT_STATE.",
+      "fix": "Snapshot the 7 identity fields (id, name, age, gender, caseNum, serviceDate, lastAccessed) before Object.assign(S, DEFAULT_STATE), then restore them after. Only clinical workflow state (tooth, condition, bone, hygiene, notes, planApproved, labStatus, etc.) is reset.",
+      "tags": ["patient-identity", "reset", "state-integrity", "DEFAULT_STATE", "critical"],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-19T00:00:00.000Z"
     }
   ]
 }
