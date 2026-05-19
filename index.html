@@ -54,6 +54,7 @@
   <link rel="stylesheet" href="src/styles/utilities/print.css?v=2.0.0" />
   <script src="src/ai/calcAI.js?v=2.0.0"></script>
   <script src="src/utils/formatting.js?v=2.0.0"></script>
+  <script src="src/constants/brand.js?v=2.0.0"></script>
   <script src="src/utils/costEngine.js?v=2.0.0"></script>
   <script src="src/ai/clinicalEngine.js?v=2.0.0"></script>
   <script src="src/reports/reportTemplates.js?v=2.0.0"></script>
@@ -62,6 +63,15 @@
   <script src="src/render/comparisonPanel.js?v=2.0.0"></script>
   <script src="src/render/patientPanel.js?v=2.0.0"></script>
   <script src="src/render/riskPanel.js?v=2.0.0"></script>
+  <script src="src/constants/storageKeys.js?v=2.0.0"></script>
+  <script src="src/constants/clinicalMaps.js?v=2.0.0"></script>
+  <script src="src/constants/workflowStages.js?v=2.0.0"></script>
+  <script src="src/constants/uiConfig.js?v=2.0.0"></script>
+  <script src="src/constants/toothPositions.js?v=2.0.0"></script>
+  <script src="src/utils/time.js?v=2.0.0"></script>
+  <script src="src/utils/caseHelpers.js?v=2.0.0"></script>
+  <script src="src/render/timeline.js?v=2.0.0"></script>
+  <script src="src/render/planFragments.js?v=2.0.0"></script>
   <!-- Wave 7B: Auth foundation — Supabase CDN must precede authModule.js -->
   <!-- TODO: To upgrade Supabase: bump version here + run npm run test:ci before deploying. Pinned: @2.39.7 -->
   <!-- Phase 4: defer preserves load order (Supabase → authModule → sync chain) but moves
@@ -2002,22 +2012,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     lastView: null,         // LOCAL ONLY — last navigated patient-scoped view; not synced
     wfHistory: [],          // LOCAL ONLY — structured workflow milestone events; not synced
   });
-  // ================================================================
-  // BRAND CONFIG — single source of truth for all branding
-  // ================================================================
-  // All user-visible brand text, report headers, export filenames, and
-  // UI labels derive from this object. Future brand updates happen here.
-  const BRAND = Object.freeze({
-    name:        'denai',
-    displayName: 'denai',
-    tagline:     'AI-Assisted Clinical Workflow Platform',
-    disclaimer:  'Prepared using denai AI-assisted workflow tools. Final clinical decisions remain the responsibility of the treating clinician.',
-    footerLine:  'denai',
-    reportPrefix: 'denai-Report',
-    exportPrefix: 'denai-Case',
-  });
-  const STORAGE_KEY    = 'dandyCaseState_v8';
-
   // ── #3 Runtime Validation (Zod-style) ────────────────────────
   const StateValidator = Object.freeze({
     SCHEMAS: {
@@ -2072,18 +2066,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       return errors;
     }
   });
-
-  const HISTORY_KEY    = 'dandyCaseHistory_v1';
-  const PATIENTS_KEY   = 'dandyPatients_v2';
-  const ACTIVE_PT_KEY  = 'dandyActivePatient_v1';
-  const BONE_MAP    = ['Good','Fair','Poor'];
-  const HYGIENE_MAP = ['Good','Fair','Poor'];
-  const OCC_MAP     = ['High occlusion load','Normal','Low'];
-  const SMOKING_MAP = ['Non-smoker','Former smoker','Current smoker'];
-  const STRUCTURE_MAP   = ['Good','Fair','Poor'];
-  const ENDO_MAP        = ['No RCT needed','RCT done','Needs RCT'];
-  const PARAFUNCTION_MAP= ['None','Clenching','Bruxism','Both'];
-  const DIABETES_MAP    = ['None','Controlled','Uncontrolled'];
 
   // ── Patient CRUD ─────────────────────────────────────────────
   function genId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
@@ -2274,16 +2256,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   // ================================================================
   // NAVIGATION — view-state routing (no URL hash, no framework)
   // ================================================================
-  const _VALID_VIEWS = ['dashboard', 'cases', 'insight', 'plan', 'lab', 'reports'];
-  const _TOPBAR_CFG = {
-    dashboard: { icon: 'fa-house',        title: 'Dashboard',          sub: 'Workspace Overview' },
-    cases:     { icon: 'fa-folder-open',  title: 'Cases',              sub: 'Patient Management' },
-    insight:   { icon: 'fa-brain',        title: 'AI Clinical Insight', sub: '' },
-    plan:      { icon: 'fa-pen-ruler',    title: 'Treatment Plan',     sub: '' },
-    lab:       { icon: 'fa-flask',        title: 'Lab & Manufacturing', sub: '' },
-    reports:   { icon: 'fa-file-medical', title: 'Reports',            sub: '' },
-  };
-
   function navigateTo(viewName) {
     const view = _VALID_VIEWS.includes(viewName) ? viewName : 'insight';
 
@@ -2355,13 +2327,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   // ================================================================
   // WORKFLOW BAR — derived from real patient S state (no hardcoding)
   // ================================================================
-  const _WF_STAGES = [
-    { id: 'scan',     icon: 'fa-scanner-keyboard', label: 'Scan' },
-    { id: 'insight',  icon: 'fa-brain',             label: 'AI Insight' },
-    { id: 'plan',     icon: 'fa-pen-ruler',          label: 'Treatment Plan' },
-    { id: 'lab',      icon: 'fa-flask',              label: 'Lab & Mfg' },
-    { id: 'delivery', icon: 'fa-calendar-check',     label: 'Delivery' },
-  ];
 
   function _getWorkflowStage() {
     if (S.caseDelivered)                              return 'complete';
@@ -2497,35 +2462,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   // ================================================================
   // WORKFLOW HELPERS
   // ================================================================
-  function _getPatientStageBadge(p) {
-    if (p.caseDelivered) return { icon: 'fa-circle-check', label: 'Delivered', cls: 'stage-delivered' };
-    if (!p.condition) return { icon: 'fa-scanner-keyboard', label: 'New', cls: 'stage-new' };
-    if (p.planApproved) {
-      if (p.labStatus === 'received') return { icon: 'fa-circle-check', label: 'Lab Received', cls: 'stage-lab' };
-      if (p.labStatus) return { icon: 'fa-flask', label: 'Lab Sent', cls: 'stage-lab' };
-      return { icon: 'fa-pen-ruler', label: 'Plan Approved', cls: 'stage-plan' };
-    }
-    return { icon: 'fa-brain', label: 'In Analysis', cls: '' };
-  }
-
-  function _getCaseUrgency(p) {
-    if (p.caseDelivered)                return '';
-    if (p.labStatus === 'received')     return 'urg-received';
-    if (p.planApproved && !p.labStatus) return 'urg-waiting';
-    if (!p.condition)                   return 'urg-new';
-    return '';
-  }
-
-  function _getStalenessText(p) {
-    if (p.caseDelivered || !p.condition || !p.lastAccessed) return '';
-    const days = Math.floor((Date.now() - p.lastAccessed) / 86400000);
-    if (days < 7) return '';
-    if (!p.planApproved)              return days + ' days in analysis';
-    if (!p.labStatus)                 return days + ' days awaiting lab';
-    if (p.labStatus === 'received')   return days + ' days awaiting delivery';
-    return days + ' days at lab';
-  }
-
   function _emitWfEvent(type, meta) {
     if (!Array.isArray(S.wfHistory)) S.wfHistory = [];
     const last = S.wfHistory[0];
@@ -2535,71 +2471,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     S.wfHistory.unshift(ev);
     if (S.wfHistory.length > 60) S.wfHistory = S.wfHistory.slice(0, 60);
     saveState();
-  }
-
-  function _synthesizeWfBaseline(p) {
-    const evs = [];
-    if (p.labStatus === 'received') {
-      evs.push({ type: 'lab_received',  ts: null, synthetic: true });
-      evs.push({ type: 'lab_sent',      ts: null, synthetic: true });
-      evs.push({ type: 'plan_approved', ts: null, synthetic: true });
-    } else if (p.labStatus) {
-      evs.push({ type: 'lab_sent',      ts: null, synthetic: true });
-      evs.push({ type: 'plan_approved', ts: null, synthetic: true });
-    } else if (p.planApproved) {
-      evs.push({ type: 'plan_approved', ts: null, synthetic: true });
-    }
-    return evs;
-  }
-
-  function _wfEventLabel(type) {
-    return ({
-      analysis_completed:  'AI Analysis Completed',
-      plan_approved:       'Treatment Plan Approved',
-      plan_reopened:       'Planning Reopened',
-      lab_sent:            'Sent to Laboratory',
-      lab_received:        'Lab Restoration Received',
-      report_generated:    'Report Generated',
-      case_delivered:      'Case Delivered',
-      delivery_reopened:   'Case Reopened After Delivery',
-    })[type] || type;
-  }
-
-  function _wfTimestamp(ts) {
-    const diff = Date.now() - ts;
-    const m = Math.floor(diff / 60000);
-    if (m < 1)  return 'just now';
-    if (m < 60) return m + 'm ago';
-    const h = Math.floor(m / 60);
-    if (h < 24) return h + 'h ago';
-    const d = Math.floor(h / 24);
-    if (d === 1) return 'Yesterday';
-    if (d < 7)  return d + 'd ago';
-    return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  }
-
-  function _renderWfTimeline(events) {
-    if (!events || events.length === 0) return '';
-    const items = events.map((ev, i) => {
-      const label   = _wfEventLabel(ev.type);
-      const time    = ev.synthetic ? 'Previously' : _wfTimestamp(ev.ts);
-      const dotCls  = ev.synthetic ? ' wf-tl-synthetic' : '';
-      const hasLine = i < events.length - 1;
-      return `<li class="wf-tl-item">` +
-        `<div class="wf-tl-indicator" aria-hidden="true">` +
-          `<div class="wf-tl-dot${dotCls}"></div>` +
-          (hasLine ? `<div class="wf-tl-connector"></div>` : '') +
-        `</div>` +
-        `<div class="wf-tl-content">` +
-          `<span class="wf-tl-label">${escapeHtml(label)}</span>` +
-          `<span class="wf-tl-time">${escapeHtml(time)}</span>` +
-        `</div>` +
-      `</li>`;
-    }).join('');
-    return `<div class="wf-tl-section">` +
-      `<h3 class="wf-tl-section-title">Case Progress</h3>` +
-      `<ol class="wf-timeline" aria-label="Case progress timeline">${items}</ol>` +
-    `</div>`;
   }
 
   function _getLatestWorkflowEvent() {
@@ -2680,19 +2551,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         _emitWfEvent('analysis_completed', { rec: _ai.rec, conf: _ai.conf });
       }
     } catch {}
-  }
-
-  function _relativeTime(ts) {
-    if (!ts) return '';
-    const diff = Date.now() - ts;
-    const m = Math.floor(diff / 60000);
-    if (m < 1)  return 'just now';
-    if (m < 60) return m + 'm ago';
-    const h = Math.floor(m / 60);
-    if (h < 24) return h + 'h ago';
-    const d = Math.floor(h / 24);
-    if (d < 7)  return d + 'd ago';
-    return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
   // ================================================================
@@ -2979,17 +2837,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   // PLAN VIEW RENDERER — Wave 8E
   // ================================================================
 
-  function _getAiForPlan(state) {
-    if (!state.condition) return null;
-    try {
-      if (state.multiSite && state.site2Tooth) {
-        const compound = ClinicalEngine.processCompound(state);
-        return compound ? (state.activeSite === 2 ? compound.site2 : compound.site1) : null;
-      }
-      return ClinicalEngine.process(state);
-    } catch (e) { return null; }
-  }
-
   function _getPlanTimeline(ai) {
     if (!ai) return [];
     const planDone = S.planApproved;
@@ -3069,40 +2916,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       { label: 'Crown Fabrication',                dur: '2–3 weeks',                        state: labDone ? 'done' : labSent ? 'active' : '' },
       { label: 'Crown Delivery',                   dur: '1 visit',                          state: labDone ? 'active' : '' },
     ];
-  }
-
-  function _buildTreatmentPathRows(ai) {
-    if (!ai) return '';
-    const rows = [];
-    if (ai.treatmentMode === 'restorative') {
-      rows.push({ label: 'Recommended', val: ai.recDisplay || 'Crown', hi: true });
-      if (ai.caseClass?.label) rows.push({ label: 'Classification', val: ai.caseClass.label });
-      if (ai.scored && ai.restorativeLabels) {
-        const bySlot = {}; ai.scored.forEach(t => { bySlot[t.slot] = t; });
-        if (bySlot['bridge'] && ai.rec !== 'bridge' && ai.restorativeLabels.slot2?.label)
-          rows.push({ label: 'Alt. 2', val: ai.restorativeLabels.slot2.label + (ai.bridge != null ? ' — ' + ai.bridge.toFixed(1) + '%' : ''), dim: true });
-        if (bySlot['crown'] && ai.rec !== 'crown' && ai.restorativeLabels.slot3?.label)
-          rows.push({ label: 'Alt. 3', val: ai.restorativeLabels.slot3.label + (ai.crown != null ? ' — ' + ai.crown.toFixed(1) + '%' : ''), dim: true });
-      }
-    } else if (ai.isMultiTooth) {
-      const labels = { implant2: '2 Implants', bridge4: '4-Unit Bridge', cantilever: 'Implant + Cantilever' };
-      rows.push({ label: 'Recommended', val: labels[ai.rec] || ai.rec, hi: true });
-      if (ai.ideal && ai.ideal !== ai.rec) rows.push({ label: 'Ideal option', val: labels[ai.ideal] || ai.ideal, dim: true });
-      [['implant2', ai.implant2], ['bridge4', ai.bridge4], ['cantilever', ai.cantilever]].forEach(([k, v]) => {
-        if (k !== ai.rec && v != null) rows.push({ label: labels[k], val: v.toFixed(1) + '%', dim: true });
-      });
-    } else {
-      const labels = { implant: 'Implant', bridge: 'Bridge', crown: 'Crown' };
-      rows.push({ label: 'Recommended', val: labels[ai.rec] || ai.rec, hi: true });
-      if (ai.rec !== 'implant' && ai.implant != null) rows.push({ label: 'Implant',   val: ai.implant.toFixed(1) + '%', dim: true });
-      if (ai.rec !== 'bridge'  && ai.bridge  != null) rows.push({ label: 'Bridge',    val: ai.bridge.toFixed(1)  + '%', dim: true });
-      if (ai.rec !== 'crown'   && ai.crown   != null && ai.crownViable)
-        rows.push({ label: 'Crown', val: ai.crown.toFixed(1) + '%', dim: true });
-    }
-    return rows.map(r => `<div class="plan-row">
-      <div class="plan-row-lbl" style="${r.dim ? 'color:var(--c-n400);font-weight:400;' : ''}">${escapeHtml(r.label)}</div>
-      <div class="plan-row-val" style="${r.hi ? 'color:var(--c-brand);' : r.dim ? 'color:var(--c-n400);font-weight:400;' : ''}">${escapeHtml(String(r.val))}</div>
-    </div>`).join('');
   }
 
   function _getPlanMaterialSummary(ai) {
@@ -3492,15 +3305,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   // ================================================================
   // CONSTANTS & DATA
   // ================================================================
-  const TOOTH_POSITIONS = Object.freeze({
-    '#1':{cx:22,cy:55},'#2':{cx:40,cy:42},'#3':{cx:58,cy:32},'#4':{cx:76,cy:24},'#5':{cx:94,cy:18},'#6':{cx:112,cy:14},
-    '#7':{cx:130,cy:11},'#8':{cx:148,cy:9},'#9':{cx:172,cy:9},'#10':{cx:190,cy:11},'#11':{cx:208,cy:14},'#12':{cx:226,cy:18},
-    '#13':{cx:244,cy:24},'#14':{cx:262,cy:32},'#15':{cx:280,cy:42},'#16':{cx:298,cy:55},'#17':{cx:298,cy:100},'#18':{cx:280,cy:113},
-    '#19':{cx:262,cy:123},'#20':{cx:244,cy:131},'#21':{cx:226,cy:137},'#22':{cx:208,cy:141},'#23':{cx:190,cy:144},'#24':{cx:172,cy:146},
-    '#25':{cx:148,cy:146},'#26':{cx:130,cy:144},'#27':{cx:112,cy:141},'#28':{cx:94,cy:137},'#29':{cx:76,cy:131},'#30':{cx:58,cy:123},
-    '#31':{cx:40,cy:113},'#32':{cx:22,cy:100}
-  });
-
   // ================================================================
   // CLINICAL ENGINE — 7-STAGE DETERMINISTIC DECISION PIPELINE
   // ================================================================
@@ -5315,19 +5119,6 @@ openNewPatientModal();
 // ================================================================
 let _pendingDeleteId = null;
 
-// ── Lightweight implant score for the patient list badge ──────────────
-// Uses only bone and hygiene — avoids the full calcAI() call which builds
-// reasons[], factors[], crown scoring, etc. (unnecessary for a sidebar badge).
-// saveState() triggers renderPatientList() debounced on every state change,
-// so calcAI per patient was running N×(every 200ms) while typing in notes.
-function _quickScore(p) {
-  if (!p.bone || !p.hygiene) return null;
-  let s = 96.4;
-  if (p.bone    === 'Good') s += 0.8; else if (p.bone    === 'Poor') s -= 12.5; else s -= 4.2;
-  if (p.hygiene === 'Good') s += 0.5; else if (p.hygiene === 'Poor') s -= 11.5; else s -= 2.6;
-  return Math.round(Math.max(50, Math.min(99, s)));
-}
-
 function renderPatientList() {
 const list = loadAllPatients() || [];
 const activeId = S.id;
@@ -5738,26 +5529,6 @@ setTimeout(() => {
   const first = status === 'signed-in' ? $('authModal').querySelector('button') : $('authSignInEmail');
   if (first) first.focus();
 }, 80);
-}
-
-// Wave 7F: relative-time formatter for last-sync display in account panel.
-function _relativeTime(isoString) {
-  try {
-    const diff = Date.now() - new Date(isoString).getTime();
-    const min  = Math.floor(diff / 60000);
-    if (min < 1)  return 'just now';
-    if (min < 60) return min + ' min ago';
-    const hr = Math.floor(min / 60);
-    if (hr  < 24) return hr + ' hr ago';
-    const day = Math.floor(hr / 24);
-    return day + ' day' + (day === 1 ? '' : 's') + ' ago';
-  } catch { return ''; }
-}
-// Returns the more recent of two ISO strings (or null if both absent).
-function _newerTs(a, b) {
-  if (!a) return b;
-  if (!b) return a;
-  try { return new Date(a).getTime() >= new Date(b).getTime() ? a : b; } catch { return a; }
 }
 
 function closeAuthModal() {

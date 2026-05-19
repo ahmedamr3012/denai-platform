@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-19T16:20:25.337Z
-> Files: 37 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-19T17:19:55.240Z
+> Files: 53 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~110000 tok)
+- `index.html` — denai — Clinical Insight (~106933 tok)
 - `playwright.config.js` (~337 tok)
 - `privacy.html` — Phase 3C-ii: standalone static privacy policy page. Self-contained HTML with trust.css + dark-mode flash prevention. Links to terms.html. (~2720 tok)
 - `terms.html` — Phase 3C-iii: standalone static terms of service page. Mirrors privacy.html architecture. tp-is-not list for "what denai is not" section. Links to privacy.html. (~3150 tok)
@@ -38,6 +38,21 @@
 
 - `authModule.js` — src/auth/authModule.js (~2327 tok)
 
+## src/constants/
+
+- `brand.js` — BRAND Object.freeze: name, displayName, tagline, disclaimer, footerLine, reportPrefix, exportPrefix (~80 tok)
+- `brand.js` — Declares BRAND (~106 tok)
+- `clinicalMaps.js` — BONE_MAP, HYGIENE_MAP, OCC_MAP, SMOKING_MAP, STRUCTURE_MAP, ENDO_MAP, PARAFUNCTION_MAP, DIABETES_MAP — dropdown option arrays (~120 tok)
+- `clinicalMaps.js` — Declares BONE_MAP (~135 tok)
+- `storageKeys.js` — STORAGE_KEY, HISTORY_KEY, PATIENTS_KEY, ACTIVE_PT_KEY — localStorage key strings (~60 tok)
+- `storageKeys.js` — Declares STORAGE_KEY (~51 tok)
+- `toothPositions.js` — TOOTH_POSITIONS Object.freeze: cx/cy coords for all 32 teeth, used for dental chart SVG rendering (~200 tok)
+- `toothPositions.js` — Declares TOOTH_POSITIONS (~208 tok)
+- `uiConfig.js` — _VALID_VIEWS array, _TOPBAR_CFG per-view icon/title/sub config (~100 tok)
+- `uiConfig.js` — Declares _VALID_VIEWS (~179 tok)
+- `workflowStages.js` — _WF_STAGES array: 5 workflow stage config objects (id, icon, label) (~80 tok)
+- `workflowStages.js` — Declares _WF_STAGES (~111 tok)
+
 ## src/db/
 
 
@@ -45,7 +60,9 @@
 
 - `costGraphPanel.js` — ================================================================ (~6656 tok)
 - `patientPanel.js` — ================================================================ (~954 tok)
+- `planFragments.js` — _getAiForPlan: _buildTreatmentPathRows (~794 tok)
 - `riskPanel.js` — renderRisk: _applyRiskCompact (~1659 tok)
+- `timeline.js` — _synthesizeWfBaseline: _renderWfTimeline (~447 tok)
 
 ## src/reports/
 
@@ -79,7 +96,9 @@
 
 ## src/utils/
 
+- `caseHelpers.js` — _getPatientStageBadge: _getCaseUrgency, _getStalenessText, _wfEventLabel, _quickScore (~605 tok)
 - `notesEncryption.js` — Wave 7G: `denaiNotesEnc` IIFE. AES-GCM 256-bit client-side PHI encryption. PBKDF2 key derivation (100k iterations, SHA-256). Payload format: `{ v:1, iv:<b64>, ct:<b64> }`. Key lives in-memory only; cleared on sign-out. Public API: generateSalt, init, encrypt, decrypt, hasKey, clearKey. (~120 tok)
+- `time.js` — _wfTimestamp (epoch ms → relative), _relativeTime (ISO string → relative), _newerTs (newer of two ISO strings) (~290 tok)
 
 ## tests/a11y/
 

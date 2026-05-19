@@ -3026,6 +3026,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-19T16:20:25.408Z"
+    },
+    {
+      "id": "bug-184",
+      "timestamp": "2026-05-19T16:41:47.487Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 12→5 lines (7 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-19T16:41:47.487Z"
+    },
+    {
+      "id": "bug-185",
+      "timestamp": "2026-05-19T17:04:22.798Z",
+      "error_message": "Missing error handling in _wfTimestamp",
+      "file": "src/utils/time.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-19T17:04:22.798Z"
     }
   ]
 }
