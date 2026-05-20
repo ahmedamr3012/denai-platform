@@ -8,6 +8,14 @@
 
 <!-- How the user likes things done. Code style, tools, patterns, communication. -->
 
+## Key Learnings — Wave C6 Preferences Hardening (2026-05-20)
+
+- **`trapFocus` must be called for ALL modals including settingsModal**: The init list at the bottom of index.html wire up focus traps for every modal. When adding a new modal, add `trapFocus('modalId')` immediately — missing it is an accessibility regression that passes CI (CI doesn't test Tab-cycle containment).
+- **`toothSystem` must validate against the enum, not just typeof string**: `_loadLocal`, `hydrate`, and `save` in prefsSync.js all accept preference values only when they match exact known values. Currency uses `_VALID_CURRENCIES.indexOf()`. toothSystem now uses explicit `=== 'universal' || === 'fdi'` check. Any other string silently falls back to the in-memory default.
+- **Cloud prefs hydration needs a re-render bridge**: `prefsSync.hydrate()` calls `_applyToDom()` (dark mode only) after cloud prefs win LWW comparison. Without an additional re-render, tooth SVG labels and monetary displays are stale until the next user action. Fix: `denaiRefreshAfterPrefsHydrate()` function declaration (accessible via window.*) calls `buildDentalSVG()` + `render(S)`. Called from hydrate() after _applyToDom(). NOT called from `save()` or `init()` — only from the cloud-wins branch of hydrate().
+- **Pricing inputs need a max attribute and JS upper-bound guard**: `Number.isFinite(parseFloat("9999999"))` is true. Prices above 99999 are unreasonable for any catalog item. Added `max="99999"` to the HTML input + `|| parsed > 99999` guard in the change handler. Both layers needed: HTML attribute constrains the spinner UI; JS guard rejects direct typed input.
+- **`denaiRefreshAfterPrefsHydrate` bridges the prefsSync → inline script gap**: Same bridge pattern as `denaiSetDarkMode`. Function declaration = accessible on window from external defer scripts. Never use const/let for cross-script bridges in this app.
+
 ## Key Learnings — Wave C5 Settings UI (2026-05-20)
 
 - **Settings gear is `.btn-settings-gear`** — same style pattern as `.dark-toggle` (no border/bg, hover adds bg). Placed in topbar-actions between dark-toggle and shortcutsBtn for visual grouping of utility icon buttons. Triggers `openSettingsModal()`.

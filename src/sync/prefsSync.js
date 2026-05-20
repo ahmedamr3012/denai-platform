@@ -49,7 +49,7 @@ window.denaiPrefs = (function () {
           if (typeof parsed.notesKeySalt === 'string')  _prefs.notesKeySalt = parsed.notesKeySalt;
           if (typeof parsed._lastSyncedAt === 'string') _lastSyncedAt       = parsed._lastSyncedAt;
           // Wave C1: clinic preferences
-          if (typeof parsed.toothSystem === 'string')   _prefs.toothSystem  = parsed.toothSystem;
+          if (parsed.toothSystem === 'universal' || parsed.toothSystem === 'fdi') _prefs.toothSystem = parsed.toothSystem;
           if (typeof parsed.currency === 'string' && _VALID_CURRENCIES.indexOf(parsed.currency) !== -1) {
             _prefs.currency = parsed.currency;
           }
@@ -186,7 +186,7 @@ window.denaiPrefs = (function () {
         if (typeof cloudPrefs.darkMode === 'boolean')    _prefs.darkMode     = cloudPrefs.darkMode;
         if (typeof cloudPrefs.notesKeySalt === 'string') _prefs.notesKeySalt = cloudPrefs.notesKeySalt;
         // Wave C1: clinic preferences from cloud
-        if (typeof cloudPrefs.toothSystem === 'string')  _prefs.toothSystem  = cloudPrefs.toothSystem;
+        if (cloudPrefs.toothSystem === 'universal' || cloudPrefs.toothSystem === 'fdi') _prefs.toothSystem = cloudPrefs.toothSystem;
         if (typeof cloudPrefs.currency === 'string' && _VALID_CURRENCIES.indexOf(cloudPrefs.currency) !== -1) {
           _prefs.currency = cloudPrefs.currency;
         }
@@ -194,6 +194,10 @@ window.denaiPrefs = (function () {
         _lastSyncedAt = res.data.updated_at;
         _saveLocal();
         _applyToDom();
+        // Wave C6: Re-render tooth SVG and monetary displays after cloud prefs apply.
+        if (typeof window.denaiRefreshAfterPrefsHydrate === 'function') {
+          try { window.denaiRefreshAfterPrefsHydrate(); } catch (e) {}
+        }
       }
     } catch (e) {
       console.warn('[denaiPrefs] hydrate failed:', e.message);
@@ -216,7 +220,7 @@ window.denaiPrefs = (function () {
       if (typeof patch.darkMode === 'boolean')    _prefs.darkMode     = patch.darkMode;
       if (typeof patch.notesKeySalt === 'string') _prefs.notesKeySalt = patch.notesKeySalt;
       // Wave C1: clinic preferences
-      if (typeof patch.toothSystem === 'string')  _prefs.toothSystem  = patch.toothSystem;
+      if (patch.toothSystem === 'universal' || patch.toothSystem === 'fdi') _prefs.toothSystem = patch.toothSystem;
       if (typeof patch.currency === 'string' && _VALID_CURRENCIES.indexOf(patch.currency) !== -1) {
         _prefs.currency = patch.currency;
       }

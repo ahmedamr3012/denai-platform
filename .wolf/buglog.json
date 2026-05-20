@@ -178,6 +178,118 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-20T08:23:00.574Z"
+    },
+    {
+      "id": "bug-012",
+      "timestamp": "2026-05-20T08:36:19.320Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had 'entryOverlay'",
+      "fix": "Changed to 'settingsModal'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-20T08:37:35.937Z"
+    },
+    {
+      "id": "bug-013",
+      "timestamp": "2026-05-20T08:36:48.085Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/sync/prefsSync.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T08:36:48.085Z"
+    },
+    {
+      "id": "bug-014",
+      "timestamp": "2026-05-20T08:37:04.200Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/sync/prefsSync.js",
+      "root_cause": "Had 'string'",
+      "fix": "Changed to 'universal'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-20T08:37:20.441Z"
+    },
+    {
+      "id": "bug-015",
+      "timestamp": "2026-05-20T08:37:41.575Z",
+      "error_message": "Wrong reference: return should be parsed",
+      "file": "index.html",
+      "root_cause": "Used \"return\" instead of \"parsed\"",
+      "fix": "Changed return → parsed",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T08:37:41.575Z"
+    },
+    {
+      "id": "bug-016",
+      "timestamp": "2026-05-20T09:31:00.000Z",
+      "error_message": "Settings modal (settingsModal) missing from trapFocus init list — Tab key escapes modal",
+      "file": "index.html",
+      "root_cause": "Wave C5 added settingsModal but forgot to add trapFocus('settingsModal') to the initialization list that wires up focus trapping for all modals",
+      "fix": "Added trapFocus('settingsModal') between notesPassphraseModal and entryOverlay in the init block",
+      "tags": ["accessibility", "modal", "focus-trap", "wave-c6", "a11y"],
+      "related_bugs": ["bug-011"],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T09:31:00.000Z"
+    },
+    {
+      "id": "bug-017",
+      "timestamp": "2026-05-20T09:32:00.000Z",
+      "error_message": "Cloud prefs hydration applies new tooth system / currency without re-rendering — UI shows stale labels until next user action",
+      "file": "src/sync/prefsSync.js",
+      "root_cause": "_applyToDom() only applies darkMode. After cloud-wins LWW merge in hydrate(), tooth SVG labels and monetary display surfaces remain stale because render(S) and buildDentalSVG() are not called",
+      "fix": "Added denaiRefreshAfterPrefsHydrate() function declaration in index.html (window-accessible bridge). Called from prefsSync.hydrate() after _applyToDom() in the cloud-wins branch only. Calls buildDentalSVG() + render(S) safely wrapped in try/catch",
+      "tags": ["hydration", "re-render", "cloud-sync", "wave-c6", "clinic-preferences"],
+      "related_bugs": ["bug-005"],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T09:32:00.000Z"
+    },
+    {
+      "id": "bug-018",
+      "timestamp": "2026-05-20T09:33:00.000Z",
+      "error_message": "toothSystem preference accepts any string — corrupt localStorage value would persist without validation",
+      "file": "src/sync/prefsSync.js",
+      "root_cause": "_loadLocal, hydrate, and save all checked typeof === 'string' for toothSystem. Any arbitrary string would be accepted and stored (e.g. 'invalid', ''). formatTooth() falls back safely but the corrupt value persists across sessions",
+      "fix": "Changed all three toothSystem checks to explicit enum validation: === 'universal' || === 'fdi'. Invalid values are silently ignored and the in-memory default ('universal') is kept",
+      "tags": ["validation", "input-sanitization", "wave-c6", "clinic-preferences"],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T09:33:00.000Z"
+    },
+    {
+      "id": "bug-019",
+      "timestamp": "2026-05-20T09:34:00.000Z",
+      "error_message": "Pricing inputs accept arbitrarily large values — parseFloat('9999999') passes isFinite check and saves to prefs",
+      "file": "index.html",
+      "root_cause": "sett-price-input had min=0 but no max. Number.isFinite() passes for any finite number including millions. No upper bound was enforced on either the HTML input or the JS change handler",
+      "fix": "Added max='99999' attribute to pricing input HTML template. Added || parsed > 99999 guard to the change handler validation. Both layers: HTML constrains the spinner UI; JS rejects direct typed values",
+      "tags": ["validation", "input-sanitization", "pricing", "wave-c6"],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T09:34:00.000Z"
     }
   ]
 }

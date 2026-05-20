@@ -5729,7 +5729,7 @@ function _renderSettingsModal() {
       + '<label class="sett-price-label" for="sprice-' + item.id + '">' + escapeHtml(item.label) + '</label>'
       + '<div class="sett-price-input-wrap">'
       + '<span class="sett-price-sym" aria-hidden="true">' + escapeHtml(sym) + '</span>'
-      + '<input class="sett-price-input" id="sprice-' + item.id + '" type="number" min="0" step="50"'
+      + '<input class="sett-price-input" id="sprice-' + item.id + '" type="number" min="0" max="99999" step="50"'
       + ' value="' + val + '" data-pref-id="' + item.id + '"'
       + ' aria-label="' + escapeHtml(item.label) + ' price" />'
       + '</div></div>';
@@ -5741,7 +5741,7 @@ function _renderSettingsModal() {
     inp.addEventListener('change', function() {
       var id = inp.dataset.prefId;
       var parsed = parseFloat(inp.value);
-      if (!id || !Number.isFinite(parsed) || parsed < 0) return;
+      if (!id || !Number.isFinite(parsed) || parsed < 0 || parsed > 99999) return;
       var rounded = Math.round(parsed);
       inp.value = rounded;
       var patch = {}; patch[id] = rounded;
@@ -5862,6 +5862,14 @@ function denaiSetDarkMode(value) {
   darkMode = !!value;
   try { localStorage.setItem('dandyDarkMode', darkMode); } catch {}
   applyDarkMode();
+}
+// Wave C6: Bridge called by denaiPrefs.hydrate() after cloud prefs win LWW merge.
+// Re-renders tooth SVG labels and monetary displays to reflect new tooth system / currency.
+// Must be a function declaration (not const) so prefsSync.js can access via window.*.
+// Guard: only fires when app is past init (render exists and S is populated).
+function denaiRefreshAfterPrefsHydrate() {
+  try { buildDentalSVG(); } catch (e) {}
+  try { render(S); } catch (e) {}
 }
 
 // ================================================================
@@ -6324,6 +6332,7 @@ trapFocus('newPatientModal');
 trapFocus('deletePatientModal');
 trapFocus('authModal');
 trapFocus('notesPassphraseModal');
+trapFocus('settingsModal');
 trapFocus('entryOverlay');
 
 renderPatientList();
