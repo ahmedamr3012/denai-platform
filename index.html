@@ -986,6 +986,41 @@ body.dark .kbd { background: var(--c-n150); border-color: var(--c-n300); color: 
 .shortcut-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--c-n100); font-size: 13px; }
 .shortcut-row:last-child { border-bottom: none; }
 
+/* ================================================================
+   CLINIC SETTINGS MODAL — Wave C5
+   ================================================================ */
+.btn-settings-gear { background: none; border: none; cursor: pointer; font-size: 17px; color: var(--c-n500); padding: 6px 8px; border-radius: var(--r-sm); transition: all var(--t-fast); display: flex; align-items: center; }
+.btn-settings-gear:hover { background: var(--c-n100); color: var(--c-n800); }
+.btn-settings-gear:focus-visible { outline: 2px solid var(--c-brand); outline-offset: 1px; box-shadow: var(--focus-ring); }
+body.dark .btn-settings-gear:hover { background: var(--c-n150); }
+.sett-section { margin-bottom: 22px; }
+.sett-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c-n400); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.sett-seg-ctrl { display: flex; gap: 6px; }
+.sett-seg-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 11px 14px; border-radius: var(--r-md); border: 1.5px solid var(--c-n200); background: white; cursor: pointer; transition: border-color var(--t-fast), background var(--t-fast), box-shadow var(--t-fast); font-family: 'DM Sans', sans-serif; }
+.sett-seg-btn:hover { border-color: var(--c-n300); background: var(--c-n50); }
+.sett-seg-btn.active { border-color: var(--c-brand); background: var(--c-brand-bg); box-shadow: 0 0 0 3px rgba(var(--c-brand-rgb),.09); }
+.sett-seg-btn:focus-visible { outline: 2px solid var(--c-brand); outline-offset: 2px; box-shadow: var(--focus-ring); }
+body.dark .sett-seg-btn { background: var(--c-n100); border-color: var(--c-n200); }
+body.dark .sett-seg-btn:hover { background: var(--c-n150); }
+body.dark .sett-seg-btn.active { background: #1a3a2a; border-color: var(--c-brand); }
+.sett-seg-main { font-size: 13px; font-weight: 700; color: var(--c-n800); }
+.sett-seg-btn.active .sett-seg-main { color: var(--c-brand-dark); }
+.sett-seg-sub { font-size: 10.5px; color: var(--c-n400); font-weight: 500; }
+.sett-seg-btn.active .sett-seg-sub { color: var(--c-brand); }
+.sett-pricing-grid { display: flex; flex-direction: column; gap: 5px; }
+.sett-pricing-category { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--c-n400); margin: 10px 0 5px; padding: 0 2px; }
+.sett-pricing-category:first-child { margin-top: 0; }
+.sett-price-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 10px; background: var(--c-n50); border-radius: var(--r-sm); border: 1px solid var(--c-n100); transition: background .15s, border-color .15s; }
+.sett-price-row:hover { background: white; border-color: var(--c-n200); }
+body.dark .sett-price-row { background: var(--c-n100); border-color: var(--c-n150); }
+body.dark .sett-price-row:hover { background: var(--c-n150); }
+.sett-price-label { font-size: 12px; font-weight: 500; color: var(--c-n700); flex: 1; }
+.sett-price-input-wrap { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.sett-price-sym { font-size: 12px; font-weight: 600; color: var(--c-n500); min-width: 14px; }
+.sett-price-input { width: 82px; border: 1.5px solid var(--c-n200); border-radius: var(--r-sm); padding: 5px 8px; font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--c-n800); background: white; outline: none; text-align: right; transition: border-color var(--t-fast), box-shadow var(--t-fast); }
+.sett-price-input:focus { border-color: var(--c-brand); box-shadow: 0 0 0 3px rgba(var(--c-brand-rgb),.1); }
+body.dark .sett-price-input { background: var(--c-n100); border-color: var(--c-n200); color: var(--c-n800); }
+
 .preset-btn.crown { border-color: #c7d2fe; background: #eef2ff; color: #4338ca; }
 .preset-btn.crown:hover { background: #e0e7ff; }
 body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color: #a5b4fc; }
@@ -1425,6 +1460,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           <span id="saveIndicatorText">Saved</span>
         </div>
         <button class="dark-toggle" id="darkToggleBtn" type="button" aria-label="Toggle dark mode"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
+        <button class="btn-settings-gear" id="settingsBtn" type="button" aria-label="Clinic settings" title="Clinic settings"><i class="fa-solid fa-sliders" aria-hidden="true"></i></button>
         <button class="btn btn-sec" type="button" id="shortcutsBtn" aria-label="Keyboard shortcuts (Ctrl+?)"><i class="fa-solid fa-keyboard" style="color:var(--c-n400)" aria-hidden="true"></i></button>
         <button class="btn btn-sec" type="button" id="reportBtn"><i class="fa-solid fa-print" style="color:var(--c-n400)" aria-hidden="true"></i> Report</button>
         <button class="btn btn-sec" type="button" id="saveDraftBtn"><i class="fa-regular fa-floppy-disk" style="color:var(--c-n400)" aria-hidden="true"></i> Save</button>
@@ -1951,6 +1987,55 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <div class="shortcut-row"><span>Dark Mode</span><span><span class="kbd">Ctrl</span> + <span class="kbd">D</span></span></div>
         <div class="shortcut-row"><span>Close Modal / Cancel</span><span><span class="kbd">Esc</span></span></div>
       </div>
+    </div>
+  </div>
+
+  <!-- Wave C5: Clinic Settings Modal -->
+  <div class="modal-ov" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settModalTitle">
+    <div class="modal-box" id="settingsModalBox" role="document" style="max-width:480px;text-align:left;">
+      <button type="button" class="modal-close-btn" id="closeSettingsBtn" aria-label="Close settings">×</button>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:var(--c-brand-bg);display:flex;align-items:center;justify-content:center;color:var(--c-brand);font-size:14px;flex-shrink:0;" aria-hidden="true"><i class="fa-solid fa-sliders"></i></div>
+        <h3 id="settModalTitle" style="font-size:18px;font-weight:800;color:var(--c-n900);margin:0;">Clinic Settings</h3>
+      </div>
+      <p style="font-size:12px;color:var(--c-n500);margin-bottom:22px;margin-left:44px;">Display and pricing preferences for your practice.</p>
+
+      <!-- Section 1: Tooth Numbering -->
+      <div class="sett-section">
+        <div class="sett-section-title"><i class="fa-solid fa-tooth" aria-hidden="true"></i> Tooth Numbering</div>
+        <div class="sett-seg-ctrl" role="group" aria-label="Select tooth numbering system">
+          <button class="sett-seg-btn" id="sett-tooth-universal" type="button" aria-pressed="true">
+            <span class="sett-seg-main">Universal</span>
+            <span class="sett-seg-sub">#8, #14…</span>
+          </button>
+          <button class="sett-seg-btn" id="sett-tooth-fdi" type="button" aria-pressed="false">
+            <span class="sett-seg-main">FDI</span>
+            <span class="sett-seg-sub">11, 26…</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 2: Currency -->
+      <div class="sett-section">
+        <div class="sett-section-title"><i class="fa-solid fa-circle-dollar-to-slot" aria-hidden="true"></i> Currency</div>
+        <select class="np-input" id="settCurrencySelect" aria-label="Clinic currency" style="max-width:240px;">
+          <option value="USD">$ — US Dollar (USD)</option>
+          <option value="EUR">€ — Euro (EUR)</option>
+          <option value="CAD">CA$ — Canadian Dollar (CAD)</option>
+          <option value="EGP">E£ — Egyptian Pound (EGP)</option>
+        </select>
+      </div>
+
+      <!-- Section 3: Clinic Pricing — dynamically rendered from TREATMENT_PRICING_CATALOG -->
+      <div class="sett-section">
+        <div class="sett-section-title"><i class="fa-solid fa-tag" aria-hidden="true"></i> Clinic Treatment Pricing</div>
+        <p style="font-size:11px;color:var(--c-n400);margin:-6px 0 10px;">Per-patient overrides always take priority. These set clinic-level defaults.</p>
+        <div id="settPricingGrid" class="sett-pricing-grid">
+          <!-- Populated by _renderSettingsModal() -->
+        </div>
+      </div>
+
+      <button class="btn btn-pri" type="button" id="settDoneBtn" style="width:100%;justify-content:center;">Done</button>
     </div>
   </div>
 
@@ -5577,6 +5662,96 @@ function openShortcutsModal() { _modalTrigger = document.activeElement; $('short
 function closeShortcutsModal() { $('shortcutsModal').style.display = 'none'; if (_modalTrigger) { _modalTrigger.focus(); _modalTrigger = null; } }
 
 // ================================================================
+// CLINIC SETTINGS MODAL — Wave C5
+// ================================================================
+let _settingsTrigger = null;
+let _settingsToothChanged = false;
+
+function openSettingsModal() {
+  _settingsTrigger = document.activeElement;
+  _settingsToothChanged = false;
+  _renderSettingsModal();
+  $('settingsModal').style.display = 'flex';
+  setTimeout(function() {
+    var first = $('settingsModal').querySelector('.sett-seg-btn, .np-input, .sett-price-input');
+    if (first) first.focus();
+  }, 60);
+}
+
+function closeSettingsModal() {
+  $('settingsModal').style.display = 'none';
+  if (_settingsTrigger) { _settingsTrigger.focus(); _settingsTrigger = null; }
+  // Re-render affected display surfaces
+  if (_settingsToothChanged) {
+    try { buildDentalSVG(); } catch(e) {}
+  }
+  try {
+    var v = UIState.view;
+    if (!v || v === 'insight' || v === 'plan' || v === 'lab' || v === 'reports') {
+      render(S);
+    } else if (v === 'cases') {
+      renderCasesView();
+    } else if (v === 'dashboard') {
+      renderDashboardView();
+    }
+  } catch(e) {}
+  _settingsToothChanged = false;
+}
+
+function _renderSettingsModal() {
+  if (typeof denaiPrefs === 'undefined') return;
+  var sys      = denaiPrefs.get('toothSystem') || 'universal';
+  var currency = denaiPrefs.get('currency')    || 'USD';
+  var pricing  = denaiPrefs.get('pricing');
+
+  // Tooth system segmented buttons
+  var btnU = $('sett-tooth-universal'), btnF = $('sett-tooth-fdi');
+  if (btnU) { btnU.classList.toggle('active', sys === 'universal'); btnU.setAttribute('aria-pressed', String(sys === 'universal')); }
+  if (btnF) { btnF.classList.toggle('active', sys === 'fdi');       btnF.setAttribute('aria-pressed', String(sys === 'fdi')); }
+
+  // Currency select
+  var currEl = $('settCurrencySelect');
+  if (currEl) currEl.value = currency;
+
+  // Pricing grid — registry-driven from TREATMENT_PRICING_CATALOG
+  var grid = $('settPricingGrid');
+  if (!grid) return;
+  var lastCat = null, html = '';
+  for (var i = 0; i < TREATMENT_PRICING_CATALOG.length; i++) {
+    var item = TREATMENT_PRICING_CATALOG[i];
+    if (item.category !== lastCat) {
+      html += '<div class="sett-pricing-category">' + escapeHtml(item.category.charAt(0).toUpperCase() + item.category.slice(1)) + '</div>';
+      lastCat = item.category;
+    }
+    var val = (pricing && typeof pricing[item.id] === 'number') ? pricing[item.id] : item.default;
+    var sym  = getCurrencySymbol();
+    html += '<div class="sett-price-row">'
+      + '<label class="sett-price-label" for="sprice-' + item.id + '">' + escapeHtml(item.label) + '</label>'
+      + '<div class="sett-price-input-wrap">'
+      + '<span class="sett-price-sym" aria-hidden="true">' + escapeHtml(sym) + '</span>'
+      + '<input class="sett-price-input" id="sprice-' + item.id + '" type="number" min="0" step="50"'
+      + ' value="' + val + '" data-pref-id="' + item.id + '"'
+      + ' aria-label="' + escapeHtml(item.label) + ' price" />'
+      + '</div></div>';
+  }
+  grid.innerHTML = html;
+
+  // Attach price-change handlers after innerHTML rebuild
+  grid.querySelectorAll('.sett-price-input').forEach(function(inp) {
+    inp.addEventListener('change', function() {
+      var id = inp.dataset.prefId;
+      var parsed = parseFloat(inp.value);
+      if (!id || !Number.isFinite(parsed) || parsed < 0) return;
+      var rounded = Math.round(parsed);
+      inp.value = rounded;
+      var patch = {}; patch[id] = rounded;
+      denaiPrefs.save({ pricing: patch });
+      showToast('Pricing saved', 'success', 1200);
+    });
+  });
+}
+
+// ================================================================
 // AUTO-SAVE INDICATOR
 // ================================================================
 let _saveIndicatorTimer = null;
@@ -5720,6 +5895,7 @@ if ($('newPatientModal').style.display==='flex') closeNewPatientModal();
 if ($('deletePatientModal').style.display==='flex') closeDeletePatient();
 if ($('authModal').style.display==='flex') closeAuthModal();
 if ($('notesPassphraseModal').style.display==='flex') closeNotesPassphraseModal();
+if ($('settingsModal').style.display==='flex') closeSettingsModal();
 const eo = $('entryOverlay'); if (eo && eo.classList.contains('entry-visible')) continueLocally();
 },
 'ctrl+1': () => selectTx('implant'),
@@ -5979,6 +6155,33 @@ $('closeAuthModalBtn')?.addEventListener('click', closeAuthModal);
 $('notesPassphraseModal')?.addEventListener('click', closeNotesPassphraseModal);
 $('notesPassphraseModalBox')?.addEventListener('click', e => e.stopPropagation());
 $('closeNotesPassphraseBtn')?.addEventListener('click', closeNotesPassphraseModal);
+// Wave C5: Clinic Settings Modal
+$('settingsModal')?.addEventListener('click', closeSettingsModal);
+$('settingsModalBox')?.addEventListener('click', e => e.stopPropagation());
+$('settingsBtn')?.addEventListener('click', openSettingsModal);
+$('closeSettingsBtn')?.addEventListener('click', closeSettingsModal);
+$('settDoneBtn')?.addEventListener('click', closeSettingsModal);
+$('sett-tooth-universal')?.addEventListener('click', function() {
+  if (typeof denaiPrefs === 'undefined') return;
+  denaiPrefs.save({ toothSystem: 'universal' });
+  _settingsToothChanged = true;
+  _renderSettingsModal();
+  showToast('Tooth system: Universal', 'success', 1200);
+});
+$('sett-tooth-fdi')?.addEventListener('click', function() {
+  if (typeof denaiPrefs === 'undefined') return;
+  denaiPrefs.save({ toothSystem: 'fdi' });
+  _settingsToothChanged = true;
+  _renderSettingsModal();
+  showToast('Tooth system: FDI', 'success', 1200);
+});
+$('settCurrencySelect')?.addEventListener('change', function() {
+  if (typeof denaiPrefs === 'undefined') return;
+  denaiPrefs.save({ currency: this.value });
+  // Update currency symbols in visible pricing rows without full grid rebuild
+  document.querySelectorAll('.sett-price-sym').forEach(function(el) { el.textContent = getCurrencySymbol(); });
+  showToast('Currency updated', 'success', 1200);
+});
 $('authSignInBtn')?.addEventListener('click', async () => {
   if (typeof denaiAuth === 'undefined') { showToast('Auth service not loaded', 'error'); return; }
   const email    = $('authSignInEmail')?.value.trim();

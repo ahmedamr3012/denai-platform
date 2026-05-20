@@ -130,6 +130,54 @@
       "related_bugs": [],
       "occurrences": 10,
       "last_seen": "2026-05-20T08:04:13.884Z"
+    },
+    {
+      "id": "bug-009",
+      "timestamp": "2026-05-20T08:21:10.515Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"btn btn-sec\"",
+      "fix": "Changed to \"btn-settings-gear\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-20T08:22:45.017Z"
+    },
+    {
+      "id": "bug-010",
+      "timestamp": "2026-05-20T08:22:23.515Z",
+      "error_message": "Missing error handling in closeShortcutsModal",
+      "file": "index.html",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T08:22:23.515Z"
+    },
+    {
+      "id": "bug-011",
+      "timestamp": "2026-05-20T08:23:00.574Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: typeof denaiPrefs === 'undefined'",
+      "fix": "Added guard clause: if (typeof denaiPrefs === 'undefined')",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T08:23:00.574Z"
     }
   ]
 }

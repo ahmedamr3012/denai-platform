@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-20T08:05:11.683Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-20T08:23:00.561Z
 > Files: 61 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~107547 tok)
+- `index.html` — denai — Clinical Insight. Wave C5: settings modal (tooth system / currency / pricing), `.btn-settings-gear`, `openSettingsModal/closeSettingsModal/_renderSettingsModal`. (~111600 tok)
 - `playwright.config.js` (~337 tok)
 - `privacy.html` — Phase 3C-ii: standalone static privacy policy page. Self-contained HTML with trust.css + dark-mode flash prevention. Links to terms.html. (~2720 tok)
 - `terms.html` — Phase 3C-iii: standalone static terms of service page. Mirrors privacy.html architecture. tp-is-not list for "what denai is not" section. Links to privacy.html. (~3150 tok)

@@ -8,6 +8,17 @@
 
 <!-- How the user likes things done. Code style, tools, patterns, communication. -->
 
+## Key Learnings — Wave C5 Settings UI (2026-05-20)
+
+- **Settings gear is `.btn-settings-gear`** — same style pattern as `.dark-toggle` (no border/bg, hover adds bg). Placed in topbar-actions between dark-toggle and shortcutsBtn for visual grouping of utility icon buttons. Triggers `openSettingsModal()`.
+- **Settings modal pattern**: `modal-ov` + `modal-box` (same CSS as all other modals, `max-width:480px`). Separate `_settingsTrigger` from the shared `_modalTrigger` — settings has its own trigger var so it doesn't clobber the shared `_modalTrigger` used by other modals (save/shortcuts).
+- **`_renderSettingsModal()` rebuilds pricing grid via innerHTML each open**: Safe because `denaiPrefs.save()` fires on input `change` (blur/Enter), not keydown. Any uncommitted typing can survive a grid rebuild only if it hasn't blurred — but since the grid is only rebuilt at open time and on tooth button clicks (not on currency change), in-progress typing in price inputs is preserved.
+- **Currency symbol update on currency change**: On `settCurrencySelect` change, use `document.querySelectorAll('.sett-price-sym').forEach(...)` to update symbol spans WITHOUT rebuilding the pricing grid — prevents in-progress typing loss. `getCurrencySymbol()` reads the newly saved pref immediately since `denaiPrefs.save()` is synchronous.
+- **Re-render on modal close, not during**: `closeSettingsModal()` re-renders the appropriate view after the modal closes. `_settingsToothChanged` flag gates `buildDentalSVG()` rebuild. Then `render(S)` / `renderCasesView()` / `renderDashboardView()` based on `UIState.view`. This avoids jarring mid-modal re-renders and batches updates cleanly.
+- **`buildDentalSVG()` needed explicitly for tooth system change**: `render(S)` → `renderMainPanels()` does NOT call `buildDentalSVG()`. The SVG is built once in `init()` and only `updateToothHighlight` runs inside `render`. Tooth system change requires explicit `buildDentalSVG()` call to update all 32 per-tooth labels and the footer label.
+- **TREATMENT_PRICING_CATALOG drives pricing rows dynamically**: The `_renderSettingsModal()` loop iterates `TREATMENT_PRICING_CATALOG` and generates category headers + price rows. Adding a new entry to the catalog automatically appears in settings. No hardcoding in the UI.
+- **Pricing `change` handler uses `data-pref-id` attribute**: Each input has `data-pref-id="${item.id}"`. The handler reads `inp.dataset.prefId` and calls `denaiPrefs.save({ pricing: { [id]: rounded } })`. Partial object merge in `prefsSync.save()` ensures other pricing values are preserved.
+
 ## Key Learnings — Wave C4 Tooth Display Abstraction (2026-05-20)
 
 - **formatTooth(tooth, compact?)** is the single tooth display abstraction. Universal mode returns `#8`. FDI mode returns `11 (#8)` (dual display for clinical safety). `compact=true` returns `11` only — used in SVG where space is tight (9.5px font in pulsing highlight circle).
