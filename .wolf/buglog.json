@@ -472,6 +472,226 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-20T10:00:00.000Z"
+    },
+    {
+      "id": "bug-029",
+      "timestamp": "2026-05-20T22:02:44.478Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/ai/clinicalEngine.js",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 18→23 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T22:02:44.478Z"
+    },
+    {
+      "id": "bug-030",
+      "timestamp": "2026-05-21T00:00:00.000Z",
+      "error_message": "Extraction path (extract_impl) hidden for COMPROMISED + RCT done + posterior teeth — endocrown ternary blocked escalation from appearing",
+      "file": "src/ai/clinicalEngine.js",
+      "root_cause": "generateTreatments slot3 ternary checked endocrownViable first, so when endocrownViable=true AND escalationViable=true the endocrown always won slot3 and extract_impl was never generated — invisible to clinician and recommendation engine alike",
+      "fix": "Moved endocrown to slot1 (it is the most conservative full-coverage option for RCT-done posterior). Slot3 now always shows extract_impl when escalationViable=true. Added HOPELESS guard to suppress endocrown in slot1 for hopeless cases.",
+      "tags": [
+        "clinical-engine",
+        "treatment-generation",
+        "extraction-path",
+        "endocrown",
+        "compromised",
+        "C1-fix"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-21T00:00:00.000Z"
+    },
+    {
+      "id": "bug-031",
+      "timestamp": "2026-05-21T00:00:00.000Z",
+      "error_message": "Poor hygiene had no numerical effect on crown prognosis score — only added a rationale string",
+      "file": "src/ai/calcAI.js",
+      "root_cause": "The calcAI.js crown scoring section included hygiene switches for implant and bridge (main section) but had no hygiene switch inside the crown scoring block. Poor hygiene only triggered a text rationale in scoreRestorative without reducing the crown score.",
+      "fix": "Added hygiene switch inside the inner crownViable block in calcAI.js: Poor hygiene: crown -=3.5, conf -=3; Fair hygiene: crown -=1.0. Penalty propagates automatically to scoreRestorative via baseAI.crown.",
+      "tags": [
+        "clinical-engine",
+        "crown-scoring",
+        "hygiene",
+        "calibration",
+        "H2-fix"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-21T00:00:00.000Z"
+    },
+    {
+      "id": "bug-032",
+      "timestamp": "2026-05-21T00:00:00.000Z",
+      "error_message": "Splinting overtreatment: all COMPROMISED cases triggered splinted crowns, including bruxism-only cases with intact abutments",
+      "file": "src/ai/clinicalEngine.js",
+      "root_cause": "splintedPreferred included caseClass.type === CT.RESTORATIVE_COMPROMISED as a third condition. Since fairStructure+bruxism classifies as COMPROMISED, single posterior teeth with bruxism and healthy neighbors received splinting with no structural indication.",
+      "fix": "Removed CT.RESTORATIVE_COMPROMISED from splintedPreferred. Now only poorFerrule or abutmentCompromised trigger splinting — the two evidence-based structural indications.",
+      "tags": [
+        "clinical-engine",
+        "splinting",
+        "overtreatment",
+        "bruxism",
+        "compromised",
+        "H3-fix"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-21T00:00:00.000Z"
+    },
+    {
+      "id": "bug-033",
+      "timestamp": "2026-05-21T00:00:00.000Z",
+      "error_message": "Bruxism has zero confidence effect in calcAI main section — missing-tooth cases with severe parafunction get identical confidence to no-parafunction profile",
+      "file": "src/ai/calcAI.js",
+      "root_cause": "The parafunction switch only existed inside the inner if(crownViable && crown > 0) block. calcAI main section (implant/bridge scoring) had no parafunction term at all. H1 deferred from Wave A.",
+      "fix": "Added parafunction switch after occlusion switch in calcAI main section: Clenching conf−=2, Bruxism conf−=4 + zirconia reason, Both conf−=6 + reason. Confidence-only, no score change — preserves non-implant-phobia.",
+      "tags": [
+        "bruxism",
+        "confidence",
+        "propagation",
+        "H1",
+        "calcAI",
+        "wave-b"
+      ],
+      "related_bugs": [
+        "bug-031"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-21"
+    },
+    {
+      "id": "bug-034",
+      "timestamp": "2026-05-21T00:00:00.000Z",
+      "error_message": "calcAIMulti confidence has no parafunction term — multi-tooth bruxism cases fully inert in confidence output",
+      "file": "src/ai/calcAI.js",
+      "root_cause": "The calcAIMulti confidence block only penalized poor bone, poor hygiene, and compromised abutments. Parafunction/bruxism was never read for the confidence calculation in the multi-tooth path.",
+      "fix": "Added parafunction block after youngGoodBone check: Bruxism/Both → conf−=4 + reason, Clenching → conf−=2.",
+      "tags": [
+        "bruxism",
+        "multi-tooth",
+        "confidence",
+        "calcAIMulti",
+        "wave-b"
+      ],
+      "related_bugs": [
+        "bug-033"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-21"
+    },
+    {
+      "id": "bug-035",
+      "timestamp": "2026-05-21T00:00:00.000Z",
+      "error_message": "explain() factors in ClinicalEngine missing smoking, uncontrolledDM, and clenching-only signals — these risks present in calcAI but not surfaced in restorative explainability output",
+      "file": "src/ai/clinicalEngine.js",
+      "root_cause": "explain() destructured only b, o, p, r from c — systemic (sys) was not destructured. No sys.currentSmoker, sys.uncontrolledDM, or o.clenching checks in the factors array.",
+      "fix": "Added systemic:sys to explain() destructuring. Added three factor pushes: currentSmoker→neg, uncontrolledDM→neg, clenching&&!bruxism→warn.",
+      "tags": [
+        "explain",
+        "smoking",
+        "diabetes",
+        "clenching",
+        "factors",
+        "propagation",
+        "wave-b"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-21"
+    },
+    {
+      "id": "bug-036",
+      "timestamp": "2026-05-20T22:45:52.132Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/ai/clinicalEngine.js",
+      "root_cause": "Had 'Active decay compromises bond quality — full cove",
+      "fix": "Changed to 'Poor hygiene: resin bond degrades under bacterial",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T22:45:52.132Z"
+    },
+    {
+      "id": "bug-037",
+      "timestamp": "2026-05-20T22:46:05.042Z",
+      "error_message": "Wrong return value",
+      "file": "src/ai/clinicalEngine.js",
+      "root_cause": "Was returning: { rec, ideal, conf, confLevel: conf >= 80 ? 'High'",
+      "fix": "Now returns: { rec, ideal, conf, confLevel: conf >= 75 ? 'High'",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T22:46:05.042Z"
+    },
+    {
+      "id": "bug-038",
+      "timestamp": "2026-05-20T23:04:06.517Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/ai/clinicalEngine.js",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 17→26 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T23:04:06.517Z"
+    },
+    {
+      "id": "bug-038",
+      "timestamp": "2026-05-20T23:08:36.346Z",
+      "error_message": "Onlay ties crown at poor hygiene under maximal favorable conditions — sort order gives onlay slot1 priority (clinically wrong)",
+      "file": "src/ai/clinicalEngine.js",
+      "root_cause": "At goodFerrule+3, !highLoad+1.5, isPosterior+1, !needsRCT+2, goodBone+0.5 (+8 total), onlay = 91+8-5 = 94. Crown at same conditions = 94. Tie. Stable sort gives onlay priority.",
+      "fix": "Increased onlay poorHygiene penalty from -5.0 to -6.0. Now onlay = 93 < crown = 94 at maximal conditions with poor hygiene.",
+      "tags": [
+        "onlay",
+        "poor-hygiene",
+        "scoring",
+        "penalty",
+        "calibration",
+        "wave-c-calibration"
+      ],
+      "related_bugs": [
+        "bug-036"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-20"
+    },
+    {
+      "id": "bug-039",
+      "timestamp": "2026-05-20T23:08:36.346Z",
+      "error_message": "Preservation-bias recommendation does not reflect clinical ambiguity when extraction scored higher — confidence unchanged despite close call",
+      "file": "src/ai/clinicalEngine.js",
+      "root_cause": "recommend() left conf unchanged when preservation bias fired with extraction scoring higher. A close preserve-vs-extract call should feel less certain but confidence was unaffected.",
+      "fix": "Added preservation-tension softening: when biasFires && extractOpt.score > bestPreserve.score, conf reduced by 2/4/7 based on pressureGap (0-0.5/0.5-2/2+). COMPROMISED path only.",
+      "tags": [
+        "confidence",
+        "preservation-bias",
+        "calibration",
+        "recommend",
+        "wave-c-calibration"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20"
     }
   ]
 }

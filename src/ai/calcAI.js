@@ -168,6 +168,13 @@
     if (stateObj.bone === 'Poor' || stateObj.hygiene === 'Poor') conf -= 10;
     if (abutComp) conf -= 8;
     if (youngGoodBone) conf += 5;
+    // Parafunction — prosthetic durability under multi-tooth span load
+    if (stateObj.parafunction === 'Bruxism' || stateObj.parafunction === 'Both') {
+      conf -= 4;
+      reasons.push('Bruxism: multi-tooth prosthetic fracture risk elevated — night guard mandatory');
+    } else if (stateObj.parafunction === 'Clenching') {
+      conf -= 2;
+    }
     conf = Math.max(35, Math.min(90, conf));
 
     // Fallback reasons
@@ -292,6 +299,25 @@
         occR = 'Low';
         reasons.push('Low occlusion minimizes restorative stress');
         factors.push({ label: 'Low occlusion', type: 'pos', delta: 0 });
+    }
+    // Parafunction — prosthetic durability and confidence realism for implant-borne restorations.
+    // Score is intentionally unchanged: parafunction does not contraindicate implants, but does
+    // increase prosthetic fracture risk and reduces recommendation certainty. Confidence-only.
+    switch (stateObj.parafunction || 'None') {
+      case 'Clenching':
+        conf -= 2;
+        factors.push({ label: 'Clenching − load caution', type: 'warn', delta: 0 });
+        break;
+      case 'Bruxism':
+        conf -= 4;
+        reasons.push('Bruxism: implant crown fracture risk elevated — monolithic zirconia prosthesis and night guard mandatory');
+        factors.push({ label: 'Bruxism − confidence', type: 'warn', delta: 0 });
+        break;
+      case 'Both':
+        conf -= 6;
+        reasons.push('Bruxism + clenching: severe parafunctional forces — monolithic zirconia and strict night guard protocol required');
+        factors.push({ label: 'Bruxism+Clenching − confidence', type: 'neg', delta: 0 });
+        break;
     }
     // Jaw (Maxilla/Mandible) + Position — evidence-based registry data
     const _maxilla  = isMaxilla(stateObj.tooth);
@@ -479,6 +505,18 @@
             factors.push({ label: 'Uncontrolled DM −1.5%', type: 'neg', delta: -1.5 });
             break;
         }
+        // Hygiene — crown margin secondary caries risk
+        switch (stateObj.hygiene || 'Good') {
+          case 'Poor':
+            crown -= 3.5; conf -= 3;
+            reasons.push('Poor hygiene: secondary caries at crown margins — intensive maintenance mandatory');
+            factors.push({ label: 'Poor hygiene −3.5%', type: 'neg', delta: -3.5 });
+            break;
+          case 'Fair':
+            crown -= 1.0;
+            factors.push({ label: 'Fair hygiene −1.0%', type: 'warn', delta: -1.0 });
+            break;
+        }
         // Tooth position
         if (isPosteriorTooth(stateObj.tooth)) {
           crown -= 1.0;
@@ -517,7 +555,7 @@
     if (crownViable && crown > 0) recScores.push({ option: 'crown', score: crown });
     recScores.sort((a, b) => b.score - a.score);
     const rec = recScores[0].option; // Truly best option based on clinical data
-    const confLevel = conf >= 80 ? 'High' : conf >= 60 ? 'Medium' : 'Low';
+    const confLevel = conf >= 75 ? 'High' : conf >= 55 ? 'Medium' : 'Low';
 
     const usedReasons = new Set(reasons);
     for (const r of FALLBACK_REASONS) {

@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-20T09:02:01.514Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-20T23:04:06.503Z
 > Files: 61 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -32,8 +32,8 @@
 
 ## src/ai/
 
-- `calcAI.js` — isPosteriorTooth: isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI (~7459 tok)
-- `clinicalEngine.js` — ClinicalEngine: normalize (Wave C3: costs.implant added), classify, generateTreatments, scoreRestorative, buildRestorativeResult (extract_impl uses c.costs.implant — C3 fix) (~7350 tok)
+- `calcAI.js` — isPosteriorTooth: isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI (~8021 tok)
+- `clinicalEngine.js` — ClinicalEngine: normalize, classify, generateTreatments, scoreRestorative (~7795 tok)
 
 ## src/auth/
 
@@ -130,7 +130,7 @@
 
 ## tests/engine/
 
-- `scenarios.js` — ================================================================ (~9553 tok)
+- `scenarios.js` — ================================================================ (~9594 tok)
 
 ## tests/smoke/
 

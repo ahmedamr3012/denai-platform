@@ -104,30 +104,33 @@
       // Indications (clinical literature):
       //   - Poor ferrule on affected tooth (borrows retention from neighbors)
       //   - Compromised adjacent abutment quality (already-failing neighbors)
-      //   - COMPROMISED case classification (structural weakness justifies support)
-      // NOT indicated for: bruxism on isolated single tooth with healthy neighbors
-      // (overtreatment — correct answer is monolithic zirconia + nightguard)
-      const splintedPreferred = b.poorFerrule || b.abutmentCompromised ||
-                                caseClass.type === CT.RESTORATIVE_COMPROMISED;
+      // NOT triggered by case classification alone — bruxism-only COMPROMISED cases
+      // receive monolithic zirconia + nightguard, not splinting overtreatment (H3 fix).
+      const splintedPreferred = b.poorFerrule || b.abutmentCompromised;
       // Escalation to extraction viable when: hopeless or compromised
       const escalationViable = caseClass.type === CT.RESTORATIVE_HOPELESS ||
                                caseClass.type === CT.RESTORATIVE_COMPROMISED;
 
       return [
         // SLOT 1 ('implant' S.tx key) — minimal / conservative option
+        // Endocrown promoted to slot1: it IS the most conservative full-coverage
+        // option for RCT-done posterior teeth (no post, pulp chamber macroretention).
+        // Guard: suppress in HOPELESS — escalation is the clinical imperative there.
         onlayViable
           ? { slot: 'implant', id: 'onlay',      label: 'Onlay / Overlay',     sub: 'Minimal Prep · Conservative' }
-          : { slot: 'implant', id: 'crown_core',  label: 'Crown + Core',        sub: 'Post & Core Build-up' },
+          : (endocrownViable && caseClass.type !== CT.RESTORATIVE_HOPELESS)
+          ? { slot: 'implant', id: 'endocrown',  label: 'Endocrown',           sub: 'Monolithic · No Post' }
+          : { slot: 'implant', id: 'crown_core', label: 'Crown + Core',        sub: 'Post & Core Build-up' },
 
         // SLOT 2 ('bridge' S.tx key) — standard crown option
         splintedPreferred
           ? { slot: 'bridge', id: 'splinted',    label: 'Splinted Crowns',     sub: 'Load Distribution' }
           : { slot: 'bridge', id: 'crown',       label: 'Crown',               sub: 'Standard Coverage' },
 
-        // SLOT 3 ('crown' S.tx key) — advanced / escalation option
-        endocrownViable
-          ? { slot: 'crown', id: 'endocrown',    label: 'Endocrown',           sub: 'Monolithic · No Post' }
-          : escalationViable
+        // SLOT 3 ('crown' S.tx key) — escalation / advanced option
+        // Escalation always takes slot3 when viable — COMPROMISED cases must surface
+        // extract_impl even when endocrown is an option (C1 fix). Endocrown is in slot1.
+        escalationViable
           ? { slot: 'crown', id: 'extract_impl', label: 'Extract + Implant',   sub: 'Escalation Path' }
           : { slot: 'crown', id: 'crown_adv',   label: 'Crown + Core',        sub: 'Full Coverage' },
       ];
@@ -155,6 +158,7 @@
             if (o.bruxism)         { score -= 8.0; rationale.push('⚠ Bruxism: onlay margins at high fracture risk — full coverage crown preferred'); }
             if (o.highLoad)        { score -= 4.0; rationale.push('High occlusal load risks marginal fracture at onlay preparation boundary'); }
             if (sys.currentSmoker) { score -= 2.0; rationale.push('Smoking increases secondary caries risk at resin margins'); }
+            if (p.poorHygiene)     { score -= 6.0; rationale.push('Poor hygiene: resin bond degrades under bacterial acid — crown preferred for margin integrity'); }
             if (r.hasDecay)        { score -= 5.0; rationale.push('Active decay compromises bond quality — full coverage preferred'); }
             break;
           }
@@ -254,12 +258,21 @@
       const extractOpt = scored.find(t => t.id === 'extract_impl');
       const bestPreserve = sorted.find(t => t.id !== 'extract_impl');
       const allowPreservationBias = caseClass?.type !== CT.RESTORATIVE_HOPELESS;
-      const rec = (allowPreservationBias && extractOpt && bestPreserve &&
-                   bestPreserve.score >= extractOpt.score - 3)
-        ? bestPreserve.slot
-        : ideal;
-      const conf = Math.max(35, Math.min(92, baseAI.conf));
-      return { rec, ideal, conf, confLevel: conf >= 80 ? 'High' : conf >= 60 ? 'Medium' : 'Low' };
+      const biasFires = allowPreservationBias && extractOpt && bestPreserve &&
+                        bestPreserve.score >= extractOpt.score - 3;
+      const rec = biasFires ? bestPreserve.slot : ideal;
+      let conf = Math.max(35, Math.min(92, baseAI.conf));
+      // Preservation-tension softening: when preservation bias fires but extraction
+      // scored higher, the recommendation is a close clinical call — soften confidence
+      // proportionally to how competitive extraction was. The closer extract was to
+      // winning, the more genuine uncertainty exists about the preservation decision.
+      if (biasFires && extractOpt.score > bestPreserve.score) {
+        const pressureGap = extractOpt.score - bestPreserve.score;
+        if (pressureGap >= 2)        conf = Math.max(35, conf - 7);
+        else if (pressureGap >= 0.5) conf = Math.max(35, conf - 4);
+        else                         conf = Math.max(35, conf - 2);
+      }
+      return { rec, ideal, conf, confLevel: conf >= 75 ? 'High' : conf >= 55 ? 'Medium' : 'Low' };
     }
 
     // ── STAGE 6: EXPLAINABILITY ENGINE ────────────────────────────
@@ -268,7 +281,7 @@
     function explain(scored, recResult, caseClass, c) {
       const recOpt = scored.find(t => t.slot === recResult.rec) || scored[0];
       const others = scored.filter(t => t.slot !== recResult.rec).sort((a, b) => b.score - a.score);
-      const { biomechanical: b, occlusal: o, periodontal: p, restorative: r } = c;
+      const { biomechanical: b, occlusal: o, periodontal: p, restorative: r, systemic: sys } = c;
 
       const reasons = [
         `Case classified: ${caseClass.label}${caseClass.notes ? ' — ' + caseClass.notes : ''}`,
@@ -288,6 +301,9 @@
       if (r.rctDone)      factors.push({ label: 'RCT done — stable', type: 'pos', delta: +1.5 });
       if (r.needsRCT)     factors.push({ label: 'RCT needed', type: 'warn', delta: -3.0 });
       if (p.poorHygiene)  factors.push({ label: 'Poor hygiene — caries risk', type: 'neg', delta: -2.5 });
+      if (sys.currentSmoker)         factors.push({ label: 'Active smoker — healing risk', type: 'neg', delta: -2.0 });
+      if (sys.uncontrolledDM)        factors.push({ label: 'Uncontrolled DM — healing risk', type: 'neg', delta: -3.0 });
+      if (o.clenching && !o.bruxism) factors.push({ label: 'Clenching — load risk', type: 'warn', delta: -1.5 });
 
       return {
         summary: `${recOpt?.label || 'Crown'} recommended — ${recResult.confLevel} clinical confidence`,
@@ -346,6 +362,8 @@
         restorativeCosts: {
           slot1: Math.round((bySlot['implant']?.id === 'onlay'
             ? (c.costs.crown * 0.65)        // onlay ≈ 65% of crown cost
+            : bySlot['implant']?.id === 'endocrown'
+            ? (c.costs.crown * 0.9)         // endocrown ≈ 90% (no post/buildup needed)
             : c.costs.crown + (c.costs.postCore * (c.restorative.fairStructure ? 1 : 0))) * 10) / 10,
           slot2: c.costs.crown + (c.restorative.needsRCT ? c.costs.rct : 0),
           slot3: Math.round((bySlot['crown']?.id === 'endocrown'

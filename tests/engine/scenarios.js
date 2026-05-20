@@ -381,16 +381,17 @@
 
     // ── 11. endocrown-viable ─────────────────────────────────────────
     // Posterior tooth, RCT done, good structure, no bruxism → endocrown viable.
-    // generateTreatments: endocrown lands in slot3 (crown field) because
-    //   endocrownViable = rctDone && isPosterior.
+    // C1 fix: endocrown promoted to slot1 (most conservative full-coverage option for
+    //   RCT-done posterior — no post, pulp chamber macroretention).
+    // generateTreatments: endocrown(slot=implant), crown(slot=bridge), crown_adv(slot=crown).
     // scoreRestorative:
-    //   crown_core (slot=implant): baseAI.crown(96.5), ceil 94 → 94.0
-    //   crown (slot=bridge): 96.5, ceil 96 → 96.0
-    //   endocrown (slot=crown): 89.0 +3.0(rctDone) +2.0(posterior) +1.5(!bruxism) = 95.5, ceil 94 → 94.0
-    // recommend: rec='bridge' (crown slot wins), but endocrown scored 94 — clinically viable/preferred vs alternatives
+    //   endocrown (slot=implant): 89.0 +3.0(rctDone) +2.0(posterior) +1.5(!bruxism) = 95.5, ceil 94 → 94.0
+    //   crown (slot=bridge): baseAI.crown(96.5), ceil 96 → 96.0
+    //   crown_adv (slot=crown): 96.5, ceil 96 → 96.0
+    // recommend: rec='bridge' (crown ties crown_adv at 96; stable sort keeps bridge-slot first)
     {
       id: 'endocrown-viable',
-      description: 'Posterior RCT-done tooth, good structure — endocrown lands in slot3 with high viability score',
+      description: 'Posterior RCT-done tooth, good structure — endocrown in slot1 (C1 fix), crown recommended',
       mode: 'process',
       state: s({
         tooth: '#30', condition: 'Fractured tooth',
@@ -405,11 +406,12 @@
         { type: 'finite', path: 'implant'                                          },
         { type: 'finite', path: 'bridge'                                           },
         { type: 'finite', path: 'crown'                                            },
-        // endocrown in slot3 (crown field) must score in high-viability range
-        { type: 'range',  path: 'crown',   min: 88, max: 95                       },
-        // standard crown slot (bridge field) scores highest — rec should be 'bridge'
-        { type: 'range',  path: 'bridge',  min: 88, max: 97                       },
+        // endocrown in slot1 (implant field): at its ceiling (94)
         { type: 'range',  path: 'implant', min: 85, max: 96                       },
+        // standard crown in slot2 (bridge field): tops the ranking
+        { type: 'range',  path: 'bridge',  min: 88, max: 97                       },
+        // crown_adv in slot3 (crown field): tied with bridge slot at 96
+        { type: 'range',  path: 'crown',   min: 88, max: 97                       },
         { type: 'range',  path: 'conf',    min: 35, max: 95                       },
         { type: 'minLen', path: 'reasons', min: 1                                  },
         { type: 'noNaN',  paths: ['implant', 'bridge', 'crown', 'conf']            },

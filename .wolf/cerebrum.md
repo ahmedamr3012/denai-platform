@@ -2,11 +2,71 @@
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-05-20
+> Last updated: 2026-05-21
 
 ## User Preferences
 
 <!-- How the user likes things done. Code style, tools, patterns, communication. -->
+
+## Key Learnings — Wave C Validation (2026-05-21)
+
+- **Onlay scoreRestorative block must include poorHygiene penalty**: The onlay case in scoreRestorative had no `p.poorHygiene` check, while every other restorative option (crown, splinted, endocrown) correctly penalizes poor hygiene. Missing it caused onlay to tie or beat crown under poor hygiene and win by sort order — clinically wrong. Fix: add `if (p.poorHygiene) { score -= 5.0; ... }` after the currentSmoker check in the onlay block.
+- **confLevel 'High' threshold must be ≤79 for MISSING_SINGLE to ever reach 'High'**: MISSING_SINGLE max conf = 76 (base) + 2 (good bone) + 1 (age<40) = 79. The old threshold of 80 made 'High' structurally unreachable. Recalibrated to 75 (High) / 55 (Medium). Applied in: calcAI.js confLevel, recommend() in clinicalEngine.js. calcAIMulti was already at 75/55.
+- **Hygiene boundary causes one defensible recommendation flip (crown→endocrown)**: For VIABLE + RCT-done posterior cases, endocrown gets −1.5 hygiene penalty vs crown −3.5. At Poor hygiene, endocrown(94) beats crown(93.5). This is clinically defensible (endocrown margins further from gingival sulcus) but non-obvious. NOT a bug — accepted design property.
+- **Uncontrolled DM does not trigger COMPROMISED classification** — DM only affects numeric scores (implant −7.0, crown −1.5). To elevate to COMPROMISED, it would need to be added as a classify() co-factor alongside bruxism/poorBone. Deferred to Wave D.
+- **confLevel is consistent across calcAI, calcAIMulti, and recommend()** — all three must use identical thresholds. When changing confLevel thresholds, grep for all three locations.
+- **Onlay should never be recommended when hygiene is Poor, bruxism is active, or active decay is present** — these are absolute contraindications for adhesive resin restorations. The penalties (bruxism −8, poorHygiene −5, hasDecay −5) are designed to push onlay below crown/crown_core ceiling in these scenarios.
+
+## Key Learnings — Wave C Calibration (2026-05-21)
+
+- **Onlay poorHygiene penalty must be −6.0, not −5.0**: At maximal onlay bonuses (goodFerrule+3, !highLoad+1.5, isPosterior+1, !needsRCT+2, goodBone+0.5 = +8.0 total), onlay reaches 99 before the ceiling clips it to 95 and the penalty is applied to the pre-ceiling score, giving 91+8−5=94. Crown at optimal poor-hygiene = 94.0. They tie. Stable sort gives onlay slot1 priority — wrong at poor hygiene. −6 breaks the tie: onlay=93 < crown=94. Always verify the penalty against the maximum achievable pre-penalty score, not just an average case.
+- **Preservation-tension in recommend() must reduce confidence**: When preservation bias fires (rec=preserve) but extraction scored higher, the recommendation is a borderline clinical call. The engine's confidence should reflect that ambiguity. Formula: pressureGap = extractOpt.score − bestPreserve.score; if gap>=2 → conf−7, gap>=0.5 → conf−4, else → conf−2. Only fires when biasFires AND extractOpt.score > bestPreserve.score (extract truly competitive). This is the clinically correct signal: close preserve-vs-extract decisions should feel less certain.
+- **Preservation-tension fix ONLY affects COMPROMISED path**: HOPELESS cases have allowPreservationBias=false (bias never fires). VIABLE/MISSING paths have no extract_impl in scored array (bias can't fire). Only COMPROMISED cases with extract_impl that is close to winning are affected. Safe to apply in recommend() without impacting other paths.
+- **Penalty calibration must account for pre-ceiling score paths**: The onlay penalty applies in scoreRestorative BEFORE the per-option ceiling clamp. So the effective penalty = penalty value × 1 (no ceiling benefit). But the bonuses also accumulate before the ceiling. Always hand-trace the full bonus stack when calibrating a penalty — the ceiling absorbs excess bonuses, not excess penalties.
+- **Scenario 12 conf impact (−5→−52): minor, clinically appropriate**: pressureGap=0.4 for splinting-indicated → conf−2 → 54→52. confLevel remains Low. This is the correct clinical signal: a COMPROMISED case where splinting beats extraction by 0.4 points should feel uncertain.
+
+## Do-Not-Repeat (2026-05-21 — Wave C Calibration)
+
+- **DO NOT use −5.0 for onlay poorHygiene** — at maximal onlay bonuses, −5.0 causes a 94/94 tie with crown, and sort order gives onlay priority. Use −6.0. (2026-05-21)
+- **DO NOT leave recommend() confidence unchanged when preservation bias fires under extraction pressure** — clinically ambiguous preserve-vs-extract decisions must soften confidence. Add preservation-tension softening after biasFires calculation. (2026-05-21)
+- **DO NOT apply gap-based confidence reduction to tied same-type treatments** (crown vs crown_adv) — those ties are not clinical ambiguity. Only apply confidence reduction when extraction pressure is the source of ambiguity. The preservation-tension approach is the targeted correct fix. (2026-05-21)
+
+## Do-Not-Repeat (2026-05-21 — Wave C)
+
+- **DO NOT omit poorHygiene penalty from the onlay scoreRestorative block** — adhesive resin onlays fail rapidly under poor hygiene. The onlay block must mirror the hygiene awareness of crown/splinted/endocrown. (Validated finding, 2026-05-21)
+- **DO NOT use 80 as the confLevel 'High' threshold in calcAI** — MISSING_SINGLE max conf is 79 under optimal conditions. Threshold must be ≤79 for 'High' to be reachable. Use 75. (Calibration bug, 2026-05-21)
+
+## Key Learnings — Wave B Risk Propagation Calibration (2026-05-21)
+
+- **Bruxism/parafunction in calcAI main section is confidence-only**: The H1 pattern is conf−=4 for Bruxism, conf−=2 for Clenching, conf−=6 for Both — no score deduction on implant/bridge. Score deductions would create implant-phobic behavior (counter to denai's philosophy). Confidence reduction is the correct lever: it signals clinical caution without altering the recommendation ordering.
+- **calcAIMulti conf block must include parafunction**: The four-line confidence block (`conf=70; bone/hygiene; abutComp; youngGoodBone`) had no parafunction term. Multi-tooth bruxism cases were fully inert. Same −4/−2 pattern applied here.
+- **explain() needs `systemic: sys` destructuring to surface smoking/DM**: explain() previously only destructured `b, o, p, r` from `c`. Adding `systemic: sys` enables `sys.currentSmoker`, `sys.uncontrolledDM` as factor signals. The pattern `if (o.clenching && !o.bruxism)` guards against double-counting bruxism (already in the factors list as a separate condition).
+- **PER_OPTION_CEILING absorbs small penalties — Fair hygiene ceiling inertia is accepted**: Fair hygiene (−1.0) is absorbed by the crown=96 ceiling. Only Poor hygiene (−3.5) produces a visible score change. This is a structural property of the ceiling design, not a bug. The ceiling exists to prevent score saturation and maintain ranking discrimination. Do not try to "fix" this by lowering the ceiling.
+- **Material realism lives in rationale text, not a material field**: scoreRestorative already pushes "⚠ Bruxism: monolithic zirconia required" for crown+bruxism and "monolithic zirconia or additional coverage" for endocrown+bruxism. These flow through explain().reasons via recOpt?.rationale. No structural material recommendation system needed at this stage.
+- **Recommendation stability is robust under discrete inputs**: denai uses dropdown-based clinical inputs (Good/Fair/Poor, not continuous sliders). The 3-point preservation bias threshold creates a sharp mathematical boundary, but since inputs are discrete, this boundary is never crossed by incremental user input variation — only by explicit input changes. No chaotic flipping observed.
+
+## Do-Not-Repeat (2026-05-21 — Wave B)
+
+- **DO NOT add implant/bridge score penalties for bruxism in calcAI** — confidence-only is the correct pattern. Score penalties would penalize implants specifically and create implant-phobic recommendation behavior, which contradicts denai's evidence-based philosophy.
+- **DO NOT forget calcAIMulti confidence when updating calcAI confidence** — the two functions are parallel engines. Any risk-factor confidence calibration done in calcAI main section should be evaluated for calcAIMulti as well.
+- **DO NOT use sys in explain() without adding `systemic: sys` to the destructuring** — explain() previously only destructured `b, o, p, r` from `c`. Always add sys to the destructuring line when adding systemic factor signals.
+
+## Key Learnings — Wave A Clinical Calibration (2026-05-21)
+
+- **Endocrown belongs in slot1, not slot3**: Clinically, endocrown is the MOST conservative full-coverage restoration for RCT-done posterior teeth (no post, pulp chamber macroretention). Slot1 = most conservative. Original slot3 placement suppressed extract_impl (the escalation path) in COMPROMISED cases — a structural logic error (C1). Endocrown is guarded from slot1 in HOPELESS cases (`caseClass.type !== CT.RESTORATIVE_HOPELESS`).
+- **Slot3 must always be escalation when escalationViable**: `escalationViable = HOPELESS || COMPROMISED`. Slot3 is the "escalation or advanced" slot. If escalation is clinically valid, it MUST appear — no other option should preempt it. The old ternary (endocrown → escalation → crown_adv) violated this because endocrown took priority over escalation.
+- **Splinting is a STRUCTURAL indication, not a classification trigger**: `splintedPreferred` should only fire on `poorFerrule || abutmentCompromised`. The original third condition `caseClass.type === CT.RESTORATIVE_COMPROMISED` caused bruxism-only COMPROMISED cases to receive splinting. Correct management for bruxism without structural compromise: monolithic zirconia + nightguard.
+- **Crown hygiene propagation must be explicit**: calcAI.js applies hygiene penalties in the main section (for implant/bridge) but the crown scoring block needs its OWN hygiene switch. Without it, poor hygiene adds only a text rationale to crown cases — no numerical deduction. The fix: add hygiene switch inside the inner `if (crownViable && crown > 0)` block after diabetes, before tooth position. Penalty (-3.5/-1.0) flows automatically to scoreRestorative via baseAI.crown.
+- **buildRestorativeResult slot1 cost needs endocrown branch**: The cost ternary checked `id === 'onlay'` then fell through to crown+postCore. Endocrown needs its own branch: `id === 'endocrown' → crown * 0.9` (no post buildup needed). Always update cost logic when changing slot assignments.
+- **Scenario derivation comments must match engine behavior**: Scenario 11's comment described the OLD slot layout (endocrown in slot3). When slot assignments change, update both the derivation comment AND any range assertions that depend on which procedure occupies each slot. Endocrown ceiling=94, crown_adv ceiling=96 — the range [88,95] became [88,97] when crown_adv took slot3.
+- **Preservation bias (3-point threshold) is still too tight vs high implant profiles**: COMPROMISED + ideal implant conditions → extract_impl reaches 97, crown reaches ~89. The 8-point gap exceeds the bias threshold → extraction recommended. This is C2 from the audit — deferred to a future calibration wave. Wave A did NOT touch this.
+- **H1 (bruxism propagation to implant/bridge) deferred to Wave B**: The Wave A constraint "ONLY if safe and minimal" was not met — any score change to the implant path requires careful calibration. Deferred.
+
+## Do-Not-Repeat (2026-05-21)
+
+- **DO NOT place endocrown in slot3 when escalationViable=true** — this permanently hides extract_impl from the scored treatment array. extract_impl is the escalation path and must always be generated when caseClass is COMPROMISED or HOPELESS. (C1 fix, 2026-05-21)
+- **DO NOT use caseClass.type in splintedPreferred** — this causes overtreatment for bruxism-only COMPROMISED cases. Only structural indications (poorFerrule, abutmentCompromised) should trigger splinting. (H3 fix, 2026-05-21)
+- **DO NOT forget crown hygiene branch in calcAI.js** — the implant/bridge hygiene switch is in the main section; the crown hygiene switch must be INSIDE the inner `if (crownViable && crown > 0)` block. These are two separate scoring contexts. (H2 fix, 2026-05-21)
 
 ## Key Learnings — Wave C6 Preferences Hardening (2026-05-20)
 
