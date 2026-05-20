@@ -23,12 +23,12 @@
     };
     // Wave C3: priority chain — patient override → clinic preference → catalog default.
     // getClinicPrice() already handles tiers 2+3; state.costX covers tier 1.
-    const implantBase  = state.costImplant   || getClinicPrice('implant');
-    const bridgeBase   = state.costBridge    || getClinicPrice('bridge');
-    const graftCost    = state.costBoneGraft || getClinicPrice('boneGraft');
-    const crownBase    = state.costCrown     || getClinicPrice('crown');
-    const rctCost      = state.costRCT       || getClinicPrice('rct');
-    const postCoreCost = state.costPostCore  || getClinicPrice('postCore');
+    const implantBase  = state.costImplant   != null ? state.costImplant   : getClinicPrice('implant');
+    const bridgeBase   = state.costBridge    != null ? state.costBridge    : getClinicPrice('bridge');
+    const graftCost    = state.costBoneGraft != null ? state.costBoneGraft : getClinicPrice('boneGraft');
+    const crownBase    = state.costCrown     != null ? state.costCrown     : getClinicPrice('crown');
+    const rctCost      = state.costRCT       != null ? state.costRCT       : getClinicPrice('rct');
+    const postCoreCost = state.costPostCore  != null ? state.costPostCore  : getClinicPrice('postCore');
     const implantInitial = implantBase + (state.bone === 'Poor' ? graftCost : 0);
     const bridgeMaterialUpcharge  = state.occlusion === 'High occlusion load' ? 0.15 : 0;
     const bridgeInitialAdjusted   = bridgeBase * (1 + bridgeMaterialUpcharge);

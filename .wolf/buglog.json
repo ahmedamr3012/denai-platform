@@ -250,8 +250,16 @@
       "file": "index.html",
       "root_cause": "Wave C5 added settingsModal but forgot to add trapFocus('settingsModal') to the initialization list that wires up focus trapping for all modals",
       "fix": "Added trapFocus('settingsModal') between notesPassphraseModal and entryOverlay in the init block",
-      "tags": ["accessibility", "modal", "focus-trap", "wave-c6", "a11y"],
-      "related_bugs": ["bug-011"],
+      "tags": [
+        "accessibility",
+        "modal",
+        "focus-trap",
+        "wave-c6",
+        "a11y"
+      ],
+      "related_bugs": [
+        "bug-011"
+      ],
       "occurrences": 1,
       "last_seen": "2026-05-20T09:31:00.000Z"
     },
@@ -262,8 +270,16 @@
       "file": "src/sync/prefsSync.js",
       "root_cause": "_applyToDom() only applies darkMode. After cloud-wins LWW merge in hydrate(), tooth SVG labels and monetary display surfaces remain stale because render(S) and buildDentalSVG() are not called",
       "fix": "Added denaiRefreshAfterPrefsHydrate() function declaration in index.html (window-accessible bridge). Called from prefsSync.hydrate() after _applyToDom() in the cloud-wins branch only. Calls buildDentalSVG() + render(S) safely wrapped in try/catch",
-      "tags": ["hydration", "re-render", "cloud-sync", "wave-c6", "clinic-preferences"],
-      "related_bugs": ["bug-005"],
+      "tags": [
+        "hydration",
+        "re-render",
+        "cloud-sync",
+        "wave-c6",
+        "clinic-preferences"
+      ],
+      "related_bugs": [
+        "bug-005"
+      ],
       "occurrences": 1,
       "last_seen": "2026-05-20T09:32:00.000Z"
     },
@@ -274,7 +290,12 @@
       "file": "src/sync/prefsSync.js",
       "root_cause": "_loadLocal, hydrate, and save all checked typeof === 'string' for toothSystem. Any arbitrary string would be accepted and stored (e.g. 'invalid', ''). formatTooth() falls back safely but the corrupt value persists across sessions",
       "fix": "Changed all three toothSystem checks to explicit enum validation: === 'universal' || === 'fdi'. Invalid values are silently ignored and the in-memory default ('universal') is kept",
-      "tags": ["validation", "input-sanitization", "wave-c6", "clinic-preferences"],
+      "tags": [
+        "validation",
+        "input-sanitization",
+        "wave-c6",
+        "clinic-preferences"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-20T09:33:00.000Z"
@@ -286,10 +307,171 @@
       "file": "index.html",
       "root_cause": "sett-price-input had min=0 but no max. Number.isFinite() passes for any finite number including millions. No upper bound was enforced on either the HTML input or the JS change handler",
       "fix": "Added max='99999' attribute to pricing input HTML template. Added || parsed > 99999 guard to the change handler validation. Both layers: HTML constrains the spinner UI; JS rejects direct typed values",
-      "tags": ["validation", "input-sanitization", "pricing", "wave-c6"],
+      "tags": [
+        "validation",
+        "input-sanitization",
+        "pricing",
+        "wave-c6"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-20T09:34:00.000Z"
+    },
+    {
+      "id": "bug-020",
+      "timestamp": "2026-05-20T09:01:09.944Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "index.html",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T09:01:09.944Z"
+    },
+    {
+      "id": "bug-021",
+      "timestamp": "2026-05-20T09:01:49.697Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/utils/costEngine.js",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T09:01:49.697Z"
+    },
+    {
+      "id": "bug-022",
+      "timestamp": "2026-05-20T09:02:01.528Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/ai/calcAI.js",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T09:02:01.528Z"
+    },
+    {
+      "id": "bug-020",
+      "timestamp": "2026-05-20T10:00:00.000Z",
+      "error_message": "Production audit: site2 Missing tooth condition does not normalize site2Structure/site2EndoStatus",
+      "file": "index.html",
+      "root_cause": "site2ConditionSelect change handler only set S.site2Condition; when condition=Missing tooth, site2Structure could remain Good. ClinicalEngine normalize() received inconsistent site2 state.",
+      "fix": "Added guard in site2ConditionSelect handler: when condition=Missing tooth, force S.site2Structure=Poor and S.site2EndoStatus=No RCT needed, and sync the visible select controls.",
+      "tags": [
+        "clinical-logic",
+        "compound-case",
+        "site2",
+        "normalization",
+        "wave-d1"
+      ],
+      "related_bugs": [
+        "bug-005"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T10:00:00.000Z"
+    },
+    {
+      "id": "bug-021",
+      "timestamp": "2026-05-20T10:00:00.000Z",
+      "error_message": "Production audit: denaiApplyCloudMerge() leaves what-if slider positions and notes textarea stale after cross-device cloud merge",
+      "file": "index.html",
+      "root_cause": "After Object.assign(S, stillHere) and render(S), tempState still held old patient values (sliders read tempState), and initClinicalNotes() was not called.",
+      "fix": "Added tempState = {...S}, updateSliderPositions(), initClinicalNotes() after render(S) in denaiApplyCloudMerge().",
+      "tags": [
+        "cloud-sync",
+        "stale-ui",
+        "cloud-merge",
+        "wave-d1"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T10:00:00.000Z"
+    },
+    {
+      "id": "bug-022",
+      "timestamp": "2026-05-20T10:00:00.000Z",
+      "error_message": "Production audit: _checkEmitAnalysisCompleted() uses calcAI(S) — emits wrong rec metadata for restorative cases",
+      "file": "index.html",
+      "root_cause": "calcAI() returns implant/bridge scores for ALL condition types including restorative. For restorative cases the correct engine is ClinicalEngine.process(S). Workflow observability events had incorrect rec field.",
+      "fix": "Replaced calcAI(S) with ClinicalEngine.process(S) in _checkEmitAnalysisCompleted(). ClinicalEngine routes to calcAI internally for missing-tooth cases so no behavioral regression.",
+      "tags": [
+        "workflow-events",
+        "clinical-logic",
+        "calcAI",
+        "wave-d1"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T10:00:00.000Z"
+    },
+    {
+      "id": "bug-023",
+      "timestamp": "2026-05-20T10:00:00.000Z",
+      "error_message": "Production audit: emergency save in beforeunload unreliable on iOS Safari — data in 200ms debounce window can be lost",
+      "file": "index.html",
+      "root_cause": "iOS Safari does not fire beforeunload reliably. Emergency save only ran in beforeunload. pagehide (which iOS fires reliably) only called CleanupRegistry.cleanup().",
+      "fix": "Expanded pagehide handler to include full emergency save sequence. Natural idempotent guard: on desktop beforeunload fires first and clears _saveStateTimer, so pagehide skips the write.",
+      "tags": [
+        "ios",
+        "data-loss",
+        "emergency-save",
+        "pagehide",
+        "wave-d1"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T10:00:00.000Z"
+    },
+    {
+      "id": "bug-024",
+      "timestamp": "2026-05-20T10:00:00.000Z",
+      "error_message": "Production audit: bone graft 0-dollar pricing broken — || operator treats 0 as falsy, falls through to clinic default",
+      "file": "src/utils/costEngine.js, src/ai/calcAI.js",
+      "root_cause": "All six costX fields used || operator. A clinic-configured price of 0 for any treatment (e.g. bone graft) would be silently ignored in favor of catalog default.",
+      "fix": "Replaced || with != null ternary pattern in both costEngine.js and calcAI.js. Allows zero as a valid clinic price.",
+      "tags": [
+        "pricing",
+        "zero-value",
+        "bone-graft",
+        "wave-d1"
+      ],
+      "related_bugs": [
+        "bug-005"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T10:00:00.000Z"
+    },
+    {
+      "id": "bug-025",
+      "timestamp": "2026-05-20T10:00:00.000Z",
+      "error_message": "Production audit: importAllData() merges backup patients without StateValidator validation — corrupt values silently persist",
+      "file": "index.html",
+      "root_cause": "Object.assign({}, DEFAULT_STATE, p) fills missing fields safely, but out-of-range or wrong-type values from backup were accepted without checking.",
+      "fix": "Added StateValidator.validateAll(imported) after merge. Invalid patients increment warnCount. Warning toast fires after import if warnCount > 0. Import not blocked.",
+      "tags": [
+        "import",
+        "validation",
+        "data-integrity",
+        "wave-d1"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T10:00:00.000Z"
     }
   ]
 }

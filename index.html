@@ -2641,7 +2641,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   function _checkEmitAnalysisCompleted() {
     try {
-      const _ai = calcAI(S);
+      const _ai = ClinicalEngine.process(S);
       if (_ai && _ai.rec && !(S.wfHistory || []).some(e => e.type === 'analysis_completed')) {
         _emitWfEvent('analysis_completed', { rec: _ai.rec, conf: _ai.conf });
       }
@@ -4280,7 +4280,37 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     cancelTimer(id)  { clearTimeout(id); this._timers.delete(id); },
     cleanup()        { this._timers.forEach(clearTimeout); this._timers.clear(); }
   };
-  window.addEventListener('pagehide', () => CleanupRegistry.cleanup(), { once: true });
+  window.addEventListener('pagehide', () => {
+    // iOS Safari doesn't fire beforeunload reliably — mirror the emergency save here.
+    // On desktop, beforeunload fires first and clears _saveStateTimer, so this block
+    // is skipped (idempotent guard). On iOS, this is the primary save path.
+    if (_notesDebounce) {
+      clearTimeout(_notesDebounce); _notesDebounce = null;
+      const _buta = document.getElementById('clinicalNotes');
+      if (_buta && typeof DOMPurify !== 'undefined') S.notes = DOMPurify.sanitize(_buta.value);
+    }
+    if (_labNotesDebounce) {
+      clearTimeout(_labNotesDebounce); _labNotesDebounce = null;
+      const _bula = document.getElementById('labNotesArea');
+      if (_bula) S.labNotes = _bula.value;
+    }
+    if (_saveStateTimer) {
+      clearTimeout(_saveStateTimer); _saveStateTimer = null;
+      try {
+        const _buSnap = { ...S };
+        const _buId   = S.id;
+        const _buCaseNum = S.caseNum || genCaseNum();
+        _buSnap.caseNum = _buCaseNum;
+        let _buList = loadAllPatients() || [];
+        const _buIdx = _buList.findIndex(p => p.id === _buId);
+        const _buUpdated = { ..._buSnap, id: _buId, caseNum: _buCaseNum };
+        if (_buIdx >= 0) _buList[_buIdx] = _buUpdated; else _buList.push(_buUpdated);
+        saveAllPatients(_buList);
+        setActivePatientId(_buId);
+      } catch (_buE) {}
+    }
+    CleanupRegistry.cleanup();
+  }, { once: true });
 
   let _sliderDebounceTimer = null;
   function debouncedUpdatePreview() {
@@ -4902,6 +4932,7 @@ const existing    = loadAllPatients() || [];
 const existingIds = new Set(existing.map(function(p) { return p.id; }));
 const toAdd       = [];
 let   skipped     = 0;
+let   warnCount   = 0;
 
 data.patients.forEach(function(p) {
   // Basic structural validation — ID must match the app-generated format to prevent
@@ -4913,6 +4944,10 @@ data.patients.forEach(function(p) {
 
   // Merge imported patient over DEFAULT_STATE for safety — fills any missing fields.
   const imported = Object.assign({}, DEFAULT_STATE, p);
+  // Validate merged state — DEFAULT_STATE guarantees safe defaults for any missing
+  // field, but imported values may be out-of-range. Log and count; do not block import.
+  const _importErrs = StateValidator.validateAll(imported);
+  if (_importErrs.length > 0) { warnCount++; console.warn('[denai] import validation warnings for', p.id, ':', _importErrs); }
   // Strip metadata that shouldn't be re-imported:
   //   _syncedAt — imported patient hasn't been synced yet on this device
   //   schema_ver — cloud metadata, not patient data
@@ -4953,6 +4988,7 @@ const msg = toAdd.length > 0
     (skipped > 0 ? ` (${skipped} skipped — already exist locally)` : '')
   : `Nothing to import — all ${skipped} patient${skipped === 1 ? '' : 's'} already exist locally`;
 showToast(msg, toAdd.length > 0 ? 'success' : 'info');
+if (warnCount > 0) showToast(`${warnCount} patient${warnCount === 1 ? '' : 's'} had out-of-range values — defaults were preserved`, 'warn');
 }
 
 // ================================================================
@@ -5458,7 +5494,10 @@ if (UIState.editing) return;
 
 // Active patient data was updated from another device
 Object.assign(S, { ...DEFAULT_STATE, ...stillHere });
+tempState = { ...S };
 render(S);
+updateSliderPositions();
+initClinicalNotes();
 showToast('Patient updated from another device', 'info');
 }
 
@@ -6287,6 +6326,12 @@ $('site2ToothSelect')?.addEventListener('change', e => {
 });
 $('site2ConditionSelect')?.addEventListener('change', e => {
   S.site2Condition = e.target.value;
+  if (e.target.value === 'Missing tooth') {
+    S.site2Structure = 'Poor';
+    S.site2EndoStatus = 'No RCT needed';
+    const s2s = $('site2StructureSelect'); if (s2s) s2s.value = 'Poor';
+    const s2e = $('site2EndoSelect'); if (s2e) s2e.value = 'No RCT needed';
+  }
   saveState(); render(S);
 });
 $('site2StructureSelect')?.addEventListener('change', e => {
