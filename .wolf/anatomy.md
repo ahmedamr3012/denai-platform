@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-19T22:42:24.052Z
-> Files: 59 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-20T07:32:23.637Z
+> Files: 61 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~107220 tok)
+- `index.html` — denai — Clinical Insight (~107355 tok)
 - `playwright.config.js` (~337 tok)
 - `privacy.html` — Phase 3C-ii: standalone static privacy policy page. Self-contained HTML with trust.css + dark-mode flash prevention. Links to terms.html. (~2720 tok)
 - `terms.html` — Phase 3C-iii: standalone static terms of service page. Mirrors privacy.html architecture. tp-is-not list for "what denai is not" section. Links to privacy.html. (~3150 tok)
@@ -32,7 +32,8 @@
 
 ## src/ai/
 
-- `calcAI.js` — isPosteriorTooth: isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI (~7372 tok)
+- `calcAI.js` — isPosteriorTooth: isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI (~7423 tok)
+- `clinicalEngine.js` — ClinicalEngine: normalize (Wave C3: costs.implant added), classify, generateTreatments, scoreRestorative, buildRestorativeResult (extract_impl uses c.costs.implant — C3 fix) (~7350 tok)
 
 ## src/auth/
 
@@ -60,7 +61,7 @@
 ## src/render/
 
 - `comparisonPanel.js` — Wave C2: renderComparison, lazyRenderComparisonTable, renderComparisonTable. All monetary display uses formatCurrency(). (~6720 tok)
-- `costGraphPanel.js` — Wave C2: renderCost, renderGraph. All monetary display uses formatCurrency(). (~6631 tok)
+- `costGraphPanel.js` — ================================================================ (~6795 tok)
 - `patientPanel.js` — ================================================================ (~954 tok)
 - `planFragments.js` — _getAiForPlan: _buildTreatmentPathRows (~794 tok)
 - `riskPanel.js` — renderRisk: _applyRiskCompact (~1659 tok)
@@ -101,6 +102,7 @@
 
 - `betaObserver.js` — Beta observation layer — passive, zero render impact. (~900 tok)
 - `caseHelpers.js` — _getPatientStageBadge: _getCaseUrgency, _getStalenessText, _wfEventLabel, _quickScore (~605 tok)
+- `costEngine.js` — Wave C3: computeCosts(state, ai). Priority chain: patient override → getClinicPrice() → catalog default. annualCheckup computed inside function. Clinical constants (CROWN_REPLACE_PROB etc.) remain top-level. (~1220 tok)
 - `diagPanel.js` — Dev-only diagnostics panel — toggle with Ctrl+Shift+D. (~2248 tok)
 - `formatters.js` — Wave C1: formatTooth() (Universal→FDI display), formatCurrency() (symbol+amount), getCurrencySymbol(), getClinicPrice() (catalog priority chain), getToothSystemLabel(). All display-only, fallback-safe, callable before denaiPrefs hydration. (~120 tok)
 - `notesEncryption.js` — Wave 7G: `denaiNotesEnc` IIFE. AES-GCM 256-bit client-side PHI encryption. PBKDF2 key derivation (100k iterations, SHA-256). Payload format: `{ v:1, iv:<b64>, ct:<b64> }`. Key lives in-memory only; cleared on sign-out. Public API: generateSalt, init, encrypt, decrypt, hasKey, clearKey. (~120 tok)

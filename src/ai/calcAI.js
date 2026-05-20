@@ -142,11 +142,12 @@
     const ideal = scores[0].option;  // highest clinical score
 
     // ── Cost calculation (MUST be before usage) ─────────────
+    // Wave C3: priority chain — patient override → clinic preference → catalog default.
     const costs = {
-      implant2:   (stateObj.costImplant || 4500) * 2
-                  + (stateObj.bone === 'Poor' ? (stateObj.costBoneGraft || 1500) * 2 : 0),
-      bridge4:    Math.round((stateObj.costBridge || 3500) * 1.3),  // 4-unit upcharge
-      cantilever: Math.round((stateObj.costImplant || 4500) * 1.5), // 1 implant + extension
+      implant2:   (stateObj.costImplant || getClinicPrice('implant')) * 2
+                  + (stateObj.bone === 'Poor' ? (stateObj.costBoneGraft || getClinicPrice('boneGraft')) * 2 : 0),
+      bridge4:    Math.round((stateObj.costBridge  || getClinicPrice('bridge'))  * 1.3),  // 4-unit upcharge
+      cantilever: Math.round((stateObj.costImplant || getClinicPrice('implant')) * 1.5),  // 1 implant + extension
     };
 
     // Cost-adjusted recommendation:

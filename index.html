@@ -4727,7 +4727,7 @@ exportedAt: new Date().toISOString(),
 patient: { name: S.name, age: S.age, gender: S.gender, tooth: S.tooth, condition: S.condition, serviceDate: S.serviceDate || null },
 clinical: { bone: S.bone, hygiene: S.hygiene, occlusion: S.occlusion, smoking: S.smoking || 'Non-smoker', diabetes: S.diabetes || 'None', remainingStructure: S.remainingStructure || 'Good', endodonticStatus: S.endodonticStatus || 'No RCT needed', parafunction: S.parafunction || 'None' },
 aiAnalysis: ai ? { implant: ai.implant, bridge: ai.bridge, crown: ai.crown, recommendationStrength: ai.conf, recommendation: ai.rec, risks: { peri: ai.peri, bone: ai.boneR, occlusion: ai.occR } } : null,
-crownAnalysis: (ai && ai.crownViable) ? { crown: ai.crown, crownViable: ai.crownViable, crownWarning: ai.crownWarning, crownRisks: ai.crownRisks, materialRecommendation: getCrownMaterial(S), hiddenCosts: { rct: S.endodonticStatus === 'Needs RCT' ? (S.costRCT||1000) : 0, postCore: S.remainingStructure !== 'Good' ? (S.costPostCore||400) : 0 } } : null,
+crownAnalysis: (ai && ai.crownViable) ? { crown: ai.crown, crownViable: ai.crownViable, crownWarning: ai.crownWarning, crownRisks: ai.crownRisks, materialRecommendation: getCrownMaterial(S), hiddenCosts: { rct: S.endodonticStatus === 'Needs RCT' ? (S.costRCT || getClinicPrice('rct')) : 0, postCore: S.remainingStructure !== 'Good' ? (S.costPostCore || getClinicPrice('postCore')) : 0 } } : null,
 treatment: { selected: S.tx, costs: computeCosts(S, ai) },
 notes: S.notes || '',
 history: History.load(S.id || null)  // BUG#14: scoped to current patient
@@ -5257,8 +5257,17 @@ const name = ($('npName')?.value.trim()) || 'New Patient';
 const rawAge = parseInt($('npAge')?.value, 10);
 const age = (!isNaN(rawAge) && rawAge >= 1 && rawAge <= 120) ? rawAge : 35;
 const npConditionVal = $('npCondition')?.value || 'Missing tooth';
+// Wave C3: cost fields inherit clinic pricing at creation time.
+// By this point denaiPrefs.init() has run, so getClinicPrice() reflects
+// any clinic-configured overrides. Existing patients are unaffected.
 const newPatient = {
 ...DEFAULT_STATE,
+costImplant:   getClinicPrice('implant'),
+costBridge:    getClinicPrice('bridge'),
+costBoneGraft: getClinicPrice('boneGraft'),
+costCrown:     getClinicPrice('crown'),
+costRCT:       getClinicPrice('rct'),
+costPostCore:  getClinicPrice('postCore'),
 id: genId(),
 caseNum: genCaseNum(),
 serviceDate: new Date().toISOString().split('T')[0],

@@ -55,7 +55,14 @@
         },
         patient: { age: s.age, young: s.age < 40, elderly: s.age > 65 },
         multi: { active: !!(s.multiTooth && s.tooth2 && s.condition === 'Missing tooth'), tooth2: s.tooth2 },
-        costs: { crown: s.costCrown || 1200, rct: s.costRCT || 1000, postCore: s.costPostCore || 400 },
+        // Wave C3: priority chain — patient override → clinic preference → catalog default.
+        // implant added here so buildRestorativeResult() can use it for extract_impl cost.
+        costs: {
+          implant:  s.costImplant   || getClinicPrice('implant'),
+          crown:    s.costCrown     || getClinicPrice('crown'),
+          rct:      s.costRCT       || getClinicPrice('rct'),
+          postCore: s.costPostCore  || getClinicPrice('postCore'),
+        },
       };
     }
 
@@ -344,7 +351,7 @@
           slot3: Math.round((bySlot['crown']?.id === 'endocrown'
             ? c.costs.crown * 0.9           // endocrown ≈ 90% (no post needed)
             : bySlot['crown']?.id === 'extract_impl'
-            ? 4500                           // extraction + implant base
+            ? c.costs.implant                // Wave C3: priority chain via normalize()
             : c.costs.crown) * 10) / 10,
         },
       };

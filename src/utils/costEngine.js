@@ -1,5 +1,6 @@
-  // ── Literature-backed 10-year cost constants ──────────────────────
-  const ANNUAL_CHECKUP        = 300;   // 2 visits/yr × $150
+  // ── Literature-backed 10-year clinical constants ───────────────
+  // These are evidence-based statistics, NOT pricing preferences.
+  // Do NOT route through getClinicPrice() — they are immutable clinical data.
   const CROWN_REPLACE_PROB    = 0.12;  // 12% implant crown replacement in 10 yrs
   const CROWN_COST_RATIO      = 0.33;  // Crown ≈ 33% of implant total cost
   const BRIDGE_REPLACE_PROB   = 0.28;  // 28% bridge failure at 10 yrs (NIH data)
@@ -8,13 +9,26 @@
   const STANDALONE_CROWN_REPLACE_RATIO = 0.80;  // 80% of original crown cost
 
   function computeCosts(state, ai) {
-    if (!state) return { implantInitial:4500, bridgeInitialAdjusted:3500, crownInitial:0, needsRCT:false, needsPostCore:false, implant10yr:7500, bridge10yr:6800, crown10yr:0, bestValue:"Implant", reason:"No data" };
-    const implantBase = state.costImplant  || 4500;
-    const bridgeBase  = state.costBridge   || 3500;
-    const graftCost   = state.costBoneGraft || 1500;
-    const crownBase   = state.costCrown    || 1200;
-    const rctCost     = state.costRCT      || 1000;
-    const postCoreCost= state.costPostCore || 400;
+    // Wave C3: annualCheckup reads from clinic pricing at call time.
+    // 2 visits/yr × per-visit price. Computed inside the function so it
+    // always reflects the current clinic pricing, not a stale load-time const.
+    const annualCheckup = getClinicPrice('annualCheckup') * 2;
+    if (!state) return {
+      implantInitial: getClinicPrice('implant'),
+      bridgeInitialAdjusted: getClinicPrice('bridge'),
+      crownInitial: 0, needsRCT: false, needsPostCore: false,
+      implant10yr: getClinicPrice('implant') + annualCheckup * 10,
+      bridge10yr:  getClinicPrice('bridge')  + annualCheckup * 10,
+      crown10yr: 0, bestValue: 'Implant', reason: 'No data',
+    };
+    // Wave C3: priority chain — patient override → clinic preference → catalog default.
+    // getClinicPrice() already handles tiers 2+3; state.costX covers tier 1.
+    const implantBase  = state.costImplant   || getClinicPrice('implant');
+    const bridgeBase   = state.costBridge    || getClinicPrice('bridge');
+    const graftCost    = state.costBoneGraft || getClinicPrice('boneGraft');
+    const crownBase    = state.costCrown     || getClinicPrice('crown');
+    const rctCost      = state.costRCT       || getClinicPrice('rct');
+    const postCoreCost = state.costPostCore  || getClinicPrice('postCore');
     const implantInitial = implantBase + (state.bone === 'Poor' ? graftCost : 0);
     const bridgeMaterialUpcharge  = state.occlusion === 'High occlusion load' ? 0.15 : 0;
     const bridgeInitialAdjusted   = bridgeBase * (1 + bridgeMaterialUpcharge);
@@ -22,9 +36,9 @@
     const needsPostCore = (state.remainingStructure === 'Fair' || state.remainingStructure === 'Poor');
     const _crownViable  = ai?.crownViable === true;
     const crownInitial  = _crownViable ? crownBase + (needsRCT ? rctCost : 0) + (needsPostCore ? postCoreCost : 0) : 0;
-    const implant10yr = implantInitial + (ANNUAL_CHECKUP * 10) + (implantInitial * CROWN_COST_RATIO * CROWN_REPLACE_PROB);
-    const bridge10yr  = bridgeInitialAdjusted + (ANNUAL_CHECKUP * 10) + (bridgeInitialAdjusted * BRIDGE_REPLACE_PROB * BRIDGE_REPLACE_RATIO);
-    const crown10yr   = _crownViable ? crownInitial + (ANNUAL_CHECKUP * 10) + (crownInitial * STANDALONE_CROWN_REPLACE_PROB * STANDALONE_CROWN_REPLACE_RATIO) : 0;
+    const implant10yr = implantInitial + (annualCheckup * 10) + (implantInitial * CROWN_COST_RATIO * CROWN_REPLACE_PROB);
+    const bridge10yr  = bridgeInitialAdjusted + (annualCheckup * 10) + (bridgeInitialAdjusted * BRIDGE_REPLACE_PROB * BRIDGE_REPLACE_RATIO);
+    const crown10yr   = _crownViable ? crownInitial + (annualCheckup * 10) + (crownInitial * STANDALONE_CROWN_REPLACE_PROB * STANDALONE_CROWN_REPLACE_RATIO) : 0;
     let bestValue = '', reason = '';
     if (ai) {
       const implantValue = ai.implant / implant10yr;

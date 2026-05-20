@@ -9,7 +9,8 @@
     if (ai?.treatmentMode === 'restorative' && ai.restorativeLabels) {
       const { slot1, slot2, slot3 } = ai.restorativeLabels;
       const rc = ai.restorativeCosts || {};
-      const checkupAnnual = 300;
+      // Wave C3: 2 visits/yr × per-visit clinic price
+      const checkupAnnual = getClinicPrice('annualCheckup') * 2;
       const s1_10yr = rc.slot1 ? Math.round(rc.slot1 + checkupAnnual * 10) : null;
       const s2_10yr = rc.slot2 ? Math.round(rc.slot2 + checkupAnnual * 10 + rc.slot2 * 0.15 * 0.8) : null;
       const s3_10yr = rc.slot3 ? Math.round(rc.slot3 + checkupAnnual * 10) : null;
@@ -31,7 +32,8 @@
     if (ai?.isMultiTooth) {
       const mtCosts = ai.costs;
       if (!mtCosts) return;
-      const ANNUAL_CHECKUP = 300;
+      // Wave C3: 2 visits/yr × per-visit clinic price
+      const ANNUAL_CHECKUP = getClinicPrice('annualCheckup') * 2;
       const imp2_10yr  = mtCosts.implant2   + ANNUAL_CHECKUP * 10;
       const bri4_10yr  = mtCosts.bridge4    + ANNUAL_CHECKUP * 10 + Math.round(mtCosts.bridge4 * 0.28 * 0.90);
       const cant_10yr  = mtCosts.cantilever + ANNUAL_CHECKUP * 10;
@@ -59,7 +61,7 @@
     const { implantInitial, bridgeInitialAdjusted, implant10yr, bridge10yr, bestValue, reason } = computeCosts(state, ai);
     const bridgeReplacement = Math.round(bridgeInitialAdjusted * BRIDGE_REPLACE_RATIO);
     const boneLine = state.bone === 'Poor'
-      ? `<div class="cost-row" style="color:var(--c-n500);font-size:12px;"><span>↳ incl. bone graft</span><strong>+${formatCurrency(state.costBoneGraft||800)}</strong></div>` : '';
+      ? `<div class="cost-row" style="color:var(--c-n500);font-size:12px;"><span>↳ incl. bone graft</span><strong>+${formatCurrency(state.costBoneGraft || getClinicPrice('boneGraft'))}</strong></div>` : '';
 
     // Fix 5: Risk mitigation costs
     const smokingStatus = state.smoking || 'Non-smoker';
@@ -74,13 +76,17 @@
         ${riskCostRows.map(r => `<div class="cost-row" style="font-size:12px;"><span>${escapeHtml(r.label)}</span><strong style="color:#dc2626;">~${formatCurrency(r.cost)}</strong></div>`).join('')}
       </div>` : '';
 
-    const checkupTotal = ANNUAL_CHECKUP * 10;
+    // Wave C3: compute locally — global ANNUAL_CHECKUP removed from costEngine.js top level.
+    const checkupPerYear = getClinicPrice('annualCheckup') * 2; // 2 visits/yr
+    const checkupTotal = checkupPerYear * 10;
     const implantCrownRisk = Math.round(implantInitial * CROWN_COST_RATIO * CROWN_REPLACE_PROB);
     const bridgeReplaceRisk = Math.round(bridgeInitialAdjusted * BRIDGE_REPLACE_PROB * BRIDGE_REPLACE_RATIO);
 
     const { crownInitial, needsRCT, needsPostCore, crown10yr } = computeCosts(state, ai);
+    const rctDisplay      = state.costRCT      || getClinicPrice('rct');
+    const postCoreDisplay = state.costPostCore || getClinicPrice('postCore');
     const crownLine = ai?.crownViable
-      ? `<div class="cost-row"><span>Crown initial <span style="font-size:10px;">${needsRCT ? '(+RCT ' + formatCurrency(1000) + ') ' : ''}${needsPostCore ? '(+Post&amp;Core ' + formatCurrency(400) + ')' : ''}</span></span><strong>${formatCurrency(crownInitial)}</strong></div>` : '';
+      ? `<div class="cost-row"><span>Crown initial <span style="font-size:10px;">${needsRCT ? '(+RCT ' + formatCurrency(rctDisplay) + ') ' : ''}${needsPostCore ? '(+Post&amp;Core ' + formatCurrency(postCoreDisplay) + ')' : ''}</span></span><strong>${formatCurrency(crownInitial)}</strong></div>` : '';
     const crown10yrLine = ai?.crownViable
       ? `<div class="cost-row" style="font-weight:700;"><span>Crown 10‑yr total</span><strong style="color:var(--c-brand);">${formatCurrency(crown10yr)}</strong></div>` : '';
     const crownReplaceRisk = ai?.crownViable ? Math.round(crownInitial * STANDALONE_CROWN_REPLACE_PROB * STANDALONE_CROWN_REPLACE_RATIO) : 0;
@@ -91,7 +97,7 @@
       <div class="cost-row"><span>Bridge initial</span><strong>${formatCurrency(bridgeInitialAdjusted)}</strong></div>
       ${crownLine}
       <div class="cost-row" style="border-top:1px solid var(--c-n100); padding-top:8px; margin-top:4px; font-size:11.5px; color:var(--c-n500);">
-        <span>Checkups (all) <span style="font-size:10px;">2×/yr × ${formatCurrency(150)} × 10yr</span></span>
+        <span>Checkups (all) <span style="font-size:10px;">2×/yr × ${formatCurrency(getClinicPrice('annualCheckup'))} × 10yr</span></span>
         <span>${formatCurrency(checkupTotal)}</span>
       </div>
       <div class="cost-row" style="font-size:11.5px; color:var(--c-n500);">
