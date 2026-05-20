@@ -2734,7 +2734,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
             <div class="case-card-av">${initials}</div>
             <div class="case-card-info">
               <div class="case-card-name">${escapeHtml(p.name||'Unknown')}</div>
-              <div class="case-card-meta">${escapeHtml(p.condition||'')}${p.tooth ? ' · ' + escapeHtml(p.tooth) : ''}</div>
+              <div class="case-card-meta">${escapeHtml(p.condition||'')}${p.tooth ? ' · ' + escapeHtml(formatTooth(p.tooth)) : ''}</div>
               <div class="case-card-stage ${badge.cls}"><i class="fa-solid ${badge.icon}" style="font-size:9px" aria-hidden="true"></i> ${badge.label}</div>
             </div>
             <div class="case-card-score">${score}</div>
@@ -2767,7 +2767,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
             <div class="dash-attn-icon"><i class="fa-solid ${icon}" style="color:${color};" aria-hidden="true"></i></div>
             <div class="dash-attn-info">
               <div class="dash-attn-name">${escapeHtml(p.name || 'Unknown')}</div>
-              <div class="dash-attn-meta">${p.tooth ? escapeHtml(p.tooth) + ' · ' : ''}${escapeHtml(p.condition || '')} · ${attnLabel}</div>
+              <div class="dash-attn-meta">${p.tooth ? escapeHtml(formatTooth(p.tooth)) + ' · ' : ''}${escapeHtml(p.condition || '')} · ${attnLabel}</div>
             </div>
             <span class="dash-attn-badge ${badgeCls}">${badge}</span>
           </div>`
@@ -3001,7 +3001,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
               <div class="plan-rec-icon"><i class="fa-solid ${recIcon}" aria-hidden="true"></i></div>
               <div style="flex:1;">
                 <div class="plan-rec-title">${escapeHtml(recLabel)}</div>
-                <div class="plan-rec-sub">${S.tooth ? escapeHtml(S.tooth) + ' · ' : ''}${escapeHtml(S.condition || '')}</div>
+                <div class="plan-rec-sub">${S.tooth ? escapeHtml(formatTooth(S.tooth)) + ' · ' : ''}${escapeHtml(S.condition || '')}</div>
               </div>
               <div style="text-align:right;flex-shrink:0;">
                 <div style="font-size:22px;font-weight:800;color:${confColor};line-height:1;">${ai ? ai.conf : '—'}<span style="font-size:13px;font-weight:600;">%</span></div>
@@ -3189,7 +3189,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
             <div class="plan-section-title">Case Specification</div>
             <div class="plan-card" style="padding:12px 16px;">
               <div class="plan-row"><div class="plan-row-lbl">Patient</div><div class="plan-row-val">${escapeHtml(S.name || '—')}</div></div>
-              <div class="plan-row"><div class="plan-row-lbl">Tooth / Site</div><div class="plan-row-val">${escapeHtml(S.tooth || '—')}</div></div>
+              <div class="plan-row"><div class="plan-row-lbl">Tooth / Site</div><div class="plan-row-val">${escapeHtml(S.tooth ? formatTooth(S.tooth) : '—')}</div></div>
               <div class="plan-row"><div class="plan-row-lbl">Restoration</div><div class="plan-row-val" style="color:var(--c-brand);">${escapeHtml(recForLab)}</div></div>
               ${material ? `<div class="plan-row"><div class="plan-row-lbl">Material</div><div class="plan-row-val" style="color:var(--c-brand);">${escapeHtml(material.primary)}</div></div>` : ''}
               ${S.caseNum ? `<div class="plan-row"><div class="plan-row-lbl">Case No.</div><div class="plan-row-val">${escapeHtml(S.caseNum)}</div></div>` : ''}
@@ -3551,7 +3551,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         const pos = isPosteriorTooth(S.tooth) ? 'posterior' : 'anterior';
         const boneStr = S.bone ? ', bone: ' + S.bone.toLowerCase() : '';
         const hygStr  = S.hygiene ? ', hygiene: ' + S.hygiene.toLowerCase() : '';
-        inputLineM.textContent = `Based on: tooth #${S.tooth} (${jaw}, ${pos})${boneStr}${hygStr}`;
+        inputLineM.textContent = `Based on: tooth ${formatTooth(S.tooth)} (${jaw}, ${pos})${boneStr}${hygStr}`;
       } else {
         inputLineM.textContent = '';
       }
@@ -3657,7 +3657,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         const pos = isPosteriorTooth(S.tooth) ? 'posterior' : 'anterior';
         const boneStr = S.bone ? ', bone: ' + S.bone.toLowerCase() : '';
         const hygStr  = S.hygiene ? ', hygiene: ' + S.hygiene.toLowerCase() : '';
-        inputLine.textContent = `Based on: tooth #${S.tooth} (${jaw}, ${pos})${boneStr}${hygStr}`;
+        inputLine.textContent = `Based on: tooth ${formatTooth(S.tooth)} (${jaw}, ${pos})${boneStr}${hygStr}`;
       } else {
         inputLine.textContent = '';
       }
@@ -3982,7 +3982,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       const score = ai.isMultiTooth
         ? (ai.implant2 || ai.implant)
         : (ai.rec === 'implant' ? ai.implant : ai.rec === 'bridge' ? ai.bridge : ai.crown);
-      return `<span class="compound-dot dot-site${tooth === state.tooth ? '1' : '2'}" style="display:inline-block;vertical-align:middle;margin-right:3px"></span><strong>${tooth}</strong> (${condition}): <em style="color:var(--c-brand)">${label}</em> — ${typeof score === 'number' ? score.toFixed(1)+'%' : '—'}`;
+      return `<span class="compound-dot dot-site${tooth === state.tooth ? '1' : '2'}" style="display:inline-block;vertical-align:middle;margin-right:3px"></span><strong>${escapeHtml(formatTooth(tooth))}</strong> (${condition}): <em style="color:var(--c-brand)">${label}</em> — ${typeof score === 'number' ? score.toFixed(1)+'%' : '—'}`;
     }
 
     body.innerHTML = `
@@ -4034,8 +4034,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   function updateSiteTabUI() {
     const t1 = $('siteTab1'), t2 = $('siteTab2');
-    const site1Label = S.tooth ? `Site 1 — ${S.tooth}` : 'Site 1';
-    const site2Label = S.site2Tooth ? `Site 2 — ${S.site2Tooth}` : 'Site 2';
+    const site1Label = S.tooth ? `Site 1 — ${formatTooth(S.tooth)}` : 'Site 1';
+    const site2Label = S.site2Tooth ? `Site 2 — ${formatTooth(S.site2Tooth)}` : 'Site 2';
     if (t1) {
       t1.innerHTML = `<span class="compound-dot dot-site1" style="display:inline-block;vertical-align:middle;margin-right:4px"></span>${site1Label}`;
       t1.classList.toggle('active', S.activeSite === 1);
@@ -4053,7 +4053,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const sel = $('site2ToothSelect');
     if (!sel) return;
     const TEETH = ['#1','#2','#3','#4','#5','#6','#7','#8','#9','#10','#11','#12','#13','#14','#15','#16','#17','#18','#19','#20','#21','#22','#23','#24','#25','#26','#27','#28','#29','#30','#31','#32'];
-    sel.innerHTML = TEETH.map(t => `<option value="${t}"${S.site2Tooth===t?' selected':''}>${t}</option>`).join('');
+    sel.innerHTML = TEETH.map(t => `<option value="${t}"${S.site2Tooth===t?' selected':''}>${escapeHtml(formatTooth(t))}</option>`).join('');
   }
 
   // ================================================================
@@ -4062,16 +4062,19 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   function buildDentalSVG() {
     const svg = $('dentalSvg');
     const SMALL_TOOTH_IDS = new Set([6,7,8,9,10,22,23,24,25,26,27]);
+    const isFdi = (typeof denaiPrefs !== 'undefined' ? denaiPrefs.get('toothSystem') : null) === 'fdi';
     let markup = `<path d="M10,65 Q160,5 310,65" fill="none" stroke="#E5E7EB" stroke-width="1.2"/><path d="M10,75 Q160,140 310,75" fill="none" stroke="#E5E7EB" stroke-width="1.2"/>`;
     for (const [num, pos] of Object.entries(TOOTH_POSITIONS)) {
       const n = parseInt(num.replace('#',''),10), r = SMALL_TOOTH_IDS.has(n) ? 4.5 : 5;
-      markup += `<g id="tooth-${n}" class="tooth"><circle cx="${pos.cx}" cy="${pos.cy}" r="${r}" fill="none" stroke="#E5E7EB" stroke-width="1"/><text x="${pos.cx}" y="${pos.cy+16}" text-anchor="middle" fill="#9CA3AF" font-size="6">${n}</text></g>`;
+      // SVG uses compact format — FDI code only (2 digits), same size as Universal number.
+      const label = isFdi ? (FDI_MAP[num] || n) : n;
+      markup += `<g id="tooth-${n}" class="tooth"><circle cx="${pos.cx}" cy="${pos.cy}" r="${r}" fill="none" stroke="#E5E7EB" stroke-width="1"/><text x="${pos.cx}" y="${pos.cy+16}" text-anchor="middle" fill="#9CA3AF" font-size="6">${label}</text></g>`;
     }
     const initPos = TOOTH_POSITIONS[S.tooth] || TOOTH_POSITIONS['#6'];
-    markup += `<g id="toothHighlight"><circle id="highlightCircleInner" cx="${initPos.cx}" cy="${initPos.cy}" r="8" fill="#FEF2F2" stroke="#EF4444" stroke-width="2.5"><animate attributeName="r" values="7.5;9;7.5" dur="1.8s" repeatCount="indefinite"/></circle><circle id="highlightCircleOuter" cx="${initPos.cx}" cy="${initPos.cy}" r="14" fill="none" stroke="#EF4444" stroke-width="2" opacity=".45"><animate attributeName="r" values="12;18;12" dur="2.2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".55;.1;.55" dur="2.2s" repeatCount="indefinite"/></circle><text id="highlightText" x="${initPos.cx}" y="${initPos.cy+16}" text-anchor="middle" fill="#991B1B" font-size="9.5" font-weight="800" font-family="Sora,sans-serif">${S.tooth}</text></g>`;
+    markup += `<g id="toothHighlight"><circle id="highlightCircleInner" cx="${initPos.cx}" cy="${initPos.cy}" r="8" fill="#FEF2F2" stroke="#EF4444" stroke-width="2.5"><animate attributeName="r" values="7.5;9;7.5" dur="1.8s" repeatCount="indefinite"/></circle><circle id="highlightCircleOuter" cx="${initPos.cx}" cy="${initPos.cy}" r="14" fill="none" stroke="#EF4444" stroke-width="2" opacity=".45"><animate attributeName="r" values="12;18;12" dur="2.2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".55;.1;.55" dur="2.2s" repeatCount="indefinite"/></circle><text id="highlightText" x="${initPos.cx}" y="${initPos.cy+16}" text-anchor="middle" fill="#991B1B" font-size="9.5" font-weight="800" font-family="Sora,sans-serif">${formatTooth(S.tooth, true)}</text></g>`;
     // Second tooth highlight group — initially hidden, activated in multi-tooth mode
     markup += `<g id="toothHighlight2" style="display:none"><circle id="highlightCircleInner2" cx="0" cy="0" r="8" fill="#EDF6F1" stroke="#1F7A4F" stroke-width="2.5"><animate attributeName="r" values="7;8.5;7" dur="2.0s" repeatCount="indefinite"/></circle><circle id="highlightCircleOuter2" cx="0" cy="0" r="14" fill="none" stroke="#1F7A4F" stroke-width="1.8" opacity=".4"><animate attributeName="r" values="11;17;11" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values=".5;.1;.5" dur="2.4s" repeatCount="indefinite"/></circle><text id="highlightText2" x="0" y="0" text-anchor="middle" fill="#0B2B1F" font-size="9.5" font-weight="800" font-family="Sora,sans-serif"></text></g>`;
-    markup += `<text x="160" y="175" text-anchor="middle" fill="#9CA3AF" font-size="8" font-family="DM Sans,sans-serif">Universal Numbering System</text>`;
+    markup += `<text x="160" y="175" text-anchor="middle" fill="#9CA3AF" font-size="8" font-family="DM Sans,sans-serif">${getToothSystemLabel()}</text>`;
     svg.innerHTML = markup;
   }
 
@@ -4081,7 +4084,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const inner = $('highlightCircleInner'), outer = $('highlightCircleOuter'), text = $('highlightText');
     if (inner) { inner.setAttribute('cx',pos.cx); inner.setAttribute('cy',pos.cy); }
     if (outer) { outer.setAttribute('cx',pos.cx); outer.setAttribute('cy',pos.cy); }
-    if (text) { text.setAttribute('x',pos.cx); text.setAttribute('y',pos.cy+16); text.textContent = tooth; }
+    if (text) { text.setAttribute('x',pos.cx); text.setAttribute('y',pos.cy+16); text.textContent = formatTooth(tooth, true); }
 
     // Only update previous and current tooth styles
     const prevNum = _lastActiveTooth;
@@ -4129,7 +4132,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       const inner2 = $('highlightCircleInner2'), outer2 = $('highlightCircleOuter2'), text2 = $('highlightText2');
       if (inner2) { inner2.setAttribute('cx', pos2.cx); inner2.setAttribute('cy', pos2.cy); }
       if (outer2) { outer2.setAttribute('cx', pos2.cx); outer2.setAttribute('cy', pos2.cy); }
-      if (text2)  { text2.setAttribute('x', pos2.cx); text2.setAttribute('y', pos2.cy+16); text2.textContent = tooth2; }
+      if (text2)  { text2.setAttribute('x', pos2.cx); text2.setAttribute('y', pos2.cy+16); text2.textContent = formatTooth(tooth2, true); }
     }
     // Style the tooth2 element in green (brand colour) to distinguish from primary (dark red)
     const el2 = document.getElementById('tooth-'+newNum2);
@@ -4150,7 +4153,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   function buildEditForm() {
     const editGrid = $('editFields');
     if (!editGrid) return;  // defensive: element must exist before mutation
-    const toothOptions = Object.keys(TOOTH_POSITIONS).map(t => `<option value="${t}"${t===S.tooth?' selected':''}>${t}</option>`).join('');
+    const toothOptions = Object.keys(TOOTH_POSITIONS).map(t => `<option value="${t}"${t===S.tooth?' selected':''}>${escapeHtml(formatTooth(t))}</option>`).join('');
     editGrid.innerHTML = `
       <div class="edit-label">Name</div><div><input id="eName" type="text" value="${escapeHtml(S.name)}" autocomplete="name" aria-label="Patient name"/></div>
       <div class="edit-label">Age / Gender</div><div class="edit-row-double"><input id="eAge" type="number" min="1" max="120" value="${S.age}" style="width:65px" aria-label="Age"/><select id="eGender" aria-label="Gender"><option${S.gender==='Male'?' selected':''}>Male</option><option${S.gender==='Female'?' selected':''}>Female</option></select></div>
@@ -4467,10 +4470,10 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <div class="section" style="background:#fafafa">
           <div class="sec-title" style="gap:8px">
             <span style="width:10px;height:10px;border-radius:50%;background:${dot};display:inline-block;flex-shrink:0"></span>
-            ${escapeHtml(siteLabel)} — Tooth ${escapeHtml(siteState.tooth)}
+            ${escapeHtml(siteLabel)} — Tooth ${escapeHtml(formatTooth(siteState.tooth))}
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
-            <div class="pfield"><div class="pfield-label">Tooth</div><div class="pfield-val">${escapeHtml(siteState.tooth)}</div></div>
+            <div class="pfield"><div class="pfield-label">Tooth</div><div class="pfield-val">${escapeHtml(formatTooth(siteState.tooth))}</div></div>
             <div class="pfield"><div class="pfield-label">Condition</div><div class="pfield-val">${escapeHtml(siteState.condition)}</div></div>
             <div class="pfield"><div class="pfield-label">Classification</div><div class="pfield-val" style="font-size:11px">${escapeHtml(ai.caseClass?.label||'—')}</div></div>
           </div>
@@ -4519,11 +4522,11 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         title: `Compound Clinical Report — ${caseNumber} — ${escapeHtml(S.name)}`,
         caseNumber, date: reportDate, time: reportTime,
         patientName: S.name, conf: avgConf, confLevel: avgLevel,
-        aiRec: `Site 1: ${compound.site1Tooth} · Site 2: ${compound.site2Tooth}`,
+        aiRec: `Site 1: ${formatTooth(compound.site1Tooth)} · Site 2: ${formatTooth(compound.site2Tooth)}`,
         recSub: 'Multi-Site Independent Analysis',
       }, bodyHTML);
-      History.add('Compound report generated', `${compound.site1Tooth} + ${compound.site2Tooth}`);
-      openReport(html, `Multi-site report ready — ${compound.site1Tooth} + ${compound.site2Tooth}`);
+      History.add('Compound report generated', `${formatTooth(compound.site1Tooth)} + ${formatTooth(compound.site2Tooth)}`);
+      openReport(html, `Multi-site report ready — ${formatTooth(compound.site1Tooth)} + ${formatTooth(compound.site2Tooth)}`);
       return;
     }
 
@@ -4558,7 +4561,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           {label:'Bone Stim.',value:'One site'},{label:'Adjacent Teeth',value:'Independent ✓'},
         ]}),
       ].join('');
-      const toothDisplay = `${escapeHtml(S.tooth)} + ${escapeHtml(S.tooth2)} <span style="font-size:10px;background:#EDF6F1;color:#1F7A4F;padding:1px 6px;border-radius:10px;font-weight:700">2 Adjacent Missing</span>`;
+      const toothDisplay = `${escapeHtml(formatTooth(S.tooth))} + ${escapeHtml(formatTooth(S.tooth2))} <span style="font-size:10px;background:#EDF6F1;color:#1F7A4F;padding:1px 6px;border-radius:10px;font-weight:700">2 Adjacent Missing</span>`;
       const bodyHTML = `
         ${rptPatientSection(S, toothDisplay)}
         <div class="section"><div class="sec-title">Treatment Options (3-Column Comparison)</div>
@@ -4573,9 +4576,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         caseNumber, date: reportDate, time: reportTime,
         patientName: S.name, conf, confLevel,
         aiRec: recDisplay + ' (2 Adjacent Missing)',
-        recSub: `Teeth ${escapeHtml(S.tooth)} + ${escapeHtml(S.tooth2)}`,
+        recSub: `Teeth ${escapeHtml(formatTooth(S.tooth))} + ${escapeHtml(formatTooth(S.tooth2))}`,
       }, bodyHTML);
-      History.add('Multi-tooth report generated', `${S.tooth} + ${S.tooth2}`);
+      History.add('Multi-tooth report generated', `${formatTooth(S.tooth)} + ${formatTooth(S.tooth2)}`);
       openReport(html, `Multi-tooth report ready — ${recDisplay} recommended`);
       return;
     }
@@ -4609,8 +4612,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const implantCrownRiskAmt = Math.round(implantCost * CROWN_COST_RATIO * CROWN_REPLACE_PROB);
     const bridgeReplaceAmt = Math.round(bridgeCost * BRIDGE_REPLACE_PROB * BRIDGE_REPLACE_RATIO);
     const reportToothDisplay = (S.multiTooth && S.tooth2)
-      ? `${escapeHtml(S.tooth)} + ${escapeHtml(S.tooth2)} <span style="font-size:10px;background:#EDF6F1;color:#1F7A4F;padding:1px 6px;border-radius:10px;font-weight:700">2 Missing</span>`
-      : escapeHtml(S.tooth);
+      ? `${escapeHtml(formatTooth(S.tooth))} + ${escapeHtml(formatTooth(S.tooth2))} <span style="font-size:10px;background:#EDF6F1;color:#1F7A4F;padding:1px 6px;border-radius:10px;font-weight:700">2 Missing</span>`
+      : escapeHtml(formatTooth(S.tooth));
 
     // Restorative-mode treatment options section
     const txOptionsHTML = isRestorative && ai.scored && ai.restorativeLabels ? (() => {

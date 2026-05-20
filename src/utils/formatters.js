@@ -18,10 +18,18 @@
 
 // ── Tooth display ─────────────────────────────────────────────────────────────
 
-function formatTooth(tooth) {
+// Formats a tooth ID for display per the active tooth numbering preference.
+// Universal mode: '#8'
+// FDI mode (default): '11 (#8)' — dual display for clinical safety
+// FDI mode (compact=true): '11' — for SVG labels where space is tight
+function formatTooth(tooth, compact) {
   if (!tooth) return '—'; // em dash fallback
   var sys = (typeof denaiPrefs !== 'undefined' ? denaiPrefs.get('toothSystem') : null) || 'universal';
-  if (sys === 'fdi') return FDI_MAP[tooth] || tooth;
+  if (sys === 'fdi') {
+    var fdi = FDI_MAP[tooth];
+    if (!fdi) return tooth; // unmapped: return as-is
+    return compact ? fdi : fdi + ' (' + tooth + ')';
+  }
   return tooth; // Universal: return '#8', '#14' etc. as stored
 }
 

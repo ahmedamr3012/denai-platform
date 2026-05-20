@@ -17,8 +17,8 @@
       <div class="info-label"><i class="fa-solid fa-tooth" aria-hidden="true"></i> Tooth / Area</div>
             <div class="info-val">${
         state.multiTooth && state.tooth2
-          ? escapeHtml(state.tooth) + ' + ' + escapeHtml(state.tooth2) + ' <span style="font-size:10px;background:var(--c-brand-bg);color:var(--c-brand);padding:2px 6px;border-radius:10px;font-weight:700">2 Missing</span>'
-          : escapeHtml(state.tooth)
+          ? escapeHtml(formatTooth(state.tooth)) + ' + ' + escapeHtml(formatTooth(state.tooth2)) + ' <span style="font-size:10px;background:var(--c-brand-bg);color:var(--c-brand);padding:2px 6px;border-radius:10px;font-weight:700">2 Missing</span>'
+          : escapeHtml(formatTooth(state.tooth))
       } </div>
       <div class="info-label"><i class="fa-solid fa-file-medical" aria-hidden="true"></i> Condition</div>
       <div class="info-val">${escapeHtml(state.condition)}</div>

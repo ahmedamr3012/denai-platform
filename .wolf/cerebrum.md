@@ -8,6 +8,17 @@
 
 <!-- How the user likes things done. Code style, tools, patterns, communication. -->
 
+## Key Learnings — Wave C4 Tooth Display Abstraction (2026-05-20)
+
+- **formatTooth(tooth, compact?)** is the single tooth display abstraction. Universal mode returns `#8`. FDI mode returns `11 (#8)` (dual display for clinical safety). `compact=true` returns `11` only — used in SVG where space is tight (9.5px font in pulsing highlight circle).
+- **S.tooth storage format is `#8` (hash-prefixed string)**: `#1` through `#32`. TOOTH_POSITIONS, FDI_MAP, and all adjacency logic use this format. Never strip the `#` for display — use `formatTooth()` instead.
+- **Pre-existing `tooth ##8` bug fixed**: `inputLine.textContent = \`Based on: tooth #${S.tooth}\`` produced `tooth ##8` since S.tooth already includes `#`. Fixed to `tooth ${formatTooth(S.tooth)}` → `tooth #8` (Universal) or `tooth 11 (#8)` (FDI). This same fix appears in both updateAICardMulti and updateAICard contexts.
+- **SVG tooth labels use compact FDI**: Small tooth reference labels (font-size 6) and pulsing highlight labels (font-size 9.5) both use `formatTooth(tooth, true)` to return just the FDI code (e.g., `11`). Full dual format `11 (#8)` is not used in SVG because it would overflow the tight arch layout.
+- **SVG footer label is dynamic**: The "Universal Numbering System" text at the bottom of the dental SVG now calls `getToothSystemLabel()` which returns `'FDI Notation'` or `'Universal Numbering System'` depending on active preference. `buildDentalSVG()` rebuilds the full SVG markup on every call.
+- **FDI_MAP lookup pattern for SVG loop**: In `buildDentalSVG()`, the loop key is `num` (`#8` format). `FDI_MAP[num]` gives the FDI code. The numeric variable `n` (e.g., `8`) is used only for element IDs (`tooth-8`) and circle radius — never for FDI lookup.
+- **All tooth display surfaces audited (2026-05-20)**: case card meta, dashboard attention meta, plan view rec sub-label, lab view Tooth/Site row, both AI input lines (multi + single), compound site summary, site tab labels, site2 select options, edit form tooth dropdown, multi-site report section header + pfield, multi-tooth report toothDisplay + recSub + History.add, compound report aiRec + History.add + openReport, single-tooth reportToothDisplay, patientPanel.js Tooth/Area info row, costGraphPanel.js multi-tooth header.
+- **Internal tooth logic untouched**: `isMaxilla()`, `isPosteriorTooth()`, `isAdjacent()`, `ClinicalEngine.normalize()`, `calcAI.js`, `serializer.js`, `TOOTH_POSITIONS` coords, `ALLOWED_FIELDS` — all receive raw Universal IDs. Display transformation is purely at the leaf render layer.
+
 ## Key Learnings — PWA
 
 - **Phase 4 PWA Polish (2026-05-17):** Safe-area insets require `viewport-fit=cover` in viewport meta — without it, `env(safe-area-inset-*)` always resolves to 0. Topbar uses `min-height + padding-top: env(safe-area-inset-top)` instead of `height` to accommodate notch on iPhone standalone. `.view-panel` uses `padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px))`. Mobile fixed sidebar gets `padding-top: env(safe-area-inset-top)` inside the `@media (max-width: 900px)` block.

@@ -72,10 +72,64 @@
       "file": "src/ai/clinicalEngine.js, src/render/costGraphPanel.js, src/utils/costEngine.js",
       "root_cause": "(1) buildRestorativeResult used literal 4500 instead of c.costs.implant; (2) costGraphPanel used ||800 fallback, 2x less than catalog default 1500; (3) ANNUAL_CHECKUP top-level const evaluated once at parse time before denaiPrefs available, and duplicated in 3 files",
       "fix": "(1) normalize() adds costs.implant via priority chain, buildRestorativeResult uses c.costs.implant; (2) all costBoneGraft fallbacks use getClinicPrice('boneGraft'); (3) ANNUAL_CHECKUP removed from global scope, computed locally as getClinicPrice('annualCheckup')*2 in each function; (4) all costEngine.js/calcAI.js/clinicalEngine.js || fallbacks now use getClinicPrice(); (5) confirmNewPatient() initializes cost fields from getClinicPrice() at creation time",
-      "tags": ["pricing", "clinic-preferences", "wave-c3", "hardcoded-fallback", "known-bug"],
+      "tags": [
+        "pricing",
+        "clinic-preferences",
+        "wave-c3",
+        "hardcoded-fallback",
+        "known-bug"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-20T08:00:00.000Z"
+    },
+    {
+      "id": "bug-006",
+      "timestamp": "2026-05-20T08:01:26.587Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/utils/formatters.js",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 13→21 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-20T08:01:26.587Z"
+    },
+    {
+      "id": "bug-007",
+      "timestamp": "2026-05-20T08:02:04.815Z",
+      "error_message": "Wrong reference: tooth should be formatTooth",
+      "file": "index.html",
+      "root_cause": "Used \"tooth\" instead of \"formatTooth\"",
+      "fix": "Changed tooth → formatTooth",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-20T08:02:10.255Z"
+    },
+    {
+      "id": "bug-008",
+      "timestamp": "2026-05-20T08:02:23.236Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had ' + escapeHtml(p.tooth) : '",
+      "fix": "Changed to ' + escapeHtml(formatTooth(p.tooth)) : '",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 10,
+      "last_seen": "2026-05-20T08:04:13.884Z"
     }
   ]
 }

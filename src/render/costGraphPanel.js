@@ -41,7 +41,7 @@
       container.innerHTML = `
         <div class="cost-grid" style="display:grid;gap:10px">
           <div class="cost-row" style="font-weight:700;color:var(--c-n700);border-bottom:1px solid var(--c-n100);padding-bottom:8px">
-            Multi-Tooth Cost Analysis — Teeth ${escapeHtml(state.tooth)} + ${escapeHtml(state.tooth2 || '')}
+            Multi-Tooth Cost Analysis — Teeth ${escapeHtml(formatTooth(state.tooth))} + ${escapeHtml(state.tooth2 ? formatTooth(state.tooth2) : '')}
           </div>
           <div class="cost-row"><span>2 Implants initial</span><span style="font-weight:700">${formatCurrency(mtCosts.implant2)}</span></div>
           <div class="cost-row"><span>4-Unit Bridge initial</span><span style="font-weight:700">${formatCurrency(mtCosts.bridge4)}</span></div>
