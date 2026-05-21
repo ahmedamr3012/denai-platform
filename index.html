@@ -4864,9 +4864,11 @@ showToast('Case data exported as JSON','success');
 // Wave 7F: FULL BACKUP EXPORT
 // Exports all patients + preferences to a portable JSON file.
 // Schema: { exportFormat, exportedAt, schemaVersion, patientCount, patients[], preferences }
+// Pilot hardening: preferences now includes currency, toothSystem, pricing from denaiPrefs.
 // ================================================================
 function exportAllData() {
 const list = loadAllPatients() || [];
+const _hasPrefs = typeof denaiPrefs !== 'undefined';
 const exportData = {
   exportFormat:    'denai-backup-v1',
   exportedAt:      new Date().toISOString(),
@@ -4876,7 +4878,10 @@ const exportData = {
     return Object.assign({}, p, { history: History.load(p.id) });
   }),
   preferences: {
-    darkMode: darkMode,
+    darkMode:    darkMode,
+    currency:    _hasPrefs ? denaiPrefs.get('currency')    : 'USD',
+    toothSystem: _hasPrefs ? denaiPrefs.get('toothSystem') : 'universal',
+    pricing:     _hasPrefs ? denaiPrefs.get('pricing')     : null,
   },
 };
 const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -4982,6 +4987,29 @@ if (data.preferences && typeof data.preferences.darkMode === 'boolean') {
     try { if (typeof denaiPrefs !== 'undefined') denaiPrefs.save({ darkMode: data.preferences.darkMode }); } catch {}
   }
 }
+// Restore clinic preferences (currency, toothSystem, pricing).
+// Pilot hardening: these were absent from pre-hardening backups — each field is
+// individually validated so old backups without them are silently skipped.
+try {
+  if (typeof denaiPrefs !== 'undefined' && data.preferences && typeof data.preferences === 'object') {
+    const _prefPatch = {};
+    const _VALID_IMPORT_CURR = ['USD', 'EUR', 'CAD', 'EGP'];
+    if (typeof data.preferences.currency === 'string' &&
+        _VALID_IMPORT_CURR.indexOf(data.preferences.currency) !== -1) {
+      _prefPatch.currency = data.preferences.currency;
+    }
+    if (data.preferences.toothSystem === 'universal' || data.preferences.toothSystem === 'fdi') {
+      _prefPatch.toothSystem = data.preferences.toothSystem;
+    }
+    if (data.preferences.pricing !== null &&
+        data.preferences.pricing !== undefined &&
+        typeof data.preferences.pricing === 'object' &&
+        !Array.isArray(data.preferences.pricing)) {
+      _prefPatch.pricing = data.preferences.pricing;
+    }
+    if (Object.keys(_prefPatch).length > 0) denaiPrefs.save(_prefPatch);
+  }
+} catch (e) {}
 
 const msg = toAdd.length > 0
   ? `Imported ${toAdd.length} patient${toAdd.length === 1 ? '' : 's'}` +
@@ -5455,9 +5483,10 @@ try {
 try { localStorage.removeItem(HISTORY_KEY + '_' + _pendingDeleteId); } catch {}
 list = list.filter(p => p.id !== _pendingDeleteId);
 saveAllPatients(list);
+const _deletedId = _pendingDeleteId; // snapshot before closeDeletePatient() nullifies it
 closeDeletePatient();
-// If deleted active patient, switch to first
-if (_pendingDeleteId === S.id || S.id === undefined) {
+// If deleted active patient, switch to first remaining
+if (_deletedId === S.id || S.id === undefined) {
 switchPatient(list[0].id);
 } else {
 renderPatientList();

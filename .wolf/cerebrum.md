@@ -8,6 +8,13 @@
 
 <!-- How the user likes things done. Code style, tools, patterns, communication. -->
 
+## Key Learnings — Pilot Persistence Hardening (2026-05-21)
+
+- **`exportAllData()` now exports full clinic preferences**: Export payload `preferences` object extended to include `currency`, `toothSystem`, and `pricing` from `denaiPrefs.get()`. Safe fallbacks (`'USD'`, `'universal'`, `null`) apply if `denaiPrefs` is not yet loaded. Old backups without these keys remain importable — each field is individually validated.
+- **`_applyImport()` preference restore block is individually gated**: Currency validated against `['USD','EUR','CAD','EGP']` allowlist. toothSystem validated as `=== 'universal' || === 'fdi'`. pricing validated as non-null plain object (not array). All three are skipped silently if absent or invalid — old backups import cleanly. Entire block wrapped in `try/catch` so a malformed preferences payload cannot abort the patient restore.
+- **The critical pilot gap**: Prior to this fix, a clinic that cleared browser data and restored from backup would lose currency, toothSystem, and pricing — despite patients restoring correctly. Fix is confined to `exportAllData()` (~4 lines) and `_applyImport()` (~18 lines) in index.html. No schema change, no new keys, no new modules.
+- **`_hasPrefs` guard in export**: `const _hasPrefs = typeof denaiPrefs !== 'undefined'` evaluated once at export time. Ternary `_hasPrefs ? denaiPrefs.get('currency') : 'USD'` guards all three new fields. Avoids repeated typeof checks.
+
 ## Key Learnings — Wave C Validation (2026-05-21)
 
 - **Onlay scoreRestorative block must include poorHygiene penalty**: The onlay case in scoreRestorative had no `p.poorHygiene` check, while every other restorative option (crown, splinted, endocrown) correctly penalizes poor hygiene. Missing it caused onlay to tie or beat crown under poor hygiene and win by sort order — clinically wrong. Fix: add `if (p.poorHygiene) { score -= 5.0; ... }` after the currentSmoker check in the onlay block.
