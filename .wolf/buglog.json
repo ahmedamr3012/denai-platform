@@ -692,6 +692,61 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-20"
+    },
+    {
+      "id": "bug-041",
+      "timestamp": "2026-05-21T06:07:43.590Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/ai/clinicalEngine.js",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 7→12 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-21T06:07:43.590Z"
+    },
+    {
+      "id": "bug-042",
+      "timestamp": "2026-05-21T00:00:00.000Z",
+      "error_message": "splintedPreferred fires for anterior poor-ferrule teeth — 'Splinted Crowns' appears as slot2 for maxillary anterior teeth with poor ferrule only (no abutment compromise)",
+      "file": "src/ai/clinicalEngine.js",
+      "root_cause": "splintedPreferred = b.poorFerrule || b.abutmentCompromised had no position guard. A maxillary anterior tooth with poor ferrule (rs=Poor) but no abutment compromise triggered 'Splinted Crowns' as slot2. Anterior splinting for ferrule loss alone is a specialist eye-roll moment — not clinically indicated without compromised abutments.",
+      "fix": "Changed to (b.poorFerrule && t.isPosterior) || b.abutmentCompromised. Posterior poorFerrule still triggers splinting (load-sharing indication). abutmentCompromised still fires universally. Anterior poorFerrule alone → crown in slot2 instead.",
+      "tags": [
+        "clinical-engine",
+        "splinting",
+        "anterior",
+        "ferrule",
+        "wave-d",
+        "D-H1-fix"
+      ],
+      "related_bugs": ["bug-032"],
+      "occurrences": 1,
+      "last_seen": "2026-05-21"
+    },
+    {
+      "id": "bug-043",
+      "timestamp": "2026-05-21T00:00:00.000Z",
+      "error_message": "Young patient (<40) extraction recommendation in COMPROMISED context carries same confidence as older patient — High confidence for 22yo anterior extraction is clinically alarming",
+      "file": "src/ai/clinicalEngine.js",
+      "root_cause": "process() passed recResult from recommend() directly without any patient-age awareness. For a 22yo with a poor-ferrule anterior tooth where extraction wins in COMPROMISED context, conf was calculated from implant-viability factors only (good bone → High conf). No clinical signal that young patients should trigger more preservation hesitation.",
+      "fix": "Added young-patient extraction restraint in process(): when caseClass.type === CT.RESTORATIVE_COMPROMISED AND recResult.rec === 'crown' (extraction wins) AND c.patient.young (age < 40), apply conf −6 and recalculate confLevel. Not applied in HOPELESS (extraction mandatory regardless of age). recResult changed from const to let to allow reassignment.",
+      "tags": [
+        "clinical-engine",
+        "confidence",
+        "young-patient",
+        "extraction",
+        "compromised",
+        "wave-d",
+        "D-H2-fix"
+      ],
+      "related_bugs": ["bug-039"],
+      "occurrences": 1,
+      "last_seen": "2026-05-21"
     }
   ]
 }

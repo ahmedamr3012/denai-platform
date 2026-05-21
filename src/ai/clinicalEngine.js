@@ -102,11 +102,16 @@
       const endocrownViable = r.rctDone && t.isPosterior;
       // Splinting is a MULTI-TOOTH procedure that links adjacent crowns to share load.
       // Indications (clinical literature):
-      //   - Poor ferrule on affected tooth (borrows retention from neighbors)
-      //   - Compromised adjacent abutment quality (already-failing neighbors)
+      //   - Poor ferrule on a POSTERIOR tooth (borrows retention from neighbors for
+      //     lateral force distribution — a posterior biomechanical strategy only)
+      //   - Compromised adjacent abutment quality (universal indication: borrows
+      //     retention regardless of position)
       // NOT triggered by case classification alone — bruxism-only COMPROMISED cases
       // receive monolithic zirconia + nightguard, not splinting overtreatment (H3 fix).
-      const splintedPreferred = b.poorFerrule || b.abutmentCompromised;
+      // NOT triggered by anterior poor ferrule alone — anterior poor ferrule → crown_core
+      // + escalation assessment, not splinting (D-H1 fix: anterior splinting for
+      // ferrule loss only is specialist eye-roll territory; Wave D 2026-05-21).
+      const splintedPreferred = (b.poorFerrule && t.isPosterior) || b.abutmentCompromised;
       // Escalation to extraction viable when: hopeless or compromised
       const escalationViable = caseClass.type === CT.RESTORATIVE_HOPELESS ||
                                caseClass.type === CT.RESTORATIVE_COMPROMISED;
@@ -398,7 +403,17 @@
       if (!baseAI) return null;
       const treatments = generateTreatments(caseClass, c);
       const scored     = scoreRestorative(treatments, c, baseAI, caseClass);
-      const recResult  = recommend(scored, baseAI, caseClass);
+      let recResult    = recommend(scored, baseAI, caseClass);
+      // Young patient extraction restraint: when extraction wins in a COMPROMISED case
+      // for a patient under 40, soften confidence to reflect the clinical imperative
+      // to exhaust preservation options before committing to early-life tooth loss.
+      // Not applied in HOPELESS (extraction is clinically mandatory regardless of age).
+      if (caseClass.type === CT.RESTORATIVE_COMPROMISED &&
+          recResult.rec === 'crown' && c.patient.young) {
+        const adjConf = Math.max(35, recResult.conf - 6);
+        recResult = { ...recResult, conf: adjConf,
+          confLevel: adjConf >= 75 ? 'High' : adjConf >= 55 ? 'Medium' : 'Low' };
+      }
       const expl       = explain(scored, recResult, caseClass, c);
       return buildRestorativeResult(scored, recResult, expl, caseClass, c, baseAI, treatments);
     }

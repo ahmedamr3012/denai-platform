@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-20T23:04:06.503Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-21T06:07:56.188Z
 > Files: 61 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -33,7 +33,7 @@
 ## src/ai/
 
 - `calcAI.js` — isPosteriorTooth: isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI (~8021 tok)
-- `clinicalEngine.js` — ClinicalEngine: normalize, classify, generateTreatments, scoreRestorative (~7795 tok)
+- `clinicalEngine.js` — ClinicalEngine: normalize, classify, generateTreatments, scoreRestorative (~8107 tok)
 
 ## src/auth/
 
