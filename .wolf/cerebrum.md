@@ -4,6 +4,19 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-22
 
+## Key Learnings — Phase 11 Operational & Legal Maturity (2026-05-22)
+
+- **Contact email in privacy.html and terms.html is `ahmedamr30121999@gmail.com`.** This is a deployment placeholder using the developer's email. When a dedicated support address is created, update both files (search for `ahmedamr30121999@gmail.com` in both files). Update the `Last updated` date when making changes.
+- **Two separate backup guidance notes exist in the auth modal.** Local-mode panel (lines ~1339-1342, under "Data Portability") and signed-in panel (lines ~1426-1429, under "Data"). Both now have a one-line operational note. The notes are slightly different in wording: local note warns about browser-clear permanence; signed-in note clarifies cloud sync ≠ backup substitute. Keep them operationally distinct — signed-in users already know their data is local; they need to know cloud sync doesn't replace manual exports.
+- **`privacy.html` and `terms.html` are well-structured and Phase 11-ready.** The legal text accurately represents: local-first architecture, opt-in cloud sync, encryption behavior, clinician responsibility, service availability (no SLA). Do not add enterprise compliance language or HIPAA claims. The current framing ("workflow tool, not medical device, not diagnosis") is correct and should be preserved.
+- **`exportAllData()` exports local records + preferences only — it does NOT export cloud-only records that haven't synced back.** The backup is a snapshot of whatever is in localStorage at export time. If a clinician signed in on Device A, never opened the app on Device B, then exported on Device B — they'd get an empty export. Operational note in modal addresses this awareness gap implicitly.
+
+## Do-Not-Repeat (2026-05-22 — Phase 11)
+
+- **DO NOT add HIPAA compliance claims, SOC2 badges, or regulatory certification language to privacy.html or terms.html.** denai is explicitly "not a medical device" and is not registered in any jurisdiction. Adding compliance claims creates false certification and regulatory liability. (Phase 11, 2026-05-22)
+- **DO NOT remove the "denai is not a medical device" statement from terms.html section 2.** This is a load-bearing legal boundary, not boilerplate. Its removal would create ambiguity about denai's regulatory classification. (Phase 11, 2026-05-22)
+- **DO NOT imply cloud sync guarantees data safety in any UI copy.** The signed-in panel backup note is deliberately worded as "Cloud sync is not a substitute for manual backup exports" to set accurate expectations. Do not soften this. (Phase 11, 2026-05-22)
+
 ## Key Learnings — Phase 10 Report Presentation (2026-05-22)
 
 - **REPORT_CSS is a self-contained popup CSS string — no app CSS variables are available.** The report opens in a `window.open` blob URL. None of the main app's `:root` CSS custom properties (like `--c-brand-rgb`) are defined there. Any CSS in `REPORT_CSS` that uses `var(--c-brand-rgb)` silently produces invalid values. Always hardcode hex/rgba in REPORT_CSS. The fix: `rgba(var(--c-brand-rgb),.3)` → `rgba(31,122,79,.3)`.

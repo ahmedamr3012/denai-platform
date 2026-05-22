@@ -1286,6 +1286,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-22T13:44:10.393Z"
+    },
+    {
+      "id": "bug-075",
+      "timestamp": "2026-05-22T14:02:48.632Z",
+      "error_message": "Incorrect value in code",
+      "file": "privacy.html",
+      "root_cause": "Had \"terms.html\"",
+      "fix": "Changed to \"mailto:ahmedamr30121999@gmail.com\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T14:02:48.632Z"
+    },
+    {
+      "id": "bug-076",
+      "timestamp": "2026-05-22T14:03:01.284Z",
+      "error_message": "Incorrect value in code",
+      "file": "terms.html",
+      "root_cause": "Had \"privacy.html\"",
+      "fix": "Changed to \"mailto:ahmedamr30121999@gmail.com\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T14:03:01.284Z"
     }
   ]
 }
