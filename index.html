@@ -26,7 +26,7 @@
   <meta name="robots" content="noindex, nofollow" />
   <meta name="color-scheme" content="light dark" />
   <!-- Dark mode flash prevention: apply dark background before first paint -->
-  <script>(function(){try{if(localStorage.getItem('dandyDarkMode')==='true'){document.documentElement.style.background='#0B2B1F';document.documentElement.style.colorScheme='dark';}}catch(e){}}());</script>
+  <script>(function(){try{var _dk=localStorage.getItem('denaiDarkMode')||localStorage.getItem('dandyDarkMode');if(_dk==='true'){document.documentElement.style.background='#0B2B1F';document.documentElement.style.colorScheme='dark';}}catch(e){}}());</script>
   <meta property="og:title" content="denai — Clinical Insight" />
   <meta property="og:description" content="AI-assisted clinical workflow platform for dental professionals." />
   <meta property="og:type" content="website" />
@@ -428,6 +428,7 @@ body.dark .dash-pipeline-strip { background: var(--c-n50); border-color: var(--c
 .entry-btn-local:hover { background: rgba(0,0,0,.42); }
 .entry-btn-local:focus-visible, .entry-btn-primary:focus-visible { outline: 2px solid rgba(255,255,255,.6); outline-offset: 2px; }
 .entry-local-note { font-size: 11px; color: rgba(255,255,255,.95); margin-top: 8px; }
+.entry-disclaimer { font-size: 10px; color: rgba(255,255,255,.85); line-height: 1.5; margin: 8px 4px 0; }
 .entry-trust-links { font-size: 10px; margin-top: 10px; display: flex; gap: 8px; align-items: center; justify-content: center; }
 .entry-trust-links a { color: rgba(255,255,255,.85); text-decoration: none; transition: color var(--t-fast); }
 .entry-trust-links a:hover { color: rgba(255,255,255,.85); }
@@ -630,6 +631,7 @@ body.dark .lab-notes { background: var(--c-n50); color: var(--c-n700); }
 @keyframes cardIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 body.dark .card { background: var(--c-n50); border-color: var(--c-n150); }
 .card-header { padding: 15px 20px; border-bottom: 1px solid var(--c-n100); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; transition: border-color .4s; position: sticky; top: 0; background: inherit; z-index: 2; }
+.ai-panel-disclaimer { font-size: 10px; color: var(--c-n400); line-height: 1.5; margin: 0; padding: 6px 16px 8px; }
 .card-title { font-size: 14px; font-weight: 700; color: var(--c-n900); display: flex; align-items: center; gap: 8px; }
 .card-title i { color: var(--c-brand); font-size: 12px; }
 .card-body { padding: 18px 20px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
@@ -1620,6 +1622,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           <span class="tt-pop" role="tooltip">AI analyzes clinical data, intraoral scans,<br>bone condition &amp; historical denai case outcomes</span>
         </div>
       </div>
+      <p id="aiPanelDisclaimer" class="ai-panel-disclaimer"></p>
       <!-- Case classification pill — prominently shows VIABLE/COMPROMISED/HOPELESS in restorative mode -->
       <div id="caseClassBadge" class="caseclass-strip" style="display:none;margin:0 16px 0;" role="status" aria-live="polite">
         <span class="caseclass-icon" id="caseClassIcon" aria-hidden="true">●</span>
@@ -1936,6 +1939,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <i class="fa-solid fa-arrow-right" style="font-size:11px;margin-right:4px;" aria-hidden="true"></i> Continue Locally
       </button>
       <div class="entry-local-note">No account needed · Data stays on your device</div>
+      <p id="entryDisclaimer" class="entry-disclaimer"></p>
       <div class="entry-trust-links">
         <a href="terms.html" target="_blank" rel="noopener">Terms</a>
         <span aria-hidden="true">·</span>
@@ -2317,6 +2321,26 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       _saveStateTimer = null;
     }, 200);
   }
+
+  // Phase 1.2: One-time safe migration — copies dandy* keys to denai* keys.
+  // Must run before loadState() / initPatients() to ensure data is found under new names.
+  // Idempotent: skips if new key already exists; never overwrites existing data.
+  (function () {
+    var _pairs = [
+      ['dandyCaseState_v8', 'denaiCaseState_v8'],
+      ['dandyPatients_v2',  'denaiPatients_v2'],
+      ['dandyDarkMode',     'denaiDarkMode'],
+    ];
+    for (var _i = 0; _i < _pairs.length; _i++) {
+      try {
+        var _old = _pairs[_i][0], _new = _pairs[_i][1];
+        if (localStorage.getItem(_new) === null) {
+          var _val = localStorage.getItem(_old);
+          if (_val !== null) { localStorage.setItem(_new, _val); }
+        }
+      } catch (e) {}
+    }
+  }());
 
   const S = (() => {
     const loaded = { ...loadState() };
@@ -5909,7 +5933,7 @@ setTimeout(() => { if (t.parentNode) { t.remove(); processToastQueue(); } }, 400
 // ================================================================
 // DARK MODE
 // ================================================================
-let darkMode = localStorage.getItem('dandyDarkMode') === 'true';
+let darkMode = (localStorage.getItem('denaiDarkMode') || localStorage.getItem('dandyDarkMode')) === 'true';
 function applyDarkMode() {
 document.body.classList.toggle('dark', darkMode);
 const btn = $('darkToggleBtn');
@@ -5919,7 +5943,7 @@ btn.setAttribute('aria-label', darkMode ? 'Switch to light mode' : 'Switch to da
 }
 function toggleDarkMode() {
   darkMode = !darkMode;
-  try { localStorage.setItem('dandyDarkMode', darkMode); } catch {}
+  try { localStorage.setItem('denaiDarkMode', darkMode); } catch {}
   applyDarkMode();
   // Wave 7F: sync dark mode preference to cloud (non-blocking).
   try { if (typeof denaiPrefs !== 'undefined') denaiPrefs.save({ darkMode: darkMode }); } catch {}
@@ -5928,7 +5952,7 @@ function toggleDarkMode() {
 // Must be a function declaration so prefsSync.js can access it via window.denaiSetDarkMode.
 function denaiSetDarkMode(value) {
   darkMode = !!value;
-  try { localStorage.setItem('dandyDarkMode', darkMode); } catch {}
+  try { localStorage.setItem('denaiDarkMode', darkMode); } catch {}
   applyDarkMode();
 }
 // Wave C6: Bridge called by denaiPrefs.hydrate() after cloud prefs win LWW merge.
@@ -6123,6 +6147,9 @@ function _cleanOrphanedHistoryKeys() {
 }
 
 (function init() {
+// Populate BRAND.disclaimer into static UI surfaces
+const _ed = $('entryDisclaimer'); if (_ed) _ed.textContent = BRAND.disclaimer;
+const _apd = $('aiPanelDisclaimer'); if (_apd) _apd.textContent = BRAND.disclaimer;
 buildDentalSVG();
 buildEditForm();
 tempState = { ...S };
@@ -6467,7 +6494,7 @@ window.addEventListener('storage', function(e) {
 // with denaiAuth and denaiSyncQueue guaranteed to be defined.
 document.addEventListener('DOMContentLoaded', function () {
   // Wave 7F: Prefs init — loads _prefs from localStorage, reconciles darkMode with
-  // dandyDarkMode, and loads _lastSyncedAt so hydrate() LWW comparison is correct.
+  // denaiDarkMode, and loads _lastSyncedAt so hydrate() LWW comparison is correct.
   // Must run BEFORE denaiAuth.init() so _lastSyncedAt is non-null when hydrate() fires.
   if (typeof denaiPrefs !== 'undefined') {
     denaiPrefs.init();

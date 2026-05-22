@@ -243,11 +243,11 @@ window.denaiPrefs = (function () {
 
   function init() {
     _loadLocal();
-    // Reconcile _prefs.darkMode with dandyDarkMode — the live toggle state is
-    // authoritative. denaiPrefs_v1.darkMode may lag if save() was called with
-    // a non-darkMode patch before init() ran (e.g. save({ notesKeySalt })).
+    // Reconcile _prefs.darkMode with live toggle state (denaiDarkMode key after
+    // Phase 1.2 migration; falls back to legacy dandyDarkMode on first deploy).
     try {
-      var _raw = localStorage.getItem(LEGACY_DARK_KEY);
+      var _raw = localStorage.getItem('denaiDarkMode');
+      if (_raw === null) _raw = localStorage.getItem(LEGACY_DARK_KEY);
       if (_raw !== null) _prefs.darkMode = _raw === 'true';
     } catch (e) {}
     _applyToDom();

@@ -2,7 +2,23 @@
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-05-21
+> Last updated: 2026-05-22
+
+## Key Learnings — Phase 1.2 storageKeys Migration (2026-05-22)
+
+- **Storage key namespace is now fully denai-branded:** `STORAGE_KEY='denaiCaseState_v8'`, `PATIENTS_KEY='denaiPatients_v2'`, live dark mode key = `denaiDarkMode`. `HISTORY_KEY='dandyCaseHistory_v1'` and `ACTIVE_PT_KEY='dandyActivePatient_v1'` were NOT in Phase 1.2 scope — left unchanged.
+- **Migration IIFE placement is critical:** Must run BEFORE `const S = (() => { loadState() ... })()`. The migration copies old→new keys so `initPatients()` finds data under the new name. Placed at index.html lines 2325-2343 (immediately before `const S`).
+- **Migration is non-destructive:** Old keys (`dandyCaseState_v8`, `dandyPatients_v2`, `dandyDarkMode`) are copied to new keys but NOT deleted. Old keys remain in localStorage. This preserves backward compat for any code still reading from old paths (prefsSync.js LEGACY_DARK_KEY, cloudSync ACTIVE_KEY, HISTORY_PREFIX).
+- **Dark mode read needs dual-key fallback at module init time:** `let darkMode` (line 5936) runs BEFORE the migration IIFE (they're both in the inline script but `let darkMode` is at module scope, not in init). Pattern: `(getItem('denaiDarkMode') || getItem('dandyDarkMode')) === 'true'`. Migration IIFE runs later at const S time — so on the first ever page load after deploy, both dark mode reads (head flash prevention + module init) need the fallback.
+- **Flash prevention in `<head>` also needs dual-key fallback:** It runs before all scripts including the migration IIFE. Pattern: `var _dk = getItem('denaiDarkMode') || getItem('dandyDarkMode'); if (_dk === 'true') {...}`.
+- **prefsSync.js reconcile must read new key first:** `init()` reconciles `_prefs.darkMode` with the live toggle key. After Phase 1.2, the live toggle writes to `denaiDarkMode`. Reconcile updated to: `var _raw = getItem('denaiDarkMode'); if (_raw === null) _raw = getItem(LEGACY_DARK_KEY); if (_raw !== null) _prefs.darkMode = _raw === 'true'`. The `LEGACY_DARK_KEY = 'dandyDarkMode'` constant is preserved for `_loadLocal()` legacy prefs bootstrap — not changed.
+- **cloudSync.js has its own private `PATIENTS_KEY`:** Independent of storageKeys.js — must be updated separately when renaming PATIENTS_KEY. cloudSync IIFE is function-scoped so no conflict with the global const.
+- **Test runners have hardcoded key strings:** `tests/auth/runner.js`, `tests/sync/runner.js`, `tests/e2e/runner.js` all had `var PATIENTS_KEY = 'dandyPatients_v2'`. These are test-local vars that must be kept in sync with the app's actual key name manually.
+
+## Do-Not-Repeat (2026-05-22 — Phase 1.2)
+
+- **DO NOT rename storage constants without: (a) adding migration IIFE, (b) updating flash prevention, (c) updating cloudSync's private PATIENTS_KEY, (d) updating prefsSync reconcile, (e) updating test runners.** Missing any of these causes silent data loss or test failures. (Phase 1.2, 2026-05-22)
+- **DO NOT place the migration IIFE AFTER `const S`.** `const S` calls `loadState()` → `initPatients()` → `loadAllPatients()` which reads from the renamed PATIENTS_KEY. Migration must write new key BEFORE this read. (Phase 1.2, 2026-05-22)
 
 ## User Preferences
 

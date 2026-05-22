@@ -13,7 +13,7 @@
   <script>
     try {
       var _p = JSON.parse(localStorage.getItem('denaiPrefs_v1') || '{}');
-      var _d = _p.darkMode != null ? _p.darkMode : localStorage.getItem('dandyDarkMode') === 'true';
+      var _d = _p.darkMode != null ? _p.darkMode : (localStorage.getItem('denaiDarkMode') || localStorage.getItem('dandyDarkMode')) === 'true';
       if (_d) {
         document.documentElement.classList.add('dark');
         document.documentElement.style.background = '#0B2B1F';

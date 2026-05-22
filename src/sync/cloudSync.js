@@ -25,7 +25,7 @@
 
 window.denaiCloudSync = (function () {
 
-  var PATIENTS_KEY   = 'dandyPatients_v2';
+  var PATIENTS_KEY   = 'denaiPatients_v2';
   var ACTIVE_KEY     = 'dandyActivePatient_v1';
   var HISTORY_PREFIX = 'dandyCaseHistory_v1_';
 
