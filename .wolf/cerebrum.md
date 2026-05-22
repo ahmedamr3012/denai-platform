@@ -4,6 +4,104 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-22
 
+## Key Learnings — Phase 17 Wave 4 Renderer Extraction (2026-05-22)
+
+- **Extraction pattern: external scripts define globals, inline script calls them at runtime.** Function declarations at the top level of any `<script>` tag are globally accessible. External render files only define functions; those are only called after the inline script finishes, so all globals (`$`, `S`, `UIState`, `escapeHtml`, `animateNumber`, etc.) are available. Pattern established by Waves 1-3; confirmed and extended here.
+- **`var` required for cross-script mutable state; `let` is script-scoped.** `let _typewriterTimer` in the inline script was accessible within that script only. Moved to `aiCardPanel.js` as `var _typewriterTimer = null` — `var` at top-level adds to `window`, so the inline cleanup handler can still cancel it. Never use `let` for a variable that must survive across script boundaries.
+- **Deferred: workflow bar cluster has private inline helpers.** `_getWorkflowStage()` and `_deriveGuidanceContext()` depend on inline-only `_getLatestWorkflowEvent()`. Extracting them alone would create hidden cross-script dependencies. Either extract the whole cluster together or leave it inline. Phase 17 deferred this.
+- **`setCardScore` co-located with `txCards.js`.** Only called from within the TX card rendering cluster — keeping it in the same file makes the extraction complete and removes a dangling helper from the inline script.
+
+## Do-Not-Repeat (2026-05-22 — Phase 17)
+
+- **DO NOT use `let` for timer/state variables the inline cleanup handler must reach.** `_typewriterTimer` cleanup is in the page cleanup section of the inline script. If declared as `let` in an external file, it's script-scoped — the inline cleanup can't cancel it. Use `var` for such cross-script persistent state. (Phase 17, 2026-05-22)
+- **DO NOT extract a function that calls a private inline helper as its primary logic path, without also extracting that helper.** Extracting `renderWfActivitySummary` without `_getLatestWorkflowEvent` creates a hidden cross-script dependency and defeats debuggability. Extract the whole cluster or leave it inline. (Phase 17, 2026-05-22)
+
+## Key Learnings — Phase 16 Arabic AI Responses (2026-05-22)
+
+- **`arabicLayer.js` is a pure phrase-map layer — no machine translation, no runtime AI calls.** `localizeExpl(expl)` takes the output of `denaiExplain.buildExplanation(ai)` and returns a structurally identical object with Arabic text. The original expl is never mutated. Language state (`denaiLang_v1`) is persisted in localStorage.
+- **All translatable text from clinicalEngine.js and explainLayer.js is a bounded set.** The engine output is hard-coded deterministic strings (not free-text). Phase 16 maps all ~60 distinct string values: 6 classification labels, ~30 rationale strings, 1 escalation, 4 referral signals, 2 static confidence variants, plus dynamic pattern matchers for tradeoff/alt-scored-lower patterns that embed numeric scores.
+- **Dynamic strings use regex pattern matchers in `_trDynamic()`.** Three patterns: (1) `'Close decision: extraction scored higher ('` prefix → parse scores; (2) `'% vs Extract+Implant ('` presence → parse label and scores; (3) `' scored lower ('` presence → parse label, delta, and rationale. Unmapped strings return original English (safe fallback).
+- **`expl.factors` is introduced by `localizeExpl()` — not present in original expl.** `buildExplanation()` in explainLayer.js does NOT include factors (they come from `ai.explanation.factors`). `localizeExpl()` adds `factors` to the returned object. `renderExplanation` now reads `expl?.factors || ai?.explanation?.factors || ai?.factors` — one-line additive change, zero regression risk.
+- **RTL is applied at the container level only.** `reasonsEl.dir = 'rtl'` on `#reasonsList` (the `.reasons-wrap`), `confRatEl.dir = 'rtl'` on `#confRationale`. CSS `.reasons-wrap[dir="rtl"] .reason-item { flex-direction: row-reverse }` handles icon/text mirroring. No full-app RTL redesign.
+- **Lang toggle button is injected by `buildAICardStructure()`.** `_arActive = typeof denaiArabic !== 'undefined' && denaiArabic.isArabic()` computed before template string. Button shows `AR` (inactive) or `EN` (active). `toggleAILang()` is a global function (near `toggleHelp`) that flips lang, manually updates button, calls `render(S)`.
+- **`buildAICardStructure()` already won't re-run unless `force=true`.** When `toggleAILang()` calls `render(S)`, the card is not rebuilt (dataset.built === '1') — only `renderAIExplanation(ai)` re-runs. The toggle button is updated manually by `toggleAILang()` before the render call. `buildAICardStructure(true)` calls (on patient edit) correctly reconstruct the button from localStorage state.
+
+## Do-Not-Repeat (2026-05-22 — Phase 16)
+
+- **DO NOT add Arabic support for multi-tooth (isMultiTooth) cases.** Multi-tooth paths use `renderReasons(ai.reasons, ai.factors)` which is untyped raw text from `calcAIMulti()`. Phase 16 scoped only to single-tooth restorative explanations via the typed expl path. Multi-tooth Arabic support requires a separate phase. (Phase 16, 2026-05-22)
+- **DO NOT machine-translate free-text clinical notes.** Phase 16 operates exclusively on the bounded set of deterministic engine strings. Free-text fields (`notes`, `labNotes`) are outside scope and must never be auto-translated — translation errors on clinical notes are a patient safety risk. (Phase 16, 2026-05-22)
+- **DO NOT add `factors` to `buildExplanation()` in explainLayer.js.** Factors live on `ai.explanation.factors` and the `renderExplanation` call site already reads them. Adding factors to expl would be an architectural change to Phase 14. The `expl?.factors` check in renderExplanation is the correct minimal approach. (Phase 16, 2026-05-22)
+- **DO NOT use i18n frameworks, runtime translation APIs, or translation memory.** Minimal deterministic phrase-map only. Any future expansion should add entries to `arabicLayer.js` PHRASES/FACTORS maps — not introduce new infrastructure. (Phase 16, 2026-05-22)
+
+## Key Learnings — Phase 15 PHI-Safe AI Infrastructure (2026-05-22)
+
+- **`aiPayload.js` is the single source of truth for the AI/PHI boundary.** `window.denaiAIPayload.build(state)` returns a clinical-signals-only object. `AI_SAFE_FIELDS` and `EXCLUDED_FIELDS` are frozen at load time. Every future AI call site (local or cloud) must route through `build()` before passing state to any engine.
+- **Three ClinicalEngine call sites are now PHI-gated.** `render()` compound path, `render()` single-site path, and `updatePreview()` all use `_aiState15 = denaiAIPayload.build(state)` before calling `ClinicalEngine.process()` or `processCompound()`. Variable named `_aiState15` to avoid shadowing any existing local names.
+- **`typeof denaiAIPayload !== 'undefined'` guard is required at all call sites.** If `aiPayload.js` fails to load, the fallback is raw state (current behavior, no regression). Same pattern used for `denaiExplain` in Phase 14.
+- **`isSafe(payload)` is a development assertion for future cloud AI.** It iterates `EXCLUDED_FIELDS` and returns false on first match. Intended to be called before transmitting any payload to an external AI endpoint — not a runtime enforcement for local calls.
+- **render() compound path: AI engine receives sanitized state; rendering path uses original state.** `processCompound(_aiState15)` uses the safe payload for computation. `effectiveState = { ...state, ... }` uses the original `state` for UI rendering (name, notes visible in UI). These are correctly separate.
+- **`processCompound()` spreads the sanitized state internally — all site2* fields are in AI_SAFE_FIELDS.** `site2Tooth`, `site2Condition`, `site2Structure`, `site2EndoStatus` are explicitly included. processCompound's internal site1State/site2State builds correctly from the sanitized input.
+- **Age is included in AI_SAFE_FIELDS.** `age` is used by calcAIMulti (youngGoodBone flag) and clinicalEngine normalize() (young/elderly). Age alone without name is not one of the 18 HIPAA identifiers. Including it is clinically necessary and accepted for this supervised-clinic context.
+
+## Do-Not-Repeat (2026-05-22 — Phase 15)
+
+- **DO NOT pass raw `S` or `tempState` directly to `ClinicalEngine.process()` or `processCompound()`.** Always use `denaiAIPayload.build(state)` at the call site. The fallback to raw state is only for the `typeof` guard (load failure), not for normal operation. (Phase 15, 2026-05-22)
+- **DO NOT add free-text fields (notes, labNotes, name) to AI_SAFE_FIELDS.** Any text field that could contain patient-identifying information is permanently excluded. If a future AI feature needs clinical notes, a separate structured summarization layer must be built first — not a raw pass-through. (Phase 15, 2026-05-22)
+- **DO NOT call `isSafe()` as a blocking gate for local AI calls.** isSafe() is for external/cloud call sites only. Local clinical engines are deterministic and don't transmit data — adding a local gate adds latency for no safety gain. (Phase 15, 2026-05-22)
+- **DO NOT modify calcAI.js or clinicalEngine.js to implement the PHI boundary.** The boundary is enforced at the call site level (index.html render paths). The engines are preserved unchanged. (Phase 15, 2026-05-22)
+
+## Key Learnings — Phase 14 AI Explanation Layer (2026-05-22)
+
+- **calcAI.js and clinicalEngine.js are synchronous (non-deferred) scripts.** Both are loaded before the main inline script without `defer`. explainLayer.js follows the same load pattern — synchronous after clinicalEngine.js — so `window.denaiExplain` is available before any user interaction triggers `renderAIExplanation()`.
+- **clinicalEngine.explain() (Stage 6) is the existing structured explanation source.** It returns `{summary, reasons[], factors[], recOption}`. `ai.explanation.reasons[0]` is always the case-classification string; `reasons[1..n]` are clinical rationale from the recommended option's `rationale` array. For MISSING paths, `ai.explanation` is undefined — use `ai.reasons` directly.
+- **`renderReasons` and `renderAIExplanation` are deliberately separate.** `renderReasons(list, factors)` is preserved unchanged for multi-tooth (updateAICardMulti) and fallback paths. `renderAIExplanation(ai)` is the Phase 14 entry point — routes to `renderExplanation(expl, ai)` for single-tooth restorative, skips for multi-tooth (already rendered by updateAICardMulti).
+- **Typed block classification logic is text-prefix based:** `⚠` = contraindication, `Case classified:` = classification, everything else = rationale. Escalation and tradeoff blocks are appended separately when clinically triggered. Do not change clinical engine output to accommodate display layer.
+- **`confRationale` div is inserted between aiInputLine and whyToggle.** Built inside `buildAICardStructure` as `style="display:none;"`. Set to `display:block` by `renderAIExplanation` when `confidenceRationale !== null` (Medium/Low confidence only). High confidence = hidden.
+- **Referral signals only surface for specific clinical combinations** — not a generic disclaimer. Bone graft: poor bone + implant rec. Glycemic: uncontrolled DM. Occlusal: bruxism + implant. Periodontal: COMPROMISED + poor bone. No referral signals for High confidence or clean profiles.
+- **Preservation-tension indicator in confidence rationale.** When `extractOpt.score > bestPreserve.score` (extraction is more competitive than the biased preservation recommendation), "extraction is a competitive option" is added to the confidence rationale parts list. This is the primary confidence-lowering signal for COMPROMISED preservation decisions.
+
+## Do-Not-Repeat (2026-05-22 — Phase 14)
+
+- **DO NOT change clinical engine outputs (calcAI.js, clinicalEngine.js) to accommodate the display layer.** explainLayer.js derives from what the engine returns — not the other way around. Explanation must reflect actual scores, not be reverse-engineered. (Phase 14, 2026-05-22)
+- **DO NOT add anthropomorphic language to explanation blocks.** No "I think", "I recommend", "the AI believes". Classification/rationale/escalation/tradeoff text must be structured clinical statements, not conversational. (Phase 14, 2026-05-22)
+- **DO NOT surface confidence rationale for High confidence cases.** `buildConfidenceRationale` returns null for 'High'. `confRationale` div remains hidden. High confidence needs no annotation — annotation implies doubt. (Phase 14, 2026-05-22)
+- **DO NOT show referral signals on every case.** Referral signals are for cases where a specific specialist consultation changes the treatment sequence. No blanket "consult your dentist" disclaimers. (Phase 14, 2026-05-22)
+
+## Key Learnings — Phase 13 Feature Gating (2026-05-22)
+
+- **`denaiEntitlements` is a pure entitlement helper — no UI, no enforcement of core workflows.** `canUse(featureKey)` returns true when the feature is not in `FEATURE_TIERS` OR when status is 'unknown'. Hard-blocking on missing entitlement state is a clinical continuity violation. Never add core workflow features to `FEATURE_TIERS`.
+- **`canUse()` returns `true` for status 'unknown' (offline/unloaded), not false.** This is the primary safety guarantee: a clinician should never be hard-blocked because a billing query hasn't resolved. 'unknown' means absence of confirmed data — not confirmed denial.
+- **`_status = null` means `init()` was never called (unloaded). `_status = 'none'` means DB returned no subscription row (confirmed free baseline).** These are different states. `null` falls through to the localStorage cache; 'none' is written to the cache as confirmed.
+- **`clinicSession._loadSubscription()` is non-fatal.** A network error logs a warning and returns early. `denaiEntitlements` falls back to the `denaiSubscription_v1` localStorage cache. Subscription query failure does NOT break the clinic session load.
+- **`clinicSession.clear()` cascades to `denaiEntitlements.clear()`.** authModule does NOT call `denaiEntitlements.clear()` directly. Both `signOut()` and the `_listenAuthChanges` else-branch call `clinicSession.clear()` — the cascade is belt-and-suspenders.
+- **Phase 13 adds `clinic_subscriptions_select_member` RLS policy.** Phase 12 left SELECT as owner-only. Members now read their clinic's subscription status for entitlement checks. The policy uses `clinic_members` (same pattern as `patients_select_clinic_member`). Write policies remain server-side only.
+- **`denaiSubscription_v1` localStorage cache: TTL=10min for refresh decisions; read indefinitely for offline grace.** Cache is preserved on `clear()` — intentional for offline sign-back-in. TTL only determines when clinicSession will re-query; it does not expire the cache for reads.
+
+## Do-Not-Repeat (2026-05-22 — Phase 13)
+
+- **DO NOT add core clinical features (patient access, exports, core workflow) to `FEATURE_TIERS`.** The map is for future premium capabilities only. Anything in `FEATURE_TIERS` can be denied on 'none' status — patient access must never be deny-able. (Phase 13, 2026-05-22)
+- **DO NOT return false from `canUse()` when status is 'unknown'.** Hard-blocking on unknown state causes workflow lockout during Stripe/DB outages. Always allow on 'unknown'. (Phase 13, 2026-05-22)
+- **DO NOT clear `denaiSubscription_v1` on sign-out.** The cache provides offline grace for re-sign-in on the same device. `clear()` resets live state only, not the localStorage key. (Phase 13, 2026-05-22)
+- **DO NOT call `denaiEntitlements.clear()` directly from authModule.** The call goes through `clinicSession.clear()` transitively. (Phase 13, 2026-05-22)
+
+## Key Learnings — Phase 12 Stripe Infrastructure (2026-05-22)
+
+- **`clinic_subscriptions` now has `stripe_customer_id` (cus_xxx) AND `external_billing_id` (sub_xxx) — two distinct Stripe IDs.** `stripe_customer_id` is the Stripe customer (one per clinic, created at checkout initiation). `external_billing_id` is the Stripe subscription (one per active subscription). Both are UNIQUE with NULL-safe constraints. Do not confuse them.
+- **`stripe_event_at` column enables atomic out-of-order protection via DB-level WHERE clause.** The `upsert_clinic_subscription()` RPC uses `ON CONFLICT DO UPDATE WHERE (stripe_event_at IS NULL OR stripe_event_at < EXCLUDED.stripe_event_at)`. This makes replay idempotent (same timestamp = no-op) and out-of-order safe (older event = no-op). Do not remove this guard or bypass it with a direct upsert.
+- **Clinic mapping requires `subscription.metadata.clinic_id` set at checkout time.** The webhook handler maps subscription events to clinic rows via `sub.metadata.clinic_id`. Events without this metadata are permanently skipped (logged). The future checkout Edge Function MUST embed `metadata.clinic_id = clinicId` in the Stripe subscription/checkout session. This is a hard contract — if forgotten, subscription events cannot be processed.
+- **Phase 12 removed client INSERT/UPDATE/DELETE policies from `clinic_subscriptions`.** Clients have SELECT-only access. All billing writes go through the webhook handler or future server-side checkout functions — both use service role (bypasses RLS). Run the Phase 12 schema section on any existing DB to apply the DROP POLICY statements.
+- **Webhook returns 500 for transient DB errors (Stripe retries) and 200 for permanent errors (no retry).** Pattern: `/connect|timeout|network|econnreset/i` in error message = transient = 500. Unknown clinic, missing metadata, bad data = permanent = 200. Never invert this — returning 200 for a transient error silently loses the event; returning 500 for missing metadata triggers infinite retries.
+- **`invoice.payment_succeeded` and `invoice.payment_failed` are supplementary signals.** `customer.subscription.updated` is the authoritative source for status changes and period_end. Invoice handlers use direct `.update()` (no RPC needed). `invoice.payment_failed` errors are non-critical — log and continue.
+- **Edge Function secrets required:** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY` must be set as Supabase Edge Function secrets. `SUPABASE_URL` is auto-injected. Never hardcode these values.
+- **No `clinicSession.js` changes in Phase 12.** Phase 7 deferral still applies: add `getSubscriptionStatus()` only when a concrete entitlement check requires it (Phase 12.5+).
+
+## Do-Not-Repeat (2026-05-22 — Phase 12)
+
+- **DO NOT add client-facing INSERT/UPDATE/DELETE policies back to `clinic_subscriptions`.** Phase 12 removed them intentionally — all billing writes are server-side (service role). Client write policies allow subscription state manipulation without payment. (Phase 12, 2026-05-22)
+- **DO NOT call `upsert_clinic_subscription()` RPC with a client-role key.** No SECURITY DEFINER — function runs with caller privileges. A client key call would fail RLS on the INSERT. Always call with service role key. (Phase 12, 2026-05-22)
+- **DO NOT create a Stripe subscription without embedding `metadata.clinic_id`.** Every checkout or subscription creation (Phase 12.5+) MUST include `metadata: { clinic_id: clinicId }`. Without it, all webhook events for that subscription are permanently unprocessable. (Phase 12, 2026-05-22)
+- **DO NOT use Supabase PostgREST `.upsert()` for subscription state changes.** PostgREST upsert has no conditional WHERE support and cannot implement out-of-order protection. Always use `upsert_clinic_subscription()` RPC for subscription state writes. (Phase 12, 2026-05-22)
+
 ## Key Learnings — Phase 11 Operational & Legal Maturity (2026-05-22)
 
 - **Contact email in privacy.html and terms.html is `ahmedamr30121999@gmail.com`.** This is a deployment placeholder using the developer's email. When a dedicated support address is created, update both files (search for `ahmedamr30121999@gmail.com` in both files). Update the `Last updated` date when making changes.

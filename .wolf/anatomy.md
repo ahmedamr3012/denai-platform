@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-22T14:03:25.317Z
-> Files: 19 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-22T18:56:44.913Z
+> Files: 28 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~113928 tok)
+- `index.html` — denai — Clinical Insight; Phase 17: AI card + TX card clusters extracted to src/render/; remaining inline: render dispatch (withErrorBoundary/render/renderMainPanels/renderCompoundSummary), workflow bar, view renderers (cases/dashboard/reports/plan/lab), patient list, modals, state/auth init (~98000 tok)
 - `privacy.html` — Privacy Policy — denai (~2802 tok)
 - `terms.html` — Terms of Service — denai (~3244 tok)
 
@@ -27,11 +27,17 @@
 
 ## src/ai/
 
+- `aiPayload.js` — Phase 15 PHI-safe AI payload boundary; window.denaiAIPayload IIFE; build(state) strips PHI → clinical context only; isSafe(payload) asserts no prohibited fields; AI_SAFE_FIELDS/EXCLUDED_FIELDS allowlists; wired into all 3 ClinicalEngine call sites; pure computation (~700 tok)
+- `arabicLayer.js` — Phase 16 Arabic bilingual explanation layer; window.denaiArabic IIFE; localizeExpl(expl) maps all bounded engine text to Arabic; getLang/setLang/isArabic localStorage-backed lang state; PHRASES/FACTORS/TX_LABELS/CONF_PARTS maps + dynamic pattern matchers for score-embedded strings; no machine translation; pure computation (~4500 tok)
+- `calcAI.js` — Pure AI scoring engine; calcAI() single-tooth (implant/bridge/crown scores, reasons, factors); calcAIMulti() two-adjacent-tooth (implant2/bridge4/cantilever); isPosteriorTooth/isMaxilla helpers; no DOM access (~5500 tok)
+- `clinicalEngine.js` — ClinicalEngine IIFE; 7-stage deterministic pipeline: normalize→classify→generateTreatments→scoreRestorative→recommend→explain→buildRestorativeResult; process(state)/processCompound(state) public API; CT case-type constants; all restorative paths run here; MISSING paths delegate to calcAI/calcAIMulti (~4500 tok)
+- `explainLayer.js` — Phase 14 explanation layer; window.denaiExplain IIFE; buildExplanation(ai) → {blocks, confidenceRationale, referralSignals}; typed blocks: classification/rationale/contraindication/escalation/tradeoff; confidence rationale for Medium/Low cases; specialist referral signals; pure derivation from existing ai result (~1600 tok)
 
 ## src/auth/
 
-- `authModule.js` — Supabase auth lifecycle; signIn/signUp/signOut; session restore + onAuthStateChange; sidebar user area updates (local: 'Cases save to this device', signed-in: '☁ Cloud sync active'); Phase 8 flush() hooks; Phase 9 sidebar text updated (~2948 tok)
-- `clinicSession.js` — Phase 3.4 clinic session context; init(client) loads clinic+role after auth; getClinicId/Role/Name/isOwner/getMembers; createClinic(name); clear() on sign-out; _initialized guard prevents re-query on token refresh; Phase 3.5 patch: _load() returns boolean so transient errors allow retry (~2050 tok)
+- `authModule.js` — Supabase auth lifecycle; signIn/signUp/signOut; session restore + onAuthStateChange; sidebar user area updates; Phase 8 flush() hooks; sign-out clears clinic session (which cascades to denaiEntitlements.clear()) (~2993 tok)
+- `clinicSession.js` — Phase 3.4+13: clinic session context; init(client) loads clinic+role+subscription; getClinicId/Role/Name/isOwner/getMembers/getSubscriptionStatus/getPlanId; createClinic(name); _loadSubscription() calls denaiEntitlements.init() after clinic load; clear() cascades to entitlements (~2724 tok)
+- `entitlements.js` — Phase 13 entitlement helper; window.denaiEntitlements; canUse(featureKey) plan-aware check (safe default: true when status unknown); isPro()/getStatus(); FEATURE_TIERS map (ai.enhanced/export.advanced/collab.advanced→'pro'); localStorage cache denaiSubscription_v1 (10min TTL); clear() preserves cache for offline grace (~1512 tok)
 
 ## src/constants/
 
@@ -39,7 +45,7 @@
 
 ## src/db/
 
-- `schema.sql` — Production schema rev 4: profiles, patients, clinics, clinic_members, clinic_subscriptions (Phase 7), workflow_observations (Phase 8); RLS policies, idempotent triggers, composite indexes (~9100 tok)
+- `schema.sql` — Production schema rev 6: profiles, patients, clinics, clinic_members, clinic_subscriptions (Phase 7+12: +stripe_customer_id, +stripe_event_at, upsert RPC; Phase 13: +member SELECT policy), workflow_observations; RLS, idempotent triggers, indexes (~11207 tok)
 
 ## src/observe/
 
@@ -51,6 +57,15 @@
 
 ## src/render/
 
+- `aiCardPanel.js` — Phase 17: AI card rendering cluster; buildAICardStructure() DOM template builder; showSkeleton/hideSkeleton helpers; updateAICard/updateAICardMulti value updaters; typewriterEffect animation; renderReasons/renderExplanation/renderAIExplanation explanation renderers; BLOCK_RENDER typed-block icon map; Phase 16 Arabic RTL path via denaiArabic; globals: $, S, UIState, escapeHtml, animateNumber, denaiExplain, denaiArabic (~6675 tok)
+- `comparisonPanel.js` — Renders inline comparison table and full comparison table body; lazyRenderComparisonTable; renderComparison (~2000 tok)
+- `costGraphPanel.js` — renderCost and renderGraph; cost breakdown and bar-chart visualization (~1800 tok)
+- `materialPanel.js` — renderMaterial; material recommendation panel for primary/secondary material display (~800 tok)
+- `patientPanel.js` — renderPatientDisplay; patient demographics and condition summary panel (~1200 tok)
+- `planFragments.js` — _getAiForPlan/buildTreatmentPathRows; treatment path HTML for Plan view; pure over parameters (~600 tok)
+- `riskPanel.js` — renderRisk(state, ai); risk indicator panel for implant/crown/restorative/multi-tooth paths; _applyRiskCompact nominal-state collapsing (~1100 tok)
+- `timeline.js` — _synthesizeWfBaseline/_renderWfTimeline; workflow timeline HTML builder; pure over patient/event parameters (~500 tok)
+- `txCards.js` — Phase 17: Treatment card rendering; setCardScore score bar helper; renderTxCards dispatch; renderMultiTxCards (2-implant/bridge/cantilever); renderRestorativeTxCards (restorative slot labels); updateCrownCardState disabled/viable state; globals: $, S (~2320 tok)
 
 ## src/reports/
 
@@ -78,6 +93,10 @@
 
 ## src/utils/
 
+
+## supabase/functions/stripe-webhook/
+
+- `index.ts` — Phase 12 Stripe webhook handler (Deno/Edge Function): signature verification, idempotent subscription lifecycle events via upsert_clinic_subscription() RPC, invoice period-end updates; retry-safe (5xx transient / 200 permanent), fast-ack unknown events (~2799 tok)
 
 ## tests/a11y/
 

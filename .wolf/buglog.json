@@ -1318,6 +1318,134 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-22T14:03:01.284Z"
+    },
+    {
+      "id": "bug-077",
+      "timestamp": "2026-05-22T17:40:07.342Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/auth/clinicSession.js",
+      "root_cause": "10 lines replaced/restructured",
+      "fix": "Rewrote 13→17 lines (10 removed) | Also: init:          init,; getClinicId:   getClinicId,",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-22T17:40:38.706Z"
+    },
+    {
+      "id": "bug-078",
+      "timestamp": "2026-05-22T17:40:25.091Z",
+      "error_message": "Missing error handling in function",
+      "file": "src/auth/clinicSession.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: _clinicId           = null;; _clinicName         = null;",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-22T17:40:32.109Z"
+    },
+    {
+      "id": "bug-079",
+      "timestamp": "2026-05-22T17:55:16.453Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"why-toggle\"",
+      "fix": "Changed to \"confRationale\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T17:55:16.453Z"
+    },
+    {
+      "id": "bug-080",
+      "timestamp": "2026-05-22T17:55:37.985Z",
+      "error_message": "Null/undefined access in ",
+      "file": "index.html",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T17:55:37.985Z"
+    },
+    {
+      "id": "bug-081",
+      "timestamp": "2026-05-22T18:29:13.804Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"why-toggle\"",
+      "fix": "Changed to \"lang-toggle-row\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T18:29:13.804Z"
+    },
+    {
+      "id": "bug-082",
+      "timestamp": "2026-05-22T18:29:40.198Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 20→28 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T18:29:40.198Z"
+    },
+    {
+      "id": "bug-083",
+      "timestamp": "2026-05-22T18:29:52.303Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: typeof denaiArabic === 'undefined'",
+      "fix": "Added guard clause: if (typeof denaiArabic === 'undefined')",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T18:29:52.303Z"
+    },
+    {
+      "id": "bug-084",
+      "timestamp": "2026-05-22T18:55:14.785Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "397 lines replaced/restructured",
+      "fix": "Rewrote 430→3 lines (397 removed) | Also: // RENDER: TREATMENT CARDS; function renderTxCards(state, ai) {",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-22T18:56:44.926Z"
     }
   ]
 }

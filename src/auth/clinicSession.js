@@ -1,12 +1,15 @@
 // src/auth/clinicSession.js
 // Phase 3.4 — Lightweight Membership Model
+// Phase 13 — Subscription state loading for entitlement checks
 //
 // Clinic session context. Loaded once after auth settle via authModule.js.
 // Exposes the current user's clinic context (id, role, name, member roster).
+// Phase 13: also loads subscription status and calls denaiEntitlements.init().
 //
 // LOCAL-FIRST INVARIANT: all methods degrade gracefully when client or auth
 // is unavailable. No clinic context = no error; user operates in personal
 // workspace. This module never blocks startup or clinical workflows.
+// Subscription load failure is non-fatal — entitlements.js falls back to cache.
 //
 // ── Session lifecycle ────────────────────────────────────────────────────────
 // init(client)   — async. Called from authModule on sign-in / session restore.
@@ -27,19 +30,23 @@
 
 window.denaiClinicSession = (function () {
 
-  var _clinicId    = null;
-  var _clinicName  = null;
-  var _role        = null;
-  var _members     = [];     // owner-only roster cache: [{user_id, role, created_at}]
-  var _initialized = false;  // prevents redundant re-queries on token refresh
+  var _clinicId            = null;
+  var _clinicName          = null;
+  var _role                = null;
+  var _members             = [];     // owner-only roster cache: [{user_id, role, created_at}]
+  var _initialized         = false;  // prevents redundant re-queries on token refresh
+  var _subscriptionStatus  = null;   // Phase 13: loaded from clinic_subscriptions
+  var _planId              = null;   // Phase 13: Stripe price ID of active plan
 
   // ── Public accessors ──────────────────────────────────────────────────────
 
-  function getClinicId()   { return _clinicId; }
-  function getClinicName() { return _clinicName; }
-  function getRole()       { return _role; }
-  function isOwner()       { return _role === 'owner'; }
-  function getMembers()    { return _members.slice(); }  // defensive copy
+  function getClinicId()            { return _clinicId; }
+  function getClinicName()          { return _clinicName; }
+  function getRole()                { return _role; }
+  function isOwner()                { return _role === 'owner'; }
+  function getMembers()             { return _members.slice(); }  // defensive copy
+  function getSubscriptionStatus()  { return _subscriptionStatus; }
+  function getPlanId()              { return _planId; }
 
   // ── Init: load clinic membership after auth settle ───────────────────────
 
@@ -82,6 +89,11 @@ window.denaiClinicSession = (function () {
     if (_role === 'owner') {
       await _loadRoster(client);
     }
+
+    // Phase 13: load subscription status for entitlement checks.
+    // Non-fatal — a query failure leaves denaiEntitlements to fall back to cache.
+    await _loadSubscription(client);
+
     return true;
   }
 
@@ -100,6 +112,38 @@ window.denaiClinicSession = (function () {
       return;
     }
     _members = res.data || [];
+  }
+
+  // ── Phase 13: Subscription load ───────────────────────────────────────────
+  // Queries clinic_subscriptions for the current clinic.
+  // RLS: clinic_subscriptions_select_owner (owner) or
+  //      clinic_subscriptions_select_member (Phase 13 policy, all members).
+  // On success: calls denaiEntitlements.init() and caches the state.
+  // On error:   logs a warning; denaiEntitlements falls back to localStorage cache.
+
+  async function _loadSubscription(client) {
+    if (!_clinicId) return;
+    try {
+      var res = await client
+        .from('clinic_subscriptions')
+        .select('status, plan_id')
+        .eq('clinic_id', _clinicId)
+        .maybeSingle();
+
+      if (res.error) {
+        console.warn('[denaiClinicSession] subscription load error:', res.error.message);
+        return;  // entitlements.js will fall back to localStorage cache
+      }
+
+      _subscriptionStatus = res.data ? res.data.status   : 'none';
+      _planId             = res.data ? res.data.plan_id   : null;
+
+      if (typeof denaiEntitlements !== 'undefined') {
+        denaiEntitlements.init(_subscriptionStatus, _planId, _clinicId);
+      }
+    } catch (e) {
+      console.warn('[denaiClinicSession] subscription load exception:', e.message);
+    }
   }
 
   // ── Clinic creation ───────────────────────────────────────────────────────
@@ -152,11 +196,15 @@ window.denaiClinicSession = (function () {
   // ── Clear on sign-out ─────────────────────────────────────────────────────
 
   function clear() {
-    _clinicId    = null;
-    _clinicName  = null;
-    _role        = null;
-    _members     = [];
-    _initialized = false;  // allows clean re-init on next sign-in
+    _clinicId           = null;
+    _clinicName         = null;
+    _role               = null;
+    _members            = [];
+    _initialized        = false;  // allows clean re-init on next sign-in
+    _subscriptionStatus = null;
+    _planId             = null;
+    // Phase 13: reset live entitlement state (cache preserved for offline grace).
+    try { if (typeof denaiEntitlements !== 'undefined') denaiEntitlements.clear(); } catch (e) {}
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -168,14 +216,16 @@ window.denaiClinicSession = (function () {
   }
 
   return Object.freeze({
-    init:          init,
-    getClinicId:   getClinicId,
-    getClinicName: getClinicName,
-    getRole:       getRole,
-    isOwner:       isOwner,
-    getMembers:    getMembers,
-    createClinic:  createClinic,
-    clear:         clear,
+    init:                  init,
+    getClinicId:           getClinicId,
+    getClinicName:         getClinicName,
+    getRole:               getRole,
+    isOwner:               isOwner,
+    getMembers:            getMembers,
+    getSubscriptionStatus: getSubscriptionStatus,
+    getPlanId:             getPlanId,
+    createClinic:          createClinic,
+    clear:                 clear,
   });
 
 })();

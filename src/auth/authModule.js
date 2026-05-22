@@ -148,6 +148,7 @@ window.denaiAuth = (function () {
         try { if (typeof denaiNotesEnc      !== 'undefined') denaiNotesEnc.clearKey(); } catch (e) {}
         try { if (typeof denaiResetNotesPrompt === 'function') denaiResetNotesPrompt(); } catch (e) {}
         // Phase 3.4: clear clinic session so next sign-in triggers a clean re-init.
+        // Phase 13: clinicSession.clear() also calls denaiEntitlements.clear().
         try { if (typeof denaiClinicSession !== 'undefined') denaiClinicSession.clear(); } catch (e) {}
         // Phase 5: abandon pending queue ops — they belong to the previous user and
         // must not be flushed under a different user's identity on the next sign-in.
@@ -204,6 +205,7 @@ window.denaiAuth = (function () {
     try { if (typeof denaiNotesEnc      !== 'undefined') denaiNotesEnc.clearKey(); } catch (e) {}
     try { if (typeof denaiResetNotesPrompt === 'function') denaiResetNotesPrompt(); } catch (e) {}
     // Phase 3.4: clear clinic session (idempotent — onAuthStateChange also calls this).
+    // Phase 13: clinicSession.clear() also calls denaiEntitlements.clear().
     try { if (typeof denaiClinicSession !== 'undefined') denaiClinicSession.clear(); } catch (e) {}
     // Phase 5: abandon pending queue ops eagerly. Belt-and-suspenders with the
     // onAuthStateChange else-branch call — covers the case where the SIGNED_OUT event

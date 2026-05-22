@@ -12,7 +12,9 @@
 -- • `activeSite` is NOT stored here — it is device-local navigation state.
 -- • AI outputs are NOT stored here — they are computed deterministically.
 --
--- SCHEMA FILE REVISION: 4  (Phase 8: workflow_observations table added)
+-- SCHEMA FILE REVISION: 6  (Phase 13: Feature Gating)
+--   Revision 5: Phase 12 — Stripe Infrastructure (+stripe_customer_id, +stripe_event_at, upsert RPC)
+--   Revision 4: Phase 8 — workflow_observations table added
 --   Revision 3: Phase 7 — clinic_subscriptions table added
 --   Revision 2: Phase 3.2 — clinic_id column added to patients
 -- ROW-LEVEL schema_ver: still 1 — all Phase 3–8 additions are either new tables
@@ -831,5 +833,185 @@ DO $$ BEGIN
     ON workflow_observations FOR INSERT
     TO authenticated
     WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+
+-- ============================================================
+-- Phase 12 — Stripe Infrastructure
+-- ============================================================
+--
+-- PURPOSE: Minimal reliable Stripe infrastructure for subscription lifecycle
+-- synchronization. This is financial infrastructure engineering — boring,
+-- predictable, recoverable, operationally safe.
+--
+-- WHAT THIS ADDS:
+--   - stripe_customer_id on clinic_subscriptions (Stripe cus_xxx, set at checkout)
+--   - stripe_event_at on clinic_subscriptions (guards out-of-order webhook delivery)
+--   - upsert_clinic_subscription() RPC function (atomic, idempotent, ordered upsert)
+--   - Stripe webhook Edge Function (supabase/functions/stripe-webhook/index.ts)
+--
+-- SECURITY CHANGE:
+--   Phase 7 added client-facing INSERT/UPDATE/DELETE policies on clinic_subscriptions.
+--   Phase 12 removes them — all billing table writes now come from the webhook handler
+--   (service role) or future server-side checkout Edge Functions (service role).
+--   Clients retain SELECT-only access to read their own subscription status.
+--   This prevents client-side manipulation of subscription state.
+--
+-- CLINIC MAPPING CONTRACT (REQUIRED by checkout function):
+--   When creating a Stripe checkout session or subscription, the checkout Edge
+--   Function MUST embed metadata.clinic_id = clinicId on the Stripe subscription.
+--   The webhook handler uses subscription.metadata.clinic_id as the authoritative
+--   mapping key. Events without this metadata are logged and permanently skipped.
+--
+-- WHAT IS INTENTIONALLY DEFERRED:
+--   - Stripe Checkout / payment collection UI     (Phase 12.5 / checkout function)
+--   - Feature-gating / plan entitlement checks    (Phase 12.5+)
+--   - Subscription creation UX / onboarding flow  (Phase 12.5+)
+--   - Invoice records / payment history table      (future)
+--   - Dunning / retry management                  (future)
+--
+-- SAFETY PROPERTIES:
+--   - Additive columns: no existing rows touched, all new columns are nullable.
+--   - Atomic RPC: upsert_clinic_subscription() uses ON CONFLICT DO UPDATE WHERE
+--     to apply events only when strictly newer — replay and out-of-order safe.
+--   - Transient Stripe failures do NOT revoke clinical access — no entitlement
+--     enforcement exists until Phase 12.5+ explicitly adds it.
+--   - Local-first continuity fully preserved — no client code changes in Phase 12.
+--
+-- NOTE: patients.schema_ver NOT bumped — no change to the patients table.
+--       Schema FILE revision bumped to 5 (see header comment).
+-- ============================================================
+
+
+-- ── Add Stripe columns to clinic_subscriptions ───────────────────────────────
+
+-- Stripe Customer ID (cus_xxx). Set by checkout Edge Function when clinic owner
+-- initiates checkout. Linked to external_billing_id (sub_xxx, Stripe subscription).
+-- UNIQUE: one Stripe customer per clinic when non-null (NULLs do not conflict).
+ALTER TABLE clinic_subscriptions ADD COLUMN IF NOT EXISTS stripe_customer_id text;
+
+DO $$ BEGIN
+  ALTER TABLE clinic_subscriptions
+    ADD CONSTRAINT clinic_subscriptions_stripe_customer_unique
+    UNIQUE (stripe_customer_id);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+-- Stores the Stripe event.created timestamp of the last-applied webhook event.
+-- Guards against out-of-order delivery: the upsert RPC only applies an event when
+-- stripe_event_at IS NULL (first event) or the incoming event is strictly newer.
+-- Replay of the same event (same timestamp) is a no-op.
+ALTER TABLE clinic_subscriptions ADD COLUMN IF NOT EXISTS stripe_event_at timestamptz;
+
+
+-- ── Index: webhook lookup by Stripe customer ID ──────────────────────────────
+-- Used by: future checkout function when it links customer → subscription row.
+-- Partial: NULL stripe_customer_id rows have no billing routing need.
+
+CREATE INDEX IF NOT EXISTS clinic_subscriptions_customer_idx
+  ON clinic_subscriptions (stripe_customer_id)
+  WHERE stripe_customer_id IS NOT NULL;
+
+
+-- ── Remove client-facing write policies on clinic_subscriptions ──────────────
+-- All billing writes are now server-side (service role). Clients have SELECT only.
+-- Future checkout functions use service role and do not require these policies.
+-- DROP IF EXISTS is idempotent — safe on databases where policies were never applied.
+
+DROP POLICY IF EXISTS "clinic_subscriptions_insert_owner" ON clinic_subscriptions;
+DROP POLICY IF EXISTS "clinic_subscriptions_update_owner" ON clinic_subscriptions;
+DROP POLICY IF EXISTS "clinic_subscriptions_delete_owner" ON clinic_subscriptions;
+
+
+-- ── RPC: upsert_clinic_subscription ─────────────────────────────────────────
+-- Atomic, idempotent subscription state upsert for the Stripe webhook handler.
+-- Called via supabase.rpc() with service role key (bypasses RLS).
+--
+-- OUT-OF-ORDER SAFETY:
+--   The ON CONFLICT DO UPDATE WHERE clause applies the upsert only when the
+--   incoming event (p_stripe_event_at) is strictly newer than the stored event.
+--   - Same event replayed: p_stripe_event_at = stored → WHERE FALSE → no-op ✓
+--   - Older event received late: p_stripe_event_at < stored → WHERE FALSE → no-op ✓
+--   - Newer event: p_stripe_event_at > stored → WHERE TRUE → applies ✓
+--   - First event: stripe_event_at IS NULL → WHERE TRUE → applies ✓
+--
+-- CALLED BY: supabase/functions/stripe-webhook/index.ts
+-- CALLER MUST USE: service role key (or SECURITY DEFINER for future RLS contexts)
+
+CREATE OR REPLACE FUNCTION upsert_clinic_subscription(
+  p_clinic_id              uuid,
+  p_stripe_customer_id     text,
+  p_external_billing_id    text,
+  p_status                 text,
+  p_plan_id                text,
+  p_trial_ends_at          timestamptz,
+  p_current_period_ends_at timestamptz,
+  p_stripe_event_at        timestamptz
+) RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  INSERT INTO clinic_subscriptions (
+    clinic_id,
+    stripe_customer_id,
+    external_billing_id,
+    status,
+    plan_id,
+    trial_ends_at,
+    current_period_ends_at,
+    stripe_event_at
+  )
+  VALUES (
+    p_clinic_id,
+    p_stripe_customer_id,
+    p_external_billing_id,
+    p_status,
+    p_plan_id,
+    p_trial_ends_at,
+    p_current_period_ends_at,
+    p_stripe_event_at
+  )
+  ON CONFLICT (clinic_id) DO UPDATE
+    SET
+      stripe_customer_id     = EXCLUDED.stripe_customer_id,
+      external_billing_id    = EXCLUDED.external_billing_id,
+      status                 = EXCLUDED.status,
+      plan_id                = EXCLUDED.plan_id,
+      trial_ends_at          = EXCLUDED.trial_ends_at,
+      current_period_ends_at = EXCLUDED.current_period_ends_at,
+      stripe_event_at        = EXCLUDED.stripe_event_at
+    WHERE (
+      clinic_subscriptions.stripe_event_at IS NULL
+      OR clinic_subscriptions.stripe_event_at < EXCLUDED.stripe_event_at
+    );
+END;
+$$;
+
+
+-- ============================================================
+-- PHASE 13: Feature Gating
+-- Applied after Phase 12. Run idempotently on existing databases.
+--
+-- Adds: clinic_subscriptions SELECT policy for clinic members.
+--
+-- WHY: Phase 12 left SELECT on clinic_subscriptions as owner-only.
+-- For entitlement checks to work for all clinic members (not just the
+-- owner), members must be able to read their clinic's subscription status.
+-- This is operational metadata (plan status), not financial detail.
+-- ============================================================
+
+-- Allow all clinic members to read their clinic's subscription status.
+-- Members need this for entitlement checks (canUse() in entitlements.js).
+-- Scope: SELECT only. INSERT/UPDATE/DELETE remain server-side (service role).
+DO $$ BEGIN
+  CREATE POLICY "clinic_subscriptions_select_member"
+    ON clinic_subscriptions FOR SELECT
+    TO authenticated
+    USING (
+      EXISTS (
+        SELECT 1 FROM clinic_members
+        WHERE clinic_members.clinic_id = clinic_subscriptions.clinic_id
+          AND clinic_members.user_id   = auth.uid()
+      )
+    );
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
