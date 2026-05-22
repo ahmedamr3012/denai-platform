@@ -1,11 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-22T18:56:44.913Z
-> Files: 28 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-22T23:10:02.704Z
+> Files: 43 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight; Phase 17: AI card + TX card clusters extracted to src/render/; remaining inline: render dispatch (withErrorBoundary/render/renderMainPanels/renderCompoundSummary), workflow bar, view renderers (cases/dashboard/reports/plan/lab), patient list, modals, state/auth init (~98000 tok)
+- `index.html` — denai — Clinical Insight (~107063 tok)
+- `jsconfig.json` — Phase 20: IDE type-governance config; allowJs:true, checkJs:false (opt-in per file), noEmit:true; includes src/**/*.js + src/**/*.d.ts; no build coupling (~82 tok)
 - `privacy.html` — Privacy Policy — denai (~2802 tok)
 - `terms.html` — Terms of Service — denai (~3244 tok)
 
@@ -27,17 +28,17 @@
 
 ## src/ai/
 
-- `aiPayload.js` — Phase 15 PHI-safe AI payload boundary; window.denaiAIPayload IIFE; build(state) strips PHI → clinical context only; isSafe(payload) asserts no prohibited fields; AI_SAFE_FIELDS/EXCLUDED_FIELDS allowlists; wired into all 3 ClinicalEngine call sites; pure computation (~700 tok)
+- `aiPayload.js` — Phase 15 PHI-safe AI payload boundary; window.denaiAIPayload IIFE; build(state) strips PHI → clinical context only; isSafe(payload) asserts no prohibited fields; AI_SAFE_FIELDS/EXCLUDED_FIELDS allowlists; wired into all 3 ClinicalEngine call sites; pure computation; Phase 20: JSDoc @param/@returns on build() and isSafe() (~1088 tok)
 - `arabicLayer.js` — Phase 16 Arabic bilingual explanation layer; window.denaiArabic IIFE; localizeExpl(expl) maps all bounded engine text to Arabic; getLang/setLang/isArabic localStorage-backed lang state; PHRASES/FACTORS/TX_LABELS/CONF_PARTS maps + dynamic pattern matchers for score-embedded strings; no machine translation; pure computation (~4500 tok)
 - `calcAI.js` — Pure AI scoring engine; calcAI() single-tooth (implant/bridge/crown scores, reasons, factors); calcAIMulti() two-adjacent-tooth (implant2/bridge4/cantilever); isPosteriorTooth/isMaxilla helpers; no DOM access (~5500 tok)
-- `clinicalEngine.js` — ClinicalEngine IIFE; 7-stage deterministic pipeline: normalize→classify→generateTreatments→scoreRestorative→recommend→explain→buildRestorativeResult; process(state)/processCompound(state) public API; CT case-type constants; all restorative paths run here; MISSING paths delegate to calcAI/calcAIMulti (~4500 tok)
-- `explainLayer.js` — Phase 14 explanation layer; window.denaiExplain IIFE; buildExplanation(ai) → {blocks, confidenceRationale, referralSignals}; typed blocks: classification/rationale/contraindication/escalation/tradeoff; confidence rationale for Medium/Low cases; specialist referral signals; pure derivation from existing ai result (~1600 tok)
+- `clinicalEngine.js` — ClinicalEngine IIFE; 7-stage deterministic pipeline: normalize→classify→generateTreatments→scoreRestorative→recommend→explain→buildRestorativeResult; process(state)/processCompound(state) public API; CT case-type constants; all restorative paths run here; MISSING paths delegate to calcAI/calcAIMulti; Phase 20: JSDoc @param/@returns on process() and processCompound() (~8166 tok)
+- `explainLayer.js` — Phase 14 explanation layer; window.denaiExplain IIFE; buildExplanation(ai) → {blocks, confidenceRationale, referralSignals}; typed blocks: classification/rationale/contraindication/escalation/tradeoff; confidence rationale for Medium/Low cases; specialist referral signals; pure derivation from existing ai result; Phase 20: JSDoc @param/@returns on buildExplanation() (~1997 tok)
 
 ## src/auth/
 
 - `authModule.js` — Supabase auth lifecycle; signIn/signUp/signOut; session restore + onAuthStateChange; sidebar user area updates; Phase 8 flush() hooks; sign-out clears clinic session (which cascades to denaiEntitlements.clear()) (~2993 tok)
 - `clinicSession.js` — Phase 3.4+13: clinic session context; init(client) loads clinic+role+subscription; getClinicId/Role/Name/isOwner/getMembers/getSubscriptionStatus/getPlanId; createClinic(name); _loadSubscription() calls denaiEntitlements.init() after clinic load; clear() cascades to entitlements (~2724 tok)
-- `entitlements.js` — Phase 13 entitlement helper; window.denaiEntitlements; canUse(featureKey) plan-aware check (safe default: true when status unknown); isPro()/getStatus(); FEATURE_TIERS map (ai.enhanced/export.advanced/collab.advanced→'pro'); localStorage cache denaiSubscription_v1 (10min TTL); clear() preserves cache for offline grace (~1512 tok)
+- `entitlements.js` — Phase 13 entitlement helper; window.denaiEntitlements; canUse(featureKey) plan-aware check (safe default: true when status unknown); isPro()/getStatus(); FEATURE_TIERS map (ai.enhanced/export.advanced/collab.advanced→'pro'); localStorage cache denaiSubscription_v1 (10min TTL); clear() preserves cache for offline grace; Phase 20: JSDoc on init(), canUse(), getStatus() (~1575 tok)
 
 ## src/constants/
 
@@ -55,15 +56,20 @@
 
 - `guidanceModule.js` — Phase 9 operational confidence guidance; IIFE window.denaiGuidance; hasSeen(key)/markSeen(key) localStorage-backed seen-state tracker; no tour engine, no analytics; guidance rendering done by index.html render paths (~212 tok)
 
+## src/react/
+
+- `RiskPanel.js` — Phase 21: React risk indicator panel island; window.denaiRiskPanel IIFE; RiskPanelComponent renders .risk-box with all implant/crown/multi-tooth/restorative risk rows; _computeRisks() derives visibility + hasWarning from state+ai props; RiskRow/RiskVal/Tooltip sub-components; no DOM mutations; global React.createElement (~175 lines)
+- `reactBridge.js` — Phase 21: React island mount bridge; window.denaiReactBridge IIFE; updateRiskPanel(state, ai) manages ReactDOM.createRoot() lifecycle; detects card rebuilds via _riskMount element-ref comparison; coexists with inline script orchestration (~30 lines)
+
 ## src/render/
 
-- `aiCardPanel.js` — Phase 17: AI card rendering cluster; buildAICardStructure() DOM template builder; showSkeleton/hideSkeleton helpers; updateAICard/updateAICardMulti value updaters; typewriterEffect animation; renderReasons/renderExplanation/renderAIExplanation explanation renderers; BLOCK_RENDER typed-block icon map; Phase 16 Arabic RTL path via denaiArabic; globals: $, S, UIState, escapeHtml, animateNumber, denaiExplain, denaiArabic (~6675 tok)
+- `aiCardPanel.js` — Phase 17/21: AI card rendering cluster; buildAICardStructure() DOM template builder; Phase 21: .risk-box template replaced with <div id="riskPanelMount"> (React island mount point); showSkeleton/hideSkeleton helpers; updateAICard/updateAICardMulti value updaters; typewriterEffect; renderReasons/renderExplanation/renderAIExplanation; BLOCK_RENDER typed-block icon map; Phase 16 Arabic RTL path via denaiArabic (~6175 tok)
 - `comparisonPanel.js` — Renders inline comparison table and full comparison table body; lazyRenderComparisonTable; renderComparison (~2000 tok)
 - `costGraphPanel.js` — renderCost and renderGraph; cost breakdown and bar-chart visualization (~1800 tok)
 - `materialPanel.js` — renderMaterial; material recommendation panel for primary/secondary material display (~800 tok)
 - `patientPanel.js` — renderPatientDisplay; patient demographics and condition summary panel (~1200 tok)
 - `planFragments.js` — _getAiForPlan/buildTreatmentPathRows; treatment path HTML for Plan view; pure over parameters (~600 tok)
-- `riskPanel.js` — renderRisk(state, ai); risk indicator panel for implant/crown/restorative/multi-tooth paths; _applyRiskCompact nominal-state collapsing (~1100 tok)
+- `riskPanel.js` — Phase 21: thin delegation shim; renderRisk(state, ai) delegates to denaiReactBridge.updateRiskPanel(); imperative DOM mutations and _applyRiskCompact moved to src/react/RiskPanel.js; call signature unchanged (~15 lines)
 - `timeline.js` — _synthesizeWfBaseline/_renderWfTimeline; workflow timeline HTML builder; pure over patient/event parameters (~500 tok)
 - `txCards.js` — Phase 17: Treatment card rendering; setCardScore score bar helper; renderTxCards dispatch; renderMultiTxCards (2-implant/bridge/cantilever); renderRestorativeTxCards (restorative slot labels); updateCrownCardState disabled/viable state; globals: $, S (~2320 tok)
 
@@ -88,8 +94,16 @@
 
 - `cloudSync.js` — src/sync/cloudSync.js (~4670 tok)
 - `prefsSync.js` — src/sync/prefsSync.js (~3196 tok)
-- `serializer.js` — Patient serializer for cloud write path; ALLOWED_FIELDS allowlist; clinicId excluded (typed column, not state JSONB) (~560 tok)
+- `serializer.js` — Patient serializer for cloud write path; ALLOWED_FIELDS allowlist; clinicId excluded (typed column, not state JSONB); Phase 20: JSDoc @param/@returns on serializePatient() (~696 tok)
 - `syncQueue.js` — src/sync/syncQueue.js (~4450 tok)
+
+## src/types/
+
+- `ai.d.ts` — Phase 20: AIFactor, CrownRisks, CalcAIResult (single-tooth), CalcAIMultiResult (two-tooth); raw scoring engine output shapes; global-scope .d.ts (~531 tok)
+- `clinical.d.ts` — Phase 20: CaseType, CaseClass, TreatmentOption, ScoredTreatment, ExplanationSummary, NormalizedClinical, ClinicalAIResult, SingleMissingResult, MultiMissingResult, ProcessResult union, CompoundAIResult; ClinicalEngine pipeline contracts (~1121 tok)
+- `explain.d.ts` — Phase 20: ExplanationBlockType, ExplanationBlock, ExplainResult; explanation layer output contracts; documents denaiExplain.buildExplanation() return shape (~300 tok)
+- `globals.d.ts` — Phase 20: window-global module declarations; ClinicalEngine, calcAI, calcAIMulti, denaiAIPayload, denaiExplain, denaiArabic, denaiEntitlements, denaiSerializer, denaiObserve, denaiGuidance; IDE IntelliSense contract surface (~810 tok)
+- `state.d.ts` — Phase 20: PatientState interface; ToothCondition/BoneQuality/HygieneLevel/etc. literal union types; TxSlot/ConfidenceLevel/RiskLevel/SubscriptionStatus; full runtime S object contract (~909 tok)
 
 ## src/utils/
 

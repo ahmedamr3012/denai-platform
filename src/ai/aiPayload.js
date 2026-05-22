@@ -50,6 +50,10 @@ window.denaiAIPayload = (function () {
   // Copies only AI_SAFE_FIELDS values from a patient state object.
   // All identity fields, free-text fields, and workflow metadata are left behind.
   // Returns null when state is missing required clinical inputs (engine can't run).
+  /**
+   * @param {Partial<PatientState>} state
+   * @returns {Partial<PatientState>|null}
+   */
   function build(state) {
     if (!state || typeof state !== 'object') return null;
     if (!state.bone || !state.hygiene || !state.condition) return null;
@@ -65,6 +69,10 @@ window.denaiAIPayload = (function () {
   // Returns true when the payload contains no prohibited fields.
   // Call this before transmitting any payload to an external AI service.
   // Usage: if (!denaiAIPayload.isSafe(payload)) { log error; abort; }
+  /**
+   * @param {object} payload
+   * @returns {boolean}
+   */
   function isSafe(payload) {
     if (!payload || typeof payload !== 'object') return true;
     for (var i = 0; i < EXCLUDED_FIELDS.length; i++) {

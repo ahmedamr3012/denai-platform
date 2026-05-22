@@ -18,6 +18,10 @@ window.denaiExplain = (function () {
   // ── Main entry point ──────────────────────────────────────────
   // Takes the existing ai result and produces display-ready structures.
   // Never changes clinical logic — derives entirely from what the engine returned.
+  /**
+   * @param {ProcessResult} ai
+   * @returns {ExplainResult|null}
+   */
   function buildExplanation(ai) {
     if (!ai) return null;
     return {

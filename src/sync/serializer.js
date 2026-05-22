@@ -35,6 +35,10 @@ window.denaiSerializer = (function () {
   // Returns null if src is not a valid object.
   // Output goes into the patients.state JSONB column — notes and activeSite are excluded.
   // notes_enc is a SEPARATE top-level column handled in syncQueue._executeOp (not here).
+  /**
+   * @param {Partial<PatientState>} src
+   * @returns {Partial<PatientState>|null}
+   */
   function serializePatient(src) {
     if (!src || typeof src !== 'object') return null;
     var out = {};

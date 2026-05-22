@@ -2,7 +2,62 @@
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-05-22
+> Last updated: 2026-05-23
+
+## Key Learnings — Phase 21 React Migration (2026-05-23)
+
+- **React CDN: cdn.jsdelivr.net only — already CSP-whitelisted.** The CSP `script-src` includes `https://cdn.jsdelivr.net`. Supabase is already loaded from there (`@supabase/supabase-js@2.39.7`). Any React CDN URL must use `cdn.jsdelivr.net` — not `unpkg.com` (blocked by CSP). Use locked versions: `react@18.2.0`, `react-dom@18.2.0`, UMD builds.
+- **No JSX, no Babel, no build step for React CDN islands.** The project has no bundler. React components use `React.createElement` directly (aliased as `h`). No `htm`, no tagged template literals — pure `h()` calls. Verbosity is acceptable for small components; readability is maintained by extracting sub-components (RiskRow, RiskVal, Tooltip).
+- **Island mount lifecycle: track _riskMount element ref for stale-root detection.** `buildAICardStructure()` resets `body.innerHTML` on every call (not just first time). This destroys the old `#riskPanelMount` element and creates a new one. `ReactDOM.createRoot()` on a stale element is silently wrong. Fix: track `_riskMount = mount` and compare on each `updateRiskPanel()` call — if `mount !== _riskMount`, the card was rebuilt and a fresh root is needed.
+- **_computeRisks() replaces _applyRiskCompact() DOM reading.** The original `_applyRiskCompact()` read `.risk-val` text content from the DOM to determine `hasWarning`. In React, `_computeRisks()` derives `hasWarning` directly from the `ai` and `state` props. No DOM reads needed. This is strictly better: pure computation, predictable, testable.
+- **React component script order must precede riskPanel.js.** Load order: React CDN → RiskPanel.js → reactBridge.js → riskPanel.js. The bridge file defines `denaiReactBridge` which `riskPanel.js`'s `renderRisk()` calls. All 4 are synchronous `<script>` tags in `<head>` — no defer needed since they're all blocking and consumed before DOMContentLoaded.
+- **`renderRisk()` call signature preserved — zero call-site changes.** The inline script still calls `renderRisk(state, ai)` at two sites (main render and preview). The thin shim in riskPanel.js makes the React migration transparent to the orchestration layer. This is the correct island pattern: runtime orchestration unchanged, renderer replaced.
+
+## Do-Not-Repeat (2026-05-23 — Phase 21)
+
+- **DO NOT call `ReactDOM.createRoot()` without checking _riskMount element ref.** After `buildAICardStructure()` rebuilds the card via `body.innerHTML = ...`, the `#riskPanelMount` element is a new object. Reusing `_riskRoot` from the old element silently fails. Always compare `mount !== _riskMount` before deciding whether to create a new root. (Phase 21, 2026-05-23)
+- **DO NOT add React CDN from unpkg.com or any domain not in the CSP whitelist.** The CSP `script-src` only allows `'self' 'unsafe-inline' https://cdn.jsdelivr.net`. Using `https://unpkg.com` will be blocked silently — React globals will be undefined and the risk panel will be blank. Always use `cdn.jsdelivr.net`. (Phase 21, 2026-05-23)
+- **DO NOT attempt JSX in any src/react/ file without a build pipeline.** These files are loaded as plain `<script>` tags. JSX is not valid JS. Use `React.createElement` (aliased as `h`) throughout. (Phase 21, 2026-05-23)
+
+## Key Learnings — Phase 20 TypeScript Foundations (2026-05-23)
+
+- **Type governance strategy: global-scope `.d.ts` + `jsconfig.json`, zero build coupling.** The project is a pure HTML/JS static app (no bundler). The right tooling is `jsconfig.json` (not `tsconfig.json`) with `checkJs: false` (opt-in per file), `noEmit: true`. Global-scope `.d.ts` files (no import/export at top level) automatically merge into the global namespace via the jsconfig `include`. This gives IDE IntelliSense and type documentation with zero runtime or build impact.
+- **5 type declaration files organized by concern.** `state.d.ts` (PatientState + field unions) → `ai.d.ts` (calcAI/calcAIMulti output shapes) → `explain.d.ts` (ExplainResult, ExplanationBlock) → `clinical.d.ts` (ClinicalEngine pipeline: NormalizedClinical, ProcessResult union, CompoundAIResult) → `globals.d.ts` (window global declarations for all denai* IIFEs + ClinicalEngine). All global-scope — no imports needed.
+- **`ProcessResult` is a union type, not a single interface.** ClinicalEngine.process() returns one of three structurally different shapes: ClinicalAIResult (restorative 7-stage pipeline), SingleMissingResult (CalcAIResult + treatmentMode/caseClass/clinical), MultiMissingResult (CalcAIMultiResult + same). Callers discriminate with `treatmentMode` or `isMultiTooth`. Never collapse these into one interface.
+- **JSDoc annotations are additive-only — no code changes.** @param/@returns tags were added to 5 module public APIs. All JSDoc was inserted AFTER existing prose comments, never replacing them. Zero logic changes, zero regression risk.
+- **`checkJs: false` is the correct starting posture.** IIFE globals, var declarations, and cross-script references would generate errors under `checkJs: true`. Keeping it false means types provide IntelliSense without error noise. Individual files opt in with `// @ts-check` as governance expands incrementally.
+
+## Do-Not-Repeat (2026-05-23 — Phase 20)
+
+- **DO NOT add `import` or `export` to the `.d.ts` type files in src/types/.** A top-level import/export makes TypeScript treat the file as a module — declarations stop being global. For a non-module JS project, all `.d.ts` files must be global-scope (no import/export). (Phase 20, 2026-05-23)
+- **DO NOT set `checkJs: true` globally in jsconfig.json.** The codebase has IIFE patterns, var globals, and cross-script dependencies that would generate hundreds of errors. Individual `// @ts-check` opt-in is the correct gradual path. (Phase 20, 2026-05-23)
+- **DO NOT add new PatientState fields without updating serializer.js ALLOWED_FIELDS AND aiPayload.js AI_SAFE_FIELDS/EXCLUDED_FIELDS.** The .d.ts is documentation; the allowlists are runtime enforcement. Both must stay in sync. (Phase 20, 2026-05-23)
+
+## Key Learnings — Phase 19 stateManager Extraction (2026-05-23)
+
+- **Two orchestration helpers extracted: `_emergencySave()` and `_restoreCompoundModeUI()`.** Phase 19 found exactly two genuine duplications after Phase 18: (1) the 13-line synchronous save block duplicated identically in `pagehide` and `beforeunload`; (2) the 28-line compound UI restore block inline in init with no name. Everything else was already well-structured — no further extraction was warranted.
+- **`_emergencySave()` is the unload-time save contract.** It guards `_saveStateTimer`, clears it, and synchronously writes the current S snapshot to localStorage. Must always be called AFTER `_flushPendingNotes()` so textarea content is captured in S before the snapshot. Calling order: `_flushPendingNotes()` → `_emergencySave()`.
+- **`_restoreCompoundModeUI()` is the init-time inverse of `_resetCompoundModeUI()`.** Reset clears all compound DOM to baseline (called on patient switch and confirmReset). Restore reads S state and shows/populates compound DOM to match (called once at page init). Together they form a symmetric reset/restore pair. `_restoreCompoundModeUI()` includes `populateSite2ToothOptions()` — this call was unconditionally before the multiSite block in the original init code.
+- **Phase 19 scope intentionally stopped at 2 helpers.** The switchPatient 300ms setTimeout callback (7 lines, used once), cloud merge refresh sequence, and DOMContentLoaded 3-init sequence were all assessed and rejected — no duplication, no fragility gain from naming. Extracting unique single-use sequences is abstraction theater, not orchestration stabilization.
+- **`_emergencySave()` placement: after `saveState()`.** Placed in the save/persistence zone (same zone as `_saveStateTimer`, `saveState`, `safeStorageSet`). Both unload handlers can reach it via hoisting. The logical zone grouping makes future debugging obvious: all synchronous persistence paths are co-located.
+
+## Do-Not-Repeat (2026-05-23 — Phase 19)
+
+- **DO NOT duplicate the emergency save block in new unload handlers.** Always call `_flushPendingNotes()` then `_emergencySave()`. Any new page-lifecycle handler (visibilitychange, freeze API, etc.) must use this pair. (Phase 19, 2026-05-23)
+- **DO NOT inline compound UI restore in new init-equivalent paths.** Always call `_restoreCompoundModeUI()` when restoring from saved S state at startup or equivalent. Reset paths use `_resetCompoundModeUI()`. Never inline the 9-element or 28-line pattern again. (Phase 19, 2026-05-23)
+
+## Key Learnings — Phase 18 Mutation Consolidation (2026-05-23)
+
+- **Three mutation consolidation targets in index.html inline script.** (1) Notes debounce flush: appeared in switchPatient, pagehide, beforeunload — 3 separate copies of the same 8-line pattern. (2) Compound mode UI reset: appeared in switchPatient and confirmReset — 9-line multi-tooth + multi-site DOM reset. (3) site2Condition auto-correct: anonymous event handler contained EC#1 analog logic that warranted a named function.
+- **`_flushPendingNotes()` returns boolean.** Returns `true` if any S mutation occurred. Callers like `switchPatient` use `if (_flushPendingNotes()) saveState()` to avoid a gratuitous save when no textarea had pending changes. The return value is the key design choice.
+- **`_resetCompoundModeUI()` resets ALL compound DOM state at once.** Covers both multi-tooth UI (toggle button, tooth2Wrap, abutmentWrap) and multi-site UI (multiSiteToggle, site2Wrap, siteTabsWrap, compoundBanner). Idempotent — display:none on already-hidden elements is a no-op.
+- **`_updateSite2Condition(val)` mirrors setState's EC#1 auto-correct for site2.** When site2Condition is set to 'Missing tooth', site2Structure → 'Poor' and site2EndoStatus → 'No RCT needed'. Previously embedded in anonymous handler closure.
+- **Mutation consolidation does NOT prevent direct S field mutations.** site2Tooth, site2Structure, site2EndoStatus are still mutated directly in event handlers — correct, they follow the valid `S.xxx = val; saveState(); render(S)` pattern. Only patterns with auto-correct logic or non-trivial duplication warrant named helpers.
+
+## Do-Not-Repeat (2026-05-23 — Phase 18)
+
+- **DO NOT inline the compound mode UI reset in any new patient-load code path.** Always call `_resetCompoundModeUI()`. (Phase 18, 2026-05-23)
+- **DO NOT skip `_flushPendingNotes()` before any patient switch or page unload.** Must precede `Object.assign(S, ...)` in switchPatient so old patient's pending notes are captured under the old S.id. (Phase 18, 2026-05-23)
 
 ## Key Learnings — Phase 17 Wave 4 Renderer Extraction (2026-05-22)
 

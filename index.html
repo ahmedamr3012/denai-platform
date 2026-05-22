@@ -73,7 +73,13 @@
   <script src="src/render/materialPanel.js?v=2.0.0"></script>
   <script src="src/render/comparisonPanel.js?v=2.0.0"></script>
   <script src="src/render/patientPanel.js?v=2.0.0"></script>
-  <script src="src/render/riskPanel.js?v=2.0.0"></script>
+  <!-- Phase 21: React 18 CDN — island migration foundation. cdn.jsdelivr.net is CSP-whitelisted. -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js" crossorigin></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Phase 21: React risk panel island — component + bridge must precede riskPanel.js -->
+  <script src="src/react/RiskPanel.js?v=21.0.0"></script>
+  <script src="src/react/reactBridge.js?v=21.0.0"></script>
+  <script src="src/render/riskPanel.js?v=21.0.0"></script>
   <script src="src/constants/storageKeys.js?v=2.0.0"></script>
   <script src="src/constants/clinicalMaps.js?v=2.0.0"></script>
   <script src="src/constants/workflowStages.js?v=2.0.0"></script>
@@ -83,8 +89,8 @@
   <script src="src/utils/caseHelpers.js?v=2.0.0"></script>
   <script src="src/render/timeline.js?v=2.0.0"></script>
   <script src="src/render/planFragments.js?v=2.0.0"></script>
-  <!-- Phase 17: AI card rendering cluster — structure builder, updaters, explanation renderers -->
-  <script src="src/render/aiCardPanel.js?v=17.0.0"></script>
+  <!-- Phase 17/21: AI card rendering cluster; Phase 21 replaced .risk-box template with #riskPanelMount -->
+  <script src="src/render/aiCardPanel.js?v=21.0.0"></script>
   <!-- Phase 17: Treatment card rendering — single-tooth, multi-tooth, restorative, score bars -->
   <script src="src/render/txCards.js?v=17.0.0"></script>
   <script src="src/utils/diagPanel.js?v=2.0.0"></script>
@@ -2394,6 +2400,26 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     }, 200);
   }
 
+  // Phase 19: Emergency synchronous save — executes the pending debounced write
+  // immediately before page unload. Shared by pagehide (iOS) and beforeunload (desktop).
+  function _emergencySave() {
+    if (_saveStateTimer) {
+      clearTimeout(_saveStateTimer); _saveStateTimer = null;
+      try {
+        const _buSnap = { ...S };
+        const _buId   = S.id;
+        const _buCaseNum = S.caseNum || genCaseNum();
+        _buSnap.caseNum = _buCaseNum;
+        let _buList = loadAllPatients() || [];
+        const _buIdx = _buList.findIndex(p => p.id === _buId);
+        const _buUpdated = { ..._buSnap, id: _buId, caseNum: _buCaseNum };
+        if (_buIdx >= 0) _buList[_buIdx] = _buUpdated; else _buList.push(_buUpdated);
+        saveAllPatients(_buList);
+        setActivePatientId(_buId);
+      } catch (_buE) {}
+    }
+  }
+
   // Phase 1.2: One-time safe migration — copies dandy* keys to denai* keys.
   // Must run before loadState() / initPatients() to ensure data is found under new names.
   // Idempotent: skips if new key already exists; never overwrites existing data.
@@ -3680,6 +3706,53 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     `;
   }
 
+  // ── Phase 18: Compound mode UI reset — multi-tooth + multi-site DOM state ─
+  function _resetCompoundModeUI() {
+    const _mtBtn = $('multiToothToggle');
+    if (_mtBtn) { _mtBtn.classList.remove('active'); _mtBtn.setAttribute('aria-pressed','false'); }
+    const _tw = $('tooth2Wrap'); if (_tw) _tw.style.display = 'none';
+    const _aw = $('abutmentWrap'); if (_aw) _aw.style.display = 'none';
+    const _msBtn = $('multiSiteToggle');
+    if (_msBtn) { _msBtn.classList.remove('active'); _msBtn.setAttribute('aria-pressed','false'); }
+    const _s2w = $('site2Wrap');    if (_s2w) _s2w.style.display = 'none';
+    const _stabs = $('siteTabsWrap'); if (_stabs) _stabs.style.display = 'none';
+    const _cban = $('compoundBanner'); if (_cban) _cban.style.display = 'none';
+  }
+
+  // ── Phase 19: Compound mode UI restore — symmetric with _resetCompoundModeUI() ─
+  // Reads current S state and shows/populates multi-tooth + multi-site DOM elements.
+  // Called once at init time to restore UI from the last persisted compound state.
+  function _restoreCompoundModeUI() {
+    populateSite2ToothOptions();
+    if (S.multiTooth && S.condition === 'Missing tooth') {
+      const mtToggle = $('multiToothToggle');
+      const tw = $('tooth2Wrap');
+      const aw = $('abutmentWrap');
+      if (mtToggle) { mtToggle.classList.add('active'); mtToggle.setAttribute('aria-pressed','true'); }
+      if (tw) tw.style.display = 'flex';
+      if (aw) aw.style.display = 'flex';
+      const tooth2Sel = $('tooth2Select');
+      const abutSel   = $('abutmentSelect');
+      if (tooth2Sel) {
+        const adj = getAdjacentTeeth(S.tooth);
+        tooth2Sel.innerHTML = adj.map(t => `<option value="${t}" ${t === S.tooth2 ? 'selected' : ''}>${t}</option>`).join('');
+      }
+      if (abutSel) abutSel.value = S.abutmentQuality || 'Good';
+    }
+    if (S.multiSite) {
+      const msToggle = $('multiSiteToggle');
+      if (msToggle) { msToggle.classList.add('active'); msToggle.setAttribute('aria-pressed','true'); }
+      const s2w  = $('site2Wrap');    if (s2w)  s2w.style.display  = 'grid';
+      const tabs  = $('siteTabsWrap'); if (tabs) tabs.style.display  = 'flex';
+      const ban   = $('compoundBanner'); if (ban) ban.style.display  = 'flex';
+      updateSiteTabUI();
+      const s2t = $('site2ToothSelect'); if (s2t) s2t.value = S.site2Tooth || '#11';
+      const s2c = $('site2ConditionSelect'); if (s2c) s2c.value = S.site2Condition || 'Missing tooth';
+      const s2s = $('site2StructureSelect'); if (s2s) s2s.value = S.site2Structure || 'Good';
+      const s2e = $('site2EndoSelect'); if (s2e) s2e.value = S.site2EndoStatus || 'No RCT needed';
+    }
+  }
+
   // ── Multi-site mode toggle ──────────────────────────────────────
   function toggleMultiSite(enabled) {
     S.multiSite = enabled;
@@ -3887,31 +3960,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     // iOS Safari doesn't fire beforeunload reliably — mirror the emergency save here.
     // On desktop, beforeunload fires first and clears _saveStateTimer, so this block
     // is skipped (idempotent guard). On iOS, this is the primary save path.
-    if (_notesDebounce) {
-      clearTimeout(_notesDebounce); _notesDebounce = null;
-      const _buta = document.getElementById('clinicalNotes');
-      if (_buta && typeof DOMPurify !== 'undefined') S.notes = DOMPurify.sanitize(_buta.value);
-    }
-    if (_labNotesDebounce) {
-      clearTimeout(_labNotesDebounce); _labNotesDebounce = null;
-      const _bula = document.getElementById('labNotesArea');
-      if (_bula) S.labNotes = _bula.value;
-    }
-    if (_saveStateTimer) {
-      clearTimeout(_saveStateTimer); _saveStateTimer = null;
-      try {
-        const _buSnap = { ...S };
-        const _buId   = S.id;
-        const _buCaseNum = S.caseNum || genCaseNum();
-        _buSnap.caseNum = _buCaseNum;
-        let _buList = loadAllPatients() || [];
-        const _buIdx = _buList.findIndex(p => p.id === _buId);
-        const _buUpdated = { ..._buSnap, id: _buId, caseNum: _buCaseNum };
-        if (_buIdx >= 0) _buList[_buIdx] = _buUpdated; else _buList.push(_buUpdated);
-        saveAllPatients(_buList);
-        setActivePatientId(_buId);
-      } catch (_buE) {}
-    }
+    _flushPendingNotes();
+    _emergencySave();
     CleanupRegistry.cleanup();
   }, { once: true });
 
@@ -4861,17 +4911,7 @@ S.id = _id; S.name = _name; S.age = _age; S.gender = _gender;
 S.caseNum = _caseNum; S.serviceDate = _serviceDate; S.lastAccessed = _lastAccessed;
 tempState = { ...S }; saveState();
 if (UIState.editing) cancelEdit();
-// Reset multi-tooth UI
-const _mt = $('multiToothToggle');
-if (_mt) { _mt.classList.remove('active'); _mt.setAttribute('aria-pressed','false'); }
-const _tw = $('tooth2Wrap'); if (_tw) _tw.style.display = 'none';
-const _aw = $('abutmentWrap'); if (_aw) _aw.style.display = 'none';
-// Reset multi-site UI
-const _ms = $('multiSiteToggle');
-if (_ms) { _ms.classList.remove('active'); _ms.setAttribute('aria-pressed','false'); }
-const _s2w = $('site2Wrap');    if (_s2w) _s2w.style.display = 'none';
-const _stabs = $('siteTabsWrap'); if (_stabs) _stabs.style.display = 'none';
-const _ban = $('compoundBanner'); if (_ban) _ban.style.display = 'none';
+_resetCompoundModeUI();
 buildEditForm();
 render(S);
 updateSliderPositions();
@@ -4920,19 +4960,8 @@ return `<div class="patient-item${isActive ? ' active-patient' : ''}" role="list
 
 function switchPatient(id) {
 if (id === S.id) { if (window.innerWidth <= 900) closeSidebar(); return; }
-// Auto-flush any pending debounced edits for the outgoing patient.
-// Captures textarea value into S NOW (before Object.assign replaces S.id),
-// so the 200ms saveState timer fires with the correct old-patient identity.
-let _preSwitch = false;
-if (_notesDebounce) {
-  clearTimeout(_notesDebounce); _notesDebounce = null;
-  const _ta = $('clinicalNotes'); if (_ta) { S.notes = DOMPurify.sanitize(_ta.value); _preSwitch = true; }
-}
-if (_labNotesDebounce) {
-  clearTimeout(_labNotesDebounce); _labNotesDebounce = null;
-  const _la = $('labNotesArea'); if (_la) { S.labNotes = _la.value; _preSwitch = true; }
-}
-if (_preSwitch) saveState(); // captures old S.id + updated notes before Object.assign below
+// Flush unsaved notes for the outgoing patient before Object.assign replaces S.id.
+if (_flushPendingNotes()) saveState();
 const list = loadAllPatients() || [];
 const target = list.find(p => p.id === id);
 if (!target) return;
@@ -4941,17 +4970,7 @@ Object.assign(S, { ...DEFAULT_STATE, ...target });
 // Normalize multi-site state for incoming patient
 if (S.multiSite && S.condition !== 'Missing tooth') { S.multiSite = false; }
 if (S.multiTooth && S.condition !== 'Missing tooth') { S.multiTooth = false; S.tooth2 = null; }
-// Reset multi-tooth UI elements
-const _mtBtn = $('multiToothToggle');
-if (_mtBtn) { _mtBtn.classList.remove('active'); _mtBtn.setAttribute('aria-pressed','false'); }
-const _tw = $('tooth2Wrap'); if (_tw) _tw.style.display = 'none';
-const _aw = $('abutmentWrap'); if (_aw) _aw.style.display = 'none';
-// Reset multi-site UI elements — prevents stale compound UI from previous patient
-const _msBtn = $('multiSiteToggle');
-if (_msBtn) { _msBtn.classList.remove('active'); _msBtn.setAttribute('aria-pressed','false'); }
-const _s2w = $('site2Wrap');      if (_s2w) _s2w.style.display = 'none';
-const _stabs = $('siteTabsWrap'); if (_stabs) _stabs.style.display = 'none';
-const _cban = $('compoundBanner'); if (_cban) _cban.style.display = 'none';
+_resetCompoundModeUI();
 setUIState({ helpOpen: {} });
 document.querySelectorAll('.disclosure-body.open').forEach(function(el) { el.classList.remove('open'); });
 document.querySelectorAll('.help-trigger[aria-expanded="true"]').forEach(function(el) { el.setAttribute('aria-expanded','false'); });
@@ -5518,6 +5537,23 @@ function initClinicalNotes() {
   }
 }
 
+// Phase 18: Consolidated notes flush — clears debounces and captures textarea
+// content into S. Returns true if any mutation occurred (caller may save).
+function _flushPendingNotes() {
+  let flushed = false;
+  if (_notesDebounce) {
+    clearTimeout(_notesDebounce); _notesDebounce = null;
+    const _ta = document.getElementById('clinicalNotes');
+    if (_ta && typeof DOMPurify !== 'undefined') { S.notes = DOMPurify.sanitize(_ta.value); flushed = true; }
+  }
+  if (_labNotesDebounce) {
+    clearTimeout(_labNotesDebounce); _labNotesDebounce = null;
+    const _la = document.getElementById('labNotesArea');
+    if (_la) { S.labNotes = _la.value; flushed = true; }
+  }
+  return flushed;
+}
+
 // ================================================================
 // TOAST SYSTEM
 // ================================================================
@@ -5812,39 +5848,8 @@ if (!localStorage.getItem('denaiEntryDismissed_v1')) {
   }
 }
 
-// Restore multi-tooth UI state from saved state
-if (S.multiTooth && S.condition === 'Missing tooth') {
-  const mtToggle = $('multiToothToggle');
-  const tw = $('tooth2Wrap');
-  const aw = $('abutmentWrap');
-  if (mtToggle) { mtToggle.classList.add('active'); mtToggle.setAttribute('aria-pressed','true'); }
-  if (tw) tw.style.display = 'flex';
-  if (aw) aw.style.display = 'flex';
-  // Populate tooth2 options
-  const tooth2Sel = $('tooth2Select');
-  const abutSel   = $('abutmentSelect');
-  if (tooth2Sel) {
-    const adj = getAdjacentTeeth(S.tooth);
-    tooth2Sel.innerHTML = adj.map(t => `<option value="${t}" ${t === S.tooth2 ? 'selected' : ''}>${t}</option>`).join('');
-  }
-  if (abutSel) abutSel.value = S.abutmentQuality || 'Good';
-}
-
-// Restore multi-site UI state from saved state
-populateSite2ToothOptions();
-if (S.multiSite) {
-  const msToggle = $('multiSiteToggle');
-  if (msToggle) { msToggle.classList.add('active'); msToggle.setAttribute('aria-pressed','true'); }
-  const s2w  = $('site2Wrap');    if (s2w)  s2w.style.display  = 'grid';
-  const tabs  = $('siteTabsWrap'); if (tabs) tabs.style.display  = 'flex';
-  const ban   = $('compoundBanner'); if (ban) ban.style.display  = 'flex';
-  updateSiteTabUI();
-  // Set site2 selects to persisted values
-  const s2t = $('site2ToothSelect'); if (s2t) s2t.value = S.site2Tooth || '#11';
-  const s2c = $('site2ConditionSelect'); if (s2c) s2c.value = S.site2Condition || 'Missing tooth';
-  const s2s = $('site2StructureSelect'); if (s2s) s2s.value = S.site2Structure || 'Good';
-  const s2e = $('site2EndoSelect'); if (s2e) s2e.value = S.site2EndoStatus || 'No RCT needed';
-}
+// Restore compound mode UI from saved state (multi-tooth + multi-site)
+_restoreCompoundModeUI();
 
 // Global event bindings
 $('saveModal')?.addEventListener('click', closeModal);
@@ -6015,16 +6020,18 @@ $('site2ToothSelect')?.addEventListener('change', e => {
   S.site2Tooth = e.target.value;
   saveState(); render(S);
 });
-$('site2ConditionSelect')?.addEventListener('change', e => {
-  S.site2Condition = e.target.value;
-  if (e.target.value === 'Missing tooth') {
+function _updateSite2Condition(val) {
+  S.site2Condition = val;
+  if (val === 'Missing tooth') {
     S.site2Structure = 'Poor';
     S.site2EndoStatus = 'No RCT needed';
     const s2s = $('site2StructureSelect'); if (s2s) s2s.value = 'Poor';
     const s2e = $('site2EndoSelect'); if (s2e) s2e.value = 'No RCT needed';
   }
-  saveState(); render(S);
-});
+  saveState();
+  render(S);
+}
+$('site2ConditionSelect')?.addEventListener('change', e => _updateSite2Condition(e.target.value));
 $('site2StructureSelect')?.addEventListener('change', e => {
   S.site2Structure = e.target.value;
   saveState(); render(S);
@@ -6078,34 +6085,9 @@ applyDarkMode();
 
 // Cleanup on page unload to prevent memory leaks
 window.addEventListener('beforeunload', () => {
-  // Flush unsaved textarea content into S before emergency write
-  if (_notesDebounce) {
-    clearTimeout(_notesDebounce); _notesDebounce = null;
-    const _buta = document.getElementById('clinicalNotes');
-    if (_buta && typeof DOMPurify !== 'undefined') S.notes = DOMPurify.sanitize(_buta.value);
-  }
-  if (_labNotesDebounce) {
-    clearTimeout(_labNotesDebounce); _labNotesDebounce = null;
-    const _bula = document.getElementById('labNotesArea');
-    if (_bula) S.labNotes = _bula.value;
-  }
-  // Emergency synchronous save: if a debounced write is pending, execute it now
-  // so data is not lost when the tab closes within the 200ms debounce window.
-  if (_saveStateTimer) {
-    clearTimeout(_saveStateTimer); _saveStateTimer = null;
-    try {
-      const _buSnap = { ...S };
-      const _buId   = S.id;
-      const _buCaseNum = S.caseNum || genCaseNum();
-      _buSnap.caseNum = _buCaseNum;
-      let _buList = loadAllPatients() || [];
-      const _buIdx = _buList.findIndex(p => p.id === _buId);
-      const _buUpdated = { ..._buSnap, id: _buId, caseNum: _buCaseNum };
-      if (_buIdx >= 0) _buList[_buIdx] = _buUpdated; else _buList.push(_buUpdated);
-      saveAllPatients(_buList);
-      setActivePatientId(_buId);
-    } catch (_buE) {}
-  }
+  // Flush unsaved textarea content into S then execute any pending debounced write
+  _flushPendingNotes();
+  _emergencySave();
   CleanupRegistry.cleanup();
   if (_sliderDebounceTimer) clearTimeout(_sliderDebounceTimer);
   if (_typewriterTimer) clearInterval(_typewriterTimer);

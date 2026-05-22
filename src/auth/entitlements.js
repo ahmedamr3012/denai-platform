@@ -46,7 +46,11 @@ window.denaiEntitlements = (function () {
   //
   // planId: Stripe price ID of the active plan, or null.
   // clinicId: The clinic UUID — stored in cache for invalidation awareness.
-
+  /**
+   * @param {string|null} status
+   * @param {string|null} planId
+   * @param {string|null} clinicId
+   */
   function init(status, planId, clinicId) {
     _status   = (typeof status   === 'string') ? status   : 'none';
     _planId   = (typeof planId   === 'string') ? planId   : null;
@@ -67,6 +71,7 @@ window.denaiEntitlements = (function () {
   //                  'incomplete' | 'none' | 'unknown'
   // 'none'    = confirmed: no subscription row exists
   // 'unknown' = no confirmed state (offline or not yet loaded)
+  /** @returns {SubscriptionStatus} */
   function getStatus() {
     return _resolveStatus();
   }
@@ -74,6 +79,10 @@ window.denaiEntitlements = (function () {
   // Returns true if the feature is available under the current plan.
   // Safe default: returns true for any feature not in FEATURE_TIERS.
   // Safe default: returns true when entitlement state is 'unknown'.
+  /**
+   * @param {string} featureKey
+   * @returns {boolean}
+   */
   function canUse(featureKey) {
     var tier = FEATURE_TIERS[featureKey];
     if (!tier) return true;

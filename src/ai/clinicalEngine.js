@@ -383,6 +383,10 @@
     // ── PUBLIC API: process(state) ─────────────────────────────────
     // Single entry point for all clinical reasoning. Render functions
     // call this instead of calcAI/calcAIMulti directly.
+    /**
+     * @param {Partial<PatientState>} state
+     * @returns {ProcessResult|null}
+     */
     function process(state) {
       // Null guard: any invalid state degrades to null (callers check for null)
       if (!state || typeof state !== 'object') return null;
@@ -423,6 +427,10 @@
     // through the full 7-stage pipeline. Shared patient-level factors
     // (periodontal, systemic) apply to both sites; restorative profile
     // is independent per site.
+    /**
+     * @param {Partial<PatientState>} state
+     * @returns {CompoundAIResult|null}
+     */
     function processCompound(state) {
       // Site 1 uses the primary state as-is (no modification)
       const site1State = { ...state, multiTooth: false, multiSite: false };
