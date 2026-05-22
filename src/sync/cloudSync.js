@@ -64,7 +64,7 @@ window.denaiCloudSync = (function () {
     // Wave 7G: include notes_enc — separate top-level column, decrypted before merge.
     var res = await client
       .from('patients')
-      .select('id, case_num, name, state, history, notes_enc, updated_at')
+      .select('id, case_num, name, state, history, notes_enc, updated_at, clinic_id')
       .is('deleted_at', null)
       .order('updated_at', { ascending: false });
 
@@ -344,6 +344,12 @@ window.denaiCloudSync = (function () {
     out._syncedAt = cloudRow.updated_at || null;
     // Remove schema_ver from the local object — it's cloud metadata, not patient data.
     delete out.schema_ver;
+    // Phase 3.2: propagate clinic_id from typed column → local clinicId field.
+    // 'clinic_id' in cloudRow: true for Phase 3.2+ rows (even when null = no clinic).
+    // false for rows fetched before Phase 3.2 was deployed — leave local value intact.
+    if ('clinic_id' in cloudRow) {
+      out.clinicId = cloudRow.clinic_id || null;
+    }
     // Wave 7G: apply decrypted notes if available from cloud (overrides local notes copy).
     // If key is absent or decryption failed, local notes from localFallback survive.
     if (decryptedNotesMap[cloudRow.id] !== undefined) {

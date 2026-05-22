@@ -96,11 +96,13 @@ window.denaiAuth = (function () {
         // Wave 7D: flush pending queue on session restore (existing session on app load).
         // onAuthStateChange does not fire for getSession() — must trigger manually.
         setTimeout(function () {
-          if (typeof denaiSyncQueue !== 'undefined') denaiSyncQueue.flush();
+          if (typeof denaiSyncQueue      !== 'undefined') denaiSyncQueue.flush();
           // Wave 7E: hydrate patient data from cloud after session restore.
-          if (typeof denaiCloudSync !== 'undefined') denaiCloudSync.hydrate();
+          if (typeof denaiCloudSync      !== 'undefined') denaiCloudSync.hydrate();
           // Wave 7F: hydrate preferences from cloud after session restore.
-          if (typeof denaiPrefs     !== 'undefined') denaiPrefs.hydrate();
+          if (typeof denaiPrefs          !== 'undefined') denaiPrefs.hydrate();
+          // Phase 3.4: load clinic session context after auth settle.
+          if (typeof denaiClinicSession  !== 'undefined') denaiClinicSession.init(client).catch(function () {});
         }, 0);
       } else {
         _session = null;
@@ -121,20 +123,31 @@ window.denaiAuth = (function () {
       _session = session;
       if (session) {
         _setStatus('signed-in', session.user.email);
+        // INITIAL_SESSION fires once at listener registration when an existing session is
+        // present. _restoreSession() already handled this session via getSession() and
+        // scheduled hydrate/flush — skipping here prevents a redundant double-trigger.
+        if (event === 'INITIAL_SESSION') return;
         // Wave 7D: flush any queued writes now that the session is confirmed.
         // Wave 7E: hydrate patient data from cloud on sign-in / token refresh.
         setTimeout(function () {
-          if (typeof denaiSyncQueue !== 'undefined') denaiSyncQueue.flush();
-          if (typeof denaiCloudSync !== 'undefined') denaiCloudSync.hydrate();
+          if (typeof denaiSyncQueue      !== 'undefined') denaiSyncQueue.flush();
+          if (typeof denaiCloudSync      !== 'undefined') denaiCloudSync.hydrate();
           // Wave 7F: hydrate preferences from cloud on sign-in.
-          if (typeof denaiPrefs     !== 'undefined') denaiPrefs.hydrate();
+          if (typeof denaiPrefs          !== 'undefined') denaiPrefs.hydrate();
+          // Phase 3.4: load clinic session context (idempotent — skips on token refresh).
+          if (typeof denaiClinicSession  !== 'undefined') denaiClinicSession.init(_getClient()).catch(function () {});
         }, 0);
       } else {
         _setStatus('local');
         // Wave 7G: clear encryption key and reset prompt flag on sign-out.
         // Key is per-session only — never persisted.
-        try { if (typeof denaiNotesEnc    !== 'undefined') denaiNotesEnc.clearKey(); } catch (e) {}
+        try { if (typeof denaiNotesEnc      !== 'undefined') denaiNotesEnc.clearKey(); } catch (e) {}
         try { if (typeof denaiResetNotesPrompt === 'function') denaiResetNotesPrompt(); } catch (e) {}
+        // Phase 3.4: clear clinic session so next sign-in triggers a clean re-init.
+        try { if (typeof denaiClinicSession !== 'undefined') denaiClinicSession.clear(); } catch (e) {}
+        // Phase 5: abandon pending queue ops — they belong to the previous user and
+        // must not be flushed under a different user's identity on the next sign-in.
+        try { if (typeof denaiSyncQueue !== 'undefined') denaiSyncQueue.abandonQueue(); } catch (e) {}
       }
     });
   }
@@ -184,8 +197,14 @@ window.denaiAuth = (function () {
     _setStatus('local');
     // Wave 7G: clear encryption key on sign-out (key is per-session only).
     // onAuthStateChange will also fire and call clearKey — this is safe to call twice.
-    try { if (typeof denaiNotesEnc    !== 'undefined') denaiNotesEnc.clearKey(); } catch (e) {}
+    try { if (typeof denaiNotesEnc      !== 'undefined') denaiNotesEnc.clearKey(); } catch (e) {}
     try { if (typeof denaiResetNotesPrompt === 'function') denaiResetNotesPrompt(); } catch (e) {}
+    // Phase 3.4: clear clinic session (idempotent — onAuthStateChange also calls this).
+    try { if (typeof denaiClinicSession !== 'undefined') denaiClinicSession.clear(); } catch (e) {}
+    // Phase 5: abandon pending queue ops eagerly. Belt-and-suspenders with the
+    // onAuthStateChange else-branch call — covers the case where the SIGNED_OUT event
+    // does not fire (e.g. Supabase CDN unavailable). idempotent if queue already empty.
+    try { if (typeof denaiSyncQueue !== 'undefined') denaiSyncQueue.abandonQueue(); } catch (e) {}
   }
 
   function getSession()  { return _session; }

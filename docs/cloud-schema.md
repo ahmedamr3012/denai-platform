@@ -201,7 +201,7 @@ After applying RLS, verify in Supabase Table Editor:
 
 ### The localStorage mismatch problem
 
-localStorage uses key versioning (`dandyCaseState_v8`) to handle schema changes — the entire key is renamed, old data is migrated in JS, new key is populated. This approach does not translate to cloud: Supabase rows have stable `id` primary keys. Schema changes go through SQL migrations, not key renames.
+localStorage uses key versioning (`denaiCaseState_v8`) to handle schema changes — the entire key is renamed, old data is migrated in JS, new key is populated. This approach does not translate to cloud: Supabase rows have stable `id` primary keys. Schema changes go through SQL migrations, not key renames.
 
 ### Rules for safe schema evolution
 
@@ -368,13 +368,13 @@ For true merge semantics (future): would require field-level conflict resolution
 - `notes` IS included in exports — it is the user's own data.
 - `activeSite` IS included — no harm in exporting device-local state.
 - AI outputs are NOT included — they are always reconstructable.
-- Export format is identical to the localStorage `dandyPatients_v2` array (plus the wrapper) — no transformation needed for re-import.
+- Export format is identical to the localStorage `denaiPatients_v2` array (plus the wrapper) — no transformation needed for re-import.
 
 ### Import / restore semantics
 
 On import:
 1. Validate `export_version` — must be `>= 1`
-2. For each patient in `patients[]`: upsert into `dandyPatients_v2` by `id`
+2. For each patient in `patients[]`: upsert into `denaiPatients_v2` by `id`
 3. For each patient history: upsert into `dandyCaseHistory_v1_<id>`
 4. Merge preferences (do not overwrite current device's `darkMode` without prompting)
 5. No cloud writes during import — re-sync happens naturally via sync queue
@@ -434,17 +434,71 @@ Supabase free tier: 500 MB. Adequate for up to ~1,000 users. Pro tier ($25/mo) h
 
 ---
 
-## 9. Final Recommended Schema
+## 9. Phase 3.1 — Clinic Schema Foundation
+
+Added in Phase 3.1. Schema preparation only — no RLS policies, no `clinic_id` on patients yet.
+
+### `clinics`
+
+One row per clinic. Establishes the ownership boundary for all future isolation.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | `uuid PK` | Server-generated (`gen_random_uuid()`). Unlike patient IDs which are client-generated. |
+| `name` | `text NOT NULL` | Clinic display name |
+| `owner_user_id` | `uuid FK → auth.users` | Ownership anchor — `ON DELETE RESTRICT` (explicit transfer required before account deletion) |
+| `created_at` | `timestamptz` | Server default `now()` |
+
+### `clinic_members`
+
+One row per user-clinic membership. Composite PK prevents duplicate memberships.
+
+| Column | Type | Notes |
+|---|---|---|
+| `clinic_id` | `uuid FK → clinics` | `ON DELETE CASCADE` |
+| `user_id` | `uuid FK → auth.users` | `ON DELETE CASCADE` |
+| `role` | `text CHECK IN ('owner','member')` | Two roles only — no admin hierarchy |
+| `created_at` | `timestamptz` | Server default `now()` |
+
+**Primary key:** `(clinic_id, user_id)` — one role per user per clinic.
+
+### Role model
+
+- `owner` — clinic creator; ownership anchor for RLS (Phase 3.2+)
+- `member` — lightweight collaboration role; future invite flow
+
+**Explicitly excluded:** admin, super_admin, billing_admin, viewer, editor, and all role matrices.
+
+### Deferred to future phases
+
+| Concern | Phase |
+|---|---|
+| `clinic_id` column on `patients` | Phase 3.2 — propagation |
+| RLS policies on clinic tables | Phase 3.2 — enforcement |
+| Membership invitations | future |
+| Subscriptions / billing | future |
+| Multi-clinic switching UI | future |
+
+### Indexes
+
+```
+clinics_owner_idx          ON clinics (owner_user_id)
+clinic_members_user_idx    ON clinic_members (user_id)
+```
+
+---
+
+## 10. Final Recommended Schema
 
 See [`src/db/schema.sql`](../src/db/schema.sql) for the executable DDL.
 
-### Summary
+### Summary (Phase 3.1)
 
 ```
-Tables:   2    (patients, profiles)
-Indexes:  3    (patients_user_active_idx, patients_user_updated_idx, patients_user_deleted_idx)
-Policies: 7    (3 on profiles, 4 on patients)
-Triggers: 2    (touch_updated_at on both tables)
+Tables:   4    (patients, profiles, clinics, clinic_members)
+Indexes:  5    (3 on patients, 2 on clinic tables)
+Policies: 7    (3 on profiles, 4 on patients — clinic tables default-deny, no policies yet)
+Triggers: 2    (touch_updated_at on patients and profiles)
 ```
 
 ### Pre-Wave-7D checklist (required before implementing sync)

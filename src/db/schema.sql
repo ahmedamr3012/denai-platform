@@ -12,7 +12,7 @@
 -- • `activeSite` is NOT stored here — it is device-local navigation state.
 -- • AI outputs are NOT stored here — they are computed deterministically.
 --
--- SCHEMA VERSION: 1  (bump when any column is added/changed)
+-- SCHEMA VERSION: 2  (Phase 3.2: clinic_id column added to patients)
 -- ============================================================
 
 
@@ -104,9 +104,17 @@ CREATE TABLE IF NOT EXISTS patients (
   -- Do NOT populate until Wave 7G is deployed.
   notes_enc   text,
 
+  -- ── Clinic ownership (Phase 3.2) ─────────────────────────────────────────
+  -- NULL = no clinic (personal workspace, pre-3.2 patients, local-only users).
+  -- FK defined in Phase 3.2 migration section below — clinics is declared
+  -- later in this file, so inline REFERENCES would fail fresh-install ordering.
+  -- Populated by future clinic-assignment flow (Phase 3.3+).
+  clinic_id   uuid,
+
   -- ── Migration tracking ────────────────────────────────────
   -- Incremented when a schema-breaking change requires data transformation.
   -- Version 1 = Wave 7C schema.
+  -- Version 2 = Phase 3.2: clinic_id typed column added.
   schema_ver  smallint    NOT NULL DEFAULT 1
 
 );
@@ -240,3 +248,348 @@ CREATE POLICY "patients_delete_own"
 -- Renaming a field:
 --   1. Add new field, backfill from old field, remove old field in three separate waves.
 --   2. Never rename a JSONB key in-place — localStorage sync would break for offline users.
+
+
+-- ============================================================
+-- Phase 3.1 — Clinic Schema Foundation
+-- ============================================================
+--
+-- PURPOSE: Establishes the minimal ownership boundary for future clinic isolation.
+-- This is schema preparation only. The following are intentionally deferred:
+--   - clinic_id column on patients  (Phase 3.2 — propagation)
+--   - RLS policies on clinic tables (Phase 3.2 — RLS enforcement)
+--   - Membership UX / invitations   (future)
+--   - Subscriptions / billing       (future)
+--
+-- ROLE MODEL: 'owner' | 'member' only.
+-- No admin hierarchy, no nested workspaces, no enterprise RBAC.
+-- ============================================================
+
+
+-- ============================================================
+-- TABLE: clinics
+-- One row per clinic. Ownership anchor for all future isolation.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS clinics (
+
+  -- Server-generated UUID. Unlike patient IDs (client-generated), clinics are
+  -- created server-side via a future onboarding flow.
+  id             uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  name           text        NOT NULL,
+
+  -- Ownership anchor. RESTRICT (not CASCADE): deleting a user must not silently
+  -- destroy a clinic that may have members and patient data. Ownership must be
+  -- explicitly transferred or the clinic deleted before account removal.
+  owner_user_id  uuid        NOT NULL
+                             REFERENCES auth.users(id) ON DELETE RESTRICT,
+
+  created_at     timestamptz NOT NULL DEFAULT now()
+
+);
+
+-- Default-deny. No RLS policies until Phase 3.2.
+-- With no policies, authenticated requests return 0 rows (safe empty state).
+ALTER TABLE clinics ENABLE ROW LEVEL SECURITY;
+
+
+-- ============================================================
+-- TABLE: clinic_members
+-- One row per user-clinic membership.
+-- Composite PK enforces one role per user per clinic.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS clinic_members (
+
+  clinic_id   uuid  NOT NULL
+                    REFERENCES clinics(id) ON DELETE CASCADE,
+
+  user_id     uuid  NOT NULL
+                    REFERENCES auth.users(id) ON DELETE CASCADE,
+
+  -- 'owner' | 'member' only. Enforced at DB level.
+  -- The clinic creator always gets 'owner'. Members invited later get 'member'.
+  role        text  NOT NULL
+                    CHECK (role IN ('owner', 'member')),
+
+  created_at  timestamptz NOT NULL DEFAULT now(),
+
+  PRIMARY KEY (clinic_id, user_id)
+
+);
+
+-- Default-deny. No RLS policies until Phase 3.2.
+ALTER TABLE clinic_members ENABLE ROW LEVEL SECURITY;
+
+
+-- ============================================================
+-- INDEXES — clinic tables
+-- ============================================================
+
+-- "Which clinics does this user own?" — used by future onboarding / dashboard.
+CREATE INDEX IF NOT EXISTS clinics_owner_idx
+  ON clinics (owner_user_id);
+
+-- "Which clinics does this user belong to?" — used by future auth association.
+CREATE INDEX IF NOT EXISTS clinic_members_user_idx
+  ON clinic_members (user_id);
+
+
+-- ============================================================
+-- Phase 3.2 — clinic_id Propagation
+-- ============================================================
+--
+-- PURPOSE: Establishes clinic ownership on operational patient data.
+-- This is propagation infrastructure only. The following are deferred:
+--   - RLS policy enforcement on patients by clinic  (Phase 3.3)
+--   - Clinic-assignment UI / session context         (Phase 3.3)
+--   - clinic_id population for existing patients    (Phase 3.3+ onboarding)
+--
+-- SAFETY PROPERTIES:
+--   - clinic_id is NULLABLE: existing patients remain accessible with NULL.
+--   - ON DELETE SET NULL: clinic deletion never cascade-deletes patient data.
+--   - Additive migration: no backfill required, no existing row touched.
+-- ============================================================
+
+
+-- ── MIGRATION: Add clinic_id column (idempotent — safe on existing databases) ──
+
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS clinic_id uuid;
+
+
+-- ── MIGRATION: Attach FK constraint ─────────────────────────────────────────
+-- ON DELETE SET NULL: patients survive clinic deletion as personal/unaffiliated records.
+-- RESTRICT would block clinic deletion; CASCADE would destroy PHI — both are wrong.
+-- DO block provides idempotency: re-running after first apply is a safe no-op.
+
+DO $$ BEGIN
+  ALTER TABLE patients
+    ADD CONSTRAINT patients_clinic_fk
+    FOREIGN KEY (clinic_id) REFERENCES clinics(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+
+-- ── INDEX ─────────────────────────────────────────────────────────────────────
+-- "All active patients in this clinic" — future RLS and list queries.
+-- Partial (WHERE clinic_id IS NOT NULL): unaffiliated patients are excluded,
+-- keeping the index lean. NULL rows need no clinic-based routing.
+
+CREATE INDEX IF NOT EXISTS patients_clinic_idx
+  ON patients (clinic_id)
+  WHERE clinic_id IS NOT NULL;
+
+
+-- ============================================================
+-- Phase 3.3 — RLS Isolation Foundation
+-- ============================================================
+--
+-- PURPOSE: Enforces clinic ownership boundaries at the database policy level.
+-- This is the FIRST true isolation enforcement phase — PHI boundary infrastructure.
+--
+-- ISOLATION MODEL:
+--   clinics       — visible to owner + members; writable by owner only.
+--   clinic_members — users see their own membership rows; owner manages roster.
+--   patients      — existing personal-ownership policies preserved;
+--                   clinic members gain SELECT access to clinic-affiliated patients.
+--
+-- DESIGN PRINCIPLES:
+--   - deny-by-default (clinic tables had no policies = 0-row safe baseline)
+--   - no circular policy dependencies:
+--       clinics_select_member includes a direct owner_user_id = auth.uid() branch
+--       so clinic_members write policies can verify ownership without querying
+--       back through clinic_members (which would recurse).
+--   - NULL clinic_id patients remain personal-only (unaffected by clinic policies)
+--   - legacy users with no clinic continue working via existing personal policies
+--   - sync compatibility preserved — no change to personal write policies
+--   - soft-deleted (tombstone) clinic patients remain visible to clinic members
+--     so cross-device tombstone propagation works correctly
+--
+-- SEQUENCING BOUNDARIES (intentionally NOT in this phase):
+--   - clinic-member write access to patients     (Phase 3.4+)
+--   - clinic assignment UI / session context     (Phase 3.4+)
+--   - roster UX (members seeing other members)   (Phase 3.4+)
+--   - audit, support impersonation, admin access (future)
+--
+-- NOTE: Schema version NOT bumped — RLS policies are behavioral, not structural.
+-- ============================================================
+
+
+-- ── clinics RLS ──────────────────────────────────────────────────────────────
+
+-- SELECT: visible to owner (direct check) and to any current member.
+-- The owner_user_id direct branch is intentional: it breaks the bootstrapping
+-- circular dependency where clinic_members write policies need to verify
+-- ownership by querying clinics, which would otherwise need clinic_members,
+-- which needs clinics... The direct owner check terminates the chain.
+DO $$ BEGIN
+  CREATE POLICY "clinics_select_member"
+    ON clinics FOR SELECT
+    USING (
+      auth.uid() = owner_user_id
+      OR EXISTS (
+        SELECT 1 FROM clinic_members
+        WHERE clinic_members.clinic_id = clinics.id
+          AND clinic_members.user_id   = auth.uid()
+      )
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+-- INSERT: only the owner can create their own clinic.
+-- Prevents impersonating another user as the clinic owner.
+DO $$ BEGIN
+  CREATE POLICY "clinics_insert_owner"
+    ON clinics FOR INSERT
+    WITH CHECK (auth.uid() = owner_user_id);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+-- UPDATE: owner only — members cannot rename or modify clinic metadata.
+DO $$ BEGIN
+  CREATE POLICY "clinics_update_owner"
+    ON clinics FOR UPDATE
+    USING  (auth.uid() = owner_user_id)
+    WITH CHECK (auth.uid() = owner_user_id);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+-- DELETE: owner only. ON DELETE SET NULL on patients.clinic_id means
+-- patient data survives clinic deletion as personal/unaffiliated records.
+DO $$ BEGIN
+  CREATE POLICY "clinics_delete_owner"
+    ON clinics FOR DELETE
+    USING (auth.uid() = owner_user_id);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+
+-- ── clinic_members RLS ───────────────────────────────────────────────────────
+
+-- SELECT: users see only their own membership rows.
+-- Intentionally minimal — avoids recursive self-join policy risk.
+-- Sufficient for: clinic visibility checks, patient access checks, self-removal.
+-- Phase 3.4+: add owner roster policy when member management UX is built.
+DO $$ BEGIN
+  CREATE POLICY "clinic_members_select_self"
+    ON clinic_members FOR SELECT
+    USING (user_id = auth.uid());
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+-- INSERT: clinic owner can add members (foundation for future invitation flow).
+-- Reads clinics with the direct owner_user_id branch — no circular dependency.
+DO $$ BEGIN
+  CREATE POLICY "clinic_members_insert_owner"
+    ON clinic_members FOR INSERT
+    WITH CHECK (
+      EXISTS (
+        SELECT 1 FROM clinics
+        WHERE clinics.id            = clinic_id
+          AND clinics.owner_user_id = auth.uid()
+      )
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+-- UPDATE: clinic owner can change member roles.
+DO $$ BEGIN
+  CREATE POLICY "clinic_members_update_owner"
+    ON clinic_members FOR UPDATE
+    USING (
+      EXISTS (
+        SELECT 1 FROM clinics
+        WHERE clinics.id            = clinic_id
+          AND clinics.owner_user_id = auth.uid()
+      )
+    )
+    WITH CHECK (
+      EXISTS (
+        SELECT 1 FROM clinics
+        WHERE clinics.id            = clinic_id
+          AND clinics.owner_user_id = auth.uid()
+      )
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+-- DELETE: clinic owner removes members, or a member removes themselves.
+DO $$ BEGIN
+  CREATE POLICY "clinic_members_delete_owner_or_self"
+    ON clinic_members FOR DELETE
+    USING (
+      user_id = auth.uid()
+      OR EXISTS (
+        SELECT 1 FROM clinics
+        WHERE clinics.id            = clinic_id
+          AND clinics.owner_user_id = auth.uid()
+      )
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+
+-- ── patients — clinic member SELECT extension ─────────────────────────────────
+
+-- SELECT: clinic members can see all patients assigned to their clinic.
+-- Augments the existing "patients_select_own" (auth.uid() = user_id) policy.
+-- PostgreSQL OR-evaluates multiple SELECT policies — personal + clinic access coexist.
+-- NULL clinic_id is explicitly excluded: personal patients stay personal-only.
+-- Soft-deleted rows (deleted_at IS NOT NULL) are included so clinic members
+-- receive tombstone rows from cloudSync, enabling cross-device delete propagation.
+-- INSERT/UPDATE/DELETE on clinic patients remain personal-ownership only (Phase 3.4+).
+DO $$ BEGIN
+  CREATE POLICY "patients_select_clinic_member"
+    ON patients FOR SELECT
+    USING (
+      clinic_id IS NOT NULL
+      AND EXISTS (
+        SELECT 1 FROM clinic_members
+        WHERE clinic_members.clinic_id = patients.clinic_id
+          AND clinic_members.user_id   = auth.uid()
+      )
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+
+-- ============================================================
+-- Phase 3.4 — Lightweight Membership Model
+-- ============================================================
+--
+-- PURPOSE: Enables operational clinic membership display and management.
+-- The only schema addition in Phase 3.4 is one SELECT policy that lets the
+-- clinic owner see their full member roster in the account panel.
+--
+-- DESIGN:
+--   clinic_members_select_owner_roster augments clinic_members_select_self
+--   (Phase 3.3). The two policies are OR-evaluated by PostgreSQL:
+--     - Any user sees their own row (select_self).
+--     - An owner additionally sees all rows for clinics they own (owner_roster).
+--   The EXISTS check reads clinics via the direct owner_user_id branch in
+--   clinics_select_member — no circular policy dependency introduced.
+--
+-- SEQUENCING BOUNDARIES (intentionally NOT in this phase):
+--   - Email-based invitation flow          (Phase 3.5+)
+--   - Member write access to patients      (Phase 3.5+)
+--   - Cross-member collaborative edits     (Phase 3.5+)
+--   - updated_at / edit flow for clinics   (Phase 3.5+)
+--
+-- NOTE: Schema version NOT bumped — behavioral policy addition only.
+-- ============================================================
+
+-- SELECT: clinic owner sees all member rows for clinics they own.
+-- Members continue to see only their own row via clinic_members_select_self.
+DO $$ BEGIN
+  CREATE POLICY "clinic_members_select_owner_roster"
+    ON clinic_members FOR SELECT
+    USING (
+      EXISTS (
+        SELECT 1 FROM clinics
+        WHERE clinics.id            = clinic_id
+          AND clinics.owner_user_id = auth.uid()
+      )
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;

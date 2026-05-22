@@ -114,6 +114,11 @@ window.denaiSyncQueue = (function () {
         ? op.payload.notes
         : null;
 
+      // Phase 3.2: capture clinic_id BEFORE serialization — typed column, not in state
+      // JSONB. Stored on the queue item; sent as a top-level column in the upsert row.
+      // Null = no clinic (personal workspace). Non-null = clinic-affiliated patient.
+      var clinicId = (op.payload && op.payload.clinicId) ? op.payload.clinicId : null;
+
       var payload = null;
       if (typeof denaiSerializer !== 'undefined') {
         payload = denaiSerializer.serializePatient(op.payload);
@@ -128,7 +133,8 @@ window.denaiSyncQueue = (function () {
         entity:     'patient',
         patient_id: op.patientId,
         payload:    payload,
-        rawNotes:   rawNotes,  // plaintext — encrypted at flush time if key is available
+        rawNotes:   rawNotes,   // plaintext — encrypted at flush time if key is available
+        clinicId:   clinicId,   // Phase 3.2: typed column, null until clinic-assignment flow
         history:    op.history || [],
         local_ts:   Date.now(),
         attempts:   0,
@@ -265,6 +271,9 @@ window.denaiSyncQueue = (function () {
           state:      op.payload,
           history:    op.history || [],
           updated_at: new Date(op.local_ts).toISOString(),
+          // Phase 3.2: clinic_id as typed column — null = no clinic (personal workspace).
+          // Always included so a future de-association (null) propagates correctly.
+          clinic_id:  op.clinicId || null,
         };
         // Add notes_enc only when encrypted — never send null to overwrite existing ciphertext
         // with a null (user may not have entered passphrase this session).
@@ -305,12 +314,39 @@ window.denaiSyncQueue = (function () {
     }
   }
 
+  // ── Public: abandonQueue ──────────────────────────────────────────────────
+  // Called on sign-out to prevent a subsequent user on the same device from
+  // flushing the signed-out user's pending ops under a different auth.uid().
+  // Without this, RLS on patients_insert_own accepts user_id = new auth.uid(),
+  // uploading the previous user's PHI to a different cloud account.
+  //
+  // Local patient data in localStorage is NOT touched — Pass 2 of cloudSync
+  // hydrate() re-enqueues local patients for upload on the next sign-in.
+
+  function abandonQueue() {
+    var count = _queue.length;
+    if (_flushTimer) {
+      clearTimeout(_flushTimer);
+      _flushTimer = null;
+    }
+    _queue = [];
+    try { localStorage.removeItem(QUEUE_KEY); } catch (e) {}
+    if (count > 0) {
+      console.warn('[denaiSync] abandonQueue: cleared ' + count + ' unsynced op(s) on sign-out — will re-queue after next sign-in');
+    }
+  }
+
   // ── Public: init ──────────────────────────────────────────────────────────
   // Synchronous. Call after denaiAuth.init() in the app's init() function.
 
   function init() {
     _loadQueue();
-    window.addEventListener('online', function () { flush(); });
+    window.addEventListener('online', function () {
+      flush();
+      // Pull cloud changes made on other devices while this device was offline.
+      // flush() covers the write path; hydrate() covers the read path.
+      if (typeof denaiCloudSync !== 'undefined') denaiCloudSync.hydrate();
+    });
   }
 
   function getStatus()          { return _status; }
@@ -330,6 +366,7 @@ window.denaiSyncQueue = (function () {
     enqueue:            enqueue,
     enqueueSoftDelete:  enqueueSoftDelete,
     flush:              flush,
+    abandonQueue:       abandonQueue,
     hasPendingFor:      hasPendingFor,
     getStatus:          getStatus,
     getQueueLength:     getQueueLength,

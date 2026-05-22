@@ -94,6 +94,8 @@
   <script defer src="src/sync/prefsSync.js?v=2.0.0"></script>
   <!-- Wave 7G: Notes encryption — AES-GCM client-side PHI protection -->
   <script defer src="src/utils/notesEncryption.js?v=2.0.0"></script>
+  <!-- Phase 3.4: Clinic session context — clinic association loaded after auth -->
+  <script defer src="src/auth/clinicSession.js?v=1.0.0"></script>
   <style>
     /* ================================================================
        DESIGN TOKENS & VARIABLES
@@ -1388,6 +1390,27 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           <button id="authNotesEncBtn" class="btn btn-sec" type="button" style="font-size:11px;padding:4px 10px;min-width:72px;">Enable</button>
         </div>
 
+        <!-- Phase 3.4: Clinic section -->
+        <div id="authClinicSection" style="margin-bottom:12px;">
+          <p style="font-size:11px;font-weight:600;color:var(--c-n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Clinic</p>
+          <!-- Shown when user is associated with a clinic -->
+          <div id="authClinicInfo" style="display:none;padding:8px 10px;background:var(--surface-card);border:1px solid var(--c-n200);border-radius:8px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <i class="fa-solid fa-hospital" style="color:var(--c-brand);font-size:11px;flex-shrink:0;" aria-hidden="true"></i>
+              <span style="font-size:13px;font-weight:600;color:var(--c-n900);flex:1;" id="authClinicName">—</span>
+              <span id="authClinicRole" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--c-brand);background:var(--c-brand-bg);padding:2px 6px;border-radius:4px;"></span>
+            </div>
+          </div>
+          <!-- Shown when no clinic — signed-in users can create one -->
+          <div id="authClinicCreate" style="display:none;">
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input class="np-input" id="authClinicNameInput" type="text" placeholder="Clinic name" maxlength="100" style="flex:1;font-size:13px;"/>
+              <button class="btn btn-pri" type="button" id="authClinicCreateBtn" style="font-size:12px;padding:8px 14px;white-space:nowrap;flex-shrink:0;">Create</button>
+            </div>
+            <p style="font-size:11px;color:var(--c-n400);margin-top:5px;line-height:1.4;">Create a clinic to associate patients across sessions.</p>
+          </div>
+        </div>
+
         <!-- Data management -->
         <div style="margin-bottom:12px;">
           <p style="font-size:11px;font-weight:600;color:var(--c-n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Data</p>
@@ -2106,6 +2129,10 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     labNotes: '',
     lastView: null,         // LOCAL ONLY — last navigated patient-scoped view; not synced
     wfHistory: [],          // LOCAL ONLY — structured workflow milestone events; not synced
+    // Phase 3.2: clinic ownership anchor — null = personal/unaffiliated workspace.
+    // Not in serializer ALLOWED_FIELDS (typed column, not state JSONB).
+    // Populated by clinic-assignment flow (Phase 3.3+).
+    clinicId: null,
   });
   // ── #3 Runtime Validation (Zod-style) ────────────────────────
   const StateValidator = Object.freeze({
@@ -5460,6 +5487,7 @@ endodonticStatus:   (npConditionVal === 'Missing tooth') ? 'No RCT needed' : ($(
 diabetes:     $('npDiabetes')?.value     || 'None',
 parafunction: $('npParafunction')?.value || 'None',
 notes: '',
+clinicId: typeof denaiClinicSession !== 'undefined' ? (denaiClinicSession.getClinicId() || null) : null,
 };
 let list = loadAllPatients() || [];
 list.push(newPatient);
@@ -5715,6 +5743,7 @@ if (status === 'signed-in') {
       notesBtn.onclick = function() { closeAuthModal(); setupNotesEncryption(); };
     }
   }
+  _renderClinicSection();
   if ($('authPanelSignIn'))    $('authPanelSignIn').style.display    = 'none';
   if ($('authPanelSignUp'))    $('authPanelSignUp').style.display    = 'none';
   if ($('authPanelSignedIn'))  $('authPanelSignedIn').style.display  = '';
@@ -5747,6 +5776,26 @@ const btnSI = $('authTabSignIn'), btnSU = $('authTabSignUp');
 if (btnSI) { btnSI.classList.toggle('auth-tab-active', tab === 'signin'); }
 if (btnSU) { btnSU.classList.toggle('auth-tab-active', tab === 'signup'); }
 $('authModal').setAttribute('aria-labelledby', tab === 'signup' ? 'authSignUpHeading' : 'authModalHeading');
+}
+
+// Phase 3.4: Render clinic section inside the signed-in account panel.
+// Shows clinic name + role when a clinic is loaded; shows create form otherwise.
+function _renderClinicSection() {
+  const infoEl   = $('authClinicInfo');
+  const createEl = $('authClinicCreate');
+  if (!infoEl || !createEl) return;
+  const hasClinic = typeof denaiClinicSession !== 'undefined' && !!denaiClinicSession.getClinicId();
+  if (hasClinic) {
+    const nameEl = $('authClinicName');
+    const roleEl = $('authClinicRole');
+    if (nameEl) nameEl.textContent = denaiClinicSession.getClinicName() || 'My Clinic';
+    if (roleEl) roleEl.textContent = denaiClinicSession.getRole() || '';
+    infoEl.style.display   = '';
+    createEl.style.display = 'none';
+  } else {
+    infoEl.style.display   = 'none';
+    createEl.style.display = '';
+  }
 }
 
 // Shortcuts modal
@@ -6338,6 +6387,24 @@ $('authSignOutBtn')?.addEventListener('click', async () => {
   closeAuthModal();
   // IMPORTANT: local patient data is never cleared on sign-out
   showToast('Signed out — local data preserved', 'info');
+});
+
+// Phase 3.4: Clinic creation button
+$('authClinicCreateBtn')?.addEventListener('click', async () => {
+  if (typeof denaiClinicSession === 'undefined') return;
+  const inp  = $('authClinicNameInput');
+  const name = inp ? inp.value.trim() : '';
+  if (!name) { if (inp) inp.focus(); return; }
+  const btn = $('authClinicCreateBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Creating…'; }
+  const result = await denaiClinicSession.createClinic(name);
+  if (btn) { btn.disabled = false; btn.textContent = 'Create'; }
+  if (result.error) {
+    showToast('Could not create clinic: ' + result.error, 'error');
+  } else {
+    _renderClinicSection();
+    showToast('Clinic created', 'success');
+  }
 });
 // Wave 7G: notes passphrase modal
 $('notesPassphraseBtn')?.addEventListener('click', submitNotesPassphrase);

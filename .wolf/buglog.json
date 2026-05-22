@@ -2,6 +2,24 @@
   "version": 1,
   "bugs": [
     {
+      "id": "bug-061",
+      "timestamp": "2026-05-22T12:00:00.000Z",
+      "error_message": "clinicSession.init() permanently blocks retry after transient DB/network error — user stuck in personal workspace for entire session",
+      "file": "src/auth/clinicSession.js",
+      "root_cause": "_load() returned void on res.error (DB error), then returned normally. init() always set _initialized=true after _load() returned, regardless of success or failure. Token-refresh guard (if _initialized return) then permanently blocked all future init attempts for the session. User had no way to recover clinic context without signing out and back in.",
+      "fix": "_load() now returns boolean: true = loaded or confirmed no-clinic, false = DB/network error. init() only sets _initialized=true when loaded=true. Transient errors leave _initialized=false, allowing the next onAuthStateChange (hourly token refresh) to retry automatically.",
+      "tags": [
+        "clinicSession",
+        "retry",
+        "transient-error",
+        "phase-3.5-audit",
+        "initialization"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T12:00:00.000Z"
+    },
+    {
       "id": "bug-001",
       "timestamp": "2026-05-20T07:31:02.161Z",
       "error_message": "Significant refactor of ",
@@ -944,10 +962,187 @@
       "file": "src/constants/storageKeys.js, index.html, src/sync/cloudSync.js, src/sync/prefsSync.js, tests/auth/runner.js, tests/sync/runner.js, tests/e2e/runner.js, privacy.html, terms.html",
       "root_cause": "STORAGE_KEY='dandyCaseState_v8', PATIENTS_KEY='dandyPatients_v2', dandyDarkMode were dandy-branded persistence keys from the pre-rename era. After renaming constants to denai* in storageKeys.js, existing users would lose all data because their data lived under old keys.",
       "fix": "1) Updated storageKeys.js constants to denaiCaseState_v8 / denaiPatients_v2. 2) Added idempotent migration IIFE in index.html BEFORE const S = loadState() that copies old→new for all 3 keys if new key absent. 3) Updated dark mode read to check denaiDarkMode first, fall back to dandyDarkMode. 4) Updated dark mode writes (toggleDarkMode, denaiSetDarkMode) to write denaiDarkMode. 5) Updated cloudSync.js private PATIENTS_KEY. 6) Updated prefsSync.js init() reconcile to check denaiDarkMode first, fall back to LEGACY_DARK_KEY. 7) Updated flash prevention in index.html, privacy.html, terms.html to OR denaiDarkMode||dandyDarkMode. 8) Updated all 3 test runners. Old keys not deleted (non-destructive migration).",
-      "tags": ["migration", "persistence", "storage-keys", "patient-safety-adjacent", "dandy-to-denai"],
-      "related_bugs": ["bug-048", "bug-049", "bug-050", "bug-051", "bug-052", "bug-054"],
+      "tags": [
+        "migration",
+        "persistence",
+        "storage-keys",
+        "patient-safety-adjacent",
+        "dandy-to-denai"
+      ],
+      "related_bugs": [
+        "bug-048",
+        "bug-049",
+        "bug-050",
+        "bug-051",
+        "bug-052",
+        "bug-054"
+      ],
       "occurrences": 1,
       "last_seen": "2026-05-22T08:00:00.000Z"
+    },
+    {
+      "id": "bug-056",
+      "timestamp": "2026-05-22T07:48:48.216Z",
+      "error_message": "Incorrect value in code",
+      "file": "docs/cloud-schema.md",
+      "root_cause": "Had `dandyCaseState_v8`",
+      "fix": "Changed to `denaiCaseState_v8`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-22T07:48:57.962Z"
+    },
+    {
+      "id": "bug-057",
+      "timestamp": "2026-05-22T07:49:18.385Z",
+      "error_message": "Significant refactor of ",
+      "file": "docs/cloud-schema.md",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 12→66 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T07:49:18.385Z"
+    },
+    {
+      "id": "bug-058",
+      "timestamp": "2026-05-22T08:32:10.337Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/auth/authModule.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: if (typeof denaiSyncQueue      !== 'undefined') denaiSyncQue; if (typeof denaiCloudSync      !== 'undefined') denaiCloudSy",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-22T08:32:18.185Z"
+    },
+    {
+      "id": "bug-059",
+      "timestamp": "2026-05-22T08:32:35.391Z",
+      "error_message": "Wrong condition in logic",
+      "file": "src/auth/authModule.js",
+      "root_cause": "Condition was: if (typeof denaiNotesEnc    !== 'undefined')",
+      "fix": "Changed to: if (typeof denaiNotesEnc      !== 'undefined')",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T08:32:35.391Z"
+    },
+    {
+      "id": "bug-060",
+      "timestamp": "2026-05-22T08:33:33.866Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: !infoEl || !createEl",
+      "fix": "Added guard clause: if (!infoEl || !createEl)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T08:33:33.866Z"
+    },
+    {
+      "id": "bug-061",
+      "timestamp": "2026-05-22T12:08:04.215Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/auth/clinicSession.js",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 23→27 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T12:08:04.215Z"
+    },
+    {
+      "id": "bug-063",
+      "timestamp": "2026-05-22T12:20:54.731Z",
+      "error_message": "Missing error handling in abandonQueue",
+      "file": "src/sync/syncQueue.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T12:20:54.731Z"
+    },
+    {
+      "id": "bug-064",
+      "timestamp": "2026-05-22T12:21:27.975Z",
+      "error_message": "Missing guard clause",
+      "file": "src/auth/authModule.js",
+      "root_cause": "No early return/throw for edge case: session",
+      "fix": "Added guard clause: if (session)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T12:21:27.976Z"
+    },
+    {
+      "id": "bug-065",
+      "timestamp": "2026-05-22T13:00:00.000Z",
+      "error_message": "PHI cross-user contamination: pending sync queue ops flushed under a different user's identity after sign-out on shared device",
+      "file": "src/sync/syncQueue.js, src/auth/authModule.js",
+      "root_cause": "Sync queue is persisted in localStorage under QUEUE_KEY and is user-unaware. On signOut(), the queue was NOT cleared. If a different user signs in on the same device, flush() reads the old queue but uses the new user's session.user.id as user_id in the upsert row. patients_insert_own RLS evaluates user_id = auth.uid() — since user_id IS the new uid, the policy PASSES. Patient data from the previous user is uploaded to the new user's cloud account.",
+      "fix": "Added abandonQueue() to syncQueue (clears _flushTimer + _queue + QUEUE_KEY from localStorage). Called from authModule.signOut() and from _listenAuthChanges else-branch (SIGNED_OUT). Local patient data in localStorage is untouched — cloudSync Pass 2 re-enqueues it on next sign-in.",
+      "tags": ["auth", "syncQueue", "PHI", "cross-user", "sign-out", "phase-5-hardening", "critical"],
+      "related_bugs": ["bug-061"],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T13:00:00.000Z"
+    },
+    {
+      "id": "bug-066",
+      "timestamp": "2026-05-22T13:00:00.000Z",
+      "error_message": "Double hydrate/flush on every page load — INITIAL_SESSION event fires in addition to _restoreSession() scheduling",
+      "file": "src/auth/authModule.js",
+      "root_cause": "Supabase onAuthStateChange fires INITIAL_SESSION synchronously at listener registration when a session exists. _restoreSession() already scheduled hydrate/flush via setTimeout(0). _listenAuthChanges() then also scheduled hydrate/flush for the INITIAL_SESSION event. Both setTimeouts ran, doubling page-load network traffic. _syncing/_flushing guards prevented data corruption but allowed redundant network calls.",
+      "fix": "Added event === 'INITIAL_SESSION' early-return guard inside _listenAuthChanges after _setStatus. INITIAL_SESSION is skipped; all subsequent events (SIGNED_IN, TOKEN_REFRESHED, SIGNED_OUT) continue to trigger hydrate/flush as before.",
+      "tags": ["auth", "hydrate", "performance", "onAuthStateChange", "phase-5-hardening", "moderate"],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T13:00:00.000Z"
+    },
+    {
+      "id": "bug-067",
+      "timestamp": "2026-05-22T13:00:00.000Z",
+      "error_message": "Online reconnect triggers flush (write path) but NOT hydrate (read path) — changes from other devices not pulled for up to 1 hour after reconnect",
+      "file": "src/sync/syncQueue.js",
+      "root_cause": "syncQueue.init() registers: window.addEventListener('online', flush). Only the write path runs on reconnect. If another device edited patients while this device was offline, those changes are invisible until the next token refresh (hourly onAuthStateChange SIGNED_IN event triggers hydrate).",
+      "fix": "Added denaiCloudSync.hydrate() call alongside flush() in the online event listener. Both read and write paths now run on network reconnect.",
+      "tags": ["sync", "reconnect", "hydrate", "online-event", "phase-5-hardening", "moderate"],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T13:00:00.000Z"
     }
   ]
 }

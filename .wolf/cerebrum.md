@@ -4,6 +4,102 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-22
 
+## Key Learnings — Phase 5 Auth Hardening (2026-05-22)
+
+- **Sync queue is user-unaware — MUST be abandoned on sign-out.** The queue is stored in localStorage (`denaiSyncQueue_v1`) with no user identity attached. `user_id` is resolved from the CURRENT session at flush time, not at enqueue time. If a different user signs in on the same device, flush() sends old-user ops under the new user's uid — RLS `patients_insert_own` evaluates `user_id = auth.uid()`, which PASSES because user_id was set to new-user uid. This is a PHI cross-user contamination path. Fix: `abandonQueue()` in syncQueue, called from `signOut()` and `_listenAuthChanges` else branch. Local data preserved; cloudSync Pass 2 re-enqueues on next sign-in.
+- **Supabase onAuthStateChange fires INITIAL_SESSION once at listener registration if a session exists.** Combined with `_restoreSession()` scheduling hydrate/flush via `setTimeout(0)`, this creates a double-trigger on every page load. `_syncing` and `_flushing` guards prevent data corruption but allow redundant network calls. Fix: early-return guard `if (event === 'INITIAL_SESSION') return` in `_listenAuthChanges` after `_setStatus`.
+- **Online reconnect must trigger both flush AND hydrate.** The `online` event listener in `syncQueue.init()` only called `flush()`. This misses the read path: changes from other devices while this device was offline are not pulled until the next hourly token refresh. Fix: add `denaiCloudSync.hydrate()` to the online listener in `syncQueue.init()`.
+- **`signOut()` and `_listenAuthChanges` else-branch are both correct locations for sign-out cleanup.** `signOut()` runs eagerly (before the SIGNED_OUT event fires asynchronously). `_listenAuthChanges` else-branch catches sign-out from other tabs, token expiry, and cases where the SIGNED_OUT event fires without explicit `signOut()` call. All cleanup functions are idempotent — calling both is safe and intentional.
+- **`event === 'INITIAL_SESSION'` is valid in Supabase JS v2.39.7.** This event string is guaranteed by Supabase v2.x. Only fires once per `onAuthStateChange` registration. All subsequent events (SIGNED_IN, TOKEN_REFRESHED, SIGNED_OUT) continue to trigger hydrate/flush correctly. Do NOT add this guard to the else-branch — SIGNED_OUT must still clear session state.
+
+## Do-Not-Repeat (2026-05-22 — Phase 5)
+
+- **DO NOT let the sync queue persist across sign-out without calling abandonQueue().** A user-unaware queue flushed under a different user's session is a PHI boundary violation. Always call `denaiSyncQueue.abandonQueue()` in both `signOut()` and the `_listenAuthChanges` SIGNED_OUT (else) branch. (Phase 5, bug-065, 2026-05-22)
+- **DO NOT trigger hydrate/flush for the INITIAL_SESSION event in onAuthStateChange.** `_restoreSession()` already handled that session. Redundant trigger wastes bandwidth. Guard: `if (event === 'INITIAL_SESSION') return` after `_setStatus` in the `if (session)` branch. (Phase 5, bug-066, 2026-05-22)
+- **DO NOT add new sync queue ops without calling `abandonQueue()` on sign-out path.** Any future code that creates queue-like persistence (prefsSync writes, etc.) needs a matching abandon/clear on sign-out to avoid same cross-user contamination. (Phase 5, 2026-05-22)
+
+## Key Learnings — Phase 3.5 Isolation Verification Audit (2026-05-22)
+
+- **`_load()` must return a boolean so `init()` can distinguish success from transient error.** Original design: `_load` returned void on error, `init` always set `_initialized = true`. Fix: `_load` returns `true` (ok/no-clinic) or `false` (DB/network error). `init` only sets `_initialized = true` when `loaded = true`. This preserves the token-refresh guard while allowing hourly retry on transient errors.
+- **Stale clinic PHI retention is an accepted local-first limitation.** When a member is removed from `clinic_members`, their device retains existing clinic patients in localStorage. RLS prevents any new cloud access after removal, but no mechanism clears historic local data. Fix would require tracking ownership provenance per patient in localStorage — Phase 3.5+ scope.
+- **After member removal, Pass 2 of `_mergeCloudIntoLocal` loops on orphaned patients for MAX_ATTEMPTS cycles.** The hydrate fetches no clinic patients (RLS denied), so formerly-shared patients appear "local-only" to Pass 2. Re-upload attempts fail (RLS denies, user_id ≠ auth.uid()). After 5 attempts each, ops are abandoned. Self-exhausting, no infinite retry, no data corruption.
+- **Soft-delete is double-protected against cross-member writes.** Application `.eq('user_id', userId)` prevents targeting another's row at the query level. `patients_update_own` USING clause denies it at RLS level. Both layers fire.
+- **RLS maximum recursion depth is 3 for Phase 3.3–3.4 policies.** Chain terminates at `clinic_members_select_self` which has zero subqueries. Adding any subquery to `clinic_members_select_self` would re-introduce recursion risk.
+- **cloudSync SELECT has no `user_id` filter — relies purely on RLS.** This is correct and intentional. A `.eq('user_id', userId)` filter would exclude clinic patients that RLS intends to return.
+
+## Do-Not-Repeat (2026-05-22 — Phase 3.5)
+
+- **DO NOT add a `user_id` filter to cloudSync's `_fetchAndMerge` query.** This would exclude all clinic patients from hydrate — clinic members would never see each other's work. (Phase 3.5, 2026-05-22)
+- **DO NOT add a subquery to `clinic_members_select_self`.** Adding any subquery re-introduces infinite recursion potential in the `clinics_select_member` → `clinic_members` chain. Zero-subquery is what terminates it. (Phase 3.5, 2026-05-22)
+- **DO NOT let `_load()` in clinicSession return void on error.** Must return boolean. Void = always sets `_initialized = true` = permanently blocks retry on transient errors. (Phase 3.5 patch, 2026-05-22)
+- **DO NOT assume member removal clears clinic data from member's localStorage.** RLS prevents cloud access post-removal; localStorage is untouched. Phase 3.5+ "revoke" features must explicitly clear stale entries on removal detection. (Phase 3.5, 2026-05-22)
+
+## Key Learnings — Phase 3.4 Lightweight Membership Model (2026-05-22)
+
+- **`clinic_members_select_owner_roster` is the only schema addition in Phase 3.4.** The Phase 3.3 `clinic_members_select_self` policy is sufficient for members. The owner needs one additional SELECT policy to fetch all members of their clinic. Uses `EXISTS (SELECT 1 FROM clinics WHERE clinics.id = clinic_id AND clinics.owner_user_id = auth.uid())` — safe because `clinics_select_member` has the direct `owner_user_id` branch, no circular dependency.
+- **`_initialized` guard in clinicSession prevents re-querying on token refresh.** `onAuthStateChange` fires SIGNED_IN on hourly token refresh. Without the guard, clinic membership would be re-fetched every hour. `_initialized = true` after successful `_load()`; reset to `false` in `clear()` on sign-out — clean re-init on next sign-in.
+- **`createClinic()` directly updates session state instead of re-querying.** After clinic INSERT + membership INSERT, all session fields are set directly from known values. Avoids a third network round-trip and keeps UI update immediate. `_initialized = true` prevents `init()` from overwriting this state on the next `onAuthStateChange` event.
+- **`clinicId` override in `confirmNewPatient()` comes AFTER the `...DEFAULT_STATE` spread.** `DEFAULT_STATE.clinicId = null`. The override is placed as the last field so it takes precedence. Narrow async race (modal opened before init completes) defaults to null — patient stays personal, which is safe.
+- **Embedded PostgREST join `clinics(id, name)` from `clinic_members` returns an object, NOT an array.** FK is many-to-one (clinic_members.clinic_id → clinics.id). PostgREST embeds parent as `row.clinics = { id, name }`. Access with `row.clinics && row.clinics.name` — never `row.clinics[0]`.
+- **`clinicSession.clear()` is called in both `signOut()` AND the `onAuthStateChange` else branch.** Intentional: `signOut()` clears eagerly; `onAuthStateChange` catches token expiry / sign-out from another tab. Both are idempotent.
+- **Versioned asset count is now 36 (not 35).** 19 CSS + 17 JS (clinicSession.js added). Release-checklist grep count updated to 36.
+
+## Do-Not-Repeat (2026-05-22 — Phase 3.4)
+
+- **DO NOT let `clinicSession.init()` re-fetch on every `onAuthStateChange` event.** Token refresh fires SIGNED_IN hourly. Without `_initialized` guard, clinic membership is re-queried hourly. Guard makes init idempotent for session lifetime. Only `clear()` on sign-out resets it. (Phase 3.4, 2026-05-22)
+- **DO NOT add `updated_at` to the `clinics` table in Phase 3.4.** Deferred until clinic edit flow is implemented (Phase 3.1 boundary). Premature addition without trigger or update UI creates misleading stale timestamps. (2026-05-22)
+- **DO NOT add member write access to clinic patients in Phase 3.4.** syncQueue's `user_id = auth.uid()` causes ON CONFLICT DO UPDATE to evaluate against existing row's user_id. A clinic-member UPDATE policy must use membership check, not user_id. Belongs to Phase 3.5+. (Phase 3.3 boundary, preserved 2026-05-22)
+- **DO NOT use `row.clinics[0]` for the embedded PostgREST many-to-one join.** Parent FK returns an object, not an array. `[0]` always returns undefined. (Phase 3.4, 2026-05-22)
+
+## Key Learnings — Phase 3.3 RLS Isolation Foundation (2026-05-22)
+
+- **`clinics_select_member` must include `auth.uid() = owner_user_id` as a direct branch.** Without it, a clinic owner who has no membership row yet (or before the first member is inserted) cannot see their own clinic — and write policies that check `clinics.owner_user_id` would fail because the clinics table read would return 0 rows. The direct owner branch terminates the circular dependency: `clinic_members_insert_owner` reads clinics → `clinics_select_member` hits direct owner check → no further subquery needed.
+- **`clinic_members_select_self` is intentionally minimal (`user_id = auth.uid()` only).** Showing all same-clinic members requires a self-join on clinic_members with a circular check risk. Minimal policy is sufficient for all Phase 3.3 use cases: clinic visibility (clinics_select_member EXISTS check), patient access (patients_select_clinic_member EXISTS check), and self-removal. Extend in Phase 3.4 when roster UX is built.
+- **`patients_select_clinic_member` intentionally includes soft-deleted (tombstone) rows.** The policy has no `deleted_at IS NULL` filter. Clinic members need to see their clinic's tombstone rows for cross-device delete propagation to work — cloudSync's tombstone fetch queries `deleted_at IS NOT NULL` rows. The application-level `.is('deleted_at', null)` filter on the live patient fetch handles what users actually see.
+- **Multiple SELECT policies on `patients` are OR-evaluated by PostgreSQL.** `patients_select_own` (`user_id = auth.uid()`) and the new `patients_select_clinic_member` coexist cleanly — a patient is visible if EITHER condition is true. No duplication in result sets (SQL guarantees each row once). Personal patients (`clinic_id = NULL`) are excluded from the clinic policy by the `clinic_id IS NOT NULL` guard.
+- **INSERT/UPDATE/DELETE on clinic patients remain personal-ownership only in Phase 3.3.** The syncQueue always sets `user_id = auth.uid()`, so the creator can always write their own patients. Collaborative cross-member writes (member B editing member A's patient) require `patients_update_clinic_member` policy — deferred to Phase 3.4 when the clinic assignment flow is built. No user is yet creating patients attributed to another user's UID.
+- **All Phase 3.3 policies use DO blocks for idempotency.** PostgreSQL has no `CREATE POLICY IF NOT EXISTS`. The `DO $$ BEGIN ... EXCEPTION WHEN duplicate_object THEN NULL; END $$` pattern makes re-running the migration section safe. Same idiom as the Phase 3.2 FK constraint.
+- **Phase 3.3 does NOT bump `schema_ver`.** Schema version tracks structural changes that require data transformation (new columns, changed column types). RLS policies are behavioral — they affect access but not the schema of stored rows. No need to increment `schema_ver` or update `DEFAULT_SCHEMA_VER` in sync modules.
+
+## Do-Not-Repeat (2026-05-22 — Phase 3.3)
+
+- **DO NOT remove the `auth.uid() = owner_user_id` branch from `clinics_select_member`.** This direct owner check breaks the circular dependency: without it, `clinic_members_insert_owner` → `clinics` read → `clinics_select_member` → `clinic_members` EXISTS → needs membership row that hasn't been inserted yet. Removing it re-creates infinite recursion / bootstrapping failure. (Phase 3.3, 2026-05-22)
+- **DO NOT add `deleted_at IS NULL` to `patients_select_clinic_member`.** Tombstone rows must be visible to clinic members for cross-device delete propagation. Application-level queries already filter deleted_at as needed. Adding a policy-level filter would silently break clinic tombstone sync. (Phase 3.3, 2026-05-22)
+- **DO NOT add clinic-member write policies to patients in this phase.** INSERT/UPDATE/DELETE on clinic patients by non-creators requires careful syncQueue design (user_id ownership conflicts on ON CONFLICT DO UPDATE). Deferred to Phase 3.4. Adding them prematurely could break upsert conflict resolution for patients created by one member and edited by another. (Phase 3.3, 2026-05-22)
+- **DO NOT make `clinic_members_select_self` join back to clinics or do a self-join.** Any clinic_members SELECT policy that reads from clinics creates: clinics_select_member → clinic_members → clinic_members_select... If the self-join brings in clinic_members rows via the same policy, recursion depth is unbounded in theory. The direct `user_id = auth.uid()` check is safe precisely because it has no subquery. (Phase 3.3, 2026-05-22)
+
+## Key Learnings — Phase 3.2 clinic_id Propagation (2026-05-22)
+
+- **`clinic_id` is a typed column on `patients`, NOT inside state JSONB.** Ownership metadata belongs at the typed column level for future RLS and index efficiency. The serializer ALLOWED_FIELDS list deliberately excludes it. `clinicId` is captured from `op.payload` BEFORE serialization in `syncQueue.enqueue()` (same pattern as `rawNotes`), stored as `syncOp.clinicId`, and sent as `row.clinic_id` in `_executeOp()`.
+- **`ON DELETE SET NULL` is the only correct FK behavior for `patients.clinic_id`.** CASCADE would destroy PHI when a clinic is deleted. RESTRICT would block clinic deletion while patients exist. SET NULL preserves all patient records as personal/unaffiliated. This is the safe PHI ownership boundary.
+- **FK cannot be inline in CREATE TABLE patients** because `clinics` is defined later in `schema.sql`. FK is added via a Phase 3.2 migration section using a `DO $$ BEGIN ... EXCEPTION WHEN duplicate_object THEN NULL; END $$` block for idempotency. `ALTER TABLE ADD COLUMN IF NOT EXISTS` handles column idempotency.
+- **`clinic_id` is always included in upsert rows** (unlike `notes_enc` which is omitted when absent). Sending `null` is correct and intentional — it explicitly records "no clinic" and allows future de-association to propagate. This differs from `notes_enc` where null would destroy existing ciphertext.
+- **cloudSync `_buildMerged` uses `'clinic_id' in cloudRow` guard** (not just `cloudRow.clinic_id`). This distinguishes "row fetched before Phase 3.2 column existed" (key absent) from "patient has no clinic" (key present, value null). Only update `out.clinicId` when the key exists in the cloud row.
+- **Partial index `WHERE clinic_id IS NOT NULL`** keeps the index lean. Patients with no clinic (NULL) have no clinic-based routing needs and don't benefit from the index. When nearly all patients are personal/unaffiliated (Phase 3.2 baseline), the full index would index mostly nulls — wasteful.
+- **`clinicId: null` in DEFAULT_STATE** ensures that `{ ...DEFAULT_STATE, ...loaded }` gives explicit null when loaded patients have no `clinicId` key (pre-3.2 records). Not in serializer ALLOWED_FIELDS — never enters state JSONB.
+
+## Do-Not-Repeat (2026-05-22 — Phase 3.2)
+
+- **DO NOT add `clinicId` to serializer ALLOWED_FIELDS.** It is a typed DB column, not clinical state. Putting it in ALLOWED_FIELDS would duplicate it inside the `state` JSONB blob AND as a separate column — redundancy and query confusion. (Phase 3.2, 2026-05-22)
+- **DO NOT add the FK inline in CREATE TABLE patients.** The clinics table is defined later in schema.sql. Inline REFERENCES would cause a fresh-install failure. Use ALTER TABLE in the migration section. (Phase 3.2, 2026-05-22)
+- **DO NOT use CASCADE on `patients.clinic_id → clinics`.** That would cascade-delete all patient rows when a clinic is deleted — PHI destruction. Always use ON DELETE SET NULL. (Phase 3.2, 2026-05-22)
+- **DO NOT add RLS policies using clinic_id yet.** Phase 3.3 scope. Clinic-based RLS requires clinic session context, membership verification, and policy authoring. Phase 3.2 only propagates the column. (Phase 3.2, 2026-05-22)
+
+## Key Learnings — Phase 3.1 Clinic Schema Foundation (2026-05-22)
+
+- **`clinics.id` is server-generated uuid (`gen_random_uuid()`)**, unlike patient IDs which are client-generated (`p_<ts>_<rand>`). Clinic rows are created server-side; never generate clinic IDs on the client.
+- **`clinics.owner_user_id ON DELETE RESTRICT` is intentional.** CASCADE would silently destroy a clinic (and eventually its patient data) when an owner deletes their account. RESTRICT forces explicit ownership transfer before account deletion — the correct SaaS behavior.
+- **`clinic_members` uses composite PK `(clinic_id, user_id)`.** One membership row per user per clinic. The CHECK constraint `role IN ('owner', 'member')` enforces the two-role model at the DB level — no application-level validation needed.
+- **RLS is ENABLED on `clinics` and `clinic_members` without policies.** Default-deny with no policies = authenticated requests return 0 rows. This is the safe schema-only baseline. Policies come in Phase 3.2. Never leave clinic tables without `ENABLE ROW LEVEL SECURITY` — an unprotected table is accessible to any anon key holder who discovers the table name.
+- **`clinic_id` is NOT yet added to `patients`.** Phase 3.1 is schema-only. The propagation of `clinic_id` into the patient row belongs to Phase 3.2.
+- **No `updated_at` on clinic tables.** Phase 3.1 spec requires exactly (id, name, owner_user_id, created_at) for clinics. The `touch_updated_at()` trigger only fires on `profiles` and `patients`. Do not add it to clinic tables until the clinic edit flow is implemented.
+
+## Do-Not-Repeat (2026-05-22 — Phase 3.1)
+
+- **DO NOT add `clinic_id` to the patients table yet.** That is Phase 3.2. Adding it prematurely breaks the sequencing contract. (Phase 3.1 boundary, 2026-05-22)
+- **DO NOT add RLS policies to clinic tables yet.** Phase 3.1 only enables RLS (default-deny). Policies require the full ownership model and come in Phase 3.2. (Phase 3.1 boundary, 2026-05-22)
+- **DO NOT use CASCADE on `clinics.owner_user_id`.** RESTRICT is correct — see Key Learnings above. (2026-05-22)
+
 ## Key Learnings — Phase 1.2 storageKeys Migration (2026-05-22)
 
 - **Storage key namespace is now fully denai-branded:** `STORAGE_KEY='denaiCaseState_v8'`, `PATIENTS_KEY='denaiPatients_v2'`, live dark mode key = `denaiDarkMode`. `HISTORY_KEY='dandyCaseHistory_v1'` and `ACTIVE_PT_KEY='dandyActivePatient_v1'` were NOT in Phase 1.2 scope — left unchanged.
