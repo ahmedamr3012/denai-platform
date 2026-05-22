@@ -1494,6 +1494,24 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-22T23:10:02.717Z"
+    },
+    {
+      "id": "bug-088",
+      "timestamp": "2026-05-22T23:32:27.255Z",
+      "error_message": "smoke-implant, smoke-bridge, smoke-restorative-visible fail: #crownRiskSection exists / #implantRiskSection exists checks fail after Phase 21 React extraction",
+      "file": "src/react/RiskPanel.js",
+      "root_cause": "RiskPanelComponent returned null for inactive sections (crownSection = null when showCrown=false, implantSection = null when showImplant=false). Smoke tests use querySelector(#id) !== null — null React output removes the element entirely. Pre-React template always emitted both IDs, hiding inactive ones with display:none.",
+      "fix": "Always render both #implantRiskSection and #crownRiskSection divs. Visibility controlled by style={{ display: none }} on the container when showImplant/showCrown is false. Content (RiskRow children) is only populated when risks data is present — but the container is always in the DOM.",
+      "tags": [
+        "smoke-test",
+        "react-island",
+        "dom-selector",
+        "backward-compat",
+        "phase-21"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T23:32:27.255Z"
     }
   ]
 }

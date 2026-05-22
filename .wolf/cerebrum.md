@@ -18,6 +18,7 @@
 - **DO NOT call `ReactDOM.createRoot()` without checking _riskMount element ref.** After `buildAICardStructure()` rebuilds the card via `body.innerHTML = ...`, the `#riskPanelMount` element is a new object. Reusing `_riskRoot` from the old element silently fails. Always compare `mount !== _riskMount` before deciding whether to create a new root. (Phase 21, 2026-05-23)
 - **DO NOT add React CDN from unpkg.com or any domain not in the CSP whitelist.** The CSP `script-src` only allows `'self' 'unsafe-inline' https://cdn.jsdelivr.net`. Using `https://unpkg.com` will be blocked silently — React globals will be undefined and the risk panel will be blank. Always use `cdn.jsdelivr.net`. (Phase 21, 2026-05-23)
 - **DO NOT attempt JSX in any src/react/ file without a build pipeline.** These files are loaded as plain `<script>` tags. JSX is not valid JS. Use `React.createElement` (aliased as `h`) throughout. (Phase 21, 2026-05-23)
+- **DO NOT return `null` for conditionally-inactive React sections that have legacy DOM selector contracts.** When a React component replaces an imperative template that always rendered certain IDs (e.g., `#implantRiskSection`, `#crownRiskSection`), those IDs must always be present in the DOM — hiding them with `style={{ display: 'none' }}` not `null`. Returning `null` removes the element; the smoke suite's `querySelector('#id') !== null` check fails. Control visibility via the section's own `style` prop. (Phase 21 CI regression, 2026-05-23)
 
 ## Key Learnings — Phase 20 TypeScript Foundations (2026-05-23)
 

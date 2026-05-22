@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-22T23:10:02.704Z
-> Files: 43 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-22T23:31:24.953Z
+> Files: 41 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -58,8 +58,7 @@
 
 ## src/react/
 
-- `RiskPanel.js` — Phase 21: React risk indicator panel island; window.denaiRiskPanel IIFE; RiskPanelComponent renders .risk-box with all implant/crown/multi-tooth/restorative risk rows; _computeRisks() derives visibility + hasWarning from state+ai props; RiskRow/RiskVal/Tooltip sub-components; no DOM mutations; global React.createElement (~175 lines)
-- `reactBridge.js` — Phase 21: React island mount bridge; window.denaiReactBridge IIFE; updateRiskPanel(state, ai) manages ReactDOM.createRoot() lifecycle; detects card rebuilds via _riskMount element-ref comparison; coexists with inline script orchestration (~30 lines)
+- `RiskPanel.js` — src/react/RiskPanel.js (~2653 tok)
 
 ## src/render/
 
@@ -69,7 +68,6 @@
 - `materialPanel.js` — renderMaterial; material recommendation panel for primary/secondary material display (~800 tok)
 - `patientPanel.js` — renderPatientDisplay; patient demographics and condition summary panel (~1200 tok)
 - `planFragments.js` — _getAiForPlan/buildTreatmentPathRows; treatment path HTML for Plan view; pure over parameters (~600 tok)
-- `riskPanel.js` — Phase 21: thin delegation shim; renderRisk(state, ai) delegates to denaiReactBridge.updateRiskPanel(); imperative DOM mutations and _applyRiskCompact moved to src/react/RiskPanel.js; call signature unchanged (~15 lines)
 - `timeline.js` — _synthesizeWfBaseline/_renderWfTimeline; workflow timeline HTML builder; pure over patient/event parameters (~500 tok)
 - `txCards.js` — Phase 17: Treatment card rendering; setCardScore score bar helper; renderTxCards dispatch; renderMultiTxCards (2-implant/bridge/cantilever); renderRestorativeTxCards (restorative slot labels); updateCrownCardState disabled/viable state; globals: $, S (~2320 tok)
 

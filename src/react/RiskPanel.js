@@ -122,11 +122,12 @@ window.denaiRiskPanel = (function () {
     var risks  = _computeRisks(props.state, props.ai);
     var hidden = !risks.hasWarning; // hide individual rows when all risks are Low
 
-    // Implant risk section
-    var implantSection = null;
+    // Implant risk section — always rendered in DOM for backward-compatible selectors;
+    // visibility controlled by style.display so #implantRiskSection always exists.
+    var implantRows = [];
     if (risks.showImplant && risks.implantRisks) {
       var ir = risks.implantRisks;
-      var implantRows = [
+      implantRows = [
         h(RiskRow, { key: 'peri', label: 'Peri-implantitis Risk', level: ir.peri,    hidden: hidden, ariaLabel: 'Peri-implantitis risk info', tooltip: 'Risk of inflammation around implant\nbased on hygiene & bone quality' }),
         h(RiskRow, { key: 'bone', label: 'Bone Loss Risk',        level: ir.bone,    hidden: hidden, ariaLabel: 'Bone loss risk info',          tooltip: 'Likelihood of peri-implant\nbone resorption over time' }),
         h(RiskRow, { key: 'occ',  label: 'Occlusal Overload',     level: ir.occ,     hidden: hidden, ariaLabel: 'Occlusal overload risk info',   tooltip: 'Excessive bite force risk —\nnight guard recommended' }),
@@ -135,21 +136,23 @@ window.denaiRiskPanel = (function () {
       if (risks.showDiabetes) {
         implantRows.push(h(RiskRow, { key: 'diab', label: 'Diabetes Risk', level: risks.diabetesLevel, hidden: hidden, ariaLabel: 'Diabetes risk info', tooltip: 'Uncontrolled HbA1c ≥7.5% causes\n2–3× higher implant failure & poor healing' }));
       }
-      implantSection = h('div', { id: 'implantRiskSection' }, implantRows);
     }
+    var implantSection = h('div', { id: 'implantRiskSection', style: risks.showImplant ? undefined : { display: 'none' } }, implantRows);
 
-    // Crown risk section
-    var crownSection = null;
+    // Crown risk section — always rendered in DOM for backward-compatible selectors;
+    // visibility controlled by style.display so #crownRiskSection always exists.
+    var crownRows = [];
     if (risks.showCrown && risks.crownRisks) {
       var cr = risks.crownRisks;
-      crownSection = h('div', { id: 'crownRiskSection' }, [
+      crownRows = [
         h(RiskRow, { key: 'caries',    label: 'Secondary Caries Risk', level: cr.caries,    hidden: hidden, tooltip: 'Risk of decay at crown margin.\nHygiene is the #1 factor' }),
         h(RiskRow, { key: 'crownFrac', label: 'Crown Fracture Risk',   level: cr.crownFrac, hidden: hidden, tooltip: 'Risk of ceramic fracture.\nParafunction = 60% failure rate' }),
         h(RiskRow, { key: 'rootFrac',  label: 'Root Fracture Risk',    level: cr.rootFrac,  hidden: hidden, tooltip: 'Risk of vertical root fracture.\nNo ferrule = 60% early failure' }),
         h(RiskRow, { key: 'endo',      label: 'Endodontic Failure',    level: cr.endo,      hidden: hidden, tooltip: 'Risk of RCT failure after crown.\nRCT done = 91.3% survival at 10yr' }),
         h(RiskRow, { key: 'parafunc',  label: 'Parafunction Damage',   level: cr.parafunc,  hidden: hidden, tooltip: 'Bruxism/clenching damage.\nNight guard REQUIRED if present' })
-      ]);
+      ];
     }
+    var crownSection = h('div', { id: 'crownRiskSection', style: risks.showCrown ? undefined : { display: 'none' } }, crownRows);
 
     return h('div', { className: 'risk-box', 'aria-label': 'Risk indicators' },
       h('div', { className: 'risk-title', 'aria-hidden': 'true' }, 'Risk Indicators'),
