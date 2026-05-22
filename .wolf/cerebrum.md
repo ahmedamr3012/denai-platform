@@ -4,6 +4,90 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-22
 
+## Key Learnings — Phase 10 Report Presentation (2026-05-22)
+
+- **REPORT_CSS is a self-contained popup CSS string — no app CSS variables are available.** The report opens in a `window.open` blob URL. None of the main app's `:root` CSS custom properties (like `--c-brand-rgb`) are defined there. Any CSS in `REPORT_CSS` that uses `var(--c-brand-rgb)` silently produces invalid values. Always hardcode hex/rgba in REPORT_CSS. The fix: `rgba(var(--c-brand-rgb),.3)` → `rgba(31,122,79,.3)`.
+- **`print-color-adjust: exact` is required for colored risk pills, confidence ring, and gradient header to survive print/PDF export.** Without it, colored backgrounds wash out to white/gray on most browsers when printing. Add `*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}` as the first rule inside `@media print` in both REPORT_CSS and print.css.
+- **`@page{size:A4;margin:15mm 18mm}` belongs at the top of REPORT_CSS (outside @media print).** This sets consistent PDF page sizing when the user chooses "Save as PDF" in the browser print dialog. Without it, page size and margins are browser-default (varies by system locale).
+- **`.section+.section{border-top:1px solid #F3F4F6}` was invisible.** `#F3F4F6` is the same near-white as the page background — section separators did not visually separate sections. Changed to `#E5E7EB`. Do not revert to #F3F4F6.
+- **reportTemplates.js references BRAND, escapeHtml, isMaxilla, isPosteriorTooth from the inline script.** It is NOT self-contained. Load order: brand.js must load before reportTemplates.js. Never move reportTemplates.js to a context where those globals are unavailable.
+- **BRAND object (brand.js) is Phase 3A-governed.** `rptShell` badge text 'AI Workflow' and tagline 'AI-Assisted Clinical Workflow' are hardcoded in reportTemplates.js and Phase 3A-approved — do not change them without Phase 3A review.
+
+## Do-Not-Repeat (2026-05-22 — Phase 10)
+
+- **DO NOT use CSS custom properties (`var(--xxx)`) inside REPORT_CSS.** The report popup is a separate browsing context — app-level CSS variables are not inherited. Use hardcoded values only. (Phase 10, 2026-05-22)
+- **DO NOT add `@media print` to REPORT_CSS without `print-color-adjust: exact`.** Without it, colored elements (risk pills, gradient header) print gray. (Phase 10, 2026-05-22)
+- **DO NOT set `.section+.section` separator to near-white (#F3F4F6).** Use #E5E7EB minimum for visible section separation in the report. (Phase 10, 2026-05-22)
+
+## Key Learnings — Phase 9 Guided Onboarding (2026-05-22)
+
+- **`denaiGuidance` is a pure seen-state tracker — no rendering.** `hasSeen(key)` / `markSeen(key)` backed by localStorage with `denaiGuide_v1_` prefix. Defaults to `true` on storage error so guidance never blocks workflow. Rendering is done entirely by existing `renderWfGuidance()` in the inline script. No separate renderer needed.
+- **`_deriveGuidanceContext` returns `{ tip }` OR `{ shell }` OR `{ shell: null }`.** The `tip` field is for dismissible one-time guidance; `shell` is for ongoing workflow status text. `renderWfGuidance()` checks `ctx.tip` first (renders with dismiss button), falls through to `ctx.shell` (renders without button). Callers do not need to know which field is present.
+- **Phase 9 'persist_tip' fires once for no-condition patients.** The tip surfaces in the `#wfGuidance` area when: (a) `patientWorkflowShell` is visible (patient-scoped view), (b) patient has no condition set, (c) `denaiGuidance.hasSeen('persist_tip')` is false. After clicking "Got it", `markSeen` persists the flag and `renderWfGuidance()` re-runs — tip disappears permanently. Self-dismissing, non-blocking, not shown for patients who already have a condition.
+- **Entry overlay is the highest-leverage first-touch onboarding surface.** Copy changes cost zero risk and reach every new user. Key operational fact to communicate: "Cases save automatically and persist across sessions." The old copy said "stored locally by default" which doesn't answer "will it be there when I come back?" The new copy answers it directly.
+- **Sidebar `.user-plan` text is a constant operational trust signal.** Changed from 'Local-only mode' (mode label) to 'Cases save to this device' (operational fact). This answers the main first-use anxiety: "is my work safe?" without requiring the user to dig into auth settings. The signed-in branch keeps '☁ Cloud sync active' unchanged.
+- **`guidanceModule.js` loads second in defer chain (after frictionLog.js).** frictionLog.js must remain first. guidanceModule has no ordering requirement relative to auth/sync defer scripts — it only needs to be defined before `init()` DOMContentLoaded fires, which is guaranteed for all defer scripts.
+
+## Do-Not-Repeat (2026-05-22 — Phase 9)
+
+- **DO NOT add rendering logic to `guidanceModule.js`.** The module is a pure seen-state tracker. Guidance rendering belongs in `renderWfGuidance()` (inline script) which already has access to `S`, `escapeHtml`, and DOM. Adding a renderer to the module would create a cross-script DOM dependency. (Phase 9, 2026-05-22)
+- **DO NOT show the persist_tip for patients who already have a condition set.** The tip is for new/empty patients only — the `if (!p.condition)` branch in `_deriveGuidanceContext`. Patients with conditions already have workflow guidance from the existing `shell` branches. (Phase 9, 2026-05-22)
+- **DO NOT add a second guidance key for the same surface.** Only one guidance tip is shown in `#wfGuidance` at a time. Adding a second tip key would require a queue or priority system. Keep guidance surfaces orthogonal: one tip per surface location. (Phase 9, 2026-05-22)
+
+## Key Learnings — Phase 8 Workflow Observation (2026-05-22)
+
+- **`workflow_observations` is INSERT-only from the client.** No SELECT policy — rows are permanently write-only from the browser. Analysis is done via Supabase dashboard with service role. This is intentional: clients observing their own observations is not the goal; aggregated signal analysis by the operator is.
+- **`session_id` is an ephemeral per-page-load UUID — NOT linked to auth.users.** This is a deliberate privacy decision. Rows in `workflow_observations` are permanently anonymous at the schema level (no user_id column). Session linkage enables within-session event correlation without user tracking.
+- **`denaiObserve.flush()` is called from within auth setTimeout blocks, not synchronously.** It runs after denaiSyncQueue.flush() and hydrate() — so observation upload piggybacks on the existing auth-settle async window. No new async flows introduced.
+- **`frictionLog.js` must be the FIRST defer script** (before supabase.js and authModule.js). All auth/sync scripts call `denaiObserve.record()` with `typeof denaiObserve !== 'undefined'` guards — the guard is safe but execution order ensures it's always defined when hooks fire.
+- **Event type allowlist is enforced in JS, NOT at the DB level.** `workflow_observations.event_type` is unconstrained text. The closed allowlist (`ALLOWED_TYPES`) in `frictionLog.js` is the enforcement point. This follows the same pattern as `clinic_subscriptions.status` — no CHECK constraint, documented expected values.
+- **Ring buffer max is 200 events (~20KB).** Oldest events are trimmed when the buffer exceeds MAX_EVENTS. This prevents localStorage bloat across long sessions. Buffer persists across page loads until successfully flushed.
+- **`flags` object accepts ONLY boolean/numeric values.** Strings are silently dropped at the `record()` call site. This is the PHI guard — no clinical free text, patient names, or notes can enter the observation stream even accidentally.
+- **Online/offline hooks live in `syncQueue.init()`** — not in `frictionLog.js`. The frictionLog module is pure data capture; lifecycle management (when to capture) belongs in the modules that manage connectivity state.
+
+## Do-Not-Repeat (2026-05-22 — Phase 8)
+
+- **DO NOT add a SELECT policy to `workflow_observations`.** The table is write-only from the client. Adding SELECT would expose all sessions' observation data to any authenticated user. Analysis must be done via service role only. (Phase 8, 2026-05-22)
+- **DO NOT add `user_id` or `clinic_id` columns to `workflow_observations`.** The privacy contract requires permanent anonymity at the schema level. session_id (ephemeral, non-identifying) is the only correlation dimension. (Phase 8, 2026-05-22)
+- **DO NOT call `denaiObserve.flush()` directly from `syncQueue.js` or `cloudSync.js`.** Only `authModule.js` (which holds the Supabase client) should call flush. Sync modules can call `record()` freely — they have no Supabase client access. (Phase 8, 2026-05-22)
+- **DO NOT add strings to `flags` in any `denaiObserve.record()` call.** frictionLog.js silently drops them, but the real risk is accidental PHI leakage if a caller passes `{ patientName: 'Mohamed A.' }`. Only pass booleans and numbers: `{ duration_ms: 1200, had_error: true }`. (Phase 8, 2026-05-22)
+- **DO NOT add event types not in the ALLOWED_TYPES list without updating frictionLog.js.** Unknown types are silently dropped by record(). New friction signals must be added to the allowlist first. (Phase 8, 2026-05-22)
+
+## Key Learnings — Phase 7 Subscription Groundwork (2026-05-22)
+
+- **`clinic_subscriptions` is a separate table, NOT columns on `clinics`.** Billing lifecycle state (status, plan_id, period timestamps, external_billing_id) changes at a different rate than clinic identity (name, owner). Separation keeps clinic rows stable, lets subscription rows upsert freely (future Stripe webhooks), and makes the billing boundary explicit. Never add subscription metadata directly to `clinics`.
+- **Absent `clinic_subscriptions` row = no subscription (graceful pre-subscription state).** NULL sentinel approach was rejected in favor of absent row: absent row requires no backfill, no DEFAULT values, and is unambiguous. Application code checking subscription status should do: `SELECT ... FROM clinic_subscriptions WHERE clinic_id = $1` and treat 0 rows as "no plan / free baseline". Do NOT treat NULL status as a subscription state.
+- **`status` is unconstrained text (no CHECK).** Mirrors Stripe's exact status values ('trialing', 'active', 'past_due', 'canceled', 'incomplete') for future direct mapping. No CHECK constraint — allows new values without a migration. Never add a CHECK constraint to `status`; use application-layer validation instead.
+- **`plan_id` is unconstrained text (no FK to a plans table).** A plans catalog table would create a hard dependency that migrates on every pricing change. Text column with expected values documented in comments is the correct approach at this stage.
+- **`external_billing_id UNIQUE` creates an implicit PostgreSQL index.** The UNIQUE constraint is sufficient for all primary access patterns on this column. No separate CREATE INDEX needed. Similarly, `clinic_id UNIQUE` creates the implicit index for clinic-based lookups.
+- **RLS uses the same `EXISTS (SELECT 1 FROM clinics WHERE owner_user_id = auth.uid())` pattern** as all other owner-only clinic policies. The direct `owner_user_id` branch in `clinics_select_member` terminates the chain — no new circular dependency introduced. Billing metadata is owner-only; clinic members never see subscription rows.
+- **No client code changes in Phase 7.** `clinicSession.js` does NOT load subscription data yet. The schema groundwork is operationally invisible to the application layer. Future: add `clinicSession.getSubscriptionStatus()` + `clinicSession.getPlanId()` when feature-gating is needed (Phase 8+).
+- **patients.schema_ver stays at 1.** Phase 7 adds a new independent table — no change to the `patients` table structure. Schema file revision bumped to 3.
+
+## Do-Not-Repeat (2026-05-22 — Phase 7)
+
+- **DO NOT add subscription columns directly to the `clinics` table.** Billing state changes at a different cadence than clinic identity. Use `clinic_subscriptions` as a separate 1:1 table. Mixing concerns makes future Stripe webhook upserts clobber clinic metadata. (Phase 7, 2026-05-22)
+- **DO NOT use NULL status to mean "active free plan".** Absent row = no subscription. NULL status (when a row exists) is a structurally ambiguous intermediate state. Application code should check for row existence first; status values are only meaningful when a row exists. (Phase 7, 2026-05-22)
+- **DO NOT add a CHECK constraint on `clinic_subscriptions.status`.** New Stripe status values or alternative billing providers would require an ALTER TABLE migration just to add an allowed value. Unconstrained text + documented expected values is the stable pattern. (Phase 7, 2026-05-22)
+- **DO NOT load subscription status in `clinicSession.js` before feature-gating is needed.** Every init() query adds latency to the auth settle path. Add subscription loading when a concrete entitlement check requires it — not speculatively. (Phase 7, 2026-05-22)
+
+## Key Learnings — Phase 6 Production Supabase Stabilization (2026-05-22)
+
+- **ALL CREATE TRIGGER statements must be wrapped in DO $$ EXCEPTION duplicate_object blocks.** PostgreSQL has no `CREATE TRIGGER IF NOT EXISTS` (unlike indexes). The existing pattern for FK constraints and policies uses the DO/EXCEPTION idiom — triggers must match. Without idempotency, running schema.sql on an existing database (disaster recovery, fresh environment rebuild) fails at the trigger lines and halts the entire migration.
+- **Missing composite index `clinic_members(user_id, clinic_id)` was the only RLS scan gap.** The `patients_select_clinic_member` EXISTS subquery needs `(user_id = auth.uid() AND clinic_id = patients.clinic_id)`. The old single-column `user_idx` on `(user_id)` works but forces a row-filter pass for each patient evaluated. The composite `(user_id, clinic_id)` allows a single index-only lookup. Add this index alongside `clinic_members_user_idx` in any schema that uses clinic-member patient policies.
+- **`ACTIVE_KEY` in cloudSync.js was dead code** — `dandyActivePatient_v1` was a legacy holdover from an older active-patient restoration design. Once `denaiApplyCloudMerge` was introduced as an inline-script bridge, cloudSync no longer needed to manage the active patient key itself. When refactoring cloudSync, always check for abandoned variables from superseded design patterns.
+- **schema_ver file-revision vs row-level version are different things.** The schema file header "SCHEMA VERSION: N" tracks the evolution of the file, not the row-level `schema_ver` column default. These can diverge: Phase 3.2 bumped the file revision to 2 (clinic_id added) but kept the row-level default at 1 because clinic_id is nullable/additive with no data transformation requirement. Document this distinction explicitly to prevent future developers from incorrectly bumping `SYNC_SCHEMA_VERSION` in serializer.js.
+- **FK and cascade semantics are all correct** — verified: profiles CASCADE, patients CASCADE, clinics RESTRICT (owner), clinic_members CASCADE (both FKs), patients.clinic_id SET NULL. The PHI ownership model is structurally sound.
+- **RLS policy chain is safe and not circular** — confirmed: direct `owner_user_id = auth.uid()` branch in `clinics_select_member` terminates the chain; `clinic_members_select_self` has zero subqueries (recursion depth floor); maximum recursion depth remains 3.
+- **Hydrate query is correctly covered by existing indexes** — `patients_user_active_idx (user_id, updated_at DESC) WHERE deleted_at IS NULL` covers the personal-patient hydrate path. `patients_clinic_idx (clinic_id) WHERE clinic_id IS NOT NULL` covers the clinic-patient access path. No additional indexes needed for the current hydrate query shape.
+- **Upsert does not implement DB-level last-write-wins** — `syncQueue._executeOp` uses `.upsert(row, { onConflict: 'id' })` with no WHERE guard. Multi-device conflicts are resolved at the application merge layer (cloudSync `_mergeOne` with `_syncedAt` timestamps) rather than at the database level. This is an accepted limitation documented in the schema comment section. No change needed.
+
+## Do-Not-Repeat (2026-05-22 — Phase 6)
+
+- **DO NOT add a bare CREATE TRIGGER without an idempotency guard.** Use `DO $$ BEGIN CREATE TRIGGER...; EXCEPTION WHEN duplicate_object THEN NULL; END $$`. PostgreSQL 14+ has `CREATE OR REPLACE TRIGGER` but the DO block is compatible with any version and matches the existing schema idiom. (Phase 6, bug-069, 2026-05-22)
+- **DO NOT add a clinic_members SELECT policy that joins on clinic_id without also adding a composite index `(user_id, clinic_id)` or `(clinic_id, user_id)`.** The single-column `user_idx` causes a filter pass; the composite index makes it an index-only scan. (Phase 6, bug-070, 2026-05-22)
+- **DO NOT confuse schema file revision (header comment "SCHEMA FILE REVISION: N") with the row-level schema_ver column.** The file revision tracks structural evolution of schema.sql. The row-level schema_ver is bumped ONLY when existing rows require data transformation. Additive nullable columns do NOT bump row-level schema_ver. (Phase 6, 2026-05-22)
+
 ## Key Learnings — Phase 5 Auth Hardening (2026-05-22)
 
 - **Sync queue is user-unaware — MUST be abandoned on sign-out.** The queue is stored in localStorage (`denaiSyncQueue_v1`) with no user identity attached. `user_id` is resolved from the CURRENT session at flush time, not at enqueue time. If a different user signs in on the same device, flush() sends old-user ops under the new user's uid — RLS `patients_insert_own` evaluates `user_id = auth.uid()`, which PASSES because user_id was set to new-user uid. This is a PHI cross-user contamination path. Fix: `abandonQueue()` in syncQueue, called from `signOut()` and `_listenAuthChanges` else branch. Local data preserved; cloudSync Pass 2 re-enqueues on next sign-in.

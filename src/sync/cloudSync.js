@@ -26,7 +26,6 @@
 window.denaiCloudSync = (function () {
 
   var PATIENTS_KEY   = 'denaiPatients_v2';
-  var ACTIVE_KEY     = 'dandyActivePatient_v1';
   var HISTORY_PREFIX = 'dandyCaseHistory_v1_';
 
   // Default placeholder name — used to detect the auto-generated seed patient
@@ -53,6 +52,7 @@ window.denaiCloudSync = (function () {
       await _fetchAndMerge(client);
     } catch (e) {
       console.warn('[denaiCloudSync] hydrate failed:', e.message);
+      try { if (typeof denaiObserve !== 'undefined') denaiObserve.record('hydrate_failed'); } catch (_e) {}
     } finally {
       _syncing = false;
     }

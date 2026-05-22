@@ -12,7 +12,12 @@
 -- • `activeSite` is NOT stored here — it is device-local navigation state.
 -- • AI outputs are NOT stored here — they are computed deterministically.
 --
--- SCHEMA VERSION: 2  (Phase 3.2: clinic_id column added to patients)
+-- SCHEMA FILE REVISION: 4  (Phase 8: workflow_observations table added)
+--   Revision 3: Phase 7 — clinic_subscriptions table added
+--   Revision 2: Phase 3.2 — clinic_id column added to patients
+-- ROW-LEVEL schema_ver: still 1 — all Phase 3–8 additions are either new tables
+-- or nullable additive columns requiring no data transformation on existing rows.
+-- See MIGRATION NOTES below for when to bump schema_ver.
 -- ============================================================
 
 
@@ -42,9 +47,12 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER profiles_updated_at
-  BEFORE UPDATE ON profiles
-  FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER profiles_updated_at
+    BEFORE UPDATE ON profiles
+    FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 -- ============================================================
@@ -120,9 +128,12 @@ CREATE TABLE IF NOT EXISTS patients (
 );
 
 -- Auto-update updated_at
-CREATE TRIGGER patients_updated_at
-  BEFORE UPDATE ON patients
-  FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER patients_updated_at
+    BEFORE UPDATE ON patients
+    FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 -- ============================================================
@@ -334,6 +345,12 @@ CREATE INDEX IF NOT EXISTS clinics_owner_idx
 -- "Which clinics does this user belong to?" — used by future auth association.
 CREATE INDEX IF NOT EXISTS clinic_members_user_idx
   ON clinic_members (user_id);
+
+-- Composite: satisfies patients_select_clinic_member EXISTS subquery
+-- (clinic_members.clinic_id = patients.clinic_id AND clinic_members.user_id = auth.uid())
+-- in a single index-only lookup instead of a filter pass over user_idx rows.
+CREATE INDEX IF NOT EXISTS clinic_members_user_clinic_idx
+  ON clinic_members (user_id, clinic_id);
 
 
 -- ============================================================
@@ -591,5 +608,228 @@ DO $$ BEGIN
           AND clinics.owner_user_id = auth.uid()
       )
     );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+
+-- ============================================================
+-- Phase 7 — Subscription Groundwork
+-- ============================================================
+--
+-- PURPOSE: Establishes the minimal ownership boundary for future subscriptions.
+-- This is foundational schema ONLY — no payment collection, no billing logic,
+-- no feature-gating enforcement, no Stripe integration.
+--
+-- WHAT THIS ENABLES:
+--   - Future subscription ownership: one subscription row per clinic
+--   - Future plan association: plan_id (open text, no FK, extensible)
+--   - Future entitlement checks: status field for lifecycle state
+--   - Future Stripe mapping: external_billing_id (NULL until Stripe)
+--   - Future billing period tracking: trial_ends_at, current_period_ends_at
+--
+-- WHAT IS INTENTIONALLY DEFERRED:
+--   - Stripe checkout / payment collection      (Phase 8+)
+--   - Feature-gating enforcement / plan limits  (Phase 8+)
+--   - Subscription creation UI / onboarding     (Phase 8+)
+--   - Invoice records / payment history         (future)
+--   - Seat accounting / per-user billing        (future)
+--   - Webhook receivers / payment retries       (future)
+--
+-- SAFETY PROPERTIES:
+--   - Additive: no existing tables or rows are touched.
+--   - Absent row = no subscription (graceful pre-subscription / free state).
+--   - ON DELETE CASCADE from clinics: subscription row removes with its clinic.
+--   - RLS: owner-only — members never see billing metadata.
+--   - No client code changes: local-first continuity fully preserved.
+--
+-- NOTE: patients.schema_ver NOT bumped — no change to the patients table.
+--       Schema FILE revision bumped to 3 (see header comment).
+-- ============================================================
+
+
+-- ============================================================
+-- TABLE: clinic_subscriptions
+-- One row per clinic. Absent row = pre-subscription / free-baseline state.
+-- Created when a clinic owner activates a plan (Phase 8+).
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS clinic_subscriptions (
+
+  id                     uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  -- Ownership anchor. UNIQUE enforces one subscription per clinic.
+  -- CASCADE: subscription row is removed when its clinic is deleted.
+  clinic_id              uuid        NOT NULL UNIQUE
+                                     REFERENCES clinics(id) ON DELETE CASCADE,
+
+  -- Lifecycle status. Mirrors Stripe subscription status values for future
+  -- direct mapping — no translation layer needed when Stripe is integrated.
+  -- NULL  = no subscription created yet (free baseline / pre-subscription).
+  -- Expected future values: 'trialing' | 'active' | 'past_due' | 'canceled' | 'incomplete'
+  -- Unconstrained text: adding new values never requires a schema migration.
+  status                 text,
+
+  -- Plan identifier. Open text — no FK to a plans table, extensible without
+  -- additional migrations. Future values: 'clinic_monthly', 'clinic_annual', etc.
+  -- NULL until the owner selects a plan.
+  plan_id                text,
+
+  -- External billing system identifier.
+  -- NULL until Stripe (or alternative) is integrated.
+  -- UNIQUE: one active billing subscription per clinic when non-null.
+  -- Future: will hold Stripe's 'sub_xxxx' subscription ID.
+  external_billing_id    text        UNIQUE,
+
+  -- Subscription period boundaries. NULL until billing is active.
+  trial_ends_at          timestamptz,
+  current_period_ends_at timestamptz,
+
+  created_at             timestamptz NOT NULL DEFAULT now(),
+  updated_at             timestamptz NOT NULL DEFAULT now()
+
+);
+
+-- Auto-update updated_at on any subscription row change.
+DO $$ BEGIN
+  CREATE TRIGGER clinic_subscriptions_updated_at
+    BEFORE UPDATE ON clinic_subscriptions
+    FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+
+-- ============================================================
+-- ROW LEVEL SECURITY — clinic_subscriptions
+-- Owner-only: billing metadata is never visible to clinic members.
+-- Uses the same clinics EXISTS pattern as other owner policies.
+-- The direct owner_user_id branch in clinics_select_member terminates
+-- the chain — no circular dependency introduced.
+-- ============================================================
+
+ALTER TABLE clinic_subscriptions ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  CREATE POLICY "clinic_subscriptions_select_owner"
+    ON clinic_subscriptions FOR SELECT
+    USING (
+      EXISTS (
+        SELECT 1 FROM clinics
+        WHERE clinics.id            = clinic_id
+          AND clinics.owner_user_id = auth.uid()
+      )
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "clinic_subscriptions_insert_owner"
+    ON clinic_subscriptions FOR INSERT
+    WITH CHECK (
+      EXISTS (
+        SELECT 1 FROM clinics
+        WHERE clinics.id            = clinic_id
+          AND clinics.owner_user_id = auth.uid()
+      )
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "clinic_subscriptions_update_owner"
+    ON clinic_subscriptions FOR UPDATE
+    USING (
+      EXISTS (
+        SELECT 1 FROM clinics
+        WHERE clinics.id            = clinic_id
+          AND clinics.owner_user_id = auth.uid()
+      )
+    )
+    WITH CHECK (
+      EXISTS (
+        SELECT 1 FROM clinics
+        WHERE clinics.id            = clinic_id
+          AND clinics.owner_user_id = auth.uid()
+      )
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "clinic_subscriptions_delete_owner"
+    ON clinic_subscriptions FOR DELETE
+    USING (
+      EXISTS (
+        SELECT 1 FROM clinics
+        WHERE clinics.id            = clinic_id
+          AND clinics.owner_user_id = auth.uid()
+      )
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+
+-- ============================================================
+-- Phase 8 — Workflow Observation Groundwork
+-- ============================================================
+--
+-- PURPOSE: Minimal friction observation table for operational signal capture.
+-- No PHI. No user linkage. Write-only from the client perspective.
+--
+-- PRIVACY DESIGN:
+--   - session_id is an ephemeral per-page-load UUID — NOT linked to auth.users.
+--   - event_type is drawn from a closed allowlist in frictionLog.js.
+--   - flags JSONB contains ONLY boolean/numeric values (enforced in frictionLog.js).
+--   - No user_id column: rows are permanently anonymous at the schema level.
+--
+-- ACCESS CONTROL:
+--   - Any authenticated user can INSERT their session events.
+--   - No SELECT policy: client cannot read back its own observations.
+--   - Analysis is done via Supabase dashboard (service role) only.
+--
+-- SAFETY PROPERTIES:
+--   - Additive: no existing tables or rows are touched.
+--   - Local-first: frictionLog.js buffers locally; upload is fire-and-forget.
+--   - Offline-safe: if upload fails, local buffer is retained for next attempt.
+--
+-- NOTE: patients.schema_ver NOT bumped — no change to the patients table.
+--       Schema FILE revision bumped to 4 (see header comment).
+-- ============================================================
+
+
+-- ============================================================
+-- TABLE: workflow_observations
+-- Operational friction signals. Anonymous. Write-only from client.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS workflow_observations (
+
+  id          uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  -- Per-page-load random UUID. Not linked to auth.users or clinics.
+  -- Links events within a single session for pattern analysis only.
+  session_id  text        NOT NULL,
+
+  -- Allowlisted behavioral signal type (enforced in frictionLog.js).
+  -- Examples: 'sync_error', 'offline_detected', 'hydrate_failed'.
+  event_type  text        NOT NULL,
+
+  -- Optional numeric/boolean context values only. Never strings (PHI guard).
+  -- Example: { duration_ms: 1200, is_online: false }
+  flags       jsonb,
+
+  occurred_at timestamptz NOT NULL DEFAULT now()
+
+);
+
+-- Default-deny. Client has INSERT only — no SELECT from the client side.
+ALTER TABLE workflow_observations ENABLE ROW LEVEL SECURITY;
+
+-- Any authenticated user can INSERT friction events for their session.
+-- No SELECT policy: rows are write-only from client. Service role reads for analysis.
+DO $$ BEGIN
+  CREATE POLICY "observations_insert_authenticated"
+    ON workflow_observations FOR INSERT
+    TO authenticated
+    WITH CHECK (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;

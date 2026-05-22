@@ -1115,8 +1115,18 @@
       "file": "src/sync/syncQueue.js, src/auth/authModule.js",
       "root_cause": "Sync queue is persisted in localStorage under QUEUE_KEY and is user-unaware. On signOut(), the queue was NOT cleared. If a different user signs in on the same device, flush() reads the old queue but uses the new user's session.user.id as user_id in the upsert row. patients_insert_own RLS evaluates user_id = auth.uid() — since user_id IS the new uid, the policy PASSES. Patient data from the previous user is uploaded to the new user's cloud account.",
       "fix": "Added abandonQueue() to syncQueue (clears _flushTimer + _queue + QUEUE_KEY from localStorage). Called from authModule.signOut() and from _listenAuthChanges else-branch (SIGNED_OUT). Local patient data in localStorage is untouched — cloudSync Pass 2 re-enqueues it on next sign-in.",
-      "tags": ["auth", "syncQueue", "PHI", "cross-user", "sign-out", "phase-5-hardening", "critical"],
-      "related_bugs": ["bug-061"],
+      "tags": [
+        "auth",
+        "syncQueue",
+        "PHI",
+        "cross-user",
+        "sign-out",
+        "phase-5-hardening",
+        "critical"
+      ],
+      "related_bugs": [
+        "bug-061"
+      ],
       "occurrences": 1,
       "last_seen": "2026-05-22T13:00:00.000Z"
     },
@@ -1127,7 +1137,14 @@
       "file": "src/auth/authModule.js",
       "root_cause": "Supabase onAuthStateChange fires INITIAL_SESSION synchronously at listener registration when a session exists. _restoreSession() already scheduled hydrate/flush via setTimeout(0). _listenAuthChanges() then also scheduled hydrate/flush for the INITIAL_SESSION event. Both setTimeouts ran, doubling page-load network traffic. _syncing/_flushing guards prevented data corruption but allowed redundant network calls.",
       "fix": "Added event === 'INITIAL_SESSION' early-return guard inside _listenAuthChanges after _setStatus. INITIAL_SESSION is skipped; all subsequent events (SIGNED_IN, TOKEN_REFRESHED, SIGNED_OUT) continue to trigger hydrate/flush as before.",
-      "tags": ["auth", "hydrate", "performance", "onAuthStateChange", "phase-5-hardening", "moderate"],
+      "tags": [
+        "auth",
+        "hydrate",
+        "performance",
+        "onAuthStateChange",
+        "phase-5-hardening",
+        "moderate"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-22T13:00:00.000Z"
@@ -1139,10 +1156,136 @@
       "file": "src/sync/syncQueue.js",
       "root_cause": "syncQueue.init() registers: window.addEventListener('online', flush). Only the write path runs on reconnect. If another device edited patients while this device was offline, those changes are invisible until the next token refresh (hourly onAuthStateChange SIGNED_IN event triggers hydrate).",
       "fix": "Added denaiCloudSync.hydrate() call alongside flush() in the online event listener. Both read and write paths now run on network reconnect.",
-      "tags": ["sync", "reconnect", "hydrate", "online-event", "phase-5-hardening", "moderate"],
+      "tags": [
+        "sync",
+        "reconnect",
+        "hydrate",
+        "online-event",
+        "phase-5-hardening",
+        "moderate"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-22T13:00:00.000Z"
+    },
+    {
+      "id": "bug-068",
+      "timestamp": "2026-05-22T12:38:09.834Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/sync/cloudSync.js",
+      "root_cause": "Had 'dandyActivePatient_v1'",
+      "fix": "Changed to 'dandyCaseHistory_v1_'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T12:38:09.834Z"
+    },
+    {
+      "id": "bug-069",
+      "timestamp": "2026-05-22T00:00:00.000Z",
+      "error_message": "schema.sql trigger creation not idempotent — re-applying to existing database fails at CREATE TRIGGER with duplicate_object error, blocking environment reconstruction",
+      "file": "src/db/schema.sql",
+      "root_cause": "CREATE TRIGGER profiles_updated_at and patients_updated_at were bare statements with no idempotency guard. Every other migration construct in the file uses CREATE TABLE IF NOT EXISTS, ALTER TABLE ADD COLUMN IF NOT EXISTS, CREATE INDEX IF NOT EXISTS, or DO $$ EXCEPTION duplicate_object $$ — triggers were the only exception.",
+      "fix": "Wrapped both CREATE TRIGGER statements in DO $$ BEGIN ... EXCEPTION WHEN duplicate_object THEN NULL; END $$ blocks. Consistent with the existing FK and policy idempotency pattern.",
+      "tags": [
+        "schema",
+        "migration-safety",
+        "idempotency",
+        "triggers",
+        "phase-6",
+        "backup-recovery"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T00:00:00.000Z"
+    },
+    {
+      "id": "bug-070",
+      "timestamp": "2026-05-22T00:00:00.000Z",
+      "error_message": "Missing composite index on clinic_members(user_id, clinic_id) — patients_select_clinic_member RLS policy EXISTS subquery runs a filter pass over user_idx rows instead of a single index-only lookup",
+      "file": "src/db/schema.sql",
+      "root_cause": "clinic_members_user_idx covered (user_id) only. The EXISTS check in patients_select_clinic_member requires both (clinic_members.user_id = auth.uid() AND clinic_members.clinic_id = patients.clinic_id). Without the composite index, PostgreSQL scans the user's membership rows from user_idx and filters on clinic_id — acceptable at 1-2 memberships but degrades as clinic_members grows.",
+      "fix": "Added CREATE INDEX IF NOT EXISTS clinic_members_user_clinic_idx ON clinic_members (user_id, clinic_id). Single index-only scan satisfies the EXISTS predicate entirely.",
+      "tags": [
+        "schema",
+        "index",
+        "rls",
+        "performance",
+        "clinic_members",
+        "phase-6"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T00:00:00.000Z"
+    },
+    {
+      "id": "bug-071",
+      "timestamp": "2026-05-22T00:00:00.000Z",
+      "error_message": "Dead variable ACTIVE_KEY declared but never used in cloudSync.js module scope",
+      "file": "src/sync/cloudSync.js",
+      "root_cause": "var ACTIVE_KEY = 'dandyActivePatient_v1' was a legacy holdover from an earlier cloudSync design that used active-patient restoration. The active patient tracking was moved to the inline script (denaiApplyCloudMerge bridge). ACTIVE_KEY remained but was never referenced inside the module.",
+      "fix": "Removed the dead variable declaration.",
+      "tags": [
+        "cloudSync",
+        "dead-code",
+        "cosmetic",
+        "phase-6"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T00:00:00.000Z"
+    },
+    {
+      "id": "bug-072",
+      "timestamp": "2026-05-22T13:08:00.151Z",
+      "error_message": "Missing error handling in _setStatus",
+      "file": "src/sync/syncQueue.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: // Phase 8: offline detection — record signal before going d; window.addEventListener('offline', function () {",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-22T13:08:08.536Z"
+    },
+    {
+      "id": "bug-073",
+      "timestamp": "2026-05-22T13:29:18.853Z",
+      "error_message": "Wrong return value",
+      "file": "index.html",
+      "root_cause": "Was returning: { shell: null };",
+      "fix": "Now returns: { tip: 'Cases save automatically to this device an",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T13:29:18.853Z"
+    },
+    {
+      "id": "bug-074",
+      "timestamp": "2026-05-22T13:44:10.393Z",
+      "error_message": "Wrong reference: F3F4F6 should be E5E7EB",
+      "file": "index.html",
+      "root_cause": "Used \"F3F4F6\" instead of \"E5E7EB\"",
+      "fix": "Changed F3F4F6 → E5E7EB",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T13:44:10.393Z"
     }
   ]
 }

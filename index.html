@@ -78,6 +78,10 @@
   <script src="src/render/timeline.js?v=2.0.0"></script>
   <script src="src/render/planFragments.js?v=2.0.0"></script>
   <script src="src/utils/diagPanel.js?v=2.0.0"></script>
+  <!-- Phase 8: Friction observation — loads first in defer chain so auth/sync hooks can record -->
+  <script defer src="src/observe/frictionLog.js?v=8.0.0"></script>
+  <!-- Phase 9: Guidance seen-state tracker — lightweight localStorage flags, no tour engine -->
+  <script defer src="src/onboarding/guidanceModule.js?v=9.0.0"></script>
   <!-- Wave 7B: Auth foundation — Supabase CDN must precede authModule.js -->
   <!-- TODO: To upgrade Supabase: bump version here + run npm run test:ci before deploying. Pinned: @2.39.7 -->
   <!-- Phase 4: defer preserves load order (Supabase → authModule → sync chain) but moves
@@ -501,6 +505,10 @@ body.dark .dash-pipeline-strip { background: var(--c-n50); border-color: var(--c
 /* Workflow shell guidance + cases staleness — Phase 2A */
 .wf-guidance-text { font-size: 11px; color: var(--c-n600); line-height: 1.4; margin: 0 0 4px; display: block; }
 .case-stale { font-size: 10.5px; color: var(--c-n400); margin-top: 3px; }
+/* Phase 9: Dismissible guidance tip inline button */
+.wf-guidance-dismiss { background: none; border: none; font-size: 10px; color: var(--c-brand); font-family: 'DM Sans', sans-serif; cursor: pointer; padding: 0 0 0 6px; font-weight: 600; vertical-align: baseline; }
+.wf-guidance-dismiss:hover { text-decoration: underline; }
+.wf-guidance-dismiss:focus-visible { outline: 2px solid var(--c-brand); outline-offset: 1px; border-radius: 2px; }
 /* Help Layer — Phase 2B */
 .help-trigger { display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%; background:none; border:1px solid var(--c-n300); color:var(--c-n400); font-size:9px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; line-height:1; padding:0; transition:border-color var(--t-fast),color var(--t-fast); vertical-align:middle; flex-shrink:0; }
 .help-trigger:hover { border-color:var(--c-brand); color:var(--c-brand); }
@@ -1955,13 +1963,13 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         </svg>
       </div>
       <div class="entry-tagline" id="entryDesc">AI-assisted clinical workflow for dental teams</div>
-      <div class="entry-disclosure">Surfaces AI-generated treatment recommendations to support — not replace — clinical judgment. Patient data is stored locally on your device by default.</div>
+      <div class="entry-disclosure">AI-generated treatment recommendations to support — not replace — clinical judgment. Cases save automatically and persist across sessions on this device.</div>
       <button class="entry-btn-primary" type="button" onclick="openAuthModal();continueLocally();" aria-label="Sign in or create an account">Sign In / Create Account</button>
       <div class="entry-divider">or</div>
       <button class="entry-btn-local" type="button" id="continueLocallyBtn" onclick="continueLocally()" aria-label="Continue using denai locally without an account">
         <i class="fa-solid fa-arrow-right" style="font-size:11px;margin-right:4px;" aria-hidden="true"></i> Continue Locally
       </button>
-      <div class="entry-local-note">No account needed · Data stays on your device</div>
+      <div class="entry-local-note">No account needed · Cases persist across sessions automatically</div>
       <p id="entryDisclaimer" class="entry-disclaimer"></p>
       <div class="entry-trust-links">
         <a href="terms.html" target="_blank" rel="noopener">Terms</a>
@@ -2648,7 +2656,13 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   }
 
   function _deriveGuidanceContext(p) {
-    if (!p.condition) return { shell: null };
+    // Phase 9: Show persistence tip once for new patients with no assessment started.
+    if (!p.condition) {
+      if (typeof denaiGuidance !== 'undefined' && !denaiGuidance.hasSeen('persist_tip')) {
+        return { tip: 'Cases save automatically to this device and persist across sessions.' };
+      }
+      return { shell: null };
+    }
     const reportCount = Array.isArray(p.reportHistory) ? p.reportHistory.length : 0;
     const latestEv    = _getLatestWorkflowEvent(); // reads S — same patient in all call sites
     // Delivered: case closed — quiet completion message
@@ -2685,9 +2699,15 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const el = document.getElementById('wfGuidance');
     if (!el) return;
     const ctx = _deriveGuidanceContext(S);
-    el.innerHTML = ctx.shell
-      ? '<span class="wf-guidance-text">' + escapeHtml(ctx.shell) + '</span>'
-      : '';
+    if (ctx.tip) {
+      // Phase 9: Dismissible one-time persistence tip for new patients.
+      el.innerHTML = '<span class="wf-guidance-text">' + escapeHtml(ctx.tip) +
+        ' <button class="wf-guidance-dismiss" onclick="if(typeof denaiGuidance!==\'undefined\')denaiGuidance.markSeen(\'persist_tip\');renderWfGuidance();" aria-label="Dismiss tip">Got it</button></span>';
+    } else {
+      el.innerHTML = ctx.shell
+        ? '<span class="wf-guidance-text">' + escapeHtml(ctx.shell) + '</span>'
+        : '';
+    }
   }
 
   function _checkEmitAnalysisCompleted() {
@@ -4535,7 +4555,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     .conf-rec-val{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;color:#0B2B1F}
     .conf-rec-sub{font-size:11px;color:#6B7280;margin-top:3px}
     .section{padding:24px 36px}
-    .section+.section{border-top:1px solid #F3F4F6}
+    .section+.section{border-top:1px solid #E5E7EB}
     .sec-title{font-family:'Sora',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#1F7A4F;margin-bottom:14px;display:flex;align-items:center;gap:8px}
     .sec-title::after{content:'';flex:1;height:1px;background:#E5E7EB}
     .patient-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -4573,7 +4593,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     .cost-big{font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:#0B2B1F;margin-bottom:4px}
     .cost-note{font-size:10px;color:#9CA3AF;line-height:1.5}
     .cost-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:#1F7A4F;color:#fff;text-transform:uppercase;letter-spacing:.06em;margin-top:6px}
-    .site-divider{margin:0 36px;border:none;border-top:3px solid #1F7A4F;opacity:.15}
+    .site-divider{margin:0 36px;border:none;border-top:3px solid #1F7A4F;opacity:.3}
     .notes-box{background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:14px 16px}
     .notes-box p{font-size:13px;color:#374151;white-space:pre-wrap}
     .disclaimer{background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:14px 16px;font-size:11px;color:#92400E;line-height:1.7}
@@ -4581,9 +4601,10 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     .rpt-footer{background:#F9FAFB;border-top:1px solid #E5E7EB;padding:14px 36px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#9CA3AF}
     .rpt-footer strong{color:#374151}
     .no-print{padding:20px 36px;text-align:center;border-top:1px solid #E5E7EB;background:#fff}
-    .print-btn{background:linear-gradient(135deg,#1F7A4F,#2a9c67);color:#fff;border:none;padding:13px 32px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(var(--c-brand-rgb),.3);transition:opacity .2s}
+    .print-btn{background:linear-gradient(135deg,#1F7A4F,#2a9c67);color:#fff;border:none;padding:13px 32px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(31,122,79,.3);transition:opacity .2s}
     .print-btn:hover{opacity:.9}
-    @media print{body{background:#fff}.page-wrap{box-shadow:none;max-width:none}.no-print{display:none}.section{padding:16px 28px;break-inside:avoid;page-break-inside:avoid}.conf-banner{break-inside:avoid;page-break-inside:avoid}.opt-card{break-inside:avoid;page-break-inside:avoid}.cost-card{break-inside:avoid;page-break-inside:avoid}.rpt-header{padding:20px 28px}}
+    @page{size:A4;margin:15mm 18mm}
+    @media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body{background:#fff}.page-wrap{box-shadow:none;max-width:none}.no-print{display:none}.section{padding:16px 28px;break-inside:avoid;page-break-inside:avoid}.conf-banner{break-inside:avoid;page-break-inside:avoid}.opt-card{break-inside:avoid;page-break-inside:avoid}.cost-card{break-inside:avoid;page-break-inside:avoid}.rpt-header{padding:20px 28px}}
     @media(max-width:640px){.patient-grid{grid-template-columns:1fr 1fr}.options-grid,.cost-compare,.risk-grid{grid-template-columns:1fr}.conf-banner{flex-direction:column}.conf-rec-box{border-left:none;border-top:1px solid #E5E7EB;min-width:unset}.rpt-header{flex-direction:column;gap:14px;text-align:center}.rpt-meta-box{text-align:center}.section{padding:16px 18px}.no-print{padding:16px 18px}}
   `;
 

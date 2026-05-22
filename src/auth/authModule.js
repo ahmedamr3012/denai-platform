@@ -60,7 +60,7 @@ window.denaiAuth = (function () {
       planEl.textContent = '';
     } else {
       nameEl.textContent = 'Local mode';
-      planEl.textContent = 'Local-only mode';
+      planEl.textContent = 'Cases save to this device';
     }
   }
 
@@ -103,6 +103,8 @@ window.denaiAuth = (function () {
           if (typeof denaiPrefs          !== 'undefined') denaiPrefs.hydrate();
           // Phase 3.4: load clinic session context after auth settle.
           if (typeof denaiClinicSession  !== 'undefined') denaiClinicSession.init(client).catch(function () {});
+          // Phase 8: upload buffered friction observations now that we have a client.
+          try { if (typeof denaiObserve !== 'undefined') denaiObserve.flush(_getClient()); } catch (e) {}
         }, 0);
       } else {
         _session = null;
@@ -136,6 +138,8 @@ window.denaiAuth = (function () {
           if (typeof denaiPrefs          !== 'undefined') denaiPrefs.hydrate();
           // Phase 3.4: load clinic session context (idempotent — skips on token refresh).
           if (typeof denaiClinicSession  !== 'undefined') denaiClinicSession.init(_getClient()).catch(function () {});
+          // Phase 8: upload buffered friction observations on sign-in / token refresh.
+          try { if (typeof denaiObserve !== 'undefined') denaiObserve.flush(_getClient()); } catch (e) {}
         }, 0);
       } else {
         _setStatus('local');

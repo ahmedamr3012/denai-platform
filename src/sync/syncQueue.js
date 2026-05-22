@@ -66,6 +66,12 @@ window.denaiSyncQueue = (function () {
 
   function _setStatus(status) {
     _status = status;
+    try { // Phase 8: friction observation — no PHI, silent
+      if (typeof denaiObserve !== 'undefined') {
+        if (status === 'error') denaiObserve.record(_hasStaleOps() ? 'sync_stalled' : 'sync_error');
+        else if (status === 'partial') denaiObserve.record('sync_partial');
+      }
+    } catch (e) {}
     try {
       if (typeof denaiAuth === 'undefined' || !denaiAuth.isSignedIn()) return;
       var el = document.getElementById('authUserPlan');
@@ -341,7 +347,12 @@ window.denaiSyncQueue = (function () {
 
   function init() {
     _loadQueue();
+    // Phase 8: offline detection — record signal before going dark
+    window.addEventListener('offline', function () {
+      try { if (typeof denaiObserve !== 'undefined') denaiObserve.record('offline_detected'); } catch (e) {}
+    });
     window.addEventListener('online', function () {
+      try { if (typeof denaiObserve !== 'undefined') denaiObserve.record('online_restored'); } catch (e) {}
       flush();
       // Pull cloud changes made on other devices while this device was offline.
       // flush() covers the write path; hydrate() covers the read path.

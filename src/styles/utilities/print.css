@@ -5,6 +5,7 @@
    ================================================================ */
 
 @media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .opt-card.active { background: #f0faf5 !important; border-color: #1F7A4F !important; }
   .opt-score-fill { background: #1F7A4F !important; }
 }
