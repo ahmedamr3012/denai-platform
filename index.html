@@ -3645,7 +3645,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       else if (!document.querySelector('#aiCardBody .conf-ring')) showSkeleton('aiCardBody');
     }, 'aiCardBody', 'AI Card');
     withErrorBoundary(() => renderComparison(state, ai),             'compInlineTable',     'Comparison');
-    withErrorBoundary(() => renderMaterial(state),                    'matPrimary',          'Material');
+    withErrorBoundary(() => renderMaterial(state, ai),                 'matPrimary',          'Material');
     withErrorBoundary(() => { renderCost(state, ai); renderGraph(ai); }, 'costContainer',   'Cost & Graph');
     withErrorBoundary(() => lazyRenderComparisonTable(state, ai),    'comparisonTableBody', 'Full Table');
     withErrorBoundary(() => {
@@ -4042,7 +4042,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       renderRisk(tempState, ai);
       renderAIExplanation(ai);
       renderComparison(tempState, ai);
-      renderMaterial(tempState);
+      renderMaterial(tempState, ai);
       renderCost(tempState, ai);
       renderGraph(ai);
       renderComparisonTable(tempState, ai);

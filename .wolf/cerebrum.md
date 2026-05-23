@@ -4,11 +4,30 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-23
 
+## Key Learnings — R3.5 Material Semantic Stabilization (2026-05-23)
+
+- **`_getMatContext(state, ai)` is the single derivation point for material vocabulary.** Added to `materialPanel.js`. In restorative mode (`ai.treatmentMode === 'restorative'`), maps `state.tx` → slot key → `ai.restorativeLabels[slot].id` → `_SLOT_ID_TO_MAT_CONTEXT[id]`. In missing-tooth mode, returns `state.tx` directly. All material UI branches key off this derived context — never off `state.tx` directly.
+- **Root cause of semantic leakage: `clinicalEngine.generateTreatments()` assigns restorative treatments to slot positions keyed by `state.tx` values.** Slot1 (state.tx='implant') can contain onlay/endocrown/crown_core. Slot2 (state.tx='bridge') can contain crown/splinted. `renderMaterial(state)` had no clinical context — it only saw `state.tx`. Fix: pass `ai` and derive from `ai.restorativeLabels[slot].id`.
+- **`_SLOT_ID_TO_MAT_CONTEXT` lookup: `{ onlay: 'overlay', endocrown: 'crown', crown_core: 'crown', splinted: 'crown', crown: 'crown', extract_impl: 'implant', crown_adv: 'crown' }`.** Must stay in sync with `clinicalEngine.generateTreatments()` slot id set. Missing slot ids fall through to 'crown' default.
+- **`isOverlaySlot` gate in `costEngine.js`: `isRestorative && ai.restorativeLabels.slot1.id === 'onlay' && state.tx === 'implant'`.** When true: `implantInitial` uses `overlayBase + overlayMaterialAdd` instead of `implantBase + implantMaterialAdd + graftCost`. All-Zirconia add-on is blocked.
+- **Restorative mode gates in `computeCosts()`: bridge and implant material add-ons gated on `!isRestorative` and `!isOverlaySlot` respectively.** In restorative mode, `state.tx='bridge'` maps to a crown treatment in slot2 — applying bridge add-ons is semantic leakage.
+- **Crown material add-on migrated from R3.3 percentage to absolute dollar entries.** `getClinicPrice('matCrownZirconia')` ($96 default) for cases 1&2; `getClinicPrice('matCrownEmax')` ($0 default) for case3. Crown case logic mirrors `getCrownMaterial()` — both must stay in sync.
+- **`renderMaterial` signature changed from `(state)` to `(state, ai)`.** Two call sites in `index.html` updated: line 3648 in `renderMainPanels(state, ai)` and line 4045 in `updatePreview`. Both had `ai` in scope.
+- **TREATMENT_PRICING_CATALOG now has 16 entries.** Added: `matCrownZirconia` ($96), `matCrownEmax` ($0), `matOverlayCeramic` ($0), `matOverlayComposite` ($0). All `category: 'material'`. Settings modal auto-renders them.
+
+## Do-Not-Repeat (2026-05-23 — R3.5)
+
+- **DO NOT derive material UI vocabulary directly from `state.tx` in restorative mode.** `state.tx='bridge'` can map to a crown; `state.tx='implant'` can map to an onlay. Always call `_getMatContext(state, ai)`. Direct `state.tx` use is correct ONLY in missing-tooth mode. (R3.5, 2026-05-23)
+- **DO NOT apply bridge material add-ons (`matZirconia`/`matEmax`) in restorative mode.** Gate with `!isRestorative` in `costEngine.js`. Slot2 (state.tx='bridge') contains a crown treatment in restorative mode. (R3.5, 2026-05-23)
+- **DO NOT apply implant material add-on (`matAllZirconia`) to the overlay slot.** Gate with `!isOverlaySlot`. When slot1 is onlay, pricing uses `overlayBase` — All-Zirconia is an implant fixture material, irrelevant to ceramic/composite overlays. (R3.5, 2026-05-23)
+- **DO NOT use `matZirconia` (bridge) for crown zirconia pricing.** Bridge and crown zirconia have different lab workflows. Use `matCrownZirconia` for crown contexts. (R3.5, 2026-05-23)
+- **DO NOT add new restorative slot ids to `clinicalEngine.generateTreatments()` without updating `_SLOT_ID_TO_MAT_CONTEXT`.** Missing entries fall through to 'crown' default, which may be wrong. (R3.5, 2026-05-23)
+
 ## Key Learnings — R3.4 Material Pricing Preferences (2026-05-23)
 
 - **Material add-ons use flat absolute dollar entries in TREATMENT_PRICING_CATALOG, not percentage multipliers.** R3.4 replaced the R3.3 hardcoded percentages (15%/8%) with configurable absolute dollar entries (`matZirconia` $525, `matEmax` $0, `matAllZirconia` $360). The defaults are calibrated to produce numerically identical results at catalog base prices (15% × $3500 = $525; 8% × $4500 = $360).
 - **Material identity resolution: `'primary'|'alt'` + `highOcc` → concrete material → `getClinicPrice(matXxx)`.** In `computeCosts()`, `isZirconiaBridge` resolves to true when (primary && highOcc) OR (alt && !highOcc). `isEmaxBridge` is the inverse. This avoids storing literal material names in state while still selecting the correct add-on price.
-- **Crown material pricing remains percentage-based (deferred from R3.4).** Crown has three case branches where 'alt' maps to semantically different materials with different cost directions (premium in 2 cases, discount in 1). A single flat add-on cannot represent all three without confusing clinicians. Crown configurability is explicitly deferred to a future phase.
+- **Crown material pricing was percentage-based in R3.4 (deferred) — resolved in R3.5 with treatment-scoped absolute add-ons.** R3.5 added `matCrownZirconia` ($96, cases 1&2) and `matCrownEmax` ($0, case3) as separate catalog entries. Case3 can be set negative by clinics if e.max costs less than zirconia. Known approximation: case2 gets $96 instead of a higher case-specific calibration — accepted trade-off for configurability.
 - **Settings modal auto-renders material add-on rows — zero UI code changes.** `_renderSettingsModal()` iterates `TREATMENT_PRICING_CATALOG` and generates inputs for every entry. Adding a new entry (including the 3 R3.4 material entries) automatically creates the corresponding input row under a 'material' category heading. No hardcoding in the UI.
 - **Backward-compat for default-priced clinics is exact.** Defaults were chosen so `bridgeBase + matZirconia default = bridgeBase × 1.15` at the catalog base prices. Existing clinics with unconfigured material add-ons see no displayed price change.
 - **Known accepted discrepancy for custom-priced clinics.** A clinic with bridge=$4000 and default matZirconia=$525 will see $4525 instead of R3.3's $4600 (15% of $4000). This delta ($75) is the accepted trade-off for configurability and is the exact gap R3.4 allows clinics to fill by setting their own matZirconia.
@@ -26,7 +45,7 @@
 ## Do-Not-Repeat (2026-05-23 — R3.3)
 
 - **DO NOT add treatment-material pair prices (bridge_zirconia_price, bridge_emax_price, implant_all_zirconia_price, etc.)** — these create a treatment × material matrix that explodes with each new combination. The approved pattern (R3.4) is flat material add-on entries (`matZirconia`, `matEmax`, `matAllZirconia`) that are treatment-agnostic and additively combined with base prices. (Updated R3.4, 2026-05-23 — supersedes the prior R3.3 entry that said percentage constants were sufficient.)
-- **DO NOT apply `selectedMaterial` upcharge to ALL treatment comparison columns simultaneously.** Gate each upcharge on `state.tx === '<treatment>'`. The material selection describes the clinician's choice for THEIR chosen treatment; the comparison view should show default pricing for other treatments. (R3.3, 2026-05-23)
+- **DO NOT apply `selectedMaterial` upcharge to ALL treatment comparison columns simultaneously.** Gate each upcharge on `state.tx === '<treatment>'`. The material selection describes the clinician's choice for THEIR chosen treatment; the comparison view should show default pricing for other treatments. (R3.3, 2026-05-23) — R3.5 extended this rule: also gate on `!isRestorative` and `!isOverlaySlot` to prevent cross-treatment-mode leakage.
 - **DO NOT call `getCrownMaterial()` from `costEngine.js`.** getCrownMaterial is defined in materialPanel.js. Calling it from a utility creates a cross-file dependency that breaks the separation between render logic and cost computation. Mirror the case logic inline in costEngine.js and keep both in sync. (R3.3, 2026-05-23)
 
 ## Key Learnings — R3.2 Material Selection UI (2026-05-23)

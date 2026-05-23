@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T13:22:42.720Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T16:22:18.713Z
 > Files: 45 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~107704 tok)
+- `index.html` — denai — Clinical Insight (~107705 tok)
 - `jsconfig.json` — Phase 20: IDE type-governance config; allowJs:true, checkJs:false (opt-in per file), noEmit:true; includes src/**/*.js + src/**/*.d.ts; no build coupling (~82 tok)
 - `privacy.html` — Privacy Policy — denai (~2802 tok)
 - `terms.html` — Terms of Service — denai (~3244 tok)
@@ -43,7 +43,7 @@
 
 ## src/constants/
 
-- `clinicPrefs.js` — src/constants/clinicPrefs.js (~1924 tok)
+- `clinicPrefs.js` — CLINIC_PREF_DEFAULTS, FDI_MAP, CURRENCY_CONFIG, TREATMENT_PRICING_CATALOG (16 entries: implant, bridge, bridge4, boneGraft, crown, overlay, rct, postCore, annualCheckup + R3.4 material add-ons: matZirconia $525, matEmax $0, matAllZirconia $360 + R3.5 treatment-scoped: matCrownZirconia $96, matCrownEmax $0, matOverlayCeramic $0, matOverlayComposite $0); all category:'material' entries flat absolute dollar add-ons, auto-rendered by settings modal (~2100 tok)
 - `storageKeys.js` — Declares STORAGE_KEY (~52 tok)
 
 ## src/db/
@@ -68,7 +68,7 @@
 - `aiCardPanel.js` — Phase 17/21/R1.1: AI card rendering cluster; buildAICardStructure() DOM template builder; #langToggle button removed (R1.1); setLang('en') resets persisted Arabic on card build; Arabic RTL path still active at renderAIExplanation time via denaiArabic; React island mount point #riskPanelMount (~5100 tok)
 - `comparisonPanel.js` — Renders inline comparison table and full comparison table body; lazyRenderComparisonTable; renderComparison (~2000 tok)
 - `costGraphPanel.js` — renderCost and renderGraph; cost breakdown and bar-chart visualization (~1800 tok)
-- `materialPanel.js` — ================================================================ (~2124 tok)
+- `materialPanel.js` — renderMaterial(state, ai): R3.5 treatment-scoped material UI; _getMatContext() derives 'implant'|'bridge'|'crown'|'overlay' from restorative slot id or state.tx; overlay branch (Ceramic/Composite Overlay); bridge branch uses clean "Zirconia Bridge"/"e.max Bridge" labels (no parentheticals); getCrownMaterial(state) unchanged — 3-case crown material logic (~1700 tok)
 - `patientPanel.js` — renderPatientDisplay; patient demographics and condition summary panel (~1200 tok)
 - `planFragments.js` — _getAiForPlan/buildTreatmentPathRows; treatment path HTML for Plan view; pure over parameters (~600 tok)
 - `timeline.js` — _synthesizeWfBaseline/_renderWfTimeline; workflow timeline HTML builder; pure over patient/event parameters (~500 tok)
@@ -108,7 +108,7 @@
 
 ## src/utils/
 
-- `costEngine.js` — ── Literature-backed 10-year clinical constants ─────────────── (~2157 tok)
+- `costEngine.js` — computeCosts(state, ai): 3-tier pricing chain; R3.5 restorative-mode gates: bridge material add-on blocked in restorative mode (!isRestorative), implant material blocked in overlay slot (isOverlaySlot); overlay slot uses overlayBase + matOverlayCeramic/matOverlayComposite add-ons; crown now uses absolute add-ons (matCrownZirconia $96 for cases 1&2, matCrownEmax $0 for case 3) replacing R3.3 percentages; selectedMaterial=null/primary → zero add-on (~2400 tok)
 
 ## supabase/functions/stripe-webhook/
 
