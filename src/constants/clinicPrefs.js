@@ -74,4 +74,19 @@ const TREATMENT_PRICING_CATALOG = Object.freeze([
   { id: 'postCore',      label: 'Post & core',             stateKey: 'costPostCore',  default:  400, category: 'restorative' },
   // ── Adjunctive ──────────────────────────────────────────────────────────────
   { id: 'annualCheckup', label: 'Checkup (per visit)',     stateKey: null,            default:  150, category: 'adjunctive'  },
+  // ── Material add-ons ────────────────────────────────────────────────────────
+  // Flat absolute dollar upcharges added to base treatment price when a material
+  // is selected. Defaults calibrated to match R3.3 percentage behavior at catalog
+  // base prices (15% × $3500 bridge = $525; 8% × $4500 implant = $360).
+  { id: 'matZirconia',        label: 'Zirconia add-on (bridge)',        stateKey: null, default: 525, category: 'material' },
+  { id: 'matEmax',            label: 'e.max add-on (bridge)',           stateKey: null, default:   0, category: 'material' },
+  { id: 'matAllZirconia',     label: 'All-Zirconia add-on (implant)',   stateKey: null, default: 360, category: 'material' },
+  // R3.5: treatment-scoped crown add-ons (bridge zirconia ≠ crown zirconia — different lab workflow)
+  // matCrownZirconia: Layered Zirconia over Monolithic/e.max. Default $96 = 8% × $1200 crown base.
+  // matCrownEmax: e.max Crown alt (case 3 — may be negative if e.max is cheaper; default $0 = no delta).
+  { id: 'matCrownZirconia',   label: 'Zirconia add-on (crown)',         stateKey: null, default:  96, category: 'material' },
+  { id: 'matCrownEmax',       label: 'e.max add-on (crown)',            stateKey: null, default:   0, category: 'material' },
+  // R3.5: overlay material add-ons — ceramic vs composite fabrication cost delta
+  { id: 'matOverlayCeramic',  label: 'Ceramic add-on (overlay)',        stateKey: null, default:   0, category: 'material' },
+  { id: 'matOverlayComposite',label: 'Composite add-on (overlay)',      stateKey: null, default:   0, category: 'material' },
 ]);

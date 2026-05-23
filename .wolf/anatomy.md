@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T12:22:19.521Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T13:22:42.720Z
 > Files: 45 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -43,7 +43,7 @@
 
 ## src/constants/
 
-- `clinicPrefs.js` — CLINIC_PREF_DEFAULTS, FDI_MAP, CURRENCY_CONFIG, TREATMENT_PRICING_CATALOG (9 entries: implant, bridge, bridge4, boneGraft, crown, overlay, rct, postCore, annualCheckup); R2.1 added bridge4 (default $4550) and overlay (default $780) as standalone configurable entries (~1500 tok)
+- `clinicPrefs.js` — src/constants/clinicPrefs.js (~1924 tok)
 - `storageKeys.js` — Declares STORAGE_KEY (~52 tok)
 
 ## src/db/
@@ -68,7 +68,7 @@
 - `aiCardPanel.js` — Phase 17/21/R1.1: AI card rendering cluster; buildAICardStructure() DOM template builder; #langToggle button removed (R1.1); setLang('en') resets persisted Arabic on card build; Arabic RTL path still active at renderAIExplanation time via denaiArabic; React island mount point #riskPanelMount (~5100 tok)
 - `comparisonPanel.js` — Renders inline comparison table and full comparison table body; lazyRenderComparisonTable; renderComparison (~2000 tok)
 - `costGraphPanel.js` — renderCost and renderGraph; cost breakdown and bar-chart visualization (~1800 tok)
-- `materialPanel.js` — ================================================================ (~1450 tok)
+- `materialPanel.js` — ================================================================ (~2124 tok)
 - `patientPanel.js` — renderPatientDisplay; patient demographics and condition summary panel (~1200 tok)
 - `planFragments.js` — _getAiForPlan/buildTreatmentPathRows; treatment path HTML for Plan view; pure over parameters (~600 tok)
 - `timeline.js` — _synthesizeWfBaseline/_renderWfTimeline; workflow timeline HTML builder; pure over patient/event parameters (~500 tok)
@@ -108,7 +108,7 @@
 
 ## src/utils/
 
-- `costEngine.js` — computeCosts(state, ai): 3-tier pricing chain (patient→clinic→catalog); R3.3 material-aware upcharges: bridge (±15% zirconia/emax gated on state.tx=bridge), implant (+8% all-zirconia gated on tx=implant), crown (±5-12% gated on tx=crown); selectedMaterial='alt' inverts defaults; null/primary → existing behavior (~1950 tok)
+- `costEngine.js` — ── Literature-backed 10-year clinical constants ─────────────── (~2157 tok)
 
 ## supabase/functions/stripe-webhook/
 

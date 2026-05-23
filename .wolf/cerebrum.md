@@ -4,6 +4,15 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-23
 
+## Key Learnings — R3.4 Material Pricing Preferences (2026-05-23)
+
+- **Material add-ons use flat absolute dollar entries in TREATMENT_PRICING_CATALOG, not percentage multipliers.** R3.4 replaced the R3.3 hardcoded percentages (15%/8%) with configurable absolute dollar entries (`matZirconia` $525, `matEmax` $0, `matAllZirconia` $360). The defaults are calibrated to produce numerically identical results at catalog base prices (15% × $3500 = $525; 8% × $4500 = $360).
+- **Material identity resolution: `'primary'|'alt'` + `highOcc` → concrete material → `getClinicPrice(matXxx)`.** In `computeCosts()`, `isZirconiaBridge` resolves to true when (primary && highOcc) OR (alt && !highOcc). `isEmaxBridge` is the inverse. This avoids storing literal material names in state while still selecting the correct add-on price.
+- **Crown material pricing remains percentage-based (deferred from R3.4).** Crown has three case branches where 'alt' maps to semantically different materials with different cost directions (premium in 2 cases, discount in 1). A single flat add-on cannot represent all three without confusing clinicians. Crown configurability is explicitly deferred to a future phase.
+- **Settings modal auto-renders material add-on rows — zero UI code changes.** `_renderSettingsModal()` iterates `TREATMENT_PRICING_CATALOG` and generates inputs for every entry. Adding a new entry (including the 3 R3.4 material entries) automatically creates the corresponding input row under a 'material' category heading. No hardcoding in the UI.
+- **Backward-compat for default-priced clinics is exact.** Defaults were chosen so `bridgeBase + matZirconia default = bridgeBase × 1.15` at the catalog base prices. Existing clinics with unconfigured material add-ons see no displayed price change.
+- **Known accepted discrepancy for custom-priced clinics.** A clinic with bridge=$4000 and default matZirconia=$525 will see $4525 instead of R3.3's $4600 (15% of $4000). This delta ($75) is the accepted trade-off for configurability and is the exact gap R3.4 allows clinics to fill by setting their own matZirconia.
+
 ## Key Learnings — R3.3 Material-Aware Pricing (2026-05-23)
 
 - **`computeCosts()` is the single change point for material pricing** — it is called from 4 sites (renderCost, comparisonPanel, report preview, report JSON export). Modifying it once propagates correctly to all surfaces. No call-site changes are needed.
@@ -16,7 +25,7 @@
 
 ## Do-Not-Repeat (2026-05-23 — R3.3)
 
-- **DO NOT add separate catalog entries for material variants (costBridgeZirconia, costBridgeEmax, etc.)** — the existing bridge base cost with the ±15% upcharge constant is sufficient to model the zirconia/e.max cost difference. Separate SKUs would bloat the catalog and settings UI. (R3.3, 2026-05-23)
+- **DO NOT add treatment-material pair prices (bridge_zirconia_price, bridge_emax_price, implant_all_zirconia_price, etc.)** — these create a treatment × material matrix that explodes with each new combination. The approved pattern (R3.4) is flat material add-on entries (`matZirconia`, `matEmax`, `matAllZirconia`) that are treatment-agnostic and additively combined with base prices. (Updated R3.4, 2026-05-23 — supersedes the prior R3.3 entry that said percentage constants were sufficient.)
 - **DO NOT apply `selectedMaterial` upcharge to ALL treatment comparison columns simultaneously.** Gate each upcharge on `state.tx === '<treatment>'`. The material selection describes the clinician's choice for THEIR chosen treatment; the comparison view should show default pricing for other treatments. (R3.3, 2026-05-23)
 - **DO NOT call `getCrownMaterial()` from `costEngine.js`.** getCrownMaterial is defined in materialPanel.js. Calling it from a utility creates a cross-file dependency that breaks the separation between render logic and cost computation. Mirror the case logic inline in costEngine.js and keep both in sync. (R3.3, 2026-05-23)
 
