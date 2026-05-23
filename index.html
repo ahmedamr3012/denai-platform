@@ -2168,6 +2168,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     parafunction: 'None',
     costImplant: 4500, costBridge: 3500, costBoneGraft: 1500,
     costCrown: 1200, costRCT: 1000, costPostCore: 400,
+    costBridge4: null, costOverlay: null,
     notes: '',
     serviceDate: null,     // ISO date (YYYY-MM-DD) — date case was opened; synced as clinical record metadata
     // Wave 8C: workflow continuity fields (migration-safe — existing patients default via merge)
@@ -5072,6 +5073,8 @@ costBoneGraft: getClinicPrice('boneGraft'),
 costCrown:     getClinicPrice('crown'),
 costRCT:       getClinicPrice('rct'),
 costPostCore:  getClinicPrice('postCore'),
+costBridge4:   getClinicPrice('bridge4'),
+costOverlay:   getClinicPrice('overlay'),
 id: genId(),
 caseNum: genCaseNum(),
 serviceDate: new Date().toISOString().split('T')[0],

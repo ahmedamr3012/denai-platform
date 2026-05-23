@@ -80,6 +80,8 @@ interface PatientState {
   costBoneGraft?: number;
   costRCT?: number;
   costPostCore?: number;
+  costBridge4?: number | null;   // R2.2: 4-unit bridge; null = use clinic preference
+  costOverlay?: number | null;   // R2.2: onlay/overlay; null = use clinic preference
   // Workflow state — synced to cloud
   planApproved?: boolean;
   labStatus?: string;

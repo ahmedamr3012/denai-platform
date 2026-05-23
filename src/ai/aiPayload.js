@@ -32,6 +32,7 @@ window.denaiAIPayload = (function () {
     // Clinic pricing schedule — not patient-identifying
     'costImplant', 'costBridge', 'costCrown',
     'costBoneGraft', 'costRCT', 'costPostCore',
+    'costBridge4', 'costOverlay',
   ]);
 
   // Explicit exclusion list — AI systems MUST NOT receive these.

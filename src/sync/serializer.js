@@ -24,6 +24,7 @@ window.denaiSerializer = (function () {
     'multiTooth', 'tooth2', 'abutmentQuality',
     'multiSite', 'site2Tooth', 'site2Condition', 'site2Structure', 'site2EndoStatus',
     'costImplant', 'costBridge', 'costBoneGraft', 'costCrown', 'costRCT', 'costPostCore',
+    'costBridge4', 'costOverlay',
     // Wave 8C: workflow continuity — synced so plan/lab state follows patient across devices
     'planApproved', 'labStatus', 'caseDelivered',
     // Wave 4A: serviceDate — ISO date (YYYY-MM-DD) case was opened; synced as clinical record metadata
