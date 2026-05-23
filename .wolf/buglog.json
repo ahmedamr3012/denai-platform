@@ -1815,6 +1815,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-23T17:10:04.728Z"
+    },
+    {
+      "id": "bug-107",
+      "timestamp": "2026-05-23T18:00:00.000Z",
+      "error_message": "Uncaught SyntaxError: Unexpected end of input around: (index):4382 — raw JS visible on screen including generateReport(), openReport(), reportHistory logic",
+      "file": "index.html",
+      "root_cause": "Service worker registered with CACHE = 'denai-v2.0' caches SHELL = ['./'] (the main HTML) on install. The activate handler only deletes caches with names !== 'denai-v2.0', so a truncated/corrupted version of index.html cached in 'denai-v2.0' during R4.1 development was served indefinitely. The cached file was truncated at ~line 4382, causing V8 to throw 'Unexpected end of input' and rendering post-truncation script content as visible HTML text nodes.",
+      "fix": "Bumped CACHE from 'denai-v2.0' to 'denai-v2.1' in the swCode template literal at index.html line 5945. This forces: (1) new SW install with fresh 'denai-v2.1' cache, (2) addAll(['./']) fetches the current complete file from network, (3) activate handler deletes stale 'denai-v2.0' cache permanently.",
+      "tags": [
+        "service-worker",
+        "cache",
+        "stale-cache",
+        "R4.1",
+        "syntax-error-false-positive",
+        "truncated-html",
+        "cache-version-bump"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T18:00:00.000Z"
     }
   ]
 }
