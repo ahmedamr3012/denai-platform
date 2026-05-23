@@ -152,7 +152,7 @@ window.denaiRiskPanel = (function () {
         h(RiskRow, { key: 'parafunc',  label: 'Parafunction Damage',   level: cr.parafunc,  hidden: hidden, tooltip: 'Bruxism/clenching damage.\nNight guard REQUIRED if present' })
       ];
     }
-    var crownSection = h('div', { id: 'crownRiskSection', style: risks.showCrown ? undefined : { display: 'none' } }, crownRows);
+    var crownSection = h('div', { id: 'crownRiskSection', style: risks.showCrown ? { display: 'block' } : undefined }, crownRows);
 
     return h('div', { className: 'risk-box', 'aria-label': 'Risk indicators' },
       h('div', { className: 'risk-title', 'aria-hidden': 'true' }, 'Risk Indicators'),
