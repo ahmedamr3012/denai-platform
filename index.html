@@ -3019,6 +3019,15 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     }
   }
 
+  function deleteReportHistory(id) {
+    if (!id) return;
+    if (!confirm('Remove this report record? This only removes the history entry — patient data is not affected.')) return;
+    if (!Array.isArray(S.reportHistory)) return;
+    S.reportHistory = S.reportHistory.filter(r => r.id !== id);
+    saveState();
+    renderReportsView();
+  }
+
   // ================================================================
   // REPORTS VIEW RENDERER
   // ================================================================
@@ -3065,7 +3074,10 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
             <div class="report-item-name">${escapeHtml(r.name || '')} — ${typeLabel}</div>
             <div class="report-item-meta">Generated ${dateStr} at ${timeStr}${r.caseNum ? ' · ' + escapeHtml(r.caseNum) : ''}</div>
           </div>
-          <button class="btn btn-sec" type="button" onclick="generateReport()" title="Generate a new report from current patient state"><i class="fa-solid fa-file-medical" style="color:var(--c-n400)" aria-hidden="true"></i> Generate Report</button>
+          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+            <button class="btn btn-sec" type="button" onclick="generateReport()" title="Generate a new report from current patient state"><i class="fa-solid fa-file-medical" style="color:var(--c-n400)" aria-hidden="true"></i> Generate Report</button>
+            ${r.id ? `<button class="btn" type="button" onclick="deleteReportHistory('${r.id}')" title="Remove this record" style="color:var(--c-n400);padding:4px 8px;" aria-label="Remove report record"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button>` : ''}
+          </div>
         </div>`;
       }).join('') + `</div>`;
     }
@@ -4199,7 +4211,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     .print-btn{background:linear-gradient(135deg,#1F7A4F,#2a9c67);color:#fff;border:none;padding:13px 32px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(31,122,79,.3);transition:opacity .2s}
     .print-btn:hover{opacity:.9}
     @page{size:A4;margin:15mm 18mm}
-    @media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body{background:#fff}.page-wrap{box-shadow:none;max-width:none}.no-print{display:none}.section{padding:16px 28px;break-inside:avoid;page-break-inside:avoid}.conf-banner{break-inside:avoid;page-break-inside:avoid}.opt-card{break-inside:avoid;page-break-inside:avoid}.cost-card{break-inside:avoid;page-break-inside:avoid}.rpt-header{padding:20px 28px}}
+    @media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body{background:#fff}.page-wrap{box-shadow:none;max-width:none}.no-print{display:none}.section{padding:16px 28px;break-inside:avoid;page-break-inside:avoid}.conf-banner{flex-direction:row!important;break-inside:avoid;page-break-inside:avoid}.opt-card{break-inside:avoid;page-break-inside:avoid}.cost-card{break-inside:avoid;page-break-inside:avoid}.rpt-header{padding:20px 28px}.options-grid{break-inside:avoid;page-break-inside:avoid}.patient-grid{break-inside:avoid;page-break-inside:avoid}.risk-grid{break-inside:avoid;page-break-inside:avoid}.cost-compare{break-inside:avoid;page-break-inside:avoid}}
     @media(max-width:640px){.patient-grid{grid-template-columns:1fr 1fr}.options-grid,.cost-compare,.risk-grid{grid-template-columns:1fr}.conf-banner{flex-direction:column}.conf-rec-box{border-left:none;border-top:1px solid #E5E7EB;min-width:unset}.rpt-header{flex-direction:column;gap:14px;text-align:center}.rpt-meta-box{text-align:center}.section{padding:16px 18px}.no-print{padding:16px 18px}}
   `;
 
@@ -4223,7 +4235,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       CleanupRegistry.timer(() => URL.revokeObjectURL(url), 5000);
       if (btn) setTimeout(() => { btn.classList.remove('btn-loading'); btn.innerHTML = '<i class="fa-solid fa-print" style="color:var(--c-n400)" aria-hidden="true"></i> Report'; }, 800);
       // Persist a record to reportHistory (local-only, capped at 20)
-      const rec = { ts: Date.now(), name: S.name || '', type: S.multiSite ? 'compound' : 'single', caseNum: S.caseNum || '' };
+      const rec = { id: Date.now().toString(36) + Math.random().toString(36).slice(2), ts: Date.now(), name: S.name || '', type: S.multiSite ? 'compound' : 'single', caseNum: S.caseNum || '' };
       if (!Array.isArray(S.reportHistory)) S.reportHistory = [];
       S.reportHistory.unshift(rec);
       if (S.reportHistory.length > 20) S.reportHistory = S.reportHistory.slice(0, 20);

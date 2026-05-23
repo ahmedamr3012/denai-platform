@@ -1767,6 +1767,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-23T13:22:25.554Z"
+    },
+    {
+      "id": "bug-104",
+      "timestamp": "2026-05-23T16:55:16.115Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: !id",
+      "fix": "Added guard clause: if (!id)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T16:55:16.115Z"
     }
   ]
 }

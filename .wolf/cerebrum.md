@@ -4,6 +4,34 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-23
 
+## Key Learnings — R4.2 Print Layout Stabilization (2026-05-23)
+
+- **`REPORT_CSS @media print` block is a single compressed line.** All print rules live in one string literal inside `generateReport()` scope. Editing it requires an exact string match — no line-by-line approach.
+- **Grid containers lacked `break-inside: avoid` while their child cards had it.** `.opt-card`, `.cost-card`, `.section` were protected but `.options-grid`, `.patient-grid`, `.risk-grid`, `.cost-compare` were not. A grid container itself can split at a page boundary even when all its children are protected — the children's `break-inside` only prevents internal splits, not where the grid starts on a new page.
+- **`.conf-banner{flex-direction:row!important}` in `@media print` overrides the `@media(max-width:640px)` responsive rule.** Print rendering in some browsers triggers narrow-viewport responsive rules even for A4 paper output. The `!important` ensures the horizontal banner layout is preserved regardless of computed viewport width during print.
+- **DO NOT use CSS `var(--xxx)` inside `REPORT_CSS`.** The report popup is a separate browsing context — app-level CSS variables are not inherited. Use hardcoded values only. (Phase 10 — reconfirmed R4.2)
+- **Forced page breaks were explicitly rejected for R4.2.** `break-before: page` or `break-after: page` would create large whitespace gaps on short reports. The approved philosophy is fragmentation prevention (`break-inside: avoid`), not forced pagination.
+
+## Do-Not-Repeat (2026-05-23 — R4.2)
+
+- **DO NOT add `break-before: page` or `break-after: page` to any report element.** Forces hard page splits that create whitespace gaps on short/single-page reports. Approved fix is `break-inside: avoid` only. (R4.2, 2026-05-23)
+- **DO NOT use CSS variables in REPORT_CSS.** Popup is a separate browsing context; variables don't inherit. (Phase 10, reconfirmed R4.2, 2026-05-23)
+- **DO NOT merge `print.css` (main-app window) with `REPORT_CSS` (report popup).** They apply to completely separate browsing contexts and should remain independent. (R4.2, 2026-05-23)
+
+## Key Learnings — R4.3 Report History Lifecycle (2026-05-23)
+
+- **`S.reportHistory` entries now include an `id` field: `Date.now().toString(36) + Math.random().toString(36).slice(2)`.** Base-36 output is `[0-9a-z]` only — safe to embed directly in `onclick` attributes without additional escaping.
+- **Legacy entries without `id` remain non-deletable — delete button is conditionally rendered only when `r.id` exists.** No migration, no mutation of old arrays on startup. Fully additive change.
+- **`deleteReportHistory(id)` uses `filter` by id, not splice by index.** Index-based deletion is fragile because `renderReportsView()` re-renders the full array — an async re-render cycle could shift indices. Filter-by-id is deterministic and order-independent.
+- **`openReport` remains a closure inside `generateReport()` — not extracted.** R4.3 only added an `id` field to the record. R4.1 (lab document) will need a separate top-level `openLabDocument()` function since it cannot reuse the closure.
+- **Delete confirmation uses `confirm()` — no modal system.** Denai philosophy: clinic-first, operationally lightweight. `confirm()` is the approved minimal confirmation pattern for destructive single-row actions.
+
+## Do-Not-Repeat (2026-05-23 — R4.3)
+
+- **DO NOT delete reportHistory entries by array index.** Use filter-by-id. Index-based deletion is fragile if any concurrent re-render shifts positions. (R4.3, 2026-05-23)
+- **DO NOT retroactively assign ids to legacy reportHistory entries on startup or hydration.** Additive-only: new entries get ids, old entries stay as-is, non-deletable. Mutating old entries risks localStorage corruption. (R4.3, 2026-05-23)
+- **DO NOT store generated report HTML in `S.reportHistory`.** History is metadata only: `{ id, ts, name, type, caseNum }`. Reports are regenerated from current patient state. (R4.3, 2026-05-23)
+
 ## Key Learnings — R3.5 Material Semantic Stabilization (2026-05-23)
 
 - **`_getMatContext(state, ai)` is the single derivation point for material vocabulary.** Added to `materialPanel.js`. In restorative mode (`ai.treatmentMode === 'restorative'`), maps `state.tx` → slot key → `ai.restorativeLabels[slot].id` → `_SLOT_ID_TO_MAT_CONTEXT[id]`. In missing-tooth mode, returns `state.tx` directly. All material UI branches key off this derived context — never off `state.tx` directly.
