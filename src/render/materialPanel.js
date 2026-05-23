@@ -2,6 +2,13 @@
   // RENDER: MATERIAL
   // ================================================================
   let _matFadeTimer = null;  // FIX#6: cancel stale fade timers on re-render
+
+  // R3.2: apply mat-selected class based on current selection ('primary' | 'alt' | null)
+  function _syncMatSelected(primary, alt, sel) {
+    if (primary) primary.classList.toggle('mat-selected', sel === 'primary');
+    if (alt) alt.classList.toggle('mat-selected', sel === 'alt');
+  }
+
   function renderMaterial(state) {
     const isImp = state.tx === 'implant';
     const isCrn = state.tx === 'crown';
@@ -11,6 +18,20 @@
     if (matForEl) matForEl.textContent = isImp ? '(for Implant)' : isCrn ? '(for Crown)' : '(for Bridge)';
     const primary = $('matPrimary'), alt = $('matAlt');
     if (!primary || !alt) return;
+
+    // R3.2: click-to-select — property assignment prevents listener accumulation on re-renders
+    primary.onclick = function() {
+      setState({ selectedMaterial: S.selectedMaterial === 'primary' ? null : 'primary' });
+      _syncMatSelected(primary, alt, S.selectedMaterial);
+    };
+    alt.onclick = function() {
+      setState({ selectedMaterial: S.selectedMaterial === 'alt' ? null : 'alt' });
+      _syncMatSelected(primary, alt, S.selectedMaterial);
+    };
+
+    // R3.2: instant selection feedback before the 160ms fade begins
+    _syncMatSelected(primary, alt, state.selectedMaterial);
+
     primary.style.opacity = '0'; alt.style.opacity = '0';
     if (_matFadeTimer) { clearTimeout(_matFadeTimer); _matFadeTimer = null; }  // FIX#6
     _matFadeTimer = setTimeout(() => {
@@ -46,6 +67,7 @@
         $('matAltRate').textContent       = '92‑95%';
       }
       primary.style.opacity = '1'; alt.style.opacity = '1';
+      _syncMatSelected(primary, alt, state.selectedMaterial);  // R3.2: re-apply after content update
     }, 160);
   }
 

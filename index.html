@@ -914,6 +914,15 @@ body.dark .mat-box { background: var(--c-n100); border-color: var(--c-n200); }
 body.dark .mat-alt { border-top-color: var(--c-n200); }
 .mat-alt-name { font-size: 12px; font-weight: 700; color: var(--c-n700); margin-bottom: 3px; }
 .mat-alt-detail { font-size: 11px; color: var(--c-n400); line-height: 1.4; }
+/* R3.2: Material selection */
+#matPrimary, #matAlt { cursor: pointer; border-radius: 6px; }
+#matPrimary:hover { background: var(--c-n50, #f9fafb); }
+#matAlt:hover { background: var(--c-n50, #f9fafb); }
+body.dark #matPrimary:hover, body.dark #matAlt:hover { background: var(--c-n150); }
+#matPrimary.mat-selected, #matAlt.mat-selected { background: var(--c-brand-bg); outline: 2px solid var(--c-brand); }
+body.dark #matPrimary.mat-selected, body.dark #matAlt.mat-selected { background: rgba(99,102,241,.12); }
+#matPrimary.mat-selected .mat-name::after { content: '✓ Selected'; background: var(--c-brand); color: #fff; font-size: 8px; padding: 2px 7px; border-radius: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-left: 2px; }
+#matAlt.mat-selected .mat-alt-name::after { content: '✓ Selected'; background: var(--c-brand); color: #fff; font-size: 8px; padding: 2px 7px; border-radius: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-left: 2px; }
 
 /* ================================================================
    COST BOX

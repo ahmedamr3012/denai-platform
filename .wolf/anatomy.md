@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T11:56:48.994Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T12:08:33.626Z
 > Files: 44 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~107432 tok)
+- `index.html` — denai — Clinical Insight (~107704 tok)
 - `jsconfig.json` — Phase 20: IDE type-governance config; allowJs:true, checkJs:false (opt-in per file), noEmit:true; includes src/**/*.js + src/**/*.d.ts; no build coupling (~82 tok)
 - `privacy.html` — Privacy Policy — denai (~2802 tok)
 - `terms.html` — Terms of Service — denai (~3244 tok)
@@ -68,7 +68,7 @@
 - `aiCardPanel.js` — Phase 17/21/R1.1: AI card rendering cluster; buildAICardStructure() DOM template builder; #langToggle button removed (R1.1); setLang('en') resets persisted Arabic on card build; Arabic RTL path still active at renderAIExplanation time via denaiArabic; React island mount point #riskPanelMount (~5100 tok)
 - `comparisonPanel.js` — Renders inline comparison table and full comparison table body; lazyRenderComparisonTable; renderComparison (~2000 tok)
 - `costGraphPanel.js` — renderCost and renderGraph; cost breakdown and bar-chart visualization (~1800 tok)
-- `materialPanel.js` — renderMaterial; material recommendation panel for primary/secondary material display (~800 tok)
+- `materialPanel.js` — ================================================================ (~1450 tok)
 - `patientPanel.js` — renderPatientDisplay; patient demographics and condition summary panel (~1200 tok)
 - `planFragments.js` — _getAiForPlan/buildTreatmentPathRows; treatment path HTML for Plan view; pure over parameters (~600 tok)
 - `timeline.js` — _synthesizeWfBaseline/_renderWfTimeline; workflow timeline HTML builder; pure over patient/event parameters (~500 tok)
@@ -104,7 +104,7 @@
 - `clinical.d.ts` — Phase 20: CaseType, CaseClass, TreatmentOption, ScoredTreatment, ExplanationSummary, NormalizedClinical, ClinicalAIResult, SingleMissingResult, MultiMissingResult, ProcessResult union, CompoundAIResult; ClinicalEngine pipeline contracts (~1121 tok)
 - `explain.d.ts` — Phase 20: ExplanationBlockType, ExplanationBlock, ExplainResult; explanation layer output contracts; documents denaiExplain.buildExplanation() return shape (~300 tok)
 - `globals.d.ts` — Phase 20: window-global module declarations; ClinicalEngine, calcAI, calcAIMulti, denaiAIPayload, denaiExplain, denaiArabic, denaiEntitlements, denaiSerializer, denaiObserve, denaiGuidance; IDE IntelliSense contract surface (~810 tok)
-- `state.d.ts` — ================================================================ (~1010 tok)
+- `state.d.ts` — ================================================================ (~1018 tok)
 
 ## src/utils/
 

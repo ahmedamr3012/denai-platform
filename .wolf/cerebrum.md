@@ -4,6 +4,21 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-23
 
+## Key Learnings — R3.2 Material Selection UI (2026-05-23)
+
+- **`selectedMaterial` stores 'primary' | 'alt' | null — NOT actual material name strings.** Using relative position keys is stable across treatment-type changes (S.tx changes). The actual material name is derived at render time from the derivation logic. Future reports should re-derive the name from state + selection key.
+- **`renderMaterial` uses `.onclick` property assignment for click handlers, not `addEventListener`.** Property assignment replaces the previous handler on every render — zero listener accumulation. This is the correct pattern for render functions that run on every full re-render cycle in this project.
+- **`_syncMatSelected(primary, alt, sel)` is called 3 times in `renderMaterial`.** (1) Immediately after onclick wiring — for instant click feedback before the 160ms fade. (2) In the setTimeout callback after content update — to re-apply after fade completes. The state object passed to renderMaterial IS the same reference as global S (rendered via `renderMaterial(state)` where state = S), so `state.selectedMaterial` and `S.selectedMaterial` are always in sync.
+- **`StateValidator.validate(field, value)` returns `{ ok: true }` for any field not in SCHEMAS.** Fields not in SCHEMAS (like selectedMaterial, costBridge4, costOverlay) bypass validation and are accepted by setState unconditionally. No schema entry is needed for non-validated fields.
+- **Material CSS uses `::after` pseudo-elements on `.mat-name` and `.mat-alt-name` for the '✓ Selected' badge.** No HTML changes needed — badge appears via CSS when `mat-selected` class is on the parent. CSS `outline: 2px solid var(--c-brand)` respects `border-radius` in Chromium (modern Chrome).
+- **`#matPrimary` has `style="transition:opacity .25s ease"` as an HTML inline attribute.** This overrides any CSS `transition` rules for the `transition` property. If adding background transitions, override via JS: `primary.style.transition = '...'` inside renderMaterial. Currently R3.2 only adds cursor/outline/background — no transition override needed since we rely on instantaneous class toggle.
+- **`saveState()` spreads all of S via `{ ...S }` — all DEFAULT_STATE fields persist to localStorage automatically.** No special handling needed for new state fields. The localStorage save covers selectedMaterial without any code changes.
+
+## Do-Not-Repeat (2026-05-23 — R3.2)
+
+- **DO NOT store the actual material name string in selectedMaterial (e.g., 'Titanium + Zirconia').** Store 'primary' or 'alt'. Material names are derived at render time and can differ by treatment type — a stored material name goes stale when S.tx changes. The relative key ('primary'/'alt') is always valid. (R3.2, 2026-05-23)
+- **DO NOT use `addEventListener` for material card click handlers.** renderMaterial() is called on every re-render. Use `primary.onclick = function() {...}` (property assignment) to replace the previous handler instead of accumulating listeners. (R3.2, 2026-05-23)
+
 ## Key Learnings — R2.1 Pricing Catalog Completeness (2026-05-23)
 
 - **bridge4 cost was derived implicitly as `bridge * 1.3` in calcAI.js.** After R2.1, bridge4 is a standalone catalog entry (`id: 'bridge4'`, default $4550) and calcAIMulti() uses `state.costBridge4 != null ? state.costBridge4 : getClinicPrice('bridge4')`. Clinic pricing is now the canonical source.

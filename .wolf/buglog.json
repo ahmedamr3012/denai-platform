@@ -1687,6 +1687,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-23T11:56:41.076Z"
+    },
+    {
+      "id": "bug-099",
+      "timestamp": "2026-05-23T12:08:20.183Z",
+      "error_message": "Wrong reference: 160 should be _syncMatSelected",
+      "file": "src/render/materialPanel.js",
+      "root_cause": "Used \"160\" instead of \"_syncMatSelected\"",
+      "fix": "Changed 160 → _syncMatSelected",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T12:08:20.183Z"
+    },
+    {
+      "id": "bug-100",
+      "timestamp": "2026-05-23T12:08:33.637Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/types/state.d.ts",
+      "root_cause": "Had 'zirconia'",
+      "fix": "Changed to 'primary'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T12:08:33.637Z"
     }
   ]
 }
