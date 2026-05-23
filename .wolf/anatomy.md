@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T11:28:30.668Z
-> Files: 43 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T11:39:40.193Z
+> Files: 44 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -31,8 +31,8 @@
 
 - `aiPayload.js` — Phase 15 PHI-safe AI payload boundary; window.denaiAIPayload IIFE; build(state) strips PHI → clinical context only; isSafe(payload) asserts no prohibited fields; AI_SAFE_FIELDS/EXCLUDED_FIELDS allowlists; wired into all 3 ClinicalEngine call sites; pure computation; Phase 20: JSDoc @param/@returns on build() and isSafe() (~1088 tok)
 - `arabicLayer.js` — Phase 16 Arabic bilingual explanation layer; window.denaiArabic IIFE; localizeExpl(expl) maps all bounded engine text to Arabic; getLang/setLang/isArabic localStorage-backed lang state; PHRASES/FACTORS/TX_LABELS/CONF_PARTS maps + dynamic pattern matchers for score-embedded strings; no machine translation; pure computation (~4500 tok)
-- `calcAI.js` — Pure AI scoring engine; calcAI() single-tooth (implant/bridge/crown scores, reasons, factors); calcAIMulti() two-adjacent-tooth (implant2/bridge4/cantilever); isPosteriorTooth/isMaxilla helpers; no DOM access (~5500 tok)
-- `clinicalEngine.js` — ClinicalEngine IIFE; 7-stage deterministic pipeline: normalize→classify→generateTreatments→scoreRestorative→recommend→explain→buildRestorativeResult; process(state)/processCompound(state) public API; CT case-type constants; all restorative paths run here; MISSING paths delegate to calcAI/calcAIMulti; Phase 20: JSDoc @param/@returns on process() and processCompound() (~8166 tok)
+- `calcAI.js` — Pure AI scoring engine; calcAI() single-tooth; calcAIMulti() two-adjacent-tooth; bridge4 cost now reads getClinicPrice('bridge4') (R2.1 — no longer derived as bridge×1.3); no DOM access (~5500 tok)
+- `clinicalEngine.js` — ClinicalEngine IIFE; 7-stage pipeline; normalize() costs object now includes overlay field (R2.1); restorativeCosts.slot1 uses c.costs.overlay for onlay cases instead of crown×0.65 (~8166 tok)
 - `explainLayer.js` — Phase 14 explanation layer; window.denaiExplain IIFE; buildExplanation(ai) → {blocks, confidenceRationale, referralSignals}; typed blocks: classification/rationale/contraindication/escalation/tradeoff; confidence rationale for Medium/Low cases; specialist referral signals; pure derivation from existing ai result; Phase 20: JSDoc @param/@returns on buildExplanation() (~1997 tok)
 
 ## src/auth/
@@ -43,6 +43,7 @@
 
 ## src/constants/
 
+- `clinicPrefs.js` — CLINIC_PREF_DEFAULTS, FDI_MAP, CURRENCY_CONFIG, TREATMENT_PRICING_CATALOG (9 entries: implant, bridge, bridge4, boneGraft, crown, overlay, rct, postCore, annualCheckup); R2.1 added bridge4 (default $4550) and overlay (default $780) as standalone configurable entries (~1500 tok)
 - `storageKeys.js` — Declares STORAGE_KEY (~52 tok)
 
 ## src/db/

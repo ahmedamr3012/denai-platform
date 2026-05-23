@@ -146,7 +146,7 @@
     const costs = {
       implant2:   (stateObj.costImplant   != null ? stateObj.costImplant   : getClinicPrice('implant')) * 2
                   + (stateObj.bone === 'Poor' ? (stateObj.costBoneGraft != null ? stateObj.costBoneGraft : getClinicPrice('boneGraft')) * 2 : 0),
-      bridge4:    Math.round((stateObj.costBridge  != null ? stateObj.costBridge  : getClinicPrice('bridge'))  * 1.3),  // 4-unit upcharge
+      bridge4:    stateObj.costBridge4 != null ? stateObj.costBridge4 : getClinicPrice('bridge4'),
       cantilever: Math.round((stateObj.costImplant != null ? stateObj.costImplant : getClinicPrice('implant')) * 1.5),  // 1 implant + extension
     };
 

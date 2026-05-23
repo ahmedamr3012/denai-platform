@@ -62,6 +62,7 @@
           crown:    s.costCrown     || getClinicPrice('crown'),
           rct:      s.costRCT       || getClinicPrice('rct'),
           postCore: s.costPostCore  || getClinicPrice('postCore'),
+          overlay:  s.costOverlay   || getClinicPrice('overlay'),  // R2.1: clinic-configurable onlay price
         },
       };
     }
@@ -366,7 +367,7 @@
         // ── Restorative cost basis (used by renderCost override) ───
         restorativeCosts: {
           slot1: Math.round((bySlot['implant']?.id === 'onlay'
-            ? (c.costs.crown * 0.65)        // onlay ≈ 65% of crown cost
+            ? c.costs.overlay               // R2.1: clinic-configurable onlay/overlay price
             : bySlot['implant']?.id === 'endocrown'
             ? (c.costs.crown * 0.9)         // endocrown ≈ 90% (no post/buildup needed)
             : c.costs.crown + (c.costs.postCore * (c.restorative.fairStructure ? 1 : 0))) * 10) / 10,

@@ -4,6 +4,21 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-23
 
+## Key Learnings — R2.1 Pricing Catalog Completeness (2026-05-23)
+
+- **bridge4 cost was derived implicitly as `bridge * 1.3` in calcAI.js.** After R2.1, bridge4 is a standalone catalog entry (`id: 'bridge4'`, default $4550) and calcAIMulti() uses `state.costBridge4 != null ? state.costBridge4 : getClinicPrice('bridge4')`. Clinic pricing is now the canonical source.
+- **Onlay / Overlay cost was derived as `c.costs.crown * 0.65` in clinicalEngine.js.** After R2.1, `overlay` is a standalone catalog entry (`id: 'overlay'`, default $780). normalize() costs object includes `overlay: s.costOverlay || getClinicPrice('overlay')`. slot1 uses `c.costs.overlay` for onlay cases.
+- **TREATMENT_PRICING_CATALOG now has 9 entries** (was 7). New entries: `bridge4` (surgical, stateKey: 'costBridge4') and `overlay` (restorative, stateKey: 'costOverlay'). Settings UI auto-renders them — grid is catalog-driven.
+- **`getClinicPrice(id)` needs no changes** — it resolves any id against the catalog by string match. Adding catalog entries is sufficient.
+- **Backward compat: existing patients lack costBridge4/costOverlay.** The `!= null` and `||` patterns treat `undefined` the same as `null` — falls through to `getClinicPrice()` → catalog default (same effective price as before for bridge4: $3500 × 1.3 = $4550; overlay: $1200 × 0.65 = $780). No DEFAULT_STATE or serializer changes needed for R2.1. Per-patient overrides are R2.2 scope.
+- **clinicalEngine.js normalize() uses `||` (falsy check); costEngine.js uses `!= null`.** Different conventions per file. Follow the file's existing convention when adding new cost fields to either.
+
+## Do-Not-Repeat (2026-05-23 — R2.1)
+
+- **DO NOT compute bridge4 cost as `bridge * 1.3` in calcAI.js.** Use `stateObj.costBridge4 != null ? stateObj.costBridge4 : getClinicPrice('bridge4')`. (R2.1, 2026-05-23)
+- **DO NOT compute onlay/overlay cost as `c.costs.crown * 0.65` in clinicalEngine.js.** Use `c.costs.overlay` from normalize(). (R2.1, 2026-05-23)
+- **DO NOT add new clinic-configurable prices without a TREATMENT_PRICING_CATALOG entry.** Settings grid is fully registry-driven. (R2.1, 2026-05-23)
+
 ## Key Learnings — R1.2 Selected vs Recommended Semantics (2026-05-23)
 
 - **`S.tx` is the authoritative clinician selection source — already existed.** `S.tx` is set when the clinician clicks a treatment card (`setState({ tx: option })`), and also captured in JSON export (`treatment: { selected: S.tx }`). No new state field was needed. The problem was purely display-layer: reports used `ai.rec` for `isRec` but never consulted `S.tx`.
