@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T06:36:09.471Z
-> Files: 42 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T06:47:27.903Z
+> Files: 43 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -18,6 +18,7 @@
 
 ## .github/workflows/
 
+- `ci.yml` — CI regression suite; push/PR on main + wave6-hardening; runs engine + smoke tests via Playwright Chromium; actions @v5 (Node.js 24 runtime); project node-version: 20 (~41 tok)
 
 ## docs/
 
