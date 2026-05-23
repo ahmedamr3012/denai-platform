@@ -2624,6 +2624,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (UIState.view === 'lab')  renderLabView();
     if (UIState.view === 'plan') renderPlanView();
     showToast('Case sent to lab', 'success');
+    generateLabDocument();
   }
 
   function markLabReceived() {
@@ -3421,6 +3422,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           ${!labStatus ? `<button class="btn-action btn-action-lab" type="button" onclick="sendToLab()"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Send to Lab</button>` : ''}
           ${labStatus === 'pending' ? `<button class="btn-action btn-action-approve" type="button" onclick="markLabReceived()"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Mark Lab Received</button>` : ''}
           ${labStatus === 'received' ? `<span class="wf-sent-badge" style="background:rgba(var(--c-brand-rgb),.1);border-color:rgba(var(--c-brand-rgb),.3);color:var(--c-brand);"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Lab Received — Ready for Delivery</span>` : ''}
+          ${labStatus ? `<button class="btn-action btn-action-reopen" type="button" onclick="generateLabDocument()"><i class="fa-solid fa-print" aria-hidden="true"></i> Print Lab Sheet</button>` : ''}
           <button class="btn-action btn-action-reopen" type="button" onclick="reopenPlanning()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reopen Planning</button>
         </div>
       </div>
@@ -4215,6 +4217,135 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     @media(max-width:640px){.patient-grid{grid-template-columns:1fr 1fr}.options-grid,.cost-compare,.risk-grid{grid-template-columns:1fr}.conf-banner{flex-direction:column}.conf-rec-box{border-left:none;border-top:1px solid #E5E7EB;min-width:unset}.rpt-header{flex-direction:column;gap:14px;text-align:center}.rpt-meta-box{text-align:center}.section{padding:16px 18px}.no-print{padding:16px 18px}}
   `;
 
+  // ── Lab sheet CSS (standalone popup — no CSS vars; popup has a separate browsing context) ──
+  const LAB_CSS = `*{box-sizing:border-box;margin:0;padding:0}body{font-family:'DM Sans',sans-serif;color:#1F2937;background:#F3F4F6;font-size:14px;line-height:1.6}.wrap{max-width:680px;margin:0 auto;background:#fff;box-shadow:0 0 24px rgba(0,0,0,.1)}.lab-hdr{background:linear-gradient(135deg,#0B2B1F 0%,#1F7A4F 100%);padding:22px 32px;display:flex;justify-content:space-between;align-items:center}.lab-brand{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px}.lab-brand-sub{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px}.lab-badge{font-size:9px;background:rgba(255,255,255,.2);color:#fff;padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;border:1px solid rgba(255,255,255,.3);vertical-align:middle;margin-left:6px}.lab-meta{text-align:right}.lab-casenum{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;color:#fff}.lab-date{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}.lab-purpose{background:#1F7A4F;padding:9px 32px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.9)}.sec{padding:20px 32px}.sec+.sec{border-top:1px solid #E5E7EB}.sec-ttl{font-family:'Sora',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#1F7A4F;margin-bottom:12px;display:flex;align-items:center;gap:8px}.sec-ttl::after{content:'';flex:1;height:1px;background:#E5E7EB}.row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #F3F4F6;font-size:13px}.row:last-child{border-bottom:none}.row-lbl{color:#6B7280}.row-val{font-weight:700;color:#111827;text-align:right}.row-val.hi{color:#1F7A4F}.mat-block{background:#EDF6F1;border:1px solid #D1FAE5;border-radius:8px;padding:14px 16px;margin-top:4px}.mat-name{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;color:#0B2B1F;margin-bottom:4px}.mat-note{font-size:12px;color:#4B5563}.notes-block{background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:12px 14px}.notes-block p{font-size:13px;color:#374151;white-space:pre-wrap;margin:0}.lab-footer{background:#F9FAFB;border-top:1px solid #E5E7EB;padding:12px 32px;font-size:11px;color:#9CA3AF;display:flex;justify-content:space-between;align-items:center}.lab-footer strong{color:#374151}.no-print{padding:16px 32px;text-align:center;border-top:1px solid #E5E7EB;background:#fff}.print-btn{background:linear-gradient(135deg,#1F7A4F,#2a9c67);color:#fff;border:none;padding:11px 28px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(31,122,79,.3)}@page{size:A4;margin:15mm 18mm}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body{background:#fff}.wrap{box-shadow:none;max-width:none}.no-print{display:none}.sec{break-inside:avoid;page-break-inside:avoid}.mat-block{break-inside:avoid;page-break-inside:avoid}}`;
+
+  function openLabDocument(html) {
+    const blob = new Blob([html], { type: 'text/html' });
+    const url  = URL.createObjectURL(blob);
+    const win  = window.open(url, '_blank', 'width=740,height=640');
+    if (!win) {
+      showToast('Popup blocked — downloading lab sheet instead', 'error');
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `denai-LabSheet-${(S.name || 'case').replace(/[^a-z0-9]/gi, '-')}.html`;
+      a.click();
+    }
+    CleanupRegistry.timer(() => URL.revokeObjectURL(url), 5000);
+  }
+
+  // R4.1: Derive lab-facing material label + note from R3.5 semantics.
+  // Reuses getCrownMaterial() — single authoritative crown-material path.
+  // Bridge/implant/overlay derived inline (2-branch logic, mirrors costEngine gates).
+  function _deriveLabMaterial(state, ai) {
+    const matSel   = state.selectedMaterial;
+    const highOcc  = state.occlusion === 'High occlusion load';
+    const isRestor = ai?.treatmentMode === 'restorative';
+    const isOverlaySlot = isRestor &&
+      ai?.restorativeLabels?.slot1?.id === 'onlay' && state.tx === 'implant';
+
+    if (isOverlaySlot) {
+      return matSel === 'alt'
+        ? { label: 'Composite Overlay',        note: 'Composite selected — deep-preparation or patient-preference protocol' }
+        : { label: 'Ceramic Overlay',           note: 'Ceramic preferred — superior wear resistance and bonding' };
+    }
+    if (state.tx === 'bridge' && !isRestor) {
+      const isZirconia = matSel === 'alt' ? !highOcc : highOcc;
+      return isZirconia
+        ? { label: 'Zirconia Bridge',           note: 'High occlusal demand — maximum fracture resistance' }
+        : { label: 'e.max Bridge',              note: 'Aesthetic zone — superior translucency and natural appearance' };
+    }
+    if (state.tx === 'crown' || isRestor) {
+      const cm = getCrownMaterial(state);
+      return matSel === 'alt'
+        ? { label: cm.alt,   note: cm.altReason }
+        : { label: cm.name,  note: cm.reason    };
+    }
+    return matSel === 'alt'
+      ? { label: 'All-Zirconia Implant',        note: 'Metal-free all-zirconia fixture — clinician-selected alternative' }
+      : { label: 'Titanium + Zirconia Implant', note: 'Standard biocompatible titanium fixture with zirconia crown' };
+  }
+
+  function generateLabDocument() {
+    const ai   = _getAiForPlan(S);
+    const mat  = _deriveLabMaterial(S, ai);
+    const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const _rawCase  = S.caseNum || 'Case 1';
+    const caseLabel = /^[#\w\-\s]{1,25}$/.test(_rawCase) ? escapeHtml(_rawCase) : 'Case 1';
+
+    // S.tx is treatment authority (clinician-approved), ai provides restorative/multi-tooth context
+    let txLabel, txSummary;
+    if (ai?.treatmentMode === 'restorative') {
+      txLabel   = ai.recDisplay || 'Crown';
+      const isOv = ai?.restorativeLabels?.slot1?.id === 'onlay' && S.tx === 'implant';
+      txSummary = isOv ? 'Partial-coverage overlay restoration' : 'Full-coverage crown restoration';
+    } else if (ai?.isMultiTooth) {
+      const MULTI     = { implant2: '2-Implant Restoration', bridge4: '4-Unit Bridge', cantilever: 'Implant + Cantilever Bridge' };
+      const MULTI_SUM = { implant2: 'Dual osseointegrated fixtures + 2 implant-supported crowns', bridge4: '4-unit fixed bridge — 2 abutments + 2 pontics', cantilever: 'Single implant fixture + cantilever bridge extension' };
+      txLabel   = MULTI[ai.rec]     || ai.rec || '—';
+      txSummary = MULTI_SUM[ai.rec] || '—';
+    } else {
+      const TX_LABEL = { implant: 'Implant', bridge: 'Bridge', crown: 'Crown' };
+      const TX_SUM   = { implant: 'Osseointegrated fixture + implant-supported crown', bridge: '3-unit fixed bridge — 2 abutments + 1 pontic', crown: 'Full-coverage tooth-supported crown' };
+      txLabel   = TX_LABEL[S.tx]   || S.tx   || '—';
+      txSummary = TX_SUM[S.tx]     || '—';
+    }
+
+    const html = `<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab Sheet — ${caseLabel}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>${LAB_CSS}</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="lab-hdr">
+    <div>
+      <div class="lab-brand">${escapeHtml(BRAND.name)}<span class="lab-badge">Lab Sheet</span></div>
+      <div class="lab-brand-sub">Fabrication &amp; Restoration Instruction</div>
+    </div>
+    <div class="lab-meta">
+      <div class="lab-casenum">${caseLabel}</div>
+      <div class="lab-date">${escapeHtml(date)} &middot; ${escapeHtml(time)}</div>
+    </div>
+  </div>
+  <div class="lab-purpose">Clinician-Approved Lab Fabrication Sheet</div>
+  <div class="sec">
+    <div class="sec-ttl">Patient &amp; Site</div>
+    <div class="row"><span class="row-lbl">Patient</span><span class="row-val">${escapeHtml(S.name || '—')}</span></div>
+    <div class="row"><span class="row-lbl">Tooth / Site</span><span class="row-val">${escapeHtml(S.tooth ? formatTooth(S.tooth) : '—')}</span></div>
+    ${S.caseNum ? `<div class="row"><span class="row-lbl">Case No.</span><span class="row-val">${caseLabel}</span></div>` : ''}
+    <div class="row"><span class="row-lbl">Date</span><span class="row-val">${escapeHtml(date)}</span></div>
+  </div>
+  <div class="sec">
+    <div class="sec-ttl">Approved Treatment</div>
+    <div class="row"><span class="row-lbl">Restoration Type</span><span class="row-val hi">${escapeHtml(txLabel)}</span></div>
+    <div class="row"><span class="row-lbl">Fabrication Scope</span><span class="row-val">${escapeHtml(txSummary)}</span></div>
+  </div>
+  <div class="sec">
+    <div class="sec-ttl">Selected Material</div>
+    <div class="mat-block">
+      <div class="mat-name">${escapeHtml(mat.label)}</div>
+      <div class="mat-note">${escapeHtml(mat.note)}</div>
+    </div>
+  </div>
+  ${S.labNotes ? `<div class="sec">
+    <div class="sec-ttl">Clinician Notes</div>
+    <div class="notes-block"><p>${escapeHtml(S.labNotes)}</p></div>
+  </div>` : ''}
+  <div class="lab-footer">
+    <div><strong>${escapeHtml(BRAND.name)}</strong> &mdash; Clinician-approved fabrication instruction</div>
+    <div>${caseLabel} &middot; ${escapeHtml(date)}</div>
+  </div>
+  <div class="no-print"><button class="print-btn" onclick="window.print()">Print Lab Sheet</button></div>
+</div>
+</body></html>`;
+
+    openLabDocument(html);
+  }
 
   function generateReport() {
     const btn = $('reportBtn');

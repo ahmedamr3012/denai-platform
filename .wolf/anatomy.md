@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T16:58:26.753Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T17:10:04.715Z
 > Files: 45 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~107985 tok)
+- `index.html` — denai — Clinical Insight (~110666 tok)
 - `jsconfig.json` — Phase 20: IDE type-governance config; allowJs:true, checkJs:false (opt-in per file), noEmit:true; includes src/**/*.js + src/**/*.d.ts; no build coupling (~82 tok)
 - `privacy.html` — Privacy Policy — denai (~2802 tok)
 - `terms.html` — Terms of Service — denai (~3244 tok)

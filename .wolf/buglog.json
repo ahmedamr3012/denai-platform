@@ -1783,6 +1783,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-23T16:55:16.115Z"
+    },
+    {
+      "id": "bug-105",
+      "timestamp": "2026-05-23T17:09:46.475Z",
+      "error_message": "Null/undefined access in ",
+      "file": "index.html",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T17:09:46.475Z"
+    },
+    {
+      "id": "bug-106",
+      "timestamp": "2026-05-23T17:10:04.728Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had '}\n          <button class=\"",
+      "fix": "Changed to '}\n          ${labStatus ? `",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T17:10:04.728Z"
     }
   ]
 }

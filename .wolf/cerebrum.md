@@ -4,6 +4,24 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-23
 
+## Key Learnings — R4.1 Lab Workflow Foundation (2026-05-23)
+
+- **`openLabDocument(html)` is a top-level utility, NOT a closure inside `generateReport()`.** It parallels the `openReport` closure logic (blob URL → popup → fallback download → CleanupRegistry timer) but has no `reportHistory` write, no `_emitWfEvent`, and no button-state restoration. Lab sheets are ephemeral artifacts — never persisted.
+- **`_deriveLabMaterial(state, ai)` is the single authoritative lab material derivation path.** Uses the same `isOverlaySlot` gate as `costEngine.js` (`isRestor && slot1.id === 'onlay' && state.tx === 'implant'`). Crown/restorative branch reuses `getCrownMaterial(state)` directly — no duplication of case logic. Bridge branch mirrors `isZirconiaBridge` semantics from `costEngine.js` inline (2-branch: `matSel === 'alt' ? !highOcc : highOcc`).
+- **`getCrownMaterial(state)` is callable from `generateLabDocument()` because `materialPanel.js` is loaded as a `<script>` tag and all its top-level function declarations are in the global (window) scope.** This is different from `costEngine.js` which is a separate non-window file — that's why costEngine mirrors the logic inline instead of calling it cross-file.
+- **`generateLabDocument()` derives treatment from `S.tx` (clinician authority) + `ai` context (restorative/multi-tooth mode).** For restorative mode it uses `ai.recDisplay`. For multi-tooth it maps `ai.rec` to labels/summaries. For single-tooth it maps `S.tx` directly. This mirrors the authority chain used in `renderLabView()`.
+- **`LAB_CSS` is a separate string from `REPORT_CSS`.** Lab sheet is compact, fabrication-oriented, no confidence ring, no multi-column options grid. Its print block includes `break-inside: avoid` on `.sec` and `.mat-block` — same R4.2 philosophy applied.
+- **`sendToLab()` now calls `generateLabDocument()` after state transition and re-renders.** The state saves and the view updates before the popup opens, so the lab view shows 'pending' state when the sheet appears.
+- **"Print Lab Sheet" button appears in `renderLabView()` only when `labStatus` is truthy (pending or received).** Before sending to lab, there is no lab sheet to reprint. This gate is `${labStatus ? ... : ''}`.
+- **`BRAND.name` is `'denai'` (confirmed from `src/constants/brand.js`).** BRAND fields: `name`, `displayName`, `tagline`, `disclaimer`, `footerLine`, `reportPrefix`, `exportPrefix`.
+
+## Do-Not-Repeat (2026-05-23 — R4.1)
+
+- **DO NOT call `getCrownMaterial()` from `costEngine.js` or other non-script utility files.** It is a global only because `materialPanel.js` is a `<script>` tag on the page. From separate module files it would be an undefined reference. Mirror the case logic inline in those contexts. (R4.1, 2026-05-23)
+- **DO NOT store generated lab HTML in state or reportHistory.** Lab sheets are ephemeral — regenerated on demand from current state. (R4.1, 2026-05-23)
+- **DO NOT call `generateLabDocument()` inside `sendToLab()` before the state save and re-render.** Order matters: `S.labStatus = 'pending'` → `saveState()` → `renderLabView()` → then `generateLabDocument()`. Reversed order would generate the sheet with the old state. (R4.1, 2026-05-23)
+- **DO NOT use CSS `var(--xxx)` in `LAB_CSS`.** Popup is a separate browsing context. Hardcoded hex values only. (Reconfirmed R4.1, 2026-05-23)
+
 ## Key Learnings — R4.2 Print Layout Stabilization (2026-05-23)
 
 - **`REPORT_CSS @media print` block is a single compressed line.** All print rules live in one string literal inside `generateReport()` scope. Editing it requires an exact string match — no line-by-line approach.
