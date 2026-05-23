@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T12:08:33.626Z
-> Files: 44 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T12:22:19.521Z
+> Files: 45 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -108,6 +108,7 @@
 
 ## src/utils/
 
+- `costEngine.js` — computeCosts(state, ai): 3-tier pricing chain (patient→clinic→catalog); R3.3 material-aware upcharges: bridge (±15% zirconia/emax gated on state.tx=bridge), implant (+8% all-zirconia gated on tx=implant), crown (±5-12% gated on tx=crown); selectedMaterial='alt' inverts defaults; null/primary → existing behavior (~1950 tok)
 
 ## supabase/functions/stripe-webhook/
 

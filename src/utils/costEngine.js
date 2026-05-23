@@ -29,13 +29,42 @@
     const crownBase    = state.costCrown     != null ? state.costCrown     : getClinicPrice('crown');
     const rctCost      = state.costRCT       != null ? state.costRCT       : getClinicPrice('rct');
     const postCoreCost = state.costPostCore  != null ? state.costPostCore  : getClinicPrice('postCore');
-    const implantInitial = implantBase + (state.bone === 'Poor' ? graftCost : 0);
-    const bridgeMaterialUpcharge  = state.occlusion === 'High occlusion load' ? 0.15 : 0;
+    const highOcc = state.occlusion === 'High occlusion load';
+    const matSel  = state.selectedMaterial; // 'primary' | 'alt' | null
+
+    // R3.3: Material-aware bridge upcharge. Primary mirrors the occlusion default
+    // (zirconia +15% for high-load, e.max 0% otherwise). Alt inverts the pair.
+    // Gated on state.tx so selectedMaterial never bleeds into the bridge comparison
+    // column when the clinician's chosen treatment is implant or crown.
+    let bridgeMaterialUpcharge;
+    if (matSel === 'alt' && state.tx === 'bridge') {
+      bridgeMaterialUpcharge = highOcc ? 0 : 0.15;
+    } else {
+      bridgeMaterialUpcharge = highOcc ? 0.15 : 0;
+    }
+
+    // R3.3: All-zirconia fixture (alt implant) is ~8% above titanium+zirconia base.
+    const implantMaterialUpcharge = (matSel === 'alt' && state.tx === 'implant') ? 0.08 : 0;
+
+    const implantInitial = (implantBase * (1 + implantMaterialUpcharge)) + (state.bone === 'Poor' ? graftCost : 0);
     const bridgeInitialAdjusted   = bridgeBase * (1 + bridgeMaterialUpcharge);
     const needsRCT      = state.endodonticStatus === 'Needs RCT';
     const needsPostCore = (state.remainingStructure === 'Fair' || state.remainingStructure === 'Poor');
     const _crownViable  = ai?.crownViable === true;
-    const crownInitial  = _crownViable ? crownBase + (needsRCT ? rctCost : 0) + (needsPostCore ? postCoreCost : 0) : 0;
+
+    // R3.3: Crown material upcharge — mirrors getCrownMaterial() case logic.
+    // Gated on state.tx=crown so other treatment comparison rows are unaffected.
+    let crownMaterialUpcharge = 0;
+    if (matSel === 'alt' && state.tx === 'crown' && _crownViable) {
+      const posterior = isPosteriorTooth(state.tooth);
+      const bruxism   = (state.parafunction === 'Bruxism' || state.parafunction === 'Both');
+      if (bruxism || (highOcc && posterior)) crownMaterialUpcharge = 0.08;  // layered over monolithic zirconia
+      else if (!highOcc && !posterior)       crownMaterialUpcharge = 0.12;  // layered zirconia over e.max
+      else                                   crownMaterialUpcharge = -0.05; // e.max over standard zirconia crown
+    }
+    const crownInitial = _crownViable
+      ? (crownBase * (1 + crownMaterialUpcharge)) + (needsRCT ? rctCost : 0) + (needsPostCore ? postCoreCost : 0)
+      : 0;
     const implant10yr = implantInitial + (annualCheckup * 10) + (implantInitial * CROWN_COST_RATIO * CROWN_REPLACE_PROB);
     const bridge10yr  = bridgeInitialAdjusted + (annualCheckup * 10) + (bridgeInitialAdjusted * BRIDGE_REPLACE_PROB * BRIDGE_REPLACE_RATIO);
     const crown10yr   = _crownViable ? crownInitial + (annualCheckup * 10) + (crownInitial * STANDALONE_CROWN_REPLACE_PROB * STANDALONE_CROWN_REPLACE_RATIO) : 0;

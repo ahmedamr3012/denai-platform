@@ -4,6 +4,22 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-23
 
+## Key Learnings — R3.3 Material-Aware Pricing (2026-05-23)
+
+- **`computeCosts()` is the single change point for material pricing** — it is called from 4 sites (renderCost, comparisonPanel, report preview, report JSON export). Modifying it once propagates correctly to all surfaces. No call-site changes are needed.
+- **Gate material upcharges on `state.tx`** — `selectedMaterial` is clinician intent for THEIR selected treatment only. If tx=implant and selectedMaterial='alt', the bridge comparison column should NOT show alt-material bridge pricing. The gate `matSel === 'alt' && state.tx === 'bridge'` prevents this bleed across treatment comparison columns.
+- **Bridge material upcharge is the existing 15% occlusion delta, made responsive.** The prior `bridgeMaterialUpcharge = highOcc ? 0.15 : 0` already encoded zirconia vs e.max cost difference. R3.3 simply inverts it when `selectedMaterial === 'alt'`: high-load alt=e.max (0%), normal-load alt=zirconia (+15%). No new catalog entries needed.
+- **Crown material upcharge mirrors `getCrownMaterial()` case logic in-place.** Rather than calling getCrownMaterial() from costEngine.js (cross-file dependency on materialPanel.js), the same bruxism/highOcc/posterior logic is replicated inline. Both must stay in sync if getCrownMaterial() case logic changes in future phases.
+- **`isPosteriorTooth()` is accessible from `costEngine.js`.** It is a function declaration at the top level of calcAI.js — added to the global object record, accessible as a plain name from all scripts in the same browser realm. Confirmed by its usage in clinicalEngine.js, materialPanel.js, reportTemplates.js.
+- **`selectedMaterial: null` and `selectedMaterial: 'primary'` both yield identical default pricing** — the material gates only fire on `=== 'alt'`. Existing patients get exactly the same costs as before R3.3.
+- **Material pricing propagates to reports automatically.** The report JSON export includes `treatment: { costs: computeCosts(S, ai) }`. Since computeCosts now reads selectedMaterial from S, reports naturally reflect the material choice. No report template changes needed.
+
+## Do-Not-Repeat (2026-05-23 — R3.3)
+
+- **DO NOT add separate catalog entries for material variants (costBridgeZirconia, costBridgeEmax, etc.)** — the existing bridge base cost with the ±15% upcharge constant is sufficient to model the zirconia/e.max cost difference. Separate SKUs would bloat the catalog and settings UI. (R3.3, 2026-05-23)
+- **DO NOT apply `selectedMaterial` upcharge to ALL treatment comparison columns simultaneously.** Gate each upcharge on `state.tx === '<treatment>'`. The material selection describes the clinician's choice for THEIR chosen treatment; the comparison view should show default pricing for other treatments. (R3.3, 2026-05-23)
+- **DO NOT call `getCrownMaterial()` from `costEngine.js`.** getCrownMaterial is defined in materialPanel.js. Calling it from a utility creates a cross-file dependency that breaks the separation between render logic and cost computation. Mirror the case logic inline in costEngine.js and keep both in sync. (R3.3, 2026-05-23)
+
 ## Key Learnings — R3.2 Material Selection UI (2026-05-23)
 
 - **`selectedMaterial` stores 'primary' | 'alt' | null — NOT actual material name strings.** Using relative position keys is stable across treatment-type changes (S.tx changes). The actual material name is derived at render time from the derivation logic. Future reports should re-derive the name from state + selection key.

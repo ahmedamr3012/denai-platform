@@ -1719,6 +1719,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-23T12:08:33.637Z"
+    },
+    {
+      "id": "bug-101",
+      "timestamp": "2026-05-23T12:22:19.543Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/utils/costEngine.js",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 7→36 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T12:22:19.543Z"
     }
   ]
 }
