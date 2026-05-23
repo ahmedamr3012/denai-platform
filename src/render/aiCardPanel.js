@@ -12,7 +12,9 @@ function buildAICardStructure(force = false) {
   if (!body || (body.dataset.built === '1' && !force)) return;  // BUG#2: force-rebuild on condition change
   body.dataset.built = '1';
   body.removeAttribute('aria-busy');  // clear skeleton aria-busy before injecting real structure
-  const _arActive = typeof denaiArabic !== 'undefined' && denaiArabic.isArabic();
+  // R1.1: Arabic toggle removed from UI. Reset any persisted Arabic state so clinics
+  // are not silently stuck in Arabic with no escape route.
+  if (typeof denaiArabic !== 'undefined' && denaiArabic.isArabic()) denaiArabic.setLang('en');
   body.innerHTML = `
     <div class="crown-warning-banner" id="crownWarningBanner" role="alert" aria-live="polite">
       <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
@@ -52,7 +54,6 @@ function buildAICardStructure(force = false) {
     <p class="ai-boundary">This recommendation is generated from the clinical inputs provided and supports — not replaces — clinical judgment.</p>
     <p class="ai-inputs" id="aiInputLine"></p>
     <div id="confRationale" class="conf-rationale" style="display:none;" aria-live="polite"></div>
-    <div class="lang-toggle-row"><button class="lang-toggle${_arActive ? ' active' : ''}" id="langToggle" type="button" onclick="toggleAILang()" title="${_arActive ? 'Switch to English' : 'عرض بالعربية'}" aria-label="Toggle Arabic explanations">${_arActive ? 'EN' : 'AR'}</button></div>
     <button class="why-toggle" id="whyToggle" type="button" aria-expanded="false" aria-controls="whyBody">
       💡 Why this recommendation? <span class="chevron" aria-hidden="true">▾</span>
     </button>

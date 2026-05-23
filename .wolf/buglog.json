@@ -1591,6 +1591,22 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-05-23T10:00:00.000Z"
+    },
+    {
+      "id": "bug-093",
+      "timestamp": "2026-05-23T06:54:04.820Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/render/aiCardPanel.js",
+      "root_cause": "Had \"lang-toggle-row\"",
+      "fix": "Changed to \"why-toggle\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T06:54:04.820Z"
     }
   ]
 }

@@ -4,6 +4,19 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-23
 
+## Key Learnings — R1.1 Arabic Toggle Removal (2026-05-23)
+
+- **Arabic toggle removal is a template-string excision, not a DOM post-removal.** The `#langToggle` button lives inside the `body.innerHTML = \`...\`` template literal in `buildAICardStructure()`. Removing it from the template string is the correct approach — it prevents the button from ever being injected on initial build OR force=true rebuilds. Any DOM-based removal (e.g., `element.remove()` after build) would reintroduce the button on every `force=true` call and is explicitly wrong.
+- **Persisted localStorage Arabic state ('ar') requires a one-line mitigation when the toggle is removed.** `renderAIExplanation()` calls `denaiArabic.isArabic()` at render time — independently of any button. If a clinic previously activated Arabic, removing the toggle leaves them silently stuck in Arabic with no escape. The fix: call `denaiArabic.setLang('en')` inside `buildAICardStructure()` before the `body.innerHTML` assignment, guarded by `typeof denaiArabic !== 'undefined' && denaiArabic.isArabic()`. Idempotent: safe on every force=true rebuild because once 'en' is set, the guard is false.
+- **`_arActive` is only used to initialize the button's class and label — remove it with the button.** It was `const _arActive = typeof denaiArabic !== 'undefined' && denaiArabic.isArabic()`. Keeping it as dead code after the button is removed is unnecessary noise. Remove both together.
+- **`toggleAILang()` in index.html must NOT be removed.** It already has a `if (btn)` null guard (`const btn = document.getElementById('langToggle')`). With no `#langToggle` in the DOM, the guard makes the function a silent no-op. The function stays for future recoverability. Arabic infrastructure fully intact.
+
+## Do-Not-Repeat (2026-05-23 — R1.1)
+
+- **DO NOT use DOM post-processing to hide or remove the Arabic toggle.** The toggle lives in `buildAICardStructure()`'s template string. Any removal done after `body.innerHTML` assignment is re-injected on the next `force=true` call (patient edit rebuilds the card). Always remove from the template string directly. (R1.1, 2026-05-23)
+- **DO NOT remove `toggleAILang()` from index.html.** It is unreachable from UI after R1.1 but must stay for: (a) future recoverability by re-exposing the button; (b) the `if (btn)` null guard makes it a harmless no-op when called. Removing it would break future phases if the toggle is re-added. (R1.1, 2026-05-23)
+- **DO NOT skip the `setLang('en')` mitigation when removing the Arabic toggle.** Without it, any clinic with 'ar' in localStorage sees Arabic explanations with no way to revert. The mitigation is one line and is idempotent. (R1.1, 2026-05-23)
+
 ## Key Learnings — Phase 21 React Migration (2026-05-23)
 
 - **React CDN: cdn.jsdelivr.net only — already CSP-whitelisted.** The CSP `script-src` includes `https://cdn.jsdelivr.net`. Supabase is already loaded from there (`@supabase/supabase-js@2.39.7`). Any React CDN URL must use `cdn.jsdelivr.net` — not `unpkg.com` (blocked by CSP). Use locked versions: `react@18.2.0`, `react-dom@18.2.0`, UMD builds.

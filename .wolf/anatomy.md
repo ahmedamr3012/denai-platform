@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T06:47:27.903Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T06:54:04.805Z
 > Files: 43 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -64,7 +64,7 @@
 
 ## src/render/
 
-- `aiCardPanel.js` — Phase 17/21: AI card rendering cluster; buildAICardStructure() DOM template builder; Phase 21: .risk-box template replaced with <div id="riskPanelMount"> (React island mount point); showSkeleton/hideSkeleton helpers; updateAICard/updateAICardMulti value updaters; typewriterEffect; renderReasons/renderExplanation/renderAIExplanation; BLOCK_RENDER typed-block icon map; Phase 16 Arabic RTL path via denaiArabic (~6175 tok)
+- `aiCardPanel.js` — Phase 17/21/R1.1: AI card rendering cluster; buildAICardStructure() DOM template builder; #langToggle button removed (R1.1); setLang('en') resets persisted Arabic on card build; Arabic RTL path still active at renderAIExplanation time via denaiArabic; React island mount point #riskPanelMount (~5100 tok)
 - `comparisonPanel.js` — Renders inline comparison table and full comparison table body; lazyRenderComparisonTable; renderComparison (~2000 tok)
 - `costGraphPanel.js` — renderCost and renderGraph; cost breakdown and bar-chart visualization (~1800 tok)
 - `materialPanel.js` — renderMaterial; material recommendation panel for primary/secondary material display (~800 tok)
