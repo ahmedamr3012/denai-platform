@@ -1534,15 +1534,17 @@
       "timestamp": "2026-05-23T00:00:00.000Z",
       "error_message": "smoke-restorative-visible: #implantRiskSection hidden — crownRiskSection not visible despite showCrown=true",
       "file": "src/react/RiskPanel.js",
-      "root_cause": "CSS rule #crownRiskSection { display: none; } at index.html:1081 hides crownSection by default. When showCrown=true, the React component set style=undefined (no inline style), leaving CSS to hide it. Since crownSection stayed hidden, React reconciliation was not properly signaling the state change, and implantSection may have remained visible from prior render. Legacy imperative code always explicitly set display:block to override the CSS default-hide.",
-      "fix": "Changed crownSection style prop from (risks.showCrown ? undefined : { display: none }) to (risks.showCrown ? { display: block } : undefined). Explicit display:block overrides the CSS rule when showCrown=true; undefined when false lets CSS handle hiding.",
+      "root_cause": "Two distinct bugs: (1) crownSection used style:undefined when showCrown=true, leaving CSS #crownRiskSection{display:none} to hide it despite React rendering showCrown=true; (2) implantSection used style:undefined (not style:{}) when showImplant=true, causing a property-addition transition (undefined->object) when switching to showImplant=false. React 18 concurrent mode can defer property-addition diffs differently from value-change diffs, leaving #implantRiskSection visible (no inline display:none applied) despite correct component props.",
+      "fix": "Changed both sections to always use explicit {display:block|none} style objects. implantSection: {display:risks.showImplant?block:none}. crownSection: {display:risks.showCrown?block:none}. Always-object style eliminates undefined->object React diff edge case; React now does a value-to-value transition (block->none or none->block) which is applied reliably.",
       "tags": [
         "react",
         "css-specificity",
         "smoke-test",
         "backward-compat",
         "display-none",
-        "phase-21"
+        "phase-21",
+        "react-style-diff",
+        "explicit-style-object"
       ],
       "related_bugs": [
         "bug-088",
@@ -1550,6 +1552,22 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-05-23T00:00:00.000Z"
+    },
+    {
+      "id": "bug-091",
+      "timestamp": "2026-05-23T05:59:38.042Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/react/RiskPanel.js",
+      "root_cause": "Had 'none'",
+      "fix": "Changed to 'block'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T05:59:38.042Z"
     }
   ]
 }

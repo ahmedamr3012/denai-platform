@@ -137,7 +137,7 @@ window.denaiRiskPanel = (function () {
         implantRows.push(h(RiskRow, { key: 'diab', label: 'Diabetes Risk', level: risks.diabetesLevel, hidden: hidden, ariaLabel: 'Diabetes risk info', tooltip: 'Uncontrolled HbA1c ≥7.5% causes\n2–3× higher implant failure & poor healing' }));
       }
     }
-    var implantSection = h('div', { id: 'implantRiskSection', style: risks.showImplant ? undefined : { display: 'none' } }, implantRows);
+    var implantSection = h('div', { id: 'implantRiskSection', style: { display: risks.showImplant ? 'block' : 'none' } }, implantRows);
 
     // Crown risk section — always rendered in DOM for backward-compatible selectors;
     // visibility controlled by style.display so #crownRiskSection always exists.
@@ -152,7 +152,7 @@ window.denaiRiskPanel = (function () {
         h(RiskRow, { key: 'parafunc',  label: 'Parafunction Damage',   level: cr.parafunc,  hidden: hidden, tooltip: 'Bruxism/clenching damage.\nNight guard REQUIRED if present' })
       ];
     }
-    var crownSection = h('div', { id: 'crownRiskSection', style: risks.showCrown ? { display: 'block' } : undefined }, crownRows);
+    var crownSection = h('div', { id: 'crownRiskSection', style: { display: risks.showCrown ? 'block' : 'none' } }, crownRows);
 
     return h('div', { className: 'risk-box', 'aria-label': 'Risk indicators' },
       h('div', { className: 'risk-title', 'aria-hidden': 'true' }, 'Risk Indicators'),

@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T05:39:00.069Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T05:59:45.950Z
 > Files: 41 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -58,7 +58,7 @@
 
 ## src/react/
 
-- `RiskPanel.js` — src/react/RiskPanel.js (~2653 tok)
+- `RiskPanel.js` — src/react/RiskPanel.js (~2652 tok)
 
 ## src/render/
 
