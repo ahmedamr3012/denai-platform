@@ -33,6 +33,8 @@ window.denaiAIPayload = (function () {
     'costImplant', 'costBridge', 'costCrown',
     'costBoneGraft', 'costRCT', 'costPostCore',
     'costBridge4', 'costOverlay',
+    // R3.1: clinician material decision — non-PHI, useful context for future cloud AI analysis
+    'selectedMaterial',
   ]);
 
   // Explicit exclusion list — AI systems MUST NOT receive these.

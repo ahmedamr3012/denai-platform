@@ -1671,6 +1671,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-23T11:39:20.817Z"
+    },
+    {
+      "id": "bug-098",
+      "timestamp": "2026-05-23T11:56:41.076Z",
+      "error_message": "Wrong reference: notes should be selectedMaterial",
+      "file": "index.html",
+      "root_cause": "Used \"notes\" instead of \"selectedMaterial\"",
+      "fix": "Changed notes → selectedMaterial",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T11:56:41.076Z"
     }
   ]
 }

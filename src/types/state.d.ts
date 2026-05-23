@@ -82,6 +82,8 @@ interface PatientState {
   costPostCore?: number;
   costBridge4?: number | null;   // R2.2: 4-unit bridge; null = use clinic preference
   costOverlay?: number | null;   // R2.2: onlay/overlay; null = use clinic preference
+  // Material — clinician decision metadata; separate from treatment authority
+  selectedMaterial?: string | null;  // R3.1: e.g. 'zirconia' | 'emax' | null; does not affect scoring
   // Workflow state — synced to cloud
   planApproved?: boolean;
   labStatus?: string;

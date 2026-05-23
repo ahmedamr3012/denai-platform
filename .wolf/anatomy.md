@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T11:50:40.032Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T11:56:48.994Z
 > Files: 44 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~107424 tok)
+- `index.html` — denai — Clinical Insight (~107432 tok)
 - `jsconfig.json` — Phase 20: IDE type-governance config; allowJs:true, checkJs:false (opt-in per file), noEmit:true; includes src/**/*.js + src/**/*.d.ts; no build coupling (~82 tok)
 - `privacy.html` — Privacy Policy — denai (~2802 tok)
 - `terms.html` — Terms of Service — denai (~3244 tok)
@@ -29,7 +29,7 @@
 
 ## src/ai/
 
-- `aiPayload.js` — ================================================================ (~1098 tok)
+- `aiPayload.js` — ================================================================ (~1132 tok)
 - `arabicLayer.js` — Phase 16 Arabic bilingual explanation layer; window.denaiArabic IIFE; localizeExpl(expl) maps all bounded engine text to Arabic; getLang/setLang/isArabic localStorage-backed lang state; PHRASES/FACTORS/TX_LABELS/CONF_PARTS maps + dynamic pattern matchers for score-embedded strings; no machine translation; pure computation (~4500 tok)
 - `calcAI.js` — Pure AI scoring engine; calcAI() single-tooth; calcAIMulti() two-adjacent-tooth; bridge4 cost now reads getClinicPrice('bridge4') (R2.1 — no longer derived as bridge×1.3); no DOM access (~5500 tok)
 - `clinicalEngine.js` — ClinicalEngine IIFE; 7-stage pipeline; normalize() costs object now includes overlay field (R2.1); restorativeCosts.slot1 uses c.costs.overlay for onlay cases instead of crown×0.65 (~8166 tok)
@@ -95,7 +95,7 @@
 
 - `cloudSync.js` — src/sync/cloudSync.js (~4670 tok)
 - `prefsSync.js` — src/sync/prefsSync.js (~3196 tok)
-- `serializer.js` — Patient serializer for cloud write path; ALLOWED_FIELDS allowlist; R2.2: +costBridge4, +costOverlay; clinicId excluded (typed column, not state JSONB) (~706 tok)
+- `serializer.js` — src/sync/serializer.js (~742 tok)
 - `syncQueue.js` — src/sync/syncQueue.js (~4450 tok)
 
 ## src/types/
@@ -104,7 +104,7 @@
 - `clinical.d.ts` — Phase 20: CaseType, CaseClass, TreatmentOption, ScoredTreatment, ExplanationSummary, NormalizedClinical, ClinicalAIResult, SingleMissingResult, MultiMissingResult, ProcessResult union, CompoundAIResult; ClinicalEngine pipeline contracts (~1121 tok)
 - `explain.d.ts` — Phase 20: ExplanationBlockType, ExplanationBlock, ExplainResult; explanation layer output contracts; documents denaiExplain.buildExplanation() return shape (~300 tok)
 - `globals.d.ts` — Phase 20: window-global module declarations; ClinicalEngine, calcAI, calcAIMulti, denaiAIPayload, denaiExplain, denaiArabic, denaiEntitlements, denaiSerializer, denaiObserve, denaiGuidance; IDE IntelliSense contract surface (~810 tok)
-- `state.d.ts` — Phase 20: PatientState interface; clinical field literal types; R2.2: +costBridge4?: number|null, +costOverlay?: number|null in pricing section (~958 tok)
+- `state.d.ts` — ================================================================ (~1010 tok)
 
 ## src/utils/
 
