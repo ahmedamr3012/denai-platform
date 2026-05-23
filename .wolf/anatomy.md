@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T05:59:45.950Z
-> Files: 41 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T06:36:09.471Z
+> Files: 42 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -58,6 +58,7 @@
 
 ## src/react/
 
+- `reactBridge.js` — src/react/reactBridge.js (~407 tok)
 - `RiskPanel.js` — src/react/RiskPanel.js (~2652 tok)
 
 ## src/render/

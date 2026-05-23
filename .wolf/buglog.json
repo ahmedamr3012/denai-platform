@@ -1568,6 +1568,29 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-23T05:59:38.042Z"
+    },
+    {
+      "id": "bug-092",
+      "timestamp": "2026-05-23T10:00:00.000Z",
+      "error_message": "smoke-restorative-visible: #implantRiskSection hidden — React 18 async update rendering prevents smoke test assertions from seeing updated DOM",
+      "file": "src/react/reactBridge.js",
+      "root_cause": "React 18 createRoot().render() is synchronous ONLY for the initial mount. For subsequent update renders (scenarios 2 and 3 in the smoke loop), React schedules work via the Scheduler (MessageChannel) as an async macrotask. The smoke test runs synchronous assertions immediately after render() returns, before React flushes the update. The DOM retains scenario 1 state (showImplant=true for missing tooth) for all subsequent renders. This is why all prior style/logic fixes had no observable effect — the business logic (showImplant=false for RESTORATIVE_VIABLE) was correct, but the DOM was never being updated before assertions ran.",
+      "fix": "Wrapped _riskRoot.render() with ReactDOM.flushSync() in reactBridge.js. flushSync forces React to synchronously commit all pending work before returning, restoring parity with the legacy synchronous imperative DOM mutations the smoke tests were designed against.",
+      "tags": [
+        "react18",
+        "async-rendering",
+        "flushSync",
+        "smoke-test",
+        "parity",
+        "Phase-21"
+      ],
+      "related_bugs": [
+        "bug-089",
+        "bug-090",
+        "bug-091"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T10:00:00.000Z"
     }
   ]
 }

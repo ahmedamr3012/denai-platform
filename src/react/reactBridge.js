@@ -24,7 +24,11 @@ window.denaiReactBridge = (function () {
       _riskMount = mount;
       _riskRoot  = ReactDOM.createRoot(mount);
     }
-    _riskRoot.render(React.createElement(denaiRiskPanel.Component, { state: state, ai: ai }));
+    // flushSync guarantees DOM is updated before control returns — required for
+    // synchronous smoke-test assertions and parity with legacy imperative DOM mutations.
+    ReactDOM.flushSync(function () {
+      _riskRoot.render(React.createElement(denaiRiskPanel.Component, { state: state, ai: ai }));
+    });
   }
 
   return Object.freeze({ updateRiskPanel: updateRiskPanel });
