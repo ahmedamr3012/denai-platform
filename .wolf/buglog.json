@@ -1835,6 +1835,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-23T18:00:00.000Z"
+    },
+    {
+      "id": "bug-108",
+      "timestamp": "2026-05-23T21:38:27.755Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had '; const SHELL = ['",
+      "fix": "Changed to '; const SHELL = []; const _c = d => d === '",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T21:38:27.755Z"
     }
   ]
 }
