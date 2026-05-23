@@ -15,6 +15,11 @@
 - **"Print Lab Sheet" button appears in `renderLabView()` only when `labStatus` is truthy (pending or received).** Before sending to lab, there is no lab sheet to reprint. This gate is `${labStatus ? ... : ''}`.
 - **`BRAND.name` is `'denai'` (confirmed from `src/constants/brand.js`).** BRAND fields: `name`, `displayName`, `tagline`, `disclaimer`, `footerLine`, `reportPrefix`, `exportPrefix`.
 
+## Do-Not-Repeat (2026-05-24 — R4.1 Parser Fix)
+
+- **NEVER write `</body>`, `</html>`, or `</head>` literally inside a template literal that is inside an inline `<script>` block.** Chrome's HTML parser exits script data state on `</body></html>` (a real-world quirk, not strict spec). The effect: the template literal is never closed → `SyntaxError: Unexpected end of input` at the next function boundary + raw JS rendered as visible text. The fix (and precedent in `reportTemplates.js:60`) is the split trick: `${'</'+'body></'+'html>'}`. Node.js `new Function()` does NOT catch this — it bypasses the HTML parser and succeeds even for broken code. Only a real browser test reveals it. (R4.1, 2026-05-24, commit 7577ab7, bug-109)
+- **ALWAYS use the split trick `${'</'+'body></'+'html>'}` for any template literal in an inline `<script>` that generates a complete HTML document.** `reportTemplates.js:60` already does this. Apply to any future function that uses a template literal to produce full HTML markup. (R4.1, 2026-05-24)
+
 ## Do-Not-Repeat (2026-05-23 — R4.1)
 
 - **DO NOT call `getCrownMaterial()` from `costEngine.js` or other non-script utility files.** It is a global only because `materialPanel.js` is a `<script>` tag on the page. From separate module files it would be an undefined reference. Mirror the case logic inline in those contexts. (R4.1, 2026-05-23)

@@ -1851,6 +1851,27 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-23T21:38:27.755Z"
+    },
+    {
+      "id": "bug-109",
+      "timestamp": "2026-05-24T00:00:00.000Z",
+      "error_message": "Uncaught SyntaxError: Unexpected end of input at line 4382; raw JS visible on screen; navigateTo is not defined — app fails to boot",
+      "file": "index.html",
+      "root_cause": "generateLabDocument() wrote </body></html> literally inside a template literal in an inline <script> block. Chrome's HTML parser exits script data state early on </body></html> (a real-world browser quirk, not a spec violation). This truncates the script block mid-template-literal, causing 'Unexpected end of input' and rendering the remainder as visible text. Node.js new Function() check passes because it bypasses the HTML parser. reportTemplates.js:60 already uses the ${'</'+'body></'+'html>'} split trick for exactly this reason — generateLabDocument() omitted it.",
+      "fix": "Replaced literal </body></html>` at the end of generateLabDocument()'s html template literal with ${'</'+'body></'+'html>'}` — same split trick used in reportTemplates.js:60. Commit 7577ab7.",
+      "tags": [
+        "html-parser",
+        "template-literal",
+        "inline-script",
+        "parser-boundary",
+        "chrome-quirk",
+        "R4.1"
+      ],
+      "related_bugs": [
+        "bug-105"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-05-24"
     }
   ]
 }
