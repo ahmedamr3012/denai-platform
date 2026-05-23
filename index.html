@@ -4154,6 +4154,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     .opt-card-title{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:#0B2B1F}
     .opt-rec-badge{font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em}
     .opt-rec-badge.rec{background:#1F7A4F;color:#fff}
+    .opt-rec-badge.sel{background:#0369a1;color:#fff}
     .opt-rec-badge.alt{background:#E5E7EB;color:#6B7280}
     .opt-card-body{padding:12px 16px}
     .opt-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #F3F4F6;font-size:12.5px}
@@ -4314,18 +4315,19 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       const { implant2, bridge4, cantilever, costs, rec, conf, confLevel } = ai;
       const recLabels = { implant2:'2 Implants', bridge4:'4-Unit Bridge', cantilever:'Impl. + Cantilever' };
       const recDisplay = recLabels[rec] || '2 Implants';
+      const selDisplay = recLabels[S.tx] || recDisplay;
       const optCards = [
-        rptOptCard({ label:'2 Implants', score:implant2, isRec:rec==='implant2', rateLabel:'10-Year Success Rate', rows:[
+        rptOptCard({ label:'2 Implants', score:implant2, isRec:rec==='implant2', isSelected:S.tx==='implant2', rateLabel:'10-Year Success Rate', rows:[
           {label:'Approach', value:'One implant per site'},{label:'Initial Cost',value:formatCurrency(costs.implant2||0)},
           {label:'Longevity',value:'20–25 years'},{label:'Recovery',value:'3–6 months'},
           {label:'Bone Stim.',value:'Both sites ✓'},{label:'Adjacent Teeth',value:'Independent ✓'},
         ]}),
-        rptOptCard({ label:'4-Unit Bridge', score:bridge4, isRec:rec==='bridge4', rateLabel:'10-Year Success Rate', rows:[
+        rptOptCard({ label:'4-Unit Bridge', score:bridge4, isRec:rec==='bridge4', isSelected:S.tx==='bridge4', rateLabel:'10-Year Success Rate', rows:[
           {label:'Span', value:'4-unit fixed bridge'},{label:'Initial Cost',value:formatCurrency(costs.bridge4||0)},
           {label:'Longevity',value:'10–15 years'},{label:'Recovery',value:'2–4 weeks'},
           {label:'Bone Stim.',value:'None — resorption'},{label:'Abutments',value:ai.abutmentCompromised?'Compromised ⚠':'Good ✓'},
         ]}),
-        rptOptCard({ label:'Impl. + Cantilever', score:cantilever, isRec:rec==='cantilever', rateLabel:'10-Year Success Rate', rows:[
+        rptOptCard({ label:'Impl. + Cantilever', score:cantilever, isRec:rec==='cantilever', isSelected:S.tx==='cantilever', rateLabel:'10-Year Success Rate', rows:[
           {label:'Approach', value:'One implant + cantilever'},{label:'Initial Cost',value:formatCurrency(costs.cantilever||0)},
           {label:'Longevity',value:'15–20 years'},{label:'Recovery',value:'3–6 months'},
           {label:'Bone Stim.',value:'One site'},{label:'Adjacent Teeth',value:'Independent ✓'},
@@ -4334,6 +4336,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       const toothDisplay = `${escapeHtml(formatTooth(S.tooth))} + ${escapeHtml(formatTooth(S.tooth2))} <span style="font-size:10px;background:#EDF6F1;color:#1F7A4F;padding:1px 6px;border-radius:10px;font-weight:700">2 Adjacent Missing</span>`;
       const bodyHTML = `
         ${rptPatientSection(S, toothDisplay)}
+        ${rptClinicianDecisionBanner(selDisplay, recDisplay)}
         <div class="section"><div class="sec-title">Treatment Options (3-Column Comparison)</div>
           <div class="options-grid">${optCards}</div>
         </div>
@@ -4393,13 +4396,13 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       const LONGEV={onlay:'8–15 yrs',crown:'10–20 yrs',crown_core:'10–18 yrs',crown_adv:'10–18 yrs',splinted:'10–18 yrs',endocrown:'10–15 yrs',extract_impl:'20–25 yrs'};
       const RECOV={onlay:'1–2 wks',crown:'1–2 wks',crown_core:'2–3 wks',crown_adv:'1–2 wks',splinted:'2–3 wks',endocrown:'1–2 wks',extract_impl:'4–6 months'};
       const PRES={onlay:'Yes — minimal prep',crown:'Preserved ✓',crown_core:'Preserved ✓',crown_adv:'Preserved ✓',splinted:'Preserved ✓',endocrown:'Preserved ✓',extract_impl:'No — extraction'};
-      const opts=[s1&&rptOptCard({label:slot1.label,score:ai.implant,isRec:ai.rec==='implant',rateLabel:'Success Rate',rows:[
+      const opts=[s1&&rptOptCard({label:slot1.label,score:ai.implant,isRec:ai.rec==='implant',isSelected:S.tx==='implant',rateLabel:'Success Rate',rows:[
         {label:'Approach',value:slot1.sub},{label:'Longevity',value:LONGEV[s1.id]||'—'},{label:'Recovery',value:RECOV[s1.id]||'—'},{label:'Tooth Preserved',value:PRES[s1.id]||'—'},
         {label:'Est. Cost',value:ai.restorativeCosts?.slot1?formatCurrency(ai.restorativeCosts.slot1):'—'},
-      ]}),s2&&rptOptCard({label:slot2.label,score:ai.bridge,isRec:ai.rec==='bridge',rateLabel:'Success Rate',rows:[
+      ]}),s2&&rptOptCard({label:slot2.label,score:ai.bridge,isRec:ai.rec==='bridge',isSelected:S.tx==='bridge',rateLabel:'Success Rate',rows:[
         {label:'Approach',value:slot2.sub},{label:'Longevity',value:LONGEV[s2.id]||'—'},{label:'Recovery',value:RECOV[s2.id]||'—'},{label:'Tooth Preserved',value:PRES[s2.id]||'—'},
         {label:'Est. Cost',value:ai.restorativeCosts?.slot2?formatCurrency(ai.restorativeCosts.slot2):'—'},
-      ]}),s3&&rptOptCard({label:slot3.label,score:ai.crown,isRec:ai.rec==='crown',rateLabel:'Success Rate',rows:[
+      ]}),s3&&rptOptCard({label:slot3.label,score:ai.crown,isRec:ai.rec==='crown',isSelected:S.tx==='crown',rateLabel:'Success Rate',rows:[
         {label:'Approach',value:slot3.sub},{label:'Longevity',value:LONGEV[s3.id]||'—'},{label:'Recovery',value:RECOV[s3.id]||'—'},{label:'Tooth Preserved',value:PRES[s3.id]||'—'},
         {label:'Est. Cost',value:ai.restorativeCosts?.slot3?formatCurrency(ai.restorativeCosts.slot3):'—'},
       ]})].filter(Boolean).join('');
@@ -4408,8 +4411,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     <div class="section">
     <div class="sec-title">Treatment Options</div>
     <div class="options-grid" style="grid-template-columns:${ai.crownViable?'1fr 1fr 1fr':'1fr 1fr'}">
-    <div class="opt-card ${ai.rec==='implant'?'winner':''}">
-      <div class="opt-card-head"><div class="opt-card-title">Implant (Single Crown)</div><div class="opt-rec-badge ${ai.rec==='implant'?'rec':'alt'}">${ai.rec==='implant'?'★ Recommended':'Alternative'}</div></div>
+    <div class="opt-card ${(ai.rec==='implant'||S.tx==='implant')?'winner':''}">
+      <div class="opt-card-head"><div class="opt-card-title">Implant (Single Crown)</div><div class="opt-rec-badge ${ai.rec==='implant'?'rec':S.tx==='implant'?'sel':'alt'}">${ai.rec==='implant'?'★ Recommended':S.tx==='implant'?'✓ Selected':'Alternative'}</div></div>
       <div class="opt-card-body">
         <div class="opt-rate">${implantRate.toFixed(1)}%</div><div class="opt-rate-label">10-Year Success Rate</div>
         <div class="opt-row"><span class="opt-row-label">Material</span><span class="opt-row-val">${implantMaterial}</span></div>
@@ -4420,8 +4423,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <div class="opt-row"><span class="opt-row-label">Risk Level</span><span class="opt-row-val">${implantRisk}</span></div>
       </div>
     </div>
-    <div class="opt-card ${ai.rec==='bridge'?'winner':''}">
-      <div class="opt-card-head"><div class="opt-card-title">Bridge (3-Unit)</div><div class="opt-rec-badge ${ai.rec==='bridge'?'rec':'alt'}">${ai.rec==='bridge'?'★ Recommended':'Alternative'}</div></div>
+    <div class="opt-card ${(ai.rec==='bridge'||S.tx==='bridge')?'winner':''}">
+      <div class="opt-card-head"><div class="opt-card-title">Bridge (3-Unit)</div><div class="opt-rec-badge ${ai.rec==='bridge'?'rec':S.tx==='bridge'?'sel':'alt'}">${ai.rec==='bridge'?'★ Recommended':S.tx==='bridge'?'✓ Selected':'Alternative'}</div></div>
       <div class="opt-card-body">
         <div class="opt-rate">${bridgeRate.toFixed(1)}%</div><div class="opt-rate-label">10-Year Success Rate</div>
         <div class="opt-row"><span class="opt-row-label">Material</span><span class="opt-row-val">${bridgeMaterial}</span></div>
@@ -4432,8 +4435,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <div class="opt-row"><span class="opt-row-label">Risk Level</span><span class="opt-row-val">${bridgeRisk}</span></div>
       </div>
     </div>
-    ${ai.crownViable ? `<div class="opt-card ${ai.rec==='crown'?'winner':''}">
-      <div class="opt-card-head"><div class="opt-card-title">Crown (Single)</div><div class="opt-rec-badge ${ai.rec==='crown'?'rec':'alt'}">${ai.rec==='crown'?'★ Recommended':'Alternative'}</div></div>
+    ${ai.crownViable ? `<div class="opt-card ${(ai.rec==='crown'||S.tx==='crown')?'winner':''}">
+      <div class="opt-card-head"><div class="opt-card-title">Crown (Single)</div><div class="opt-rec-badge ${ai.rec==='crown'?'rec':S.tx==='crown'?'sel':'alt'}">${ai.rec==='crown'?'★ Recommended':S.tx==='crown'?'✓ Selected':'Alternative'}</div></div>
       <div class="opt-card-body">
         <div class="opt-rate">${crownRate.toFixed(1)}%</div><div class="opt-rate-label">10-Year Success Rate</div>
         <div class="opt-row"><span class="opt-row-label">Material</span><span class="opt-row-val">${crownMaterial}</span></div>
@@ -4464,8 +4467,19 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       </div>` : ''}
     </div></div>`;
 
+    const _p3TxLabels = { implant:'Implant (Single Crown)', bridge:'Bridge (3-Unit)', crown:'Crown (Single)' };
+    const _restSelSlot = S.tx==='bridge'?'slot2':S.tx==='crown'?'slot3':'slot1';
+    const _restRecSlot = ai.rec==='bridge'?'slot2':ai.rec==='crown'?'slot3':'slot1';
+    const _p3SelLabel = isRestorative
+      ? (ai.restorativeLabels?.[_restSelSlot]?.label || ai.recDisplay || 'Crown')
+      : (_p3TxLabels[S.tx] || aiRecommendation);
+    const _p3RecLabel = isRestorative
+      ? (ai.restorativeLabels?.[_restRecSlot]?.label || ai.recDisplay || 'Crown')
+      : aiRecommendation;
+
     const bodyHTML = `
       ${rptPatientSection(S, reportToothDisplay)}
+      ${rptClinicianDecisionBanner(_p3SelLabel, _p3RecLabel)}
       ${txOptionsHTML}
       ${rptRiskSection(S, ai)}
       ${ai.crownViable && ai.crownRisks ? `<div class="section"><div class="sec-title">Crown Risk Indicators</div><div class="risk-grid">

@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T06:54:04.805Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T11:28:30.668Z
 > Files: 43 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~107063 tok)
+- `index.html` — denai — Clinical Insight (~107390 tok)
 - `jsconfig.json` — Phase 20: IDE type-governance config; allowJs:true, checkJs:false (opt-in per file), noEmit:true; includes src/**/*.js + src/**/*.d.ts; no build coupling (~82 tok)
 - `privacy.html` — Privacy Policy — denai (~2802 tok)
 - `terms.html` — Terms of Service — denai (~3244 tok)
@@ -75,7 +75,7 @@
 
 ## src/reports/
 
-- `reportTemplates.js` — Shared report shell (rptShell), patient section, risk section, opt card, reasons section; references BRAND/escapeHtml/isMaxilla from inline script; 120 lines (~1800 tok)
+- `reportTemplates.js` — Shared report shell (rptShell), patient/risk/opt-card/reasons sections; R1.2: rptOptCard gains isSelected prop (✓ Selected badge); rptClinicianDecisionBanner() added (shown when clinician overrides AI rec); references BRAND/escapeHtml/isMaxilla from inline script (~2800 tok)
 
 ## src/styles/
 

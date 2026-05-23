@@ -1607,6 +1607,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-23T06:54:04.820Z"
+    },
+    {
+      "id": "bug-094",
+      "timestamp": "2026-05-23T11:27:04.995Z",
+      "error_message": "Missing guard clause",
+      "file": "src/reports/reportTemplates.js",
+      "root_cause": "No early return/throw for edge case: !selLabel || selLabel === recLabel",
+      "fix": "Added guard clause: if (!selLabel || selLabel === recLabel)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T11:27:04.995Z"
+    },
+    {
+      "id": "bug-095",
+      "timestamp": "2026-05-23T11:28:02.235Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"opt-card ${ai.rec==='",
+      "fix": "Changed to \"opt-card ${(ai.rec==='",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-05-23T11:28:15.554Z"
+    },
+    {
+      "id": "bug-096",
+      "timestamp": "2026-05-23T11:28:30.680Z",
+      "error_message": "Null/undefined access in ",
+      "file": "index.html",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T11:28:30.680Z"
     }
   ]
 }

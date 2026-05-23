@@ -4,6 +4,21 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-05-23
 
+## Key Learnings — R1.2 Selected vs Recommended Semantics (2026-05-23)
+
+- **`S.tx` is the authoritative clinician selection source — already existed.** `S.tx` is set when the clinician clicks a treatment card (`setState({ tx: option })`), and also captured in JSON export (`treatment: { selected: S.tx }`). No new state field was needed. The problem was purely display-layer: reports used `ai.rec` for `isRec` but never consulted `S.tx`.
+- **`rptOptCard` gained an optional `isSelected` prop (backward-compatible).** Badge logic: `isRec` → `'★ Recommended'`, `isSelected && !isRec` → `'✓ Selected'`, neither → `'Alternative'`. Winner highlight: `(isRec || isSelected)`. No call-site without `isSelected` is affected — the prop defaults to falsy.
+- **`rptClinicianDecisionBanner(selLabel, recLabel)` is a new additive helper.** Returns empty string when labels match (clinician confirmed recommendation). Returns a blue-tinted section when they differ. Placed after `rptPatientSection` in each path's bodyHTML. Zero regression risk — purely additive.
+- **Path 3 (single-site non-restorative) uses inline HTML for opt cards — updated in-place.** The three inline cards (implant/bridge/crown) had hardcoded `ai.rec === 'implant'` for winner class and badge. Updated to `(ai.rec==='implant'||S.tx==='implant')` for winner, and ternary badge logic for class/text. Same for bridge and crown.
+- **Banner label computation for restorative uses slot mapping.** `restorativeLabels` has `{ slot1, slot2, slot3 }` where slot1=implant, slot2=bridge, slot3=crown. Map `S.tx` → slot key → `.label` to get human-readable label. Compare rec and sel slot labels — if same, banner returns empty.
+- **Compound (Path 1) intentionally skipped.** Compound cases have two independent sites with no single clinician `S.tx` value. Compound selection semantics are undefined at this phase.
+
+## Do-Not-Repeat (2026-05-23 — R1.2)
+
+- **DO NOT use `ai.rec` alone as the source of truth for `isRec` badge in reports without also passing `isSelected: S.tx === slot`.** Recommendation and clinician selection are separate; reports must surface both. (R1.2, 2026-05-23)
+- **DO NOT put clinician decision banner inside `rptShell` header.** The header is labeled "AI-Generated Recommendation" and must remain the AI recommendation. Clinician decision belongs in the body via `rptClinicianDecisionBanner`. (R1.2, 2026-05-23)
+- **DO NOT use CSS custom properties in banner inline styles.** REPORT_CSS context has no app-level CSS variables — use hardcoded hex values (#0369a1, #EFF6FF, etc.). (R1.2, 2026-05-23)
+
 ## Key Learnings — R1.1 Arabic Toggle Removal (2026-05-23)
 
 - **Arabic toggle removal is a template-string excision, not a DOM post-removal.** The `#langToggle` button lives inside the `body.innerHTML = \`...\`` template literal in `buildAICardStructure()`. Removing it from the template string is the correct approach — it prevents the button from ever being injected on initial build OR force=true rebuilds. Any DOM-based removal (e.g., `element.remove()` after build) would reintroduce the button on every `force=true` call and is explicitly wrong.

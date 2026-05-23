@@ -97,18 +97,34 @@ ${bodyHTML}
   }
 
   // ── Opt card (shared treatment option card) ─────────────────────
+  // isSelected: clinician's approved treatment (may differ from isRec = AI recommendation)
   function rptOptCard(opt) {
     const rows = opt.rows.map(r => `<div class="opt-row"><span class="opt-row-label">${escapeHtml(r.label)}</span><span class="opt-row-val">${r.value}</span></div>`).join('');
-    return `<div class="opt-card ${opt.isRec?'winner':''}">
+    const isRec = !!opt.isRec;
+    const isSel = !!opt.isSelected;
+    const highlight  = (isRec || isSel) ? 'winner' : '';
+    const badgeClass = isRec ? 'rec' : isSel ? 'sel' : 'alt';
+    const badgeText  = isRec ? '★ Recommended' : isSel ? '✓ Selected' : 'Alternative';
+    return `<div class="opt-card ${highlight}">
     <div class="opt-card-head">
       <div class="opt-card-title">${escapeHtml(opt.label)}</div>
-      <div class="opt-rec-badge ${opt.isRec?'rec':'alt'}">${opt.isRec?'★ Recommended':'Alternative'}</div>
+      <div class="opt-rec-badge ${badgeClass}">${badgeText}</div>
     </div>
     <div class="opt-card-body">
       <div class="opt-rate">${(+opt.score||0).toFixed(1)}%</div>
       <div class="opt-rate-label">${escapeHtml(opt.rateLabel||'Success Rate')}</div>
       ${rows}
     </div></div>`;
+  }
+
+  // ── Clinician decision banner (shown when clinician overrides AI rec) ─
+  function rptClinicianDecisionBanner(selLabel, recLabel) {
+    if (!selLabel || selLabel === recLabel) return '';
+    return `<div class="section" style="background:#EFF6FF;border-left:4px solid #0369a1">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#0369a1;margin-bottom:6px">Clinician Decision</div>
+    <div style="font-size:13px;font-weight:700;color:#0B2B1F">Approved Treatment: ${escapeHtml(selLabel)}</div>
+    <div style="font-size:11px;color:#6b7280;margin-top:3px">AI recommendation: ${escapeHtml(recLabel)}</div>
+    </div>`;
   }
 
   // ── Reasons section ─────────────────────────────────────────────
