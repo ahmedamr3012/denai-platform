@@ -127,6 +127,18 @@
     // Age > 65
     if (stateObj.age > 65) { implant2 -= 2.5; cantilever -= 2.0; }
 
+    // Skeletal immaturity — jaw growth typically completes at 18–20 yrs.
+    // An implant placed before growth arrest will ankylose and infraocclude
+    // as adjacent teeth continue to erupt. Cantilever is also implant-anchored
+    // and carries the same contraindication. Bridge is unaffected (no osseous fixture).
+    if (stateObj.age < 18) {
+      implant2   -= 15.0;
+      cantilever -= 15.0;
+      conf       -= 15;
+      reasons.push('Age < 18: skeletal growth likely incomplete — implants strongly deferred until jaw maturity confirmed (cephalometric assessment recommended)');
+      factors.push({ label: 'Age <18 — growth risk −15.0%', type: 'neg', delta: -15.0 });
+    }
+
     // ── CLAMP ───────────────────────────────────────────────
     implant2   = Math.round(Math.max(50, Math.min(99, implant2))   * 10) / 10;
     bridge4    = Math.round(Math.max(50, Math.min(95, bridge4))    * 10) / 10;
@@ -362,9 +374,10 @@
       factors.push({ label: 'Compromised tooth', type: 'neg', delta: -1.5 });
     }
 
-    // Fix 1: Bridge Logic — warn when Poor bone makes bridge risky for adjacent teeth
+    // Bridge caution: poor bone compromises abutment integrity — fire at analysis time so the
+    // clinician sees this context while evaluating options, not only after selecting bridge.
     let bridgeWarning = null;
-    if (stateObj.bone === 'Poor' && stateObj.tx === 'bridge') {
+    if (stateObj.bone === 'Poor') {
       bridgeWarning = 'Poor bone quality may compromise abutment teeth — bridge could accelerate adjacent tooth loss';
       if (!reasons.includes(bridgeWarning)) reasons.push(bridgeWarning);
     }

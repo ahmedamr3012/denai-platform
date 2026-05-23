@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T21:38:50.994Z
-> Files: 1 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T23:07:01.533Z
+> Files: 2 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~110802 tok)
+- `index.html` — denai — Clinical Insight (~110719 tok)
 
 ## .claude/
 
@@ -24,6 +24,7 @@
 
 ## src/ai/
 
+- `calcAI.js` — isPosteriorTooth: isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI (~8231 tok)
 
 ## src/auth/
 

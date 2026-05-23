@@ -2,7 +2,7 @@
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-05-23
+> Last updated: 2026-05-24
 
 ## Key Learnings — R4.1 Lab Workflow Foundation (2026-05-23)
 
@@ -14,6 +14,26 @@
 - **`sendToLab()` now calls `generateLabDocument()` after state transition and re-renders.** The state saves and the view updates before the popup opens, so the lab view shows 'pending' state when the sheet appears.
 - **"Print Lab Sheet" button appears in `renderLabView()` only when `labStatus` is truthy (pending or received).** Before sending to lab, there is no lab sheet to reprint. This gate is `${labStatus ? ... : ''}`.
 - **`BRAND.name` is `'denai'` (confirmed from `src/constants/brand.js`).** BRAND fields: `name`, `displayName`, `tagline`, `disclaimer`, `footerLine`, `reportPrefix`, `exportPrefix`.
+
+## Key Learnings — Full-System Audit (2026-05-24)
+
+- **P0 clinical safety issue: `calcAIMulti` has no age < 18 implant deferral.** `calcAI.js:354` applies `implant -= 15; conf -= 15` for age < 18 (skeletal growth). `calcAIMulti` has no equivalent guard. A teenager with two adjacent missing teeth gets a normal implant recommendation. Fix: add age < 18 block to `calcAIMulti` after the jaw/position section.
+- **P0 workflow risk: lab sheet regenerates from current state, not a snapshot of the state at sendToLab time.** `renderLabView()`'s "Print Lab Sheet" button calls `generateLabDocument()` which reads current `S`. If material selection changes after lab send, a reprinted sheet specifies the wrong material. Fix: store a `labSnapshot: { tx, selectedMaterial, tooth, condition, recDisplay }` in S at `sendToLab()` time, and generate lab sheet from snapshot.
+- **P0 safety gap: `bridgeWarning` fires on `state.tx === 'bridge'`, not when `ai.rec === 'bridge'`.** Poor-bone bridge warning only appears when the clinician has bridge selected. If AI recommends bridge (rec='bridge') but clinician tx is still 'implant', no warning is visible. Fix: check `(state.tx === 'bridge' || ai?.rec === 'bridge')`.
+- **P0 UX: `sendToLab()` has no confirmation dialog.** Sets `labStatus='pending'` and saves immediately on a single click. Should use `confirm()` like `deleteReportHistory()` does.
+- **`labNotes` is not in serializer ALLOWED_FIELDS — device-local only.** Lab communication notes written on one device are invisible on another device. Deliberate design decision at R4.1 but a real multi-device clinic pain point.
+- **`wfHistory` (workflow audit trail) is local-only.** Not synced. Workflow timeline fragmented across devices in multi-device clinics.
+- **`caseDelivered` is not cleared by `reopenPlanning()`.** A delivered case that is reopened to planning has `caseDelivered=true` AND `planApproved=false` simultaneously. Contradictory state. Decision needed: either clear or document as intentional.
+- **LWW merge loses cross-device concurrent edits silently.** No notification when cloud merge overwrites local changes. Clinician has no awareness of overwrite.
+- **Endocrown has no dedicated pricing catalog entry.** Cost is approximated as `crown × 0.90` in `clinicalEngine.js:372`. No clinic-configurable entry. Known limitation accepted in R4.1 scope.
+- **`matCrownEmax` and `matOverlayCeramic/Composite` default to $0.** Correct calibration choice (no add-on at default) but means alternative materials show zero cost differential until clinic configures them.
+- **System readiness estimate: 78–82%.** Core clinical engine is solid. Gap is in: lab sheet snapshot (P0), multi-device local-only fields, LWW merge silent loss, calcAIMulti age guard.
+
+## Do-Not-Repeat (2026-05-24 — Wave A1)
+
+- **`bridgeWarning` and similar context-warnings in calcAI() must NOT be gated on `state.tx`.** Clinical context (abutment risk, bone compromise) is decision-support information the clinician needs BEFORE making a selection. Gating on `state.tx` delays disclosure until after commitment. Gate warnings on clinical conditions only (e.g., `bone === 'Poor'`). The `!reasons.includes()` guard already prevents duplicate entries on re-render. (Wave A4, 2026-05-24, bug-112)
+- **When adding a new age-range adjustment to calcAI(), ALWAYS check calcAIMulti() for parity.** The two functions share the same clinical domain but have separate score adjustment sections. Any age, systemic, or patient-level guard added to one must be evaluated for the other. The calcAIMulti() version may need different variable names (implant2, cantilever vs implant) and may need to preserve bridge4 unpenalized if the condition is implant-specific. (Wave A1, 2026-05-24, bug-110)
+- **calcAIMulti() cantilever is implant-anchored — any implant contraindication applies to cantilever too.** When penalizing implant2 for a systemic/age/growth reason, always evaluate whether cantilever should also be penalized. A cantilever is 1 implant + pontic extension — it carries all implant surgical risks. (Wave A1, 2026-05-24)
 
 ## Do-Not-Repeat (2026-05-24 — R4.1 Parser Fix)
 

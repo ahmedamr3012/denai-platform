@@ -1872,6 +1872,63 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-05-24"
+    },
+    {
+      "id": "bug-110",
+      "timestamp": "2026-05-24T00:00:00.000Z",
+      "error_message": "P0 clinical safety gap: calcAIMulti() had no age<18 implant deferral — teenager with two adjacent missing teeth received normal adult implant recommendation",
+      "file": "src/ai/calcAI.js",
+      "root_cause": "calcAI() (single-tooth path) applies implant -= 15.0; conf -= 15 for age < 18 at line 354. calcAIMulti() (multi-tooth path) checked age > 65 but had no lower-age guard. A patient age < 18 also triggered youngGoodBone bonus (+4.0 to implant2) with no offsetting skeletal-maturity penalty — actively encouraging implants in skeletally immature patients.",
+      "fix": "Added age < 18 block to calcAIMulti() between the age > 65 check and the CLAMP section: implant2 -= 15.0; cantilever -= 15.0; conf -= 15. bridge4 deliberately NOT penalized (conventional bridge has no skeletal growth contraindication and is the standard adolescent gap treatment). Reasons and factors propagation mirrors calcAI() exactly.",
+      "tags": [
+        "clinical-safety",
+        "calcAIMulti",
+        "age-guard",
+        "P0",
+        "Wave-A1",
+        "skeletal-maturity"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-24"
+    },
+    {
+      "id": "bug-111",
+      "timestamp": "2026-05-24T00:00:00.000Z",
+      "error_message": "P0 workflow gap: sendToLab() executed immediately on click with no confirmation — misclick locks treatment plan, emits wfHistory event, saves state, and generates lab document irreversibly",
+      "file": "index.html",
+      "root_cause": "sendToLab() had no guard before state mutation. First line was S.labStatus = 'pending' — any click triggered the full workflow transition including saveState(), _emitWfEvent('lab_sent'), renderWorkflowBar(), and generateLabDocument(). All other destructive transitions in Denai (deletePatient, deleteReportHistory) had confirmation guards; sendToLab() was the only unguarded consequential transition.",
+      "fix": "Added if (!confirm('Send this case to lab? This will lock the treatment plan.')) return; as the first line of sendToLab(), before any state mutation. Cancel path is a pure no-op. Confirm path behavior is identical to pre-fix.",
+      "tags": [
+        "workflow-safety",
+        "sendToLab",
+        "confirm-guard",
+        "P0",
+        "Wave-A3",
+        "accidental-trigger"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-24"
+    },
+    {
+      "id": "bug-112",
+      "timestamp": "2026-05-24T00:00:00.000Z",
+      "error_message": "P0 disclosure-timing gap: bridgeWarning visible only after clinician selects bridge tx, not during recommendation evaluation — clinician could commit to bridge without seeing abutment-compromise context",
+      "file": "src/ai/calcAI.js",
+      "root_cause": "bridgeWarning condition was: stateObj.bone === 'Poor' && stateObj.tx === 'bridge'. Default state.tx is 'implant'. So for a poor-bone missing-tooth patient, the warning never entered the reasons array until the clinician clicked the bridge treatment card. The warning is clinical decision context — it should be visible during option evaluation, not only after selection.",
+      "fix": "Removed stateObj.tx === 'bridge' from the condition. Warning now fires whenever stateObj.bone === 'Poor' in calcAI(). Surfaces through reasons array at analysis time for all MISSING_SINGLE cases. RESTORATIVE cases are unaffected: buildRestorativeResult() uses expl.reasons from explain(), not baseAI.reasons, so the warning never reaches the UI for restorative conditions (correct — bridge-as-abutment semantics don't apply to restorative mode).",
+      "tags": [
+        "disclosure-timing",
+        "bridgeWarning",
+        "calcAI",
+        "P0",
+        "Wave-A4",
+        "clinical-transparency"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-24"
     }
   ]
 }
