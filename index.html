@@ -1942,7 +1942,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <button class="cases-tab active" role="tab" data-stage="all"       aria-selected="true"  onclick="setCasesStageFilter('all')">All</button>
       <button class="cases-tab"        role="tab" data-stage="new"       aria-selected="false" onclick="setCasesStageFilter('new')">New</button>
       <button class="cases-tab"        role="tab" data-stage="analysis"  aria-selected="false" onclick="setCasesStageFilter('analysis')">In Analysis</button>
-      <button class="cases-tab"        role="tab" data-stage="lab"       aria-selected="false" onclick="setCasesStageFilter('lab')">At Lab</button>
+      <button class="cases-tab"        role="tab" data-stage="lab"       aria-selected="false" onclick="setCasesStageFilter('lab')">Lab &amp; Delivery</button>
       <button class="cases-tab"        role="tab" data-stage="delivered" aria-selected="false" onclick="setCasesStageFilter('delivered')">Delivered</button>
     </div>
     <div id="casesViewContent">
@@ -2622,6 +2622,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   function sendToLab() {
     if (!confirm('Send this case to lab? This will lock the treatment plan.')) return;
+    // Flush any unsaved textarea content into S before capturing snapshot.
+    if (_flushPendingNotes()) { /* notes flushed — no save needed; snapshot captures S.labNotes below */ }
     // Freeze fabrication spec before any state mutation — reprints use this snapshot, not live S.
     const _sAi  = _getAiForPlan(S);
     const _sMat = _deriveLabMaterial(S, _sAi);
@@ -2670,6 +2672,12 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   }
 
   function reopenPlanning() {
+    if (S.labStatus) {
+      const _msg = S.labStatus === 'received'
+        ? 'The lab restoration has already been received. Reopen planning anyway? This will reset the lab workflow.'
+        : 'This case is currently at the lab. Reopen planning and reset the lab workflow?';
+      if (!confirm(_msg)) return;
+    }
     S.planApproved = false;
     S.labStatus = null;
     S.labSnapshot = null; // Clear stale fabrication spec; re-send creates a fresh snapshot.
@@ -2866,8 +2874,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const stageFilter = {
       new:       p => !p.condition,
       analysis:  p => p.condition && !p.planApproved && !p.caseDelivered,
-      lab:       p => p.planApproved && p.labStatus === 'pending' && !p.caseDelivered,
-      delivered: p => p.caseDelivered || p.labStatus === 'received',
+      lab:       p => p.planApproved && p.labStatus && !p.caseDelivered,
+      delivered: p => p.caseDelivered,
     };
     const filtered = _casesStageFilter !== 'all' && stageFilter[_casesStageFilter]
       ? textFiltered.filter(stageFilter[_casesStageFilter])
@@ -2971,8 +2979,8 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     // Pipeline stats strip — B4: clinic-wide workflow stage counts
     const cNew       = allPatients.filter(p => !p.condition && !p.caseDelivered).length;
     const cAnalysis  = allPatients.filter(p => p.condition && !p.planApproved && !p.caseDelivered).length;
-    const cAtLab     = allPatients.filter(p => p.planApproved && p.labStatus === 'pending' && !p.caseDelivered).length;
-    const cDelivered = allPatients.filter(p => p.caseDelivered || p.labStatus === 'received').length;
+    const cAtLab     = allPatients.filter(p => p.planApproved && p.labStatus && !p.caseDelivered).length;
+    const cDelivered = allPatients.filter(p => p.caseDelivered).length;
     const _setPipe = (id, count) => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -3460,7 +3468,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           ${labStatus === 'pending' ? `<button class="btn-action btn-action-approve" type="button" onclick="markLabReceived()"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Mark Lab Received</button>` : ''}
           ${labStatus === 'received' ? `<span class="wf-sent-badge" style="background:rgba(var(--c-brand-rgb),.1);border-color:rgba(var(--c-brand-rgb),.3);color:var(--c-brand);"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Lab Received — Ready for Delivery</span>` : ''}
           ${labStatus ? `<button class="btn-action btn-action-reopen" type="button" onclick="generateLabDocument()"><i class="fa-solid fa-print" aria-hidden="true"></i> Print Lab Sheet</button>` : ''}
-          <button class="btn-action btn-action-reopen" type="button" onclick="reopenPlanning()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reopen Planning</button>
+          ${!S.caseDelivered ? `<button class="btn-action btn-action-reopen" type="button" onclick="reopenPlanning()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reopen Planning</button>` : ''}
         </div>
       </div>
 

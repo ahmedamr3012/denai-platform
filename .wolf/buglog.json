@@ -2077,10 +2077,47 @@
       "file": "index.html, src/sync/serializer.js",
       "root_cause": "(1) labNotes not in serializer ALLOWED_FIELDS — device-local only, pre-send notes lost cross-device. (2) Textarea remained editable after sendToLab() but generateLabDocument() uses snap.labNotes (frozen at send time), not live S.labNotes — silent mismatch with no UI indication. (3) Section titled 'Manufacturing Notes' in lab view but 'Clinician Notes' in lab sheet — inconsistent vocabulary.",
       "fix": "B4: (1) Added 'labNotes' to ALLOWED_FIELDS for cross-device pre-send sync. (2) Textarea gets readonly attribute when labStatus is truthy; status text changes to 'Captured in lab sheet' with lock icon. (3) Both surfaces now use 'Lab Notes'. (4) reopenPlanning() now clears labSnapshot=null for clean re-send cycle.",
-      "tags": ["wave-b4", "lab-notes", "sync", "readonly", "labSnapshot", "multi-device"],
-      "related_bugs": ["bug-113"],
+      "tags": [
+        "wave-b4",
+        "lab-notes",
+        "sync",
+        "readonly",
+        "labSnapshot",
+        "multi-device"
+      ],
+      "related_bugs": [
+        "bug-113"
+      ],
       "occurrences": 1,
       "last_seen": "2026-05-24T18:30:00.000Z"
+    },
+    {
+      "id": "bug-122",
+      "timestamp": "2026-05-24T12:18:18.627Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had '}\n          <button class=\"",
+      "fix": "Changed to '}\n          ${!S.caseDelivered ? `",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-24T12:18:18.627Z"
+    },
+    {
+      "id": "bug-122",
+      "timestamp": "2026-05-24T19:00:00.000Z",
+      "error_message": "Pre-pilot stabilization pass: 5 P1 operational issues — lab notes race condition, misleading dashboard stats, missing confirm on destructive reopen, contradictory state for delivered cases, pipeline counting errors",
+      "file": "index.html",
+      "root_cause": "(A) sendToLab() reads S.labNotes before 800ms debounce fires — snapshot captures stale notes. (B) cDelivered counted labStatus='received' as delivered — inflated stat. (C) reopenPlanning() had no confirm when labStatus truthy — single click destroyed lab workflow state. (D) Lab view 'Reopen Planning' shown for delivered cases. (E) stageFilter.lab used labStatus==='pending' dropping lab-received from all counts.",
+      "fix": "(A) _flushPendingNotes() called at top of sendToLab(). (B) cDelivered = p.caseDelivered only; cAtLab = p.labStatus truthy. (C) reopenPlanning() adds context-aware confirm. (D) Reopen Planning hidden when caseDelivered=true. (E) stageFilter.lab uses truthy labStatus; tab renamed 'Lab & Delivery'.",
+      "tags": ["pre-pilot", "stabilization", "sendToLab", "pipeline-stats", "reopenPlanning", "race-condition"],
+      "related_bugs": ["bug-113", "bug-114", "bug-121"],
+      "occurrences": 1,
+      "last_seen": "2026-05-24T19:00:00.000Z"
     }
   ]
 }

@@ -29,6 +29,15 @@
 - **`matCrownEmax` and `matOverlayCeramic/Composite` default to $0.** Correct calibration choice (no add-on at default) but means alternative materials show zero cost differential until clinic configures them.
 - **System readiness estimate: 78–82%.** Core clinical engine is solid. Gap is in: lab sheet snapshot (P0), multi-device local-only fields, LWW merge silent loss, calcAIMulti age guard.
 
+## Do-Not-Repeat (2026-05-24 — Pre-Pilot Stabilization Pass)
+
+- **`sendToLab()` must call `_flushPendingNotes()` BEFORE reading `S.labNotes` for the snapshot.** The labNotes textarea auto-save has an 800ms debounce. If a clinician types notes and immediately clicks Send, `S.labNotes` is stale. `_flushPendingNotes()` synchronously captures the textarea value into `S` — call it first. (Pre-Pilot, 2026-05-24, bug-122)
+- **Any action that reads `S.labNotes` for a freezing/archiving purpose must flush the debounce first.** This pattern applies to any future "freeze current state" operation that touches fields with debounced auto-save.
+- **`reopenPlanning()` must confirm when `S.labStatus` is truthy.** No-confirm reopen is destructive at lab stages — it clears labStatus, planApproved, and labSnapshot on a single click. The message should be context-aware: different text for `labStatus='received'` vs `'pending'`. (Pre-Pilot, 2026-05-24)
+- **`stageFilter.lab` and `cAtLab` should use `p.labStatus && !p.caseDelivered` (truthy, not === 'pending').** Using `=== 'pending'` drops lab-received cases from the pipeline — they disappear from all stats. The filter tab now says "Lab & Delivery" to cover both substates accurately. (Pre-Pilot, 2026-05-24, bug-122)
+- **Dashboard `cDelivered` must count ONLY `p.caseDelivered` (not `|| p.labStatus === 'received'`).** Lab-received cases are not yet delivered to the patient — combining them inflates the "Delivered" stat and erodes dashboard trust. (Pre-Pilot, 2026-05-24)
+- **"Reopen Planning" in the lab view must be hidden when `S.caseDelivered = true`.** Calling reopenPlanning() on a delivered case creates `caseDelivered=true + planApproved=false + labStatus=null` — the workflow bar says "Delivered" but lab view says "Ready to Send". Gate the button on `!S.caseDelivered`. (Pre-Pilot, 2026-05-24)
+
 ## Key Learnings — Wave B4 Lab Notes Semantics (2026-05-24)
 
 - **Lab Notes have three semantic phases: editable (pre-send) → frozen (post-send, readonly textarea) → cleared (reopen planning).** The textarea uses the `readonly` attribute after `labStatus` becomes truthy. The status text changes from "Auto-saved" to "Captured in lab sheet" with a lock icon. `reopenPlanning()` now clears `labSnapshot = null` so the post-reopen state is clean for the next send cycle.
