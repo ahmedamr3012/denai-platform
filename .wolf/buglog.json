@@ -2053,6 +2053,34 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-24T18:00:00.000Z"
+    },
+    {
+      "id": "bug-120",
+      "timestamp": "2026-05-24T11:59:32.560Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→7 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-24T11:59:32.560Z"
+    },
+    {
+      "id": "bug-121",
+      "timestamp": "2026-05-24T18:30:00.000Z",
+      "error_message": "Post-send edits to Lab Notes textarea are silently ignored on reprints; notes typed on Device A invisible when Device B sends to lab",
+      "file": "index.html, src/sync/serializer.js",
+      "root_cause": "(1) labNotes not in serializer ALLOWED_FIELDS — device-local only, pre-send notes lost cross-device. (2) Textarea remained editable after sendToLab() but generateLabDocument() uses snap.labNotes (frozen at send time), not live S.labNotes — silent mismatch with no UI indication. (3) Section titled 'Manufacturing Notes' in lab view but 'Clinician Notes' in lab sheet — inconsistent vocabulary.",
+      "fix": "B4: (1) Added 'labNotes' to ALLOWED_FIELDS for cross-device pre-send sync. (2) Textarea gets readonly attribute when labStatus is truthy; status text changes to 'Captured in lab sheet' with lock icon. (3) Both surfaces now use 'Lab Notes'. (4) reopenPlanning() now clears labSnapshot=null for clean re-send cycle.",
+      "tags": ["wave-b4", "lab-notes", "sync", "readonly", "labSnapshot", "multi-device"],
+      "related_bugs": ["bug-113"],
+      "occurrences": 1,
+      "last_seen": "2026-05-24T18:30:00.000Z"
     }
   ]
 }

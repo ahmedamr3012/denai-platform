@@ -620,6 +620,8 @@ body.dark .lab-status-card.ls-received { background: #0b1c10; border-color: #1a4
 .lab-notes { width: 100%; min-height: 80px; border: 1px solid var(--c-n150); border-radius: 10px; padding: 10px 13px; font-size: 13px; color: var(--c-n700); background: var(--surface-card); font-family: 'DM Sans', sans-serif; resize: vertical; transition: border-color var(--t-fast), box-shadow var(--t-fast); box-sizing: border-box; }
 .lab-notes:focus { outline: none; border-color: var(--c-brand); box-shadow: 0 0 0 3px rgba(var(--c-brand-rgb),.10); }
 body.dark .lab-notes { background: var(--c-n50); color: var(--c-n700); }
+.lab-notes[readonly] { background: var(--c-n50); color: var(--c-n500); cursor: default; resize: none; border-color: var(--c-n100); }
+body.dark .lab-notes[readonly] { background: var(--c-n100); color: var(--c-n400); }
 .lab-notready { display: flex; flex-direction: column; align-items: center; padding: 48px 24px; text-align: center; }
 /* ================================================================
    DASHBOARD ATTENTION — Wave 8E
@@ -2187,7 +2189,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     caseDelivered: false,  // delivery closure marker — synced (follows case across devices)
     lastAccessed: null,    // epoch ms — updated on open/switch, used for sorting
     reportHistory: [],     // [{ ts, name, type, caseNum }] — last 20, local-only
-    // Wave 8E: lab manufacturing notes — local-only (device-specific workflow notes)
+    // B4: lab fabrication notes — synced pre-send; frozen into labSnapshot at sendToLab()
     labNotes: '',
     labSnapshot: null,   // A2: frozen fabrication spec captured at sendToLab(); null until first send
     lastView: null,         // LOCAL ONLY — last navigated patient-scoped view; not synced
@@ -2670,6 +2672,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   function reopenPlanning() {
     S.planApproved = false;
     S.labStatus = null;
+    S.labSnapshot = null; // Clear stale fabrication spec; re-send creates a fresh snapshot.
     _emitWfEvent('plan_reopened');
     saveState(); renderWorkflowBar();
     if (UIState.view === 'plan') renderPlanView();
@@ -3485,10 +3488,12 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         </div>
         <div>
           <div class="plan-section">
-            <div class="plan-section-title">Manufacturing Notes</div>
-            <textarea class="lab-notes" id="labNotesArea" placeholder="Shade, dimensions, special instructions…" aria-label="Manufacturing notes">${escapeHtml(S.labNotes || '')}</textarea>
+            <div class="plan-section-title">Lab Notes</div>
+            <textarea class="lab-notes" id="labNotesArea" placeholder="Shade, dimensions, special instructions…" aria-label="Lab notes"${labStatus ? ' readonly' : ''}>${escapeHtml(S.labNotes || '')}</textarea>
             <div class="notes-meta" style="margin-top:6px;">
-              <span id="labNotesStatus" style="font-size:11px;color:var(--c-n400);">Auto-saved</span>
+              ${labStatus
+                ? `<span style="font-size:11px;color:var(--c-n400);"><i class="fa-solid fa-lock" style="font-size:10px;margin-right:3px;" aria-hidden="true"></i>Captured in lab sheet</span>`
+                : `<span id="labNotesStatus" style="font-size:11px;color:var(--c-n400);">Auto-saved</span>`}
             </div>
           </div>
           ${labStatus === 'received' ? `<div class="plan-section">
@@ -4377,7 +4382,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     </div>
   </div>
   ${_snapNotes ? `<div class="sec">
-    <div class="sec-ttl">Clinician Notes</div>
+    <div class="sec-ttl">Lab Notes</div>
     <div class="notes-block"><p>${escapeHtml(_snapNotes)}</p></div>
   </div>` : ''}
   <div class="lab-footer">
