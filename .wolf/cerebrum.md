@@ -29,6 +29,12 @@
 - **`matCrownEmax` and `matOverlayCeramic/Composite` default to $0.** Correct calibration choice (no add-on at default) but means alternative materials show zero cost differential until clinic configures them.
 - **System readiness estimate: 78–82%.** Core clinical engine is solid. Gap is in: lab sheet snapshot (P0), multi-device local-only fields, LWW merge silent loss, calcAIMulti age guard.
 
+## Do-Not-Repeat (2026-05-24 — Wave A2)
+
+- **`generateLabDocument()` must always use `S.labSnapshot` when present, not live `S` fields.** The snapshot is the fabrication authority — it was frozen at `sendToLab()` time. Calling `_getAiForPlan(S)` or reading `S.tx`/`S.selectedMaterial` directly inside `generateLabDocument()` during a reprint will produce a sheet that reflects post-send edits, not the sent specification. Pattern: `const snap = S.labSnapshot; const ai = snap ? null : _getAiForPlan(S);` (Wave A2, 2026-05-24, bug-113)
+- **Lab sheet snapshot should store derived output (txLabel, txSummary, matLabel, matNote), not raw inputs.** Storing raw inputs (tx, selectedMaterial, occlusion, all clinical flags) and re-running the engine on reprint is fragile — engine changes would alter historical sheets. Storing the pre-computed strings makes reprints immune to future scoring changes and avoids engine failure risks for edge-case state. (Wave A2, 2026-05-24)
+- **`labSnapshot` must be in serializer `ALLOWED_FIELDS`.** It is a fabrication record, not a device-local annotation (unlike `labNotes`). Without it in ALLOWED_FIELDS, the snapshot stays local and reprints diverge across devices. (Wave A2, 2026-05-24)
+
 ## Do-Not-Repeat (2026-05-24 — Wave A1)
 
 - **`bridgeWarning` and similar context-warnings in calcAI() must NOT be gated on `state.tx`.** Clinical context (abutment risk, bone compromise) is decision-support information the clinician needs BEFORE making a selection. Gating on `state.tx` delays disclosure until after commitment. Gate warnings on clinical conditions only (e.g., `bone === 'Poor'`). The `!reasons.includes()` guard already prevents duplicate entries on re-render. (Wave A4, 2026-05-24, bug-112)

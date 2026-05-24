@@ -31,6 +31,8 @@ window.denaiSerializer = (function () {
     'planApproved', 'labStatus', 'caseDelivered',
     // Wave 4A: serviceDate — ISO date (YYYY-MM-DD) case was opened; synced as clinical record metadata
     'serviceDate',
+    // A2: frozen fabrication spec — synced so lab sheet reprints are consistent across devices
+    'labSnapshot',
     // lastAccessed and reportHistory are intentionally excluded: device-local + large array
   ];
 

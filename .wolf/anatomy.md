@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T23:07:01.533Z
-> Files: 2 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-24T11:22:51.530Z
+> Files: 3 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~110719 tok)
+- `index.html` — denai — Clinical Insight (~111324 tok)
 
 ## .claude/
 
@@ -64,6 +64,7 @@
 
 ## src/sync/
 
+- `serializer.js` — src/sync/serializer.js (~776 tok)
 
 ## src/types/
 

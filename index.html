@@ -2189,6 +2189,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     reportHistory: [],     // [{ ts, name, type, caseNum }] — last 20, local-only
     // Wave 8E: lab manufacturing notes — local-only (device-specific workflow notes)
     labNotes: '',
+    labSnapshot: null,   // A2: frozen fabrication spec captured at sendToLab(); null until first send
     lastView: null,         // LOCAL ONLY — last navigated patient-scoped view; not synced
     wfHistory: [],          // LOCAL ONLY — structured workflow milestone events; not synced
     // Phase 3.2: clinic ownership anchor — null = personal/unaffiliated workspace.
@@ -2619,6 +2620,36 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   function sendToLab() {
     if (!confirm('Send this case to lab? This will lock the treatment plan.')) return;
+    // Freeze fabrication spec before any state mutation — reprints use this snapshot, not live S.
+    const _sAi  = _getAiForPlan(S);
+    const _sMat = _deriveLabMaterial(S, _sAi);
+    let _sTxLabel, _sTxSummary;
+    if (_sAi?.treatmentMode === 'restorative') {
+      _sTxLabel   = _sAi.recDisplay || 'Crown';
+      const _sIsOv = _sAi?.restorativeLabels?.slot1?.id === 'onlay' && S.tx === 'implant';
+      _sTxSummary = _sIsOv ? 'Partial-coverage overlay restoration' : 'Full-coverage crown restoration';
+    } else if (_sAi?.isMultiTooth) {
+      const _sMULTI     = { implant2: '2-Implant Restoration', bridge4: '4-Unit Bridge', cantilever: 'Implant + Cantilever Bridge' };
+      const _sMULTI_SUM = { implant2: 'Dual osseointegrated fixtures + 2 implant-supported crowns', bridge4: '4-unit fixed bridge — 2 abutments + 2 pontics', cantilever: 'Single implant fixture + cantilever bridge extension' };
+      _sTxLabel   = _sMULTI[_sAi.rec]     || _sAi.rec || '—';
+      _sTxSummary = _sMULTI_SUM[_sAi.rec] || '—';
+    } else {
+      const _sTX_LABEL = { implant: 'Implant', bridge: 'Bridge', crown: 'Crown' };
+      const _sTX_SUM   = { implant: 'Osseointegrated fixture + implant-supported crown', bridge: '3-unit fixed bridge — 2 abutments + 1 pontic', crown: 'Full-coverage tooth-supported crown' };
+      _sTxLabel   = _sTX_LABEL[S.tx] || S.tx || '—';
+      _sTxSummary = _sTX_SUM[S.tx]   || '—';
+    }
+    S.labSnapshot = {
+      txLabel:   _sTxLabel,
+      txSummary: _sTxSummary,
+      matLabel:  _sMat.label,
+      matNote:   _sMat.note,
+      labNotes:  S.labNotes,
+      name:      S.name,
+      tooth:     S.tooth,
+      caseNum:   S.caseNum,
+      sentAt:    new Date().toISOString(),
+    };
     S.labStatus = 'pending';
     _emitWfEvent('lab_sent');
     saveState(); renderWorkflowBar();
@@ -4269,16 +4300,25 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   }
 
   function generateLabDocument() {
-    const ai   = _getAiForPlan(S);
-    const mat  = _deriveLabMaterial(S, ai);
+    // Use frozen snapshot when available (post-send reprints); fall back to live S for first generation.
+    const snap = S.labSnapshot;
+    const ai   = snap ? null : _getAiForPlan(S);
+    const mat  = snap
+      ? { label: snap.matLabel, note: snap.matNote }
+      : _deriveLabMaterial(S, ai);
     const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    const _rawCase  = S.caseNum || 'Case 1';
-    const caseLabel = /^[#\w\-\s]{1,25}$/.test(_rawCase) ? escapeHtml(_rawCase) : 'Case 1';
+    const _snapName  = snap ? snap.name     : S.name;
+    const _snapTooth = snap ? snap.tooth    : S.tooth;
+    const _snapNotes = snap ? snap.labNotes : S.labNotes;
+    const _rawCase   = (snap ? snap.caseNum : S.caseNum) || 'Case 1';
+    const caseLabel  = /^[#\w\-\s]{1,25}$/.test(_rawCase) ? escapeHtml(_rawCase) : 'Case 1';
 
-    // S.tx is treatment authority (clinician-approved), ai provides restorative/multi-tooth context
     let txLabel, txSummary;
-    if (ai?.treatmentMode === 'restorative') {
+    if (snap) {
+      txLabel   = snap.txLabel;
+      txSummary = snap.txSummary;
+    } else if (ai?.treatmentMode === 'restorative') {
       txLabel   = ai.recDisplay || 'Crown';
       const isOv = ai?.restorativeLabels?.slot1?.id === 'onlay' && S.tx === 'implant';
       txSummary = isOv ? 'Partial-coverage overlay restoration' : 'Full-coverage crown restoration';
@@ -4317,9 +4357,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   <div class="lab-purpose">Clinician-Approved Lab Fabrication Sheet</div>
   <div class="sec">
     <div class="sec-ttl">Patient &amp; Site</div>
-    <div class="row"><span class="row-lbl">Patient</span><span class="row-val">${escapeHtml(S.name || '—')}</span></div>
-    <div class="row"><span class="row-lbl">Tooth / Site</span><span class="row-val">${escapeHtml(S.tooth ? formatTooth(S.tooth) : '—')}</span></div>
-    ${S.caseNum ? `<div class="row"><span class="row-lbl">Case No.</span><span class="row-val">${caseLabel}</span></div>` : ''}
+    <div class="row"><span class="row-lbl">Patient</span><span class="row-val">${escapeHtml(_snapName || '—')}</span></div>
+    <div class="row"><span class="row-lbl">Tooth / Site</span><span class="row-val">${escapeHtml(_snapTooth ? formatTooth(_snapTooth) : '—')}</span></div>
+    ${_rawCase !== 'Case 1' ? `<div class="row"><span class="row-lbl">Case No.</span><span class="row-val">${caseLabel}</span></div>` : ''}
     <div class="row"><span class="row-lbl">Date</span><span class="row-val">${escapeHtml(date)}</span></div>
   </div>
   <div class="sec">
@@ -4334,9 +4374,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <div class="mat-note">${escapeHtml(mat.note)}</div>
     </div>
   </div>
-  ${S.labNotes ? `<div class="sec">
+  ${_snapNotes ? `<div class="sec">
     <div class="sec-ttl">Clinician Notes</div>
-    <div class="notes-block"><p>${escapeHtml(S.labNotes)}</p></div>
+    <div class="notes-block"><p>${escapeHtml(_snapNotes)}</p></div>
   </div>` : ''}
   <div class="lab-footer">
     <div><strong>${escapeHtml(BRAND.name)}</strong> &mdash; Clinician-approved fabrication instruction</div>
