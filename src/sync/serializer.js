@@ -24,7 +24,7 @@ window.denaiSerializer = (function () {
     'multiTooth', 'tooth2', 'abutmentQuality',
     'multiSite', 'site2Tooth', 'site2Condition', 'site2Structure', 'site2EndoStatus',
     'costImplant', 'costBridge', 'costBoneGraft', 'costCrown', 'costRCT', 'costPostCore',
-    'costBridge4', 'costOverlay',
+    'costBridge4', 'costOverlay', 'costEndocrown',
     // R3.1: clinician material selection — synced so material choice follows patient across devices
     'selectedMaterial',
     // Wave 8C: workflow continuity — synced so plan/lab state follows patient across devices

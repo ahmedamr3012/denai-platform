@@ -1953,10 +1953,106 @@
       "file": "index.html, src/sync/serializer.js",
       "root_cause": "generateLabDocument() read S.tx, S.selectedMaterial, S.occlusion, S.labNotes, and all AI clinical inputs (via _getAiForPlan(S)) from live mutable state. Any post-send edit to treatment selection, material, or clinical inputs changed the reprinted lab sheet.",
       "fix": "sendToLab() now freezes S.labSnapshot = { txLabel, txSummary, matLabel, matNote, labNotes, name, tooth, caseNum, sentAt } before state mutation. generateLabDocument() checks S.labSnapshot first — if present, uses frozen values; if null (pre-snapshot patients), falls back to live S. labSnapshot added to DEFAULT_STATE (null) and serializer ALLOWED_FIELDS (syncs across devices).",
-      "tags": ["lab-sheet", "snapshot", "workflow-integrity", "wave-a2", "p0", "fabrication"],
-      "related_bugs": ["bug-111"],
+      "tags": [
+        "lab-sheet",
+        "snapshot",
+        "workflow-integrity",
+        "wave-a2",
+        "p0",
+        "fabrication"
+      ],
+      "related_bugs": [
+        "bug-111"
+      ],
       "occurrences": 1,
       "last_seen": "2026-05-24T16:30:00.000Z"
+    },
+    {
+      "id": "bug-115",
+      "timestamp": "2026-05-24T11:33:18.370Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had 'In Analysis'",
+      "fix": "Changed to 'complete'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-24T11:33:18.370Z"
+    },
+    {
+      "id": "bug-114",
+      "timestamp": "2026-05-24T17:00:00.000Z",
+      "error_message": "caseStatusPill shows 'In Analysis' for delivered cases; markDelivered/reopenDelivery stale plan view; cAtLab double-counts labStatus='received' cases",
+      "file": "index.html",
+      "root_cause": "Three delivery-workflow inconsistencies: (1) stageLabel ternary had no case for 'complete' (returned by _getWorkflowStage when caseDelivered=true), falling through to 'In Analysis' default. (2) markDelivered() and reopenDelivery() refreshed lab+reports views but not plan view — plan banner showed stale delivery state. (3) cAtLab filter used p.labStatus (truthy) instead of p.labStatus==='pending', causing labStatus='received' cases to appear in both 'At Lab' and 'Delivered' pipeline counts simultaneously.",
+      "fix": "5 surgical edits: (1) Added wfStage==='complete' ? 'Delivered' case to stageLabel ternary at line 3727. (2) Added if(UIState.view==='plan') renderPlanView() to markDelivered() at line 2685. (3) Added if(UIState.view==='plan') renderPlanView() to reopenDelivery() at line 2694. (4) Changed cAtLab filter to p.labStatus==='pending' at line 2969. (5) Changed stageFilter.lab to p.labStatus==='pending' at line 2864.",
+      "tags": [
+        "wave-b1",
+        "delivery-workflow",
+        "consistency",
+        "stale-ui",
+        "double-counting",
+        "status-pill"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-24T17:00:00.000Z"
+    },
+    {
+      "id": "bug-117",
+      "timestamp": "2026-05-24T11:42:40.266Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 28→57 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-24T11:42:40.266Z"
+    },
+    {
+      "id": "bug-116",
+      "timestamp": "2026-05-24T17:30:00.000Z",
+      "error_message": "Cloud overwrite toast is generic ('Patient updated from another device') with no clinical context; non-active patient overwrites produce no notification",
+      "file": "index.html",
+      "root_cause": "denaiApplyCloudMerge() always showed the same generic toast regardless of what changed (delivery state, lab status, plan approval, treatment). Non-active patient changes were silently applied (list re-rendered only). No clinical context available to clinician deciding whether to investigate.",
+      "fix": "Enhanced denaiApplyCloudMerge() with: (1) context-aware toast comparing _prevDelivered/_prevLabStatus/_prevPlanApproved/_prevTx to post-merge S values — highest-priority clinical change drives the message. (2) Brief count toast for non-active patient syncs when active patient is not also changing (avoids double-toast).",
+      "tags": [
+        "wave-b2",
+        "multi-device",
+        "sync",
+        "overwrite-visibility",
+        "toast"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-24T17:30:00.000Z"
+    },
+    {
+      "id": "bug-117",
+      "timestamp": "2026-05-24T18:00:00.000Z",
+      "error_message": "Endocrown pricing is hardcoded as crown×0.90 in clinicalEngine.js and absent from TREATMENT_PRICING_CATALOG — not configurable by clinics, not synced across devices",
+      "file": "src/ai/clinicalEngine.js, src/constants/clinicPrefs.js, src/sync/serializer.js, index.html",
+      "root_cause": "restorativeCosts.slot1/slot3 used inline ratio `c.costs.crown * 0.9` for endocrown, bypassing the patient-override → clinic-preference → catalog-default priority chain. No costEndocrown field in DEFAULT_STATE or ALLOWED_FIELDS.",
+      "fix": "B3: Promoted endocrown from derived to standalone configurable catalog entry (default: 1080 = crown×0.90). Added costEndocrown to TREATMENT_PRICING_CATALOG, DEFAULT_STATE, normalize() costs object, serializer ALLOWED_FIELDS, and new patient init. restorativeCosts.slot1/slot3 now reference c.costs.endocrown.",
+      "tags": [
+        "wave-b3",
+        "endocrown",
+        "pricing",
+        "restorative",
+        "configurable"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-24T18:00:00.000Z"
     }
   ]
 }

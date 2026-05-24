@@ -53,14 +53,15 @@ const CURRENCY_CONFIG = Object.freeze({
 // COVERAGE — all treatment paths that produce dollar amounts:
 //   Single-tooth:  implant + optional boneGraft / bridge / crown + optional rct + postCore
 //   Multi-tooth:   bridge4 (4-unit, standalone configurable), implant×2 (+ boneGraft×2), implant×1.5 (cantilever)
-//   Restorative:   crown (base), overlay (onlay — standalone configurable), crown_core (crown + postCore),
-//                  endocrown (crown×0.90 — derived), extract_impl (implant — Wave C3 fix),
+//   Restorative:   crown (base), overlay (onlay — standalone configurable), endocrown (standalone configurable),
+//                  crown_core (crown + postCore), extract_impl (implant — Wave C3 fix),
 //                  splinted (crown — derived), crown_adv (crown — derived)
 //   Adjunctive:    annualCheckup (×2/yr used in 10-year totals)
 //
 // Derived costs (multi-unit ratios, restorative variants not listed above) are COMPUTED
 // in render/engine logic from these base prices — they are not separate catalog entries.
 // R2.1: bridge4 and overlay promoted from derived → standalone configurable entries.
+// B3: endocrown promoted from derived (crown×0.90) → standalone configurable entry.
 const TREATMENT_PRICING_CATALOG = Object.freeze([
   // ── Surgical / Prosthetic ───────────────────────────────────────────────────
   { id: 'implant',       label: 'Implant placement',      stateKey: 'costImplant',   default: 4500, category: 'surgical'    },
@@ -70,6 +71,7 @@ const TREATMENT_PRICING_CATALOG = Object.freeze([
   // ── Restorative ─────────────────────────────────────────────────────────────
   { id: 'crown',         label: 'Crown',                   stateKey: 'costCrown',     default: 1200, category: 'restorative' },
   { id: 'overlay',       label: 'Onlay / Overlay',         stateKey: 'costOverlay',   default:  780, category: 'restorative' },
+  { id: 'endocrown',     label: 'Endocrown',               stateKey: 'costEndocrown', default: 1080, category: 'restorative' },
   { id: 'rct',           label: 'Root canal (RCT)',         stateKey: 'costRCT',       default: 1000, category: 'restorative' },
   { id: 'postCore',      label: 'Post & core',             stateKey: 'costPostCore',  default:  400, category: 'restorative' },
   // ── Adjunctive ──────────────────────────────────────────────────────────────

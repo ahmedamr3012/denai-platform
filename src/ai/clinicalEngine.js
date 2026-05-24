@@ -62,7 +62,8 @@
           crown:    s.costCrown     || getClinicPrice('crown'),
           rct:      s.costRCT       || getClinicPrice('rct'),
           postCore: s.costPostCore  || getClinicPrice('postCore'),
-          overlay:  s.costOverlay   || getClinicPrice('overlay'),  // R2.1: clinic-configurable onlay price
+          overlay:   s.costOverlay   || getClinicPrice('overlay'),   // R2.1: clinic-configurable onlay price
+          endocrown: s.costEndocrown || getClinicPrice('endocrown'), // B3: clinic-configurable endocrown price
         },
       };
     }
@@ -369,11 +370,11 @@
           slot1: Math.round((bySlot['implant']?.id === 'onlay'
             ? c.costs.overlay               // R2.1: clinic-configurable onlay/overlay price
             : bySlot['implant']?.id === 'endocrown'
-            ? (c.costs.crown * 0.9)         // endocrown ≈ 90% (no post/buildup needed)
+            ? c.costs.endocrown             // B3: clinic-configurable endocrown price
             : c.costs.crown + (c.costs.postCore * (c.restorative.fairStructure ? 1 : 0))) * 10) / 10,
           slot2: c.costs.crown + (c.restorative.needsRCT ? c.costs.rct : 0),
           slot3: Math.round((bySlot['crown']?.id === 'endocrown'
-            ? c.costs.crown * 0.9           // endocrown ≈ 90% (no post needed)
+            ? c.costs.endocrown             // B3: clinic-configurable endocrown price
             : bySlot['crown']?.id === 'extract_impl'
             ? c.costs.implant                // Wave C3: priority chain via normalize()
             : c.costs.crown) * 10) / 10,

@@ -2177,7 +2177,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     parafunction: 'None',
     costImplant: 4500, costBridge: 3500, costBoneGraft: 1500,
     costCrown: 1200, costRCT: 1000, costPostCore: 400,
-    costBridge4: null, costOverlay: null,
+    costBridge4: null, costOverlay: null, costEndocrown: null,
     selectedMaterial: null,
     notes: '',
     serviceDate: null,     // ISO date (YYYY-MM-DD) — date case was opened; synced as clinical record metadata
@@ -2682,6 +2682,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     _emitWfEvent('case_delivered');
     saveState(); renderWorkflowBar();
     if (UIState.view === 'lab')     renderLabView();
+    if (UIState.view === 'plan')    renderPlanView();
     if (UIState.view === 'reports') renderReportsView();
     showToast('Case marked as delivered', 'success');
   }
@@ -2691,6 +2692,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     _emitWfEvent('delivery_reopened');
     saveState(); renderWorkflowBar();
     if (UIState.view === 'lab')     renderLabView();
+    if (UIState.view === 'plan')    renderPlanView();
     if (UIState.view === 'reports') renderReportsView();
     showToast('Case reopened', 'info');
   }
@@ -2861,7 +2863,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const stageFilter = {
       new:       p => !p.condition,
       analysis:  p => p.condition && !p.planApproved && !p.caseDelivered,
-      lab:       p => p.planApproved && p.labStatus && !p.caseDelivered,
+      lab:       p => p.planApproved && p.labStatus === 'pending' && !p.caseDelivered,
       delivered: p => p.caseDelivered || p.labStatus === 'received',
     };
     const filtered = _casesStageFilter !== 'all' && stageFilter[_casesStageFilter]
@@ -2966,7 +2968,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     // Pipeline stats strip — B4: clinic-wide workflow stage counts
     const cNew       = allPatients.filter(p => !p.condition && !p.caseDelivered).length;
     const cAnalysis  = allPatients.filter(p => p.condition && !p.planApproved && !p.caseDelivered).length;
-    const cAtLab     = allPatients.filter(p => p.planApproved && p.labStatus && !p.caseDelivered).length;
+    const cAtLab     = allPatients.filter(p => p.planApproved && p.labStatus === 'pending' && !p.caseDelivered).length;
     const cDelivered = allPatients.filter(p => p.caseDelivered || p.labStatus === 'received').length;
     const _setPipe = (id, count) => {
       const el = document.getElementById(id);
@@ -3724,7 +3726,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const statusPillEl = document.getElementById('caseStatusPill');
     if (statusPillEl) {
       const wfStage = _getWorkflowStage();
-      const stageLabel = wfStage === 'scan' ? 'New Case' : wfStage === 'insight' ? 'In Analysis' : wfStage === 'plan' ? 'Plan Approved' : wfStage === 'lab' ? 'Lab Sent' : wfStage === 'delivery' ? 'Lab Received' : 'In Analysis';
+      const stageLabel = wfStage === 'scan' ? 'New Case' : wfStage === 'insight' ? 'In Analysis' : wfStage === 'plan' ? 'Plan Approved' : wfStage === 'lab' ? 'Lab Sent' : wfStage === 'delivery' ? 'Lab Received' : wfStage === 'complete' ? 'Delivered' : 'In Analysis';
       statusPillEl.textContent = stageLabel;
       statusPillEl.setAttribute('aria-label', 'Status: ' + stageLabel);
     }
@@ -5269,8 +5271,9 @@ costBoneGraft: getClinicPrice('boneGraft'),
 costCrown:     getClinicPrice('crown'),
 costRCT:       getClinicPrice('rct'),
 costPostCore:  getClinicPrice('postCore'),
-costBridge4:   getClinicPrice('bridge4'),
-costOverlay:   getClinicPrice('overlay'),
+costBridge4:    getClinicPrice('bridge4'),
+costOverlay:    getClinicPrice('overlay'),
+costEndocrown:  getClinicPrice('endocrown'),
 id: genId(),
 caseNum: genCaseNum(),
 serviceDate: new Date().toISOString().split('T')[0],
@@ -5355,7 +5358,16 @@ showToast(`${name} removed`, 'info');
 // ================================================================
 function denaiApplyCloudMerge(changedIds) {
 renderPatientList();
-if (!Array.isArray(changedIds) || !changedIds.includes(S.id)) return;
+
+const _activeChanged = Array.isArray(changedIds) && changedIds.includes(S.id);
+const _bgCount       = Array.isArray(changedIds) ? changedIds.filter(id => id !== S.id).length : 0;
+
+// Non-active patient updates: brief count toast (only when active patient not also updated).
+if (!_activeChanged && _bgCount > 0) {
+  showToast((_bgCount === 1 ? '1 other case' : _bgCount + ' other cases') + ' synced from cloud', 'info');
+}
+
+if (!_activeChanged) return;
 
 const list      = loadAllPatients() || [];
 const stillHere = list.find(p => p.id === S.id);
@@ -5373,13 +5385,33 @@ if (!stillHere) {
 // Don't disrupt an active edit session — uncommitted changes take priority.
 if (UIState.editing) return;
 
+// Snapshot clinical workflow fields before applying — drives context-aware toast.
+const _prevDelivered    = S.caseDelivered;
+const _prevLabStatus    = S.labStatus;
+const _prevPlanApproved = S.planApproved;
+const _prevTx           = S.tx;
+
 // Active patient data was updated from another device
 Object.assign(S, { ...DEFAULT_STATE, ...stillHere });
 tempState = { ...S };
 render(S);
 updateSliderPositions();
 initClinicalNotes();
-showToast('Patient updated from another device', 'info');
+
+// Context-aware sync toast — highest-priority clinical change drives the message.
+let _syncMsg = 'Case synced from another device';
+if (S.caseDelivered !== _prevDelivered) {
+  _syncMsg = S.caseDelivered ? 'Case marked delivered on another device' : 'Delivery reopened on another device';
+} else if (S.labStatus !== _prevLabStatus) {
+  if      (S.labStatus === 'received') _syncMsg = 'Lab restoration marked received on another device';
+  else if (S.labStatus === 'pending')  _syncMsg = 'Case sent to lab on another device';
+  else                                 _syncMsg = 'Lab status updated on another device';
+} else if (S.planApproved !== _prevPlanApproved) {
+  _syncMsg = S.planApproved ? 'Treatment plan approved on another device' : 'Planning reopened on another device';
+} else if (S.tx && _prevTx && S.tx !== _prevTx) {
+  _syncMsg = 'Treatment selection updated on another device';
+}
+showToast(_syncMsg, 'info');
 }
 
 // ================================================================

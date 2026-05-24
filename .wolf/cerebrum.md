@@ -25,9 +25,27 @@
 - **`wfHistory` (workflow audit trail) is local-only.** Not synced. Workflow timeline fragmented across devices in multi-device clinics.
 - **`caseDelivered` is not cleared by `reopenPlanning()`.** A delivered case that is reopened to planning has `caseDelivered=true` AND `planApproved=false` simultaneously. Contradictory state. Decision needed: either clear or document as intentional.
 - **LWW merge loses cross-device concurrent edits silently.** No notification when cloud merge overwrites local changes. Clinician has no awareness of overwrite.
-- **Endocrown has no dedicated pricing catalog entry.** Cost is approximated as `crown × 0.90` in `clinicalEngine.js:372`. No clinic-configurable entry. Known limitation accepted in R4.1 scope.
+- **Endocrown was derived as `crown × 0.90` in `clinicalEngine.js` before B3.** After B3 it is a standalone configurable entry in TREATMENT_PRICING_CATALOG (default: 1080) with `costEndocrown` in DEFAULT_STATE, normalize() costs, serializer ALLOWED_FIELDS, and new patient init. The display surfaces (costGraphPanel.js, comparisonPanel.js, report) all use `ai.restorativeCosts` — they were never broken, just limited to a non-configurable derived value.
 - **`matCrownEmax` and `matOverlayCeramic/Composite` default to $0.** Correct calibration choice (no add-on at default) but means alternative materials show zero cost differential until clinic configures them.
 - **System readiness estimate: 78–82%.** Core clinical engine is solid. Gap is in: lab sheet snapshot (P0), multi-device local-only fields, LWW merge silent loss, calcAIMulti age guard.
+
+## Key Learnings — Wave B3 Endocrown Pricing (2026-05-24)
+
+- **The promotion pattern for derived → configurable pricing is: catalog entry + DEFAULT_STATE null + normalize() costs entry + new patient init + serializer ALLOWED_FIELDS.** This is the same pattern used for bridge4 (R2.1) and overlay (R2.1). All five touch points must be updated together — missing any one breaks the priority chain `patient override → clinic preference → catalog default`.
+- **`restorativeCosts` in `clinicalEngine.js` is the only pricing surface used by restorative displays.** `costGraphPanel.js:renderCost()` returns early on the restorative path using `ai.restorativeCosts`. `comparisonPanel.js` uses `rc.slot1/slot2/slot3`. `generateReport()` uses `ai.restorativeCosts` for restorative option cards. `computeCosts()` in `costEngine.js` is NOT called for restorative display — so errors in its endocrown path were invisible in the UI.
+- **`computeCosts()` in costEngine.js has no endocrown gate (unlike `isOverlaySlot` for onlay).** An endocrown case falls through to the standard implant base pricing path in computeCosts. This is harmless for current restorative displays (all use ai.restorativeCosts), but if computeCosts is ever called for restorative comparison, it will price endocrown wrong. Note for Wave C.
+
+## Do-Not-Repeat (2026-05-24 — Wave B2)
+
+- **`denaiApplyCloudMerge()` is the ONLY correct place to add cloud overwrite visibility.** This is the Wave 7E UI callback — the single point where cloud merges notify the inline script. Adding sync toasts anywhere else (in cloudSync.js, syncQueue.js, or saveState) risks duplicate notifications, wrong timing, or missing patient context. (Wave B2, 2026-05-24, bug-116)
+- **Snapshot clinical fields BEFORE `Object.assign(S, ...)` in `denaiApplyCloudMerge`.** The `_prev*` constants must be captured while S still holds the pre-merge values. Capturing after the assign produces a diff of identical values — no clinical context detected. Pattern: `const _prevLabStatus = S.labStatus; Object.assign(S, ...); if (S.labStatus !== _prevLabStatus) ...`. (Wave B2, 2026-05-24)
+- **Non-active patient count toast must be suppressed when the active patient is also changing.** Showing both "2 other cases synced" AND "Case sent to lab on another device" in the same hydrate cycle is noisy. Gate the background count toast on `!_activeChanged`. (Wave B2, 2026-05-24)
+
+## Do-Not-Repeat (2026-05-24 — Wave B1)
+
+- **`stageLabel` ternary in `renderMainPanels()` must include a case for `'complete'`.** `_getWorkflowStage()` returns `'complete'` when `caseDelivered=true`. Any future addition to the ternary must keep the 'complete' → 'Delivered' case — it is easy to miss since `_WF_STAGES` doesn't include 'complete' (it's a post-completion terminal state). `_getPatientStageBadge()` in caseHelpers.js correctly handles `caseDelivered` — use it as the reference for stage vocabulary. (Wave B1, 2026-05-24, bug-114)
+- **`cAtLab` and `stageFilter.lab` must use `p.labStatus === 'pending'`, NOT the truthy `p.labStatus`.** A case with `labStatus='received'` is not at the lab — the restoration has returned. Using truthy labStatus double-counts these cases in both the "At Lab" and "Delivered" pipeline buckets. Always use strict equality when filtering by labStatus value. (Wave B1, 2026-05-24, bug-114)
+- **When adding a new workflow state transition function, check all three view render guards: `lab`, `plan`, AND `reports`.** `markDelivered()` and `reopenDelivery()` originally missed `renderPlanView()`. The plan view shows delivery-phase content (lab-received banner, "Mark Delivered" action) that goes stale when delivery state changes. Pattern: `if (UIState.view === 'lab') renderLabView(); if (UIState.view === 'plan') renderPlanView(); if (UIState.view === 'reports') renderReportsView()`. (Wave B1, 2026-05-24, bug-114)
 
 ## Do-Not-Repeat (2026-05-24 — Wave A2)
 
