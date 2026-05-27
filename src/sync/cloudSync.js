@@ -26,7 +26,7 @@
 window.denaiCloudSync = (function () {
 
   var PATIENTS_KEY   = 'denaiPatients_v2';
-  var HISTORY_PREFIX = 'dandyCaseHistory_v1_';
+  var HISTORY_PREFIX = 'denaiCaseHistory_v1_';
 
   // Default placeholder name — used to detect the auto-generated seed patient
   // on a fresh install. Prevents uploading a meaningless placeholder to cloud.

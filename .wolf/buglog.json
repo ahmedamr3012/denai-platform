@@ -2243,6 +2243,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-27T00:00:00.000Z"
+    },
+    {
+      "id": "bug-131",
+      "timestamp": "2026-05-27T10:12:14.884Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/sync/cloudSync.js",
+      "root_cause": "Had 'dandyCaseHistory_v1_'",
+      "fix": "Changed to 'denaiCaseHistory_v1_'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-27T10:12:14.884Z"
+    },
+    {
+      "id": "bug-132",
+      "timestamp": "2026-05-27T10:12:20.098Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/sync/runner.js",
+      "root_cause": "Had 'dandyCaseHistory_v1_'",
+      "fix": "Changed to 'denaiCaseHistory_v1_'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-27T10:12:27.461Z"
     }
   ]
 }

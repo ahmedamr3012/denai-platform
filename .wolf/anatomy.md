@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-27T09:15:14.185Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-27T10:12:27.454Z
 > Files: 5 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~112657 tok)
+- `index.html` — denai — Clinical Insight (~112664 tok)
 
 ## .claude/
 
@@ -24,15 +24,13 @@
 
 ## src/ai/
 
-- `calcAI.js` — isPosteriorTooth: isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI (~8231 tok)
-- `clinicalEngine.js` — ClinicalEngine: normalize, classify, generateTreatments, scoreRestorative (~8237 tok)
 
 ## src/auth/
 
 
 ## src/constants/
 
-- `clinicPrefs.js` — src/constants/clinicPrefs.js (~1986 tok)
+- `storageKeys.js` — 4 global storage key constants (all denai-branded) + `_migrateStorageKeys()` one-time startup migration from dandy→denai keys (~350 tok)
 
 ## src/db/
 
@@ -66,7 +64,7 @@
 
 ## src/sync/
 
-- `serializer.js` — src/sync/serializer.js (~814 tok)
+- `cloudSync.js` — src/sync/cloudSync.js (~4670 tok)
 
 ## src/types/
 
@@ -88,6 +86,7 @@
 
 ## tests/e2e/
 
+- `runner.js` — tests/e2e/runner.js (~6276 tok)
 
 ## tests/engine/
 
@@ -97,3 +96,4 @@
 
 ## tests/sync/
 
+- `runner.js` — tests/sync/runner.js (~4778 tok)

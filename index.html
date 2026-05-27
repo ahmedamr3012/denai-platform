@@ -6108,6 +6108,7 @@ function _cleanOrphanedHistoryKeys() {
 }
 
 (function init() {
+_migrateStorageKeys();
 // Populate BRAND.disclaimer into static UI surfaces
 const _ed = $('entryDisclaimer'); if (_ed) _ed.textContent = BRAND.disclaimer;
 const _apd = $('aiPanelDisclaimer'); if (_apd) _apd.textContent = BRAND.disclaimer;

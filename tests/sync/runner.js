@@ -19,7 +19,7 @@
 
   var QUEUE_KEY    = 'denaiSyncQueue_v1';
   var PATIENTS_KEY = 'denaiPatients_v2';
-  var HIST_PREFIX  = 'dandyCaseHistory_v1_';
+  var HIST_PREFIX  = 'denaiCaseHistory_v1_';
 
   // ── Assertion micro-framework ─────────────────────────────────────────────
 
