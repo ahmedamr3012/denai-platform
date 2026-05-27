@@ -38,11 +38,25 @@
 - **Dashboard `cDelivered` must count ONLY `p.caseDelivered` (not `|| p.labStatus === 'received'`).** Lab-received cases are not yet delivered to the patient — combining them inflates the "Delivered" stat and erodes dashboard trust. (Pre-Pilot, 2026-05-24)
 - **"Reopen Planning" in the lab view must be hidden when `S.caseDelivered = true`.** Calling reopenPlanning() on a delivered case creates `caseDelivered=true + planApproved=false + labStatus=null` — the workflow bar says "Delivered" but lab view says "Ready to Send". Gate the button on `!S.caseDelivered`. (Pre-Pilot, 2026-05-24)
 
+## Key Learnings — Micro-Fix Note to Lab UX Placement (2026-05-27)
+
+- **Note to Lab textarea (`labNotesArea`) lives in the Insight view Card 1 (static HTML), NOT in `renderLabView()`.** Moved there so Clinical Notes and Note to Lab are co-located in the clinical workspace. The Lab view shows a read-only display block instead of a textarea.
+- **`initLabNotes()` is the single initialization function for Note to Lab.** Sets `textarea.value`, `textarea.readOnly = !!S.labStatus`, and updates `labNotesStatus` span. Uses `_labNotesInputBound` guard (mirror of `_notesInputBound` for Clinical Notes).
+- **`initLabNotes()` must be called alongside `initClinicalNotes()` at all patient-switch and page-init sites, AND in `sendToLab()` and `reopenPlanning()`.** The latter two update readonly state while Insight view is hidden.
+- **DO NOT re-add `labNotesArea` textarea to `renderLabView()`.** Duplicate IDs break `getElementById('labNotesArea')` and `_flushPendingNotes()`.
+
+## Key Learnings — Micro-Wave Lab Communication Completion (2026-05-27)
+
+- **The field is `S.labNotes` internally but the UI label is "Note to Lab" (not "Lab Notes").** The naming distinction matters operationally: "Lab Notes" reads as internal memos; "Note to Lab" reads as fabrication instruction directed at the technician. State key and snapshot key (`snap.labNotes`) stay unchanged — only the displayed label changed.
+- **The contextual hint "Appears on the lab sheet — keep to fabrication instructions" is placed between the section title and the textarea.** This makes the fabrication-facing intent explicit without adding UI chrome. It disappears naturally when the textarea goes readonly (the locked status replaces it visually).
+- **"Save as PDF" and "Print Lab Sheet" both call `window.print()`.** The distinction is workflow guidance, not mechanics. Both are inside `.no-print`, which `LAB_CSS @media print` hides with `display:none` — neither button nor the instruction text appears in the final print/PDF output.
+- **The instruction line "To save as PDF, choose 'Save as PDF' in the print dialog" uses hardcoded `#9ca3af` color.** LAB_CSS is a separate browsing context (popup) — CSS variables are not available. All colors in the lab sheet HTML must use hex/rgb literals.
+
 ## Key Learnings — Wave B4 Lab Notes Semantics (2026-05-24)
 
 - **Lab Notes have three semantic phases: editable (pre-send) → frozen (post-send, readonly textarea) → cleared (reopen planning).** The textarea uses the `readonly` attribute after `labStatus` becomes truthy. The status text changes from "Auto-saved" to "Captured in lab sheet" with a lock icon. `reopenPlanning()` now clears `labSnapshot = null` so the post-reopen state is clean for the next send cycle.
 - **Post-send edits to labNotes textarea are silently ignored on reprints if textarea remains editable.** `generateLabDocument()` uses `snap.labNotes` (frozen at send time) for reprints, not live `S.labNotes`. Making the textarea readonly after send prevents the silent mismatch. This was the most operationally dangerous ambiguity in the pre-B4 state.
-- **The section was called "Manufacturing Notes" in renderLabView and "Clinician Notes" in generateLabDocument before B4.** Both now use "Lab Notes" for consistency. "Clinician Notes" on a lab sheet is informative but the inconsistency outweighs the nuance.
+- **The section was called "Manufacturing Notes" in renderLabView and "Clinician Notes" in generateLabDocument before B4.** Both now use "Note to Lab" for consistency (updated again in Micro-Wave 2026-05-27). "Lab Notes" is ambiguous; "Note to Lab" is fabrication-directive language.
 - **`labNotes` is excluded from aiPayload.js (AI privacy/PHI) but that does NOT mean it should be excluded from sync.** AI payload exclusion and cloud sync are independent decisions. Fabrication notes don't contain clinical identity data — they contain shade/dimension specs.
 
 ## Key Learnings — Wave B3 Endocrown Pricing (2026-05-24)

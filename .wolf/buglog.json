@@ -2114,10 +2114,85 @@
       "file": "index.html",
       "root_cause": "(A) sendToLab() reads S.labNotes before 800ms debounce fires — snapshot captures stale notes. (B) cDelivered counted labStatus='received' as delivered — inflated stat. (C) reopenPlanning() had no confirm when labStatus truthy — single click destroyed lab workflow state. (D) Lab view 'Reopen Planning' shown for delivered cases. (E) stageFilter.lab used labStatus==='pending' dropping lab-received from all counts.",
       "fix": "(A) _flushPendingNotes() called at top of sendToLab(). (B) cDelivered = p.caseDelivered only; cAtLab = p.labStatus truthy. (C) reopenPlanning() adds context-aware confirm. (D) Reopen Planning hidden when caseDelivered=true. (E) stageFilter.lab uses truthy labStatus; tab renamed 'Lab & Delivery'.",
-      "tags": ["pre-pilot", "stabilization", "sendToLab", "pipeline-stats", "reopenPlanning", "race-condition"],
-      "related_bugs": ["bug-113", "bug-114", "bug-121"],
+      "tags": [
+        "pre-pilot",
+        "stabilization",
+        "sendToLab",
+        "pipeline-stats",
+        "reopenPlanning",
+        "race-condition"
+      ],
+      "related_bugs": [
+        "bug-113",
+        "bug-114",
+        "bug-121"
+      ],
       "occurrences": 1,
       "last_seen": "2026-05-24T19:00:00.000Z"
+    },
+    {
+      "id": "bug-124",
+      "timestamp": "2026-05-27T06:48:25.420Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"lab-notes\"",
+      "fix": "Changed to \"font-size:11px;color:var(--c-n400);margin-bottom:",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-27T06:48:25.420Z"
+    },
+    {
+      "id": "bug-125",
+      "timestamp": "2026-05-27T06:48:35.337Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 9→15 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-27T06:48:35.338Z"
+    },
+    {
+      "id": "bug-126",
+      "timestamp": "2026-05-27T07:04:39.259Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 7→4 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-27T07:04:39.259Z"
+    },
+    {
+      "id": "bug-127",
+      "timestamp": "2026-05-27T07:04:49.211Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: !textarea",
+      "fix": "Added guard clause: if (!textarea)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-27T07:04:49.211Z"
     }
   ]
 }

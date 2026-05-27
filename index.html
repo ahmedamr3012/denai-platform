@@ -1686,6 +1686,16 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           </div>
         </div>
 
+        <!-- Note to Lab -->
+        <div style="margin-top:8px;">
+          <label for="labNotesArea" style="font-size:11px;font-weight:700;color:var(--c-n500);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px;">Note to Lab</label>
+          <div style="font-size:11px;color:var(--c-n400);margin-bottom:4px;">Appears on the lab sheet — keep to fabrication instructions</div>
+          <textarea id="labNotesArea" class="lab-notes" placeholder="Shade, dimensions, special instructions…" aria-label="Note to lab"></textarea>
+          <div class="notes-meta">
+            <span id="labNotesStatus">Auto-saved</span>
+          </div>
+        </div>
+
         <!-- Change History -->
         <div style="margin-top:8px;">
           <button class="why-toggle" id="historyToggle" type="button" aria-expanded="false" aria-controls="historyBody" style="font-size:11px;color:var(--c-n500);">
@@ -2659,6 +2669,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     saveState(); renderWorkflowBar();
     if (UIState.view === 'lab')  renderLabView();
     if (UIState.view === 'plan') renderPlanView();
+    initLabNotes();
     showToast('Case sent to lab', 'success');
     generateLabDocument();
   }
@@ -2685,6 +2696,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     saveState(); renderWorkflowBar();
     if (UIState.view === 'plan') renderPlanView();
     if (UIState.view === 'lab')  renderLabView();
+    initLabNotes();
     showToast('Planning reopened', 'info');
   }
 
@@ -3496,12 +3508,14 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         </div>
         <div>
           <div class="plan-section">
-            <div class="plan-section-title">Lab Notes</div>
-            <textarea class="lab-notes" id="labNotesArea" placeholder="Shade, dimensions, special instructions…" aria-label="Lab notes"${labStatus ? ' readonly' : ''}>${escapeHtml(S.labNotes || '')}</textarea>
-            <div class="notes-meta" style="margin-top:6px;">
+            <div class="plan-section-title">Note to Lab</div>
+            ${S.labNotes
+              ? `<div class="plan-card" style="padding:10px 12px;font-size:12px;color:var(--c-n700);line-height:1.6;">${escapeHtml(S.labNotes)}</div>`
+              : `<div style="font-size:12px;color:var(--c-n300);font-style:italic;padding:4px 0;">No note added.</div>`}
+            <div style="margin-top:4px;font-size:11px;color:var(--c-n400);">
               ${labStatus
-                ? `<span style="font-size:11px;color:var(--c-n400);"><i class="fa-solid fa-lock" style="font-size:10px;margin-right:3px;" aria-hidden="true"></i>Captured in lab sheet</span>`
-                : `<span id="labNotesStatus" style="font-size:11px;color:var(--c-n400);">Auto-saved</span>`}
+                ? `<i class="fa-solid fa-lock" style="font-size:10px;margin-right:3px;" aria-hidden="true"></i>Captured in lab sheet`
+                : `Appears on the lab sheet`}
             </div>
           </div>
           ${labStatus === 'received' ? `<div class="plan-section">
@@ -3518,9 +3532,6 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         </div>
       </div>
     </div>`;
-    // Wire auto-save; textarea is recreated on each render so listener is always fresh
-    const labNotesTa = container.querySelector('#labNotesArea');
-    if (labNotesTa) labNotesTa.addEventListener('input', _handleLabNotesInput);
   }
 
   // ================================================================
@@ -4390,14 +4401,20 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     </div>
   </div>
   ${_snapNotes ? `<div class="sec">
-    <div class="sec-ttl">Lab Notes</div>
+    <div class="sec-ttl">Note to Lab</div>
     <div class="notes-block"><p>${escapeHtml(_snapNotes)}</p></div>
   </div>` : ''}
   <div class="lab-footer">
     <div><strong>${escapeHtml(BRAND.name)}</strong> &mdash; Clinician-approved fabrication instruction</div>
     <div>${caseLabel} &middot; ${escapeHtml(date)}</div>
   </div>
-  <div class="no-print"><button class="print-btn" onclick="window.print()">Print Lab Sheet</button></div>
+  <div class="no-print" style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+    <div style="display:flex;gap:8px;">
+      <button class="print-btn" onclick="window.print()">Print Lab Sheet</button>
+      <button class="print-btn" onclick="window.print()">Save as PDF</button>
+    </div>
+    <div style="font-size:11px;color:#9ca3af;">To save as PDF, choose <strong>Save as PDF</strong> in the print dialog</div>
+  </div>
 </div>
 ${'</'+'body></'+'html>'}`;
 
@@ -5206,6 +5223,7 @@ showSkeleton('aiCardBody');
 buildEditForm();
 updateSliderPositions();
 initClinicalNotes();
+initLabNotes();
 History.render();
 setTimeout(() => {
   S.lastAccessed = Date.now(); saveState(); render(S); renderWorkflowBar();
@@ -5410,6 +5428,7 @@ tempState = { ...S };
 render(S);
 updateSliderPositions();
 initClinicalNotes();
+initLabNotes();
 
 // Context-aware sync toast — highest-priority clinical change drives the message.
 let _syncMsg = 'Case synced from another device';
@@ -5795,6 +5814,28 @@ function initClinicalNotes() {
   }
 }
 
+let _labNotesInputBound = false;
+
+function initLabNotes() {
+  const textarea = $('labNotesArea');
+  if (!textarea) return;
+  textarea.value = S.labNotes || '';
+  const locked = !!S.labStatus;
+  textarea.readOnly = locked;
+  const statusEl = $('labNotesStatus');
+  if (statusEl) {
+    if (locked) {
+      statusEl.innerHTML = '<i class="fa-solid fa-lock" style="font-size:10px;margin-right:3px;" aria-hidden="true"></i>Captured in lab sheet';
+    } else {
+      statusEl.textContent = 'Auto-saved';
+    }
+  }
+  if (!_labNotesInputBound) {
+    textarea.addEventListener('input', _handleLabNotesInput);
+    _labNotesInputBound = true;
+  }
+}
+
 // Phase 18: Consolidated notes flush — clears debounces and captures textarea
 // content into S. Returns true if any mutation occurred (caller may save).
 function _flushPendingNotes() {
@@ -6067,6 +6108,7 @@ tempState = { ...S };
 attachSliderEvents();
 updateSliderPositions();
 initClinicalNotes();
+initLabNotes();
 History.render();
 
 render(S);

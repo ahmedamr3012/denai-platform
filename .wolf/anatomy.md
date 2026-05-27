@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-24T12:18:18.614Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-27T07:05:34.220Z
 > Files: 5 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~112065 tok)
+- `index.html` — denai — Clinical Insight (~112474 tok)
 
 ## .claude/
 
