@@ -2193,6 +2193,56 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-27T07:04:49.211Z"
+    },
+    {
+      "id": "bug-128",
+      "timestamp": "2026-05-27T09:14:49.256Z",
+      "error_message": "Wrong reference: lab should be planned",
+      "file": "index.html",
+      "root_cause": "Used \"lab\" instead of \"planned\"",
+      "fix": "Changed lab → planned",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-27T09:14:49.256Z"
+    },
+    {
+      "id": "bug-129",
+      "timestamp": "2026-05-27T09:14:57.872Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"       aria-selected=\"",
+      "fix": "Changed to \"   aria-selected=\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-27T09:14:57.872Z"
+    },
+    {
+      "id": "bug-130",
+      "timestamp": "2026-05-27T00:00:00.000Z",
+      "error_message": "Plan-approved cases (planApproved=true, labStatus=null) disappeared from all Cases view filter tabs except All",
+      "file": "index.html",
+      "root_cause": "stageFilter.analysis required !planApproved; stageFilter.lab required truthy labStatus — no bucket captured the approved-but-not-yet-sent state",
+      "fix": "Added stageFilter.planned predicate, Ready for Lab tab button, Ready for Lab dashboard pipeline stat, and cPlanned counter",
+      "tags": [
+        "workflow",
+        "visibility",
+        "stageFilter",
+        "cases-view",
+        "dashboard"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-27T00:00:00.000Z"
     }
   ]
 }

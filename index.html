@@ -1905,6 +1905,11 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <div class="dash-pipeline-label">In Analysis</div>
       </div>
       <div class="dash-pipeline-div" aria-hidden="true"></div>
+      <div class="dash-pipeline-stat" role="listitem" aria-label="Cases ready for lab">
+        <div class="dash-pipeline-num" id="pipePlannedCount">—</div>
+        <div class="dash-pipeline-label">Ready for Lab</div>
+      </div>
+      <div class="dash-pipeline-div" aria-hidden="true"></div>
       <div class="dash-pipeline-stat" role="listitem" aria-label="Cases at lab">
         <div class="dash-pipeline-num" id="pipeAtLabCount">—</div>
         <div class="dash-pipeline-label">At Lab</div>
@@ -1952,6 +1957,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       <button class="cases-tab active" role="tab" data-stage="all"       aria-selected="true"  onclick="setCasesStageFilter('all')">All</button>
       <button class="cases-tab"        role="tab" data-stage="new"       aria-selected="false" onclick="setCasesStageFilter('new')">New</button>
       <button class="cases-tab"        role="tab" data-stage="analysis"  aria-selected="false" onclick="setCasesStageFilter('analysis')">In Analysis</button>
+      <button class="cases-tab"        role="tab" data-stage="planned"   aria-selected="false" onclick="setCasesStageFilter('planned')">Ready for Lab</button>
       <button class="cases-tab"        role="tab" data-stage="lab"       aria-selected="false" onclick="setCasesStageFilter('lab')">Lab &amp; Delivery</button>
       <button class="cases-tab"        role="tab" data-stage="delivered" aria-selected="false" onclick="setCasesStageFilter('delivered')">Delivered</button>
     </div>
@@ -2886,6 +2892,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const stageFilter = {
       new:       p => !p.condition,
       analysis:  p => p.condition && !p.planApproved && !p.caseDelivered,
+      planned:   p => p.planApproved && !p.labStatus && !p.caseDelivered,
       lab:       p => p.planApproved && p.labStatus && !p.caseDelivered,
       delivered: p => p.caseDelivered,
     };
@@ -2991,6 +2998,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     // Pipeline stats strip — B4: clinic-wide workflow stage counts
     const cNew       = allPatients.filter(p => !p.condition && !p.caseDelivered).length;
     const cAnalysis  = allPatients.filter(p => p.condition && !p.planApproved && !p.caseDelivered).length;
+    const cPlanned   = allPatients.filter(p => p.planApproved && !p.labStatus && !p.caseDelivered).length;
     const cAtLab     = allPatients.filter(p => p.planApproved && p.labStatus && !p.caseDelivered).length;
     const cDelivered = allPatients.filter(p => p.caseDelivered).length;
     const _setPipe = (id, count) => {
@@ -3001,6 +3009,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     };
     _setPipe('pipeNewCount',      cNew);
     _setPipe('pipeAnalysisCount', cAnalysis);
+    _setPipe('pipePlannedCount',  cPlanned);
     _setPipe('pipeAtLabCount',    cAtLab);
     _setPipe('pipeDeliveredCount', cDelivered);
 
