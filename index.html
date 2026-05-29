@@ -1780,7 +1780,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
         <div class="comp-table-inline" id="compInlineTable" role="table" aria-label="Treatment comparison">
           <div class="comp-head" role="row"><div class="comp-head-cell" role="columnheader" style="text-align:left">Metric</div><div class="comp-head-cell" role="columnheader">Implant</div><div class="comp-head-cell" role="columnheader">Bridge</div><div class="comp-head-cell" role="columnheader">Crown</div></div>
           <div class="comp-row" role="row"><div class="comp-lbl" role="rowheader">Longevity</div><div class="comp-cell hi" id="cImplantLong" role="cell">20‑25 yrs</div><div class="comp-cell dimmed" id="cBridgeLong" role="cell">10‑15 yrs</div><div class="comp-cell dimmed" id="cCrownLong" role="cell">10‑20 yrs</div></div>
-          <div class="comp-row" role="row"><div class="comp-lbl" role="rowheader">Success Rate</div><div class="comp-cell hi" id="cImplantSuc" role="cell">93%</div><div class="comp-cell dimmed" id="cBridgeSuc" role="cell" style="color:#d97706">85%</div><div class="comp-cell dimmed" id="cCrownSuc" role="cell">—</div></div>
+          <div class="comp-row" role="row"><div class="comp-lbl" role="rowheader">Suitability</div><div class="comp-cell hi" id="cImplantSuc" role="cell">93%</div><div class="comp-cell dimmed" id="cBridgeSuc" role="cell" style="color:#d97706">85%</div><div class="comp-cell dimmed" id="cCrownSuc" role="cell">—</div></div>
           <div class="comp-row" role="row"><div class="comp-lbl" role="rowheader">Risk Level</div><div class="comp-cell hi" id="cImplantRisk" role="cell">Low</div><div class="comp-cell dimmed" id="cBridgeRisk" role="cell" style="color:#d97706">Medium</div><div class="comp-cell dimmed" id="cCrownRisk" role="cell">—</div></div>
           <div class="comp-row" role="row"><div class="comp-lbl" role="rowheader">Main Risk</div><div class="comp-cell" id="cImplantMR" role="cell" style="font-size:11px;color:var(--c-n700)">Peri-implantitis</div><div class="comp-cell dimmed" id="cBridgeMR" role="cell" style="font-size:11px;color:var(--c-n700)">Abutment stress</div><div class="comp-cell dimmed" id="cCrownMR" role="cell" style="font-size:11px;color:var(--c-n700)">Secondary caries</div></div>
           <div class="comp-row" role="row"><div class="comp-lbl" role="rowheader">Recovery</div><div class="comp-cell" id="cImplantRec" role="cell" style="font-size:11px;color:var(--c-n700)">3‑6 months</div><div class="comp-cell dimmed" id="cBridgeRec" role="cell" style="font-size:11px;color:var(--c-n700)">2‑4 weeks</div><div class="comp-cell dimmed" id="cCrownRec" role="cell" style="font-size:11px;color:var(--c-n700)">1‑2 wks ✓</div></div>
@@ -3393,7 +3393,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
               <div class="plan-row-val" style="font-weight:400;color:var(--c-n600);font-size:12px;max-width:200px;">${escapeHtml(material.reason)}</div>
             </div>
             <div class="plan-row">
-              <div class="plan-row-lbl">Est. Success</div>
+              <div class="plan-row-lbl">Reported Survival</div>
               <div class="plan-row-val">${escapeHtml(material.rate)}</div>
             </div>
           </div>
@@ -4489,7 +4489,7 @@ ${'</'+'body></'+'html>'}`;
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
             <div style="text-align:center;padding:12px;background:#EDF6F1;border-radius:10px">
               <div style="font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:#1F7A4F">${typeof score==='number'?score.toFixed(1)+'%':'—'}</div>
-              <div style="font-size:9px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;margin-top:2px">Success Rate</div>
+              <div style="font-size:9px;text-transform:uppercase;color:#6b7280;letter-spacing:.05em;margin-top:2px">Clinical Suitability</div>
             </div>
             <div style="text-align:center;padding:12px;background:#f3f4f6;border-radius:10px">
               <div style="font-size:13px;font-weight:700;color:#0B2B1F">${escapeHtml(rec)}</div>
@@ -4555,17 +4555,17 @@ ${'</'+'body></'+'html>'}`;
       const recDisplay = recLabels[rec] || '2 Implants';
       const selDisplay = recLabels[S.tx] || recDisplay;
       const optCards = [
-        rptOptCard({ label:'2 Implants', score:implant2, isRec:rec==='implant2', isSelected:S.tx==='implant2', rateLabel:'10-Year Success Rate', rows:[
+        rptOptCard({ label:'2 Implants', score:implant2, isRec:rec==='implant2', isSelected:S.tx==='implant2', rateLabel:'Clinical Suitability', rows:[
           {label:'Approach', value:'One implant per site'},{label:'Initial Cost',value:formatCurrency(costs.implant2||0)},
           {label:'Longevity',value:'20–25 years'},{label:'Recovery',value:'3–6 months'},
           {label:'Bone Stim.',value:'Both sites ✓'},{label:'Adjacent Teeth',value:'Independent ✓'},
         ]}),
-        rptOptCard({ label:'4-Unit Bridge', score:bridge4, isRec:rec==='bridge4', isSelected:S.tx==='bridge4', rateLabel:'10-Year Success Rate', rows:[
+        rptOptCard({ label:'4-Unit Bridge', score:bridge4, isRec:rec==='bridge4', isSelected:S.tx==='bridge4', rateLabel:'Clinical Suitability', rows:[
           {label:'Span', value:'4-unit fixed bridge'},{label:'Initial Cost',value:formatCurrency(costs.bridge4||0)},
           {label:'Longevity',value:'10–15 years'},{label:'Recovery',value:'2–4 weeks'},
           {label:'Bone Stim.',value:'None — resorption'},{label:'Abutments',value:ai.abutmentCompromised?'Compromised ⚠':'Good ✓'},
         ]}),
-        rptOptCard({ label:'Impl. + Cantilever', score:cantilever, isRec:rec==='cantilever', isSelected:S.tx==='cantilever', rateLabel:'10-Year Success Rate', rows:[
+        rptOptCard({ label:'Impl. + Cantilever', score:cantilever, isRec:rec==='cantilever', isSelected:S.tx==='cantilever', rateLabel:'Clinical Suitability', rows:[
           {label:'Approach', value:'One implant + cantilever'},{label:'Initial Cost',value:formatCurrency(costs.cantilever||0)},
           {label:'Longevity',value:'15–20 years'},{label:'Recovery',value:'3–6 months'},
           {label:'Bone Stim.',value:'One site'},{label:'Adjacent Teeth',value:'Independent ✓'},
@@ -4634,13 +4634,13 @@ ${'</'+'body></'+'html>'}`;
       const LONGEV={onlay:'8–15 yrs',crown:'10–20 yrs',crown_core:'10–18 yrs',crown_adv:'10–18 yrs',splinted:'10–18 yrs',endocrown:'10–15 yrs',extract_impl:'20–25 yrs'};
       const RECOV={onlay:'1–2 wks',crown:'1–2 wks',crown_core:'2–3 wks',crown_adv:'1–2 wks',splinted:'2–3 wks',endocrown:'1–2 wks',extract_impl:'4–6 months'};
       const PRES={onlay:'Yes — minimal prep',crown:'Preserved ✓',crown_core:'Preserved ✓',crown_adv:'Preserved ✓',splinted:'Preserved ✓',endocrown:'Preserved ✓',extract_impl:'No — extraction'};
-      const opts=[s1&&rptOptCard({label:slot1.label,score:ai.implant,isRec:ai.rec==='implant',isSelected:S.tx==='implant',rateLabel:'Success Rate',rows:[
+      const opts=[s1&&rptOptCard({label:slot1.label,score:ai.implant,isRec:ai.rec==='implant',isSelected:S.tx==='implant',rateLabel:'Clinical Suitability',rows:[
         {label:'Approach',value:slot1.sub},{label:'Longevity',value:LONGEV[s1.id]||'—'},{label:'Recovery',value:RECOV[s1.id]||'—'},{label:'Tooth Preserved',value:PRES[s1.id]||'—'},
         {label:'Est. Cost',value:ai.restorativeCosts?.slot1?formatCurrency(ai.restorativeCosts.slot1):'—'},
-      ]}),s2&&rptOptCard({label:slot2.label,score:ai.bridge,isRec:ai.rec==='bridge',isSelected:S.tx==='bridge',rateLabel:'Success Rate',rows:[
+      ]}),s2&&rptOptCard({label:slot2.label,score:ai.bridge,isRec:ai.rec==='bridge',isSelected:S.tx==='bridge',rateLabel:'Clinical Suitability',rows:[
         {label:'Approach',value:slot2.sub},{label:'Longevity',value:LONGEV[s2.id]||'—'},{label:'Recovery',value:RECOV[s2.id]||'—'},{label:'Tooth Preserved',value:PRES[s2.id]||'—'},
         {label:'Est. Cost',value:ai.restorativeCosts?.slot2?formatCurrency(ai.restorativeCosts.slot2):'—'},
-      ]}),s3&&rptOptCard({label:slot3.label,score:ai.crown,isRec:ai.rec==='crown',isSelected:S.tx==='crown',rateLabel:'Success Rate',rows:[
+      ]}),s3&&rptOptCard({label:slot3.label,score:ai.crown,isRec:ai.rec==='crown',isSelected:S.tx==='crown',rateLabel:'Clinical Suitability',rows:[
         {label:'Approach',value:slot3.sub},{label:'Longevity',value:LONGEV[s3.id]||'—'},{label:'Recovery',value:RECOV[s3.id]||'—'},{label:'Tooth Preserved',value:PRES[s3.id]||'—'},
         {label:'Est. Cost',value:ai.restorativeCosts?.slot3?formatCurrency(ai.restorativeCosts.slot3):'—'},
       ]})].filter(Boolean).join('');
@@ -4652,7 +4652,7 @@ ${'</'+'body></'+'html>'}`;
     <div class="opt-card ${(ai.rec==='implant'||S.tx==='implant')?'winner':''}">
       <div class="opt-card-head"><div class="opt-card-title">Implant (Single Crown)</div><div class="opt-rec-badge ${ai.rec==='implant'?'rec':S.tx==='implant'?'sel':'alt'}">${ai.rec==='implant'?'★ Recommended':S.tx==='implant'?'✓ Selected':'Alternative'}</div></div>
       <div class="opt-card-body">
-        <div class="opt-rate">${implantRate.toFixed(1)}%</div><div class="opt-rate-label">10-Year Success Rate</div>
+        <div class="opt-rate">${implantRate.toFixed(1)}%</div><div class="opt-rate-label">Clinical Suitability</div>
         <div class="opt-row"><span class="opt-row-label">Material</span><span class="opt-row-val">${implantMaterial}</span></div>
         <div class="opt-row"><span class="opt-row-label">Initial Cost</span><span class="opt-row-val">${formatCurrency(implantCost)}${S.bone==='Poor'?' (+graft)':''}</span></div>
         <div class="opt-row"><span class="opt-row-label">10-Yr Total</span><span class="opt-row-val">${formatCurrency(implant10yr)}</span></div>
@@ -4664,7 +4664,7 @@ ${'</'+'body></'+'html>'}`;
     <div class="opt-card ${(ai.rec==='bridge'||S.tx==='bridge')?'winner':''}">
       <div class="opt-card-head"><div class="opt-card-title">Bridge (3-Unit)</div><div class="opt-rec-badge ${ai.rec==='bridge'?'rec':S.tx==='bridge'?'sel':'alt'}">${ai.rec==='bridge'?'★ Recommended':S.tx==='bridge'?'✓ Selected':'Alternative'}</div></div>
       <div class="opt-card-body">
-        <div class="opt-rate">${bridgeRate.toFixed(1)}%</div><div class="opt-rate-label">10-Year Success Rate</div>
+        <div class="opt-rate">${bridgeRate.toFixed(1)}%</div><div class="opt-rate-label">Clinical Suitability</div>
         <div class="opt-row"><span class="opt-row-label">Material</span><span class="opt-row-val">${bridgeMaterial}</span></div>
         <div class="opt-row"><span class="opt-row-label">Initial Cost</span><span class="opt-row-val">${formatCurrency(bridgeCost)}</span></div>
         <div class="opt-row"><span class="opt-row-label">10-Yr Total</span><span class="opt-row-val">${formatCurrency(bridge10yr)}</span></div>
@@ -4676,7 +4676,7 @@ ${'</'+'body></'+'html>'}`;
     ${ai.crownViable ? `<div class="opt-card ${(ai.rec==='crown'||S.tx==='crown')?'winner':''}">
       <div class="opt-card-head"><div class="opt-card-title">Crown (Single)</div><div class="opt-rec-badge ${ai.rec==='crown'?'rec':S.tx==='crown'?'sel':'alt'}">${ai.rec==='crown'?'★ Recommended':S.tx==='crown'?'✓ Selected':'Alternative'}</div></div>
       <div class="opt-card-body">
-        <div class="opt-rate">${crownRate.toFixed(1)}%</div><div class="opt-rate-label">10-Year Success Rate</div>
+        <div class="opt-rate">${crownRate.toFixed(1)}%</div><div class="opt-rate-label">Clinical Suitability</div>
         <div class="opt-row"><span class="opt-row-label">Material</span><span class="opt-row-val">${crownMaterial}</span></div>
         <div class="opt-row"><span class="opt-row-label">Initial Cost</span><span class="opt-row-val">${formatCurrency(crownCost)}${needsRCT?' (+RCT)':''}</span></div>
         <div class="opt-row"><span class="opt-row-label">10-Yr Total</span><span class="opt-row-val">${formatCurrency(crown10yr)}</span></div>

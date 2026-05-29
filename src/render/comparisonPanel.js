@@ -228,10 +228,10 @@
       const MAIN_RISK  = { onlay:'Marginal fracture', crown:'Secondary caries', crown_core:'Root fracture', crown_adv:'Secondary caries', splinted:'Perio access / plaque', endocrown:'Cusp fracture', extract_impl:'Peri-implantitis' };
 
       const rows = [
-        ['Success Rate',
-          `${ai.implant.toFixed(1)}%${scoreBadge(ai.implant)}`,
-          `${ai.bridge.toFixed(1)}%${scoreBadge(ai.bridge)}`,
-          `${ai.crown.toFixed(1)}%${scoreBadge(ai.crown)}`,
+        ['Suitability',
+          `${ai.implant.toFixed(1)}${scoreBadge(ai.implant)}`,
+          `${ai.bridge.toFixed(1)}${scoreBadge(ai.bridge)}`,
+          `${ai.crown.toFixed(1)}${scoreBadge(ai.crown)}`,
           ai.implant === bestScore],
         ['Initial Cost',
           rc.slot1 ? `${formatCurrency(rc.slot1)}<span class="comp-badge">✓ Lowest</span>` : '—',
@@ -274,7 +274,7 @@
       const badge = (flag) => flag ? '<span class="comp-badge">✓ Best</span>' : '';
       const recBadge = (opt) => rec === opt ? '<span class="comp-badge">✓ Rec</span>' : (ideal === opt ? '<span class="comp-badge">✦ Ideal</span>' : '');
       const rows = [
-        ['Success Rate',    `${implant2.toFixed(1)}%${badge(impBest)}`,   `${bridge4.toFixed(1)}%${badge(briBest)}`,  `${cantilever.toFixed(1)}%${badge(cntBest)}`,  impBest],
+        ['Suitability',    `${implant2.toFixed(1)}${badge(impBest)}`,   `${bridge4.toFixed(1)}${badge(briBest)}`,  `${cantilever.toFixed(1)}${badge(cntBest)}`,  impBest],
         ['Initial Cost',    `${formatCurrency(costs.implant2)}`,        `${formatCurrency(costs.bridge4)}`,        `${formatCurrency(costs.cantilever)}`,        false],
         ['Longevity',       '20–25 yrs<span class="comp-badge">✓</span>', '10–15 yrs',                                '15–20 yrs',                                    true],
         ['Adjacent Teeth',  'Independent<span class="comp-badge">✓</span>','Requires grinding','Independent<span class="comp-badge">✓</span>', true],
@@ -295,7 +295,7 @@
     // ── SINGLE-TOOTH PATH (unchanged logic, hardened) ────────────────────
     const { implantInitial, bridgeInitialAdjusted, crownInitial, needsRCT, implant10yr, bridge10yr, crown10yr } = computeCosts(state, ai);
     const crownViable = ai.crownViable && ai.crown > 0;
-    const crownSucStr = crownViable ? `${ai.crown.toFixed(1)}%` : 'N/A';
+    const crownSucStr = crownViable ? `${ai.crown.toFixed(1)}` : 'N/A';
     const crownCostStr = crownViable ? formatCurrency(crownInitial) + (needsRCT ? ' (+RCT)' : '') : 'N/A';
     const crown10yrStr = crownViable ? formatCurrency(crown10yr) : 'N/A';
 
@@ -313,9 +313,9 @@
     const crownBestCost    = crownViable && crown10yr === lowestCost && !implantBestCost && !bridgeBestCost;
 
     const rows = [
-      ['Success Rate',
-        `${ai.implant.toFixed(1)}%${implantBestScore?'<span class="comp-badge">✓ Best</span>':''}`,
-        `${ai.bridge.toFixed(1)}%${bridgeBestScore?'<span class="comp-badge">✓ Best</span>':''}`,
+      ['Suitability',
+        `${ai.implant.toFixed(1)}${implantBestScore?'<span class="comp-badge">✓ Best</span>':''}`,
+        `${ai.bridge.toFixed(1)}${bridgeBestScore?'<span class="comp-badge">✓ Best</span>':''}`,
         crownViable ? `${crownSucStr}${crownBestScore?'<span class="comp-badge">✓ Best</span>':''}` : '—',
         implantBestScore],
       ['Initial Cost',

@@ -112,7 +112,7 @@ ${bodyHTML}
     </div>
     <div class="opt-card-body">
       <div class="opt-rate">${(+opt.score||0).toFixed(1)}%</div>
-      <div class="opt-rate-label">${escapeHtml(opt.rateLabel||'Success Rate')}</div>
+      <div class="opt-rate-label">${escapeHtml(opt.rateLabel||'Clinical Suitability')}</div>
       ${rows}
     </div></div>`;
   }

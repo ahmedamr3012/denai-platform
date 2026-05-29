@@ -41,9 +41,9 @@ function buildAICardStructure(force = false) {
         </div>
         <div class="conf-level" id="confLevel" role="status">High</div>
       </div>
-      <div class="metric-card" aria-label="Estimated success rate">
-        <div class="metric-lbl">Est. Success</div>
-        <div class="metric-big" id="successVal" aria-live="polite">85%</div>
+      <div class="metric-card" aria-label="Treatment suitability index">
+        <div class="metric-lbl" style="display:flex;align-items:center;gap:5px;">Suitability <button class="help-trigger" id="helpTrig_suit" type="button" onclick="toggleHelp('suit')" aria-expanded="${UIState.helpOpen.suit ? 'true' : 'false'}" aria-controls="helpBody_suit" aria-label="About suitability">?</button></div>
+        <div class="metric-big" id="successVal" aria-live="polite">85</div>
         <div class="metric-sub" id="successSub">—</div>
         <div class="prog-bar" aria-hidden="true"><div class="prog-fill" id="successBar" style="width:85%"></div></div>
       </div>
@@ -51,9 +51,14 @@ function buildAICardStructure(force = false) {
     <div class="disclosure-body${UIState.helpOpen.conf ? ' open' : ''}" id="helpBody_conf" role="region" aria-label="Recommendation strength">
       <span class="disclosure-text">Recommendation strength reflects how consistently the clinical inputs point toward this option. A lower score indicates competing factors or case complexity — not that the recommendation is clinically inappropriate. This is not a probability of success or a diagnostic metric.</span>
     </div>
+    <div class="disclosure-body${UIState.helpOpen.suit ? ' open' : ''}" id="helpBody_suit" role="region" aria-label="Suitability">
+      <span class="disclosure-text">Suitability is a relative index (0–100) showing how well each option fits the clinical inputs compared with the alternatives. It is a ranking score for ordering options — not a predicted success, survival, or probability figure.</span>
+    </div>
     <p class="ai-boundary">This recommendation is generated from the clinical inputs provided and supports — not replaces — clinical judgment.</p>
     <p class="ai-inputs" id="aiInputLine"></p>
     <div id="confRationale" class="conf-rationale" style="display:none;" aria-live="polite"></div>
+    <div id="recPreserveNote" class="rec-meta-line" role="note" style="display:none;font-size:12px;line-height:1.45;margin:8px 0 0;padding:8px 10px;border-left:3px solid var(--c-brand,#1F7A4F);background:rgba(31,122,79,.06);border-radius:6px;color:var(--c-n700,#374151);"></div>
+    <div id="recCloseAlt" class="rec-meta-line" style="display:none;font-size:12px;line-height:1.45;margin:8px 0 0;color:var(--c-n600,#6b7280);"></div>
     <button class="why-toggle" id="whyToggle" type="button" aria-expanded="false" aria-controls="whyBody">
       💡 Why this recommendation? <span class="chevron" aria-hidden="true">▾</span>
     </button>
@@ -82,7 +87,7 @@ function showSkeleton(containerId) {
 function showMetricSkeleton() {
   const confEl = $('confVal'); const sucEl = $('successVal');
   if (confEl) confEl.textContent = '—';
-  if (sucEl)  sucEl.textContent  = '—%';
+  if (sucEl)  sucEl.textContent  = '—';
   const bar = $('successBar'); if (bar) bar.style.width = '0%';
 }
 function hideSkeleton(containerId) {
@@ -101,7 +106,7 @@ function updateAICardMulti(ai) {
 
   const rateMap = { implant2: ai.implant2, bridge4: ai.bridge4, cantilever: ai.cantilever };
   const displayRate = rateMap[ai.rec] || ai.implant2;
-  animateNumber('successVal', displayRate.toFixed(1), '%');
+  animateNumber('successVal', displayRate.toFixed(1), '');
   const bar = $('successBar'); if (bar) bar.style.width = displayRate + '%';
 
   // Sub label
@@ -140,6 +145,8 @@ function updateAICardMulti(ai) {
     }
   }
 
+  _renderRecMeta(ai);  // W1-B closest alternative (W1-C preserve note is restorative-only → hidden here)
+
   // Trust surface: show which clinical inputs were used
   const inputLineM = $('aiInputLine');
   if (inputLineM) {
@@ -152,6 +159,79 @@ function updateAICardMulti(ai) {
     } else {
       inputLineM.textContent = '';
     }
+  }
+}
+
+// ── W1-B / W1-C: recommendation meta lines ───────────────────
+// Pure presentation. Derives entirely from scores the engine already computed.
+// Does NOT change scoring, ranking, confidence, or which option is recommended.
+function _recOptionList(ai) {
+  if (ai.treatmentMode === 'restorative' && Array.isArray(ai.scored)) {
+    return ai.scored.map(t => ({ key: t.slot, label: t.label, score: t.score, id: t.id }));
+  }
+  if (ai.isMultiTooth) {
+    return [
+      { key: 'implant2',   label: '2 Implants',           score: ai.implant2 },
+      { key: 'bridge4',    label: '4-Unit Bridge',        score: ai.bridge4 },
+      { key: 'cantilever', label: 'Implant + Cantilever', score: ai.cantilever },
+    ];
+  }
+  const list = [
+    { key: 'implant', label: 'Implant', score: ai.implant },
+    { key: 'bridge',  label: 'Bridge',  score: ai.bridge },
+  ];
+  if (ai.crownViable && ai.crown > 0) list.push({ key: 'crown', label: 'Crown', score: ai.crown });
+  return list;
+}
+
+function _renderRecMeta(ai) {
+  const altEl  = $('recCloseAlt');
+  const presEl = $('recPreserveNote');
+  if (!altEl && !presEl) return;
+  const opts   = _recOptionList(ai);
+  const recOpt = opts && opts.find(o => o.key === ai.rec);
+
+  // W1-B — closest alternative ("what almost won?"), only when the race is close
+  if (altEl) {
+    let shown = false;
+    if (opts && recOpt && Number.isFinite(recOpt.score)) {
+      const others = opts.filter(o => o.key !== ai.rec && Number.isFinite(o.score));
+      if (others.length) {
+        const runnerUp = others.reduce((a, b) => (b.score > a.score ? b : a));
+        const gap = recOpt.score - runnerUp.score;
+        if (Math.abs(gap) <= 6) {  // "meaningful" = within 6 index points either way
+          const rel = gap >= 0 ? `${gap.toFixed(1)} behind` : `${(-gap).toFixed(1)} ahead`;
+          let html = `<i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> Closest alternative: <strong>${escapeHtml(runnerUp.label)}</strong> — suitability ${runnerUp.score.toFixed(1)} (${rel})`;
+          // Wave 2 — near-tie defensibility note: fires only when the recommendation is the
+          // top scorer but by a slim margin (gap 0–3). Affirms both pathways are defensible
+          // and restates why the recommendation was chosen — without weakening it. Override
+          // cases (gap < 0) are covered by the preservation note below, so they're excluded.
+          if (gap >= 0 && gap <= 3) {
+            const recLbl = recOpt.label || 'the recommended option';
+            html += `<span style="display:block;margin-top:4px;color:var(--c-n700,#374151);">Close clinical decision — both pathways remain clinically defensible; ${escapeHtml(recLbl)} is recommended as it scored slightly higher.</span>`;
+          }
+          altEl.innerHTML = html;
+          altEl.style.display = 'block';
+          shown = true;
+        }
+      }
+    }
+    if (!shown) altEl.style.display = 'none';
+  }
+
+  // W1-C — preservation transparency (restorative): make the "preserve despite extract
+  // scoring higher" rationale visible at the point of decision, not behind a panel.
+  if (presEl) {
+    let shown = false;
+    if (ai.treatmentMode === 'restorative' && Array.isArray(ai.scored) && recOpt) {
+      const extractOpt = ai.scored.find(t => t.id === 'extract_impl');
+      if (extractOpt && Number.isFinite(extractOpt.score) && extractOpt.score > recOpt.score) {
+        presEl.innerHTML = `<i class="fa-solid fa-shield-heart" aria-hidden="true"></i> Preservation chosen as first-line: <strong>${escapeHtml(recOpt.label)}</strong> is recommended even though Extract + Implant scored higher (${extractOpt.score.toFixed(1)} vs ${recOpt.score.toFixed(1)}). Reassess if the tooth deteriorates.`;
+        presEl.style.display = 'block';
+        shown = true;
+      }
+    }
+    if (!shown) presEl.style.display = 'none';
   }
 }
 
@@ -170,7 +250,7 @@ function updateAICard(ai) {
         implant2: ai.implant2, bridge4: ai.bridge4, cantilever: ai.cantilever }
     : { implant: ai.implant, bridge: ai.bridge, crown: ai.crown || ai.implant };
   const displayRate = rateMap[ai.rec] ?? (ai.isMultiTooth ? ai.implant2 : ai.implant);
-  animateNumber('successVal', Number.isFinite(displayRate) ? displayRate.toFixed(1) : '0.0', '%');
+  animateNumber('successVal', Number.isFinite(displayRate) ? displayRate.toFixed(1) : '0.0', '');
   const bar = $('successBar'); if (bar) bar.style.width = displayRate + '%';
   const subEl = $('successSub');
 
@@ -259,6 +339,8 @@ function updateAICard(ai) {
       inputLine.textContent = '';
     }
   }
+
+  _renderRecMeta(ai);  // W1-B closest alternative + W1-C preservation transparency
 }
 
 // var (not let) so _typewriterTimer is accessible globally from the inline cleanup handler

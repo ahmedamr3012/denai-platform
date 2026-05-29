@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-27T10:12:27.454Z
-> Files: 5 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-29T15:01:00.180Z
+> Files: 6 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~112664 tok)
+- `index.html` — denai — Clinical Insight (~112673 tok)
 
 ## .claude/
 
@@ -24,13 +24,13 @@
 
 ## src/ai/
 
+- `calcAI.js` — isPosteriorTooth: isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI (~8295 tok)
 
 ## src/auth/
 
 
 ## src/constants/
 
-- `storageKeys.js` — 4 global storage key constants (all denai-branded) + `_migrateStorageKeys()` one-time startup migration from dandy→denai keys (~350 tok)
 
 ## src/db/
 
@@ -43,12 +43,16 @@
 
 ## src/react/
 
+- `RiskPanel.js` — src/react/RiskPanel.js (~2708 tok)
 
 ## src/render/
 
+- `aiCardPanel.js` — src/render/aiCardPanel.js (~6737 tok)
+- `comparisonPanel.js` — ================================================================ (~6717 tok)
 
 ## src/reports/
 
+- `reportTemplates.js` — ── Shared report shell (header + CSS + footer wrapper) ───────── (~2591 tok)
 
 ## src/styles/
 
@@ -64,7 +68,6 @@
 
 ## src/sync/
 
-- `cloudSync.js` — src/sync/cloudSync.js (~4670 tok)
 
 ## src/types/
 
@@ -86,7 +89,6 @@
 
 ## tests/e2e/
 
-- `runner.js` — tests/e2e/runner.js (~6276 tok)
 
 ## tests/engine/
 
@@ -96,4 +98,3 @@
 
 ## tests/sync/
 
-- `runner.js` — tests/sync/runner.js (~4778 tok)

@@ -134,7 +134,7 @@
     if (stateObj.age < 18) {
       implant2   -= 15.0;
       cantilever -= 15.0;
-      conf       -= 15;
+      // conf penalty applied in the confidence section below, where `conf` is declared
       reasons.push('Age < 18: skeletal growth likely incomplete — implants strongly deferred until jaw maturity confirmed (cephalometric assessment recommended)');
       factors.push({ label: 'Age <18 — growth risk −15.0%', type: 'neg', delta: -15.0 });
     }
@@ -180,6 +180,7 @@
     if (stateObj.bone === 'Poor' || stateObj.hygiene === 'Poor') conf -= 10;
     if (abutComp) conf -= 8;
     if (youngGoodBone) conf += 5;
+    if (stateObj.age < 18) conf -= 15;  // skeletal immaturity — see age<18 scoring block above
     // Parafunction — prosthetic durability under multi-tooth span load
     if (stateObj.parafunction === 'Bruxism' || stateObj.parafunction === 'Both') {
       conf -= 4;
@@ -213,12 +214,6 @@
   function calcAI(stateObj) {
     if (!stateObj.bone || !stateObj.hygiene || !stateObj.occlusion) return null;
     const BASE_IMPLANT = 96.4, BASE_BRIDGE = 88.0;
-    const FALLBACK_REASONS = [
-      'Lower risk of abutment stress vs bridge',
-      'Better long-term prognosis and durability',
-      'Preserves adjacent tooth structure',
-      'Higher patient satisfaction in studies'
-    ];
     let implant = BASE_IMPLANT, bridge = BASE_BRIDGE, conf = 76;
     let peri = 'Low', boneR = 'Low', occR = 'Low';
     const reasons = [];
@@ -227,7 +222,7 @@
     switch (stateObj.bone) {
       case 'Good':
         implant += 0.8; conf += 2; boneR = 'Low';
-        reasons.push('Native bone: 98.3% implant survival');
+        reasons.push('Native bone: reported implant survival ~98% in published cohorts');
         factors.push({ label: 'Good bone', type: 'pos', delta: +0.8 });
         break;
       case 'Fair':
@@ -253,7 +248,7 @@
         break;
       default:
         implant -= 11.5; bridge -= 4.5; peri = 'High'; conf -= 18;
-        reasons.push('Poor hygiene: peri‑implantitis prevalence up to 40% — patient counselling critical');
+        reasons.push('Poor hygiene: reported peri‑implantitis prevalence up to 40% in the literature — patient counselling critical');
         factors.push({ label: 'Poor hygiene −11.5%', type: 'neg', delta: -11.5 });
     }
     // Smoking — major risk factor in implantology
@@ -397,7 +392,7 @@
       case 'Fractured tooth':
         crownViable = true;
         if (stateObj.remainingStructure === 'Poor') {
-          crownWarning = 'Poor remaining structure — high root fracture risk (60% failure). Consider extraction + implant.';
+          crownWarning = 'Poor remaining structure — high root fracture risk (~60% failure reported in compromised structure). Consider extraction + implant.';
           crown = 0; crownViable = false;
         } else if (stateObj.remainingStructure === 'Fair') {
           crownWarning = 'Partial ferrule — viable with post & core support, monitor closely.';
@@ -443,7 +438,7 @@
         switch (stateObj.endodonticStatus || 'No RCT needed') {
           case 'RCT done':
             crown += 1.5;
-            reasons.push('RCT completed: endodontic failure risk eliminated, 91.3% survival at 10 years');
+            reasons.push('RCT completed: endodontic prognosis stabilized — reported ~91% survival at 10 years in treated cohorts; residual risk of retreatment or root fracture remains');
             factors.push({ label: 'RCT done +1.5%', type: 'pos', delta: +1.5 });
             break;
           case 'No RCT needed':
@@ -470,7 +465,7 @@
             break;
           case 'Bruxism':
             crown -= 4.0; conf -= 5;
-            reasons.push('Bruxism: 60% failure rate vs 10% without — immediate night guard required');
+            reasons.push('Bruxism: reported crown failure ~60% vs ~10% without parafunction in studies — immediate night guard required');
             factors.push({ label: 'Bruxism −4.0%', type: 'neg', delta: -4.0 });
             break;
           case 'Both':
@@ -570,11 +565,10 @@
     const rec = recScores[0].option; // Truly best option based on clinical data
     const confLevel = conf >= 75 ? 'High' : conf >= 55 ? 'Medium' : 'Low';
 
-    const usedReasons = new Set(reasons);
-    for (const r of FALLBACK_REASONS) {
-      if (reasons.length >= 4) break;
-      if (!usedReasons.has(r)) { reasons.push(r); usedReasons.add(r); }
-    }
+    // Boilerplate fallback padding removed (Wave 0): show only real, case-specific
+    // reasons rather than generic filler. The factor switches above always produce
+    // several case-specific reasons (bone, hygiene, occlusion, jaw/position), so the
+    // reasons list is never empty.
 
     const caseCount = conf >= 80 ? 'strong clinical profile' : conf >= 60 ? 'moderate clinical profile' : 'limited data — review carefully';
     const smokingStatus2 = stateObj.smoking || 'Non-smoker';

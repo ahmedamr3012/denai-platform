@@ -146,9 +146,9 @@ window.denaiRiskPanel = (function () {
       var cr = risks.crownRisks;
       crownRows = [
         h(RiskRow, { key: 'caries',    label: 'Secondary Caries Risk', level: cr.caries,    hidden: hidden, tooltip: 'Risk of decay at crown margin.\nHygiene is the #1 factor' }),
-        h(RiskRow, { key: 'crownFrac', label: 'Crown Fracture Risk',   level: cr.crownFrac, hidden: hidden, tooltip: 'Risk of ceramic fracture.\nParafunction = 60% failure rate' }),
-        h(RiskRow, { key: 'rootFrac',  label: 'Root Fracture Risk',    level: cr.rootFrac,  hidden: hidden, tooltip: 'Risk of vertical root fracture.\nNo ferrule = 60% early failure' }),
-        h(RiskRow, { key: 'endo',      label: 'Endodontic Failure',    level: cr.endo,      hidden: hidden, tooltip: 'Risk of RCT failure after crown.\nRCT done = 91.3% survival at 10yr' }),
+        h(RiskRow, { key: 'crownFrac', label: 'Crown Fracture Risk',   level: cr.crownFrac, hidden: hidden, tooltip: 'Risk of ceramic fracture.\nParafunction — reported ~60% failure rate' }),
+        h(RiskRow, { key: 'rootFrac',  label: 'Root Fracture Risk',    level: cr.rootFrac,  hidden: hidden, tooltip: 'Risk of vertical root fracture.\nNo ferrule — reported ~60% early failure' }),
+        h(RiskRow, { key: 'endo',      label: 'Endodontic Failure',    level: cr.endo,      hidden: hidden, tooltip: 'Risk of RCT failure after crown.\nRCT done — reported ~91% survival at 10yr' }),
         h(RiskRow, { key: 'parafunc',  label: 'Parafunction Damage',   level: cr.parafunc,  hidden: hidden, tooltip: 'Bruxism/clenching damage.\nNight guard REQUIRED if present' })
       ];
     }
