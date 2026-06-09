@@ -2,7 +2,24 @@
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-05-24
+> Last updated: 2026-06-09
+
+## Key Learnings — Phase 14 Trial Infrastructure (P1.1 Wave A, 2026-06-09)
+
+- **`start_clinic_trial()` RPC is called from service role only — not callable by authenticated clients.** Phase 12 removed client-facing write policies on `clinic_subscriptions`. The function is intended for invocation from Supabase Studio (SQL editor), a future Edge Function, or an admin API. The anon key cannot call it.
+- **`start_clinic_trial()` idempotency rule: does NOT reset `trial_ends_at` when already `'trialing'`.** The ON CONFLICT DO UPDATE WHERE `status NOT IN ('active', 'trialing')` prevents re-extension of an in-progress trial. Calling twice for the same clinic is a true no-op. This is intentional — admin must use a different status path to extend a trial.
+- **`expire_trialing_subscriptions()` is the authoritative trial expiry mechanism for non-Stripe trials.** Stripe webhooks handle expiry for paid plans. Free trials (no Stripe subscription) rely entirely on this pg_cron function. If pg_cron is not enabled, trials never expire automatically.
+- **pg_cron schedule DO block pattern for idempotent re-apply: unschedule first, then re-schedule.** `cron.schedule()` with a duplicate job name throws a unique constraint violation. The correct pattern is: `IF EXISTS (unschedule) → THEN schedule`. Used in Phase 14 pg_cron setup — copy this pattern for any future cron additions.
+- **`_trialEndsAt` flows: DB → clinicSession._loadSubscription → denaiEntitlements.init(4th arg) → entitlements._trialEndsAt → localStorage cache key 'denaiSubscription_v1'.** The cache key was NOT bumped to v2 — the new field is additive and backward-compatible. Old caches that lack `trialEndsAt` return null from `getTrialEndsAt()` (correct fallback behavior).
+- **`getTrialEndsAt()` in `entitlements.js` has a two-step fallback: live `_trialEndsAt` first, then localStorage cache.** This mirrors the pattern used by `_resolveStatus()` for offline and sign-out grace. The cache fallback means `getTrialEndsAt()` returns the last-known trial end even after `clear()` — correct for offline scenarios.
+- **Wave B will consume `denaiEntitlements.isPro()` for access gates and `getTrialEndsAt()` for the trial countdown UI.** Do NOT add canCreatePatient() or canCreatePlan() to entitlements.js in Wave A scope. Both belong exclusively in Wave B.
+
+## Do-Not-Repeat (2026-06-09 — Phase 14)
+
+- **DO NOT call `start_clinic_trial()` with the anon key or from a client RLS context.** It will fail silently because `clinic_subscriptions` has no client-facing write policies. Always use service role (Studio SQL editor or Edge Function with SUPABASE_SERVICE_ROLE_KEY). (Phase 14, 2026-06-09)
+- **DO NOT rely on pg_cron for trial expiry without first enabling the extension in Supabase Dashboard → Database → Extensions.** If pg_cron is not enabled, `CREATE EXTENSION IF NOT EXISTS pg_cron` will succeed silently but the `cron.job` table and `cron.schedule()` function will not exist, and the DO block will throw. Check extension status before applying Phase 14 migration. (Phase 14, 2026-06-09)
+- **DO NOT bump the `denaiSubscription_v1` localStorage cache key when adding new fields.** The cache JSON is read with loose field access — missing keys return undefined, which graceful fallback handles as null. Bumping the key would force all existing clients to re-query the DB on first load, invalidating the offline grace. (Phase 14, 2026-06-09)
+- **DO NOT pass `trial_ends_at` to `denaiEntitlements.init()` as a Date object — always use the raw ISO 8601 string from the DB.** The Supabase client returns `trial_ends_at` as an ISO string. `typeof trialEndsAt === 'string'` is the guard in `init()`. A Date object would fail the typeof check and be stored as null. (Phase 14, 2026-06-09)
 
 ## Key Learnings — R4.1 Lab Workflow Foundation (2026-05-23)
 

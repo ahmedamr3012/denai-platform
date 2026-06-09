@@ -115,10 +115,11 @@
   <!-- Wave 7G: Notes encryption — AES-GCM client-side PHI protection -->
   <script defer src="src/utils/notesEncryption.js?v=2.0.0"></script>
   <!-- Phase 3.4: Clinic session context — clinic association loaded after auth -->
-  <!-- Phase 13: version bumped; now also loads subscription state for entitlements -->
-  <script defer src="src/auth/clinicSession.js?v=13.0.0"></script>
+  <!-- Phase 14: version bumped; now propagates trial_ends_at into entitlements (P1.1 Wave A) -->
+  <script defer src="src/auth/clinicSession.js?v=14.0.0"></script>
   <!-- Phase 13: Entitlement helper — plan-aware canUse() checks, graceful offline degradation -->
-  <script defer src="src/auth/entitlements.js?v=13.0.0"></script>
+  <!-- Phase 14: version bumped; now exposes getTrialEndsAt() (P1.1 Wave A) -->
+  <script defer src="src/auth/entitlements.js?v=14.0.0"></script>
   <style>
     /* ================================================================
        DESIGN TOKENS & VARIABLES

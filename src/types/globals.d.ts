@@ -46,10 +46,11 @@ declare const denaiArabic: {
 
 // ── denaiEntitlements (src/auth/entitlements.js) ──────────────
 declare const denaiEntitlements: {
-  init(status: string, planId: string | null, clinicId: string | null): void;
+  init(status: string | null, planId: string | null, clinicId: string | null, trialEndsAt?: string | null): void;
   canUse(featureKey: string): boolean;
   isPro(): boolean;
   getStatus(): SubscriptionStatus;
+  getTrialEndsAt(): string | null;
   isCacheFresh(): boolean;
   clear(): void;
 };

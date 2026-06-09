@@ -12,7 +12,8 @@
 -- • `activeSite` is NOT stored here — it is device-local navigation state.
 -- • AI outputs are NOT stored here — they are computed deterministically.
 --
--- SCHEMA FILE REVISION: 6  (Phase 13: Feature Gating)
+-- SCHEMA FILE REVISION: 7  (Phase 14: Trial Infrastructure — P1.1 Wave A)
+--   Revision 6: Phase 13 — Feature Gating (+clinic_subscriptions member SELECT policy)
 --   Revision 5: Phase 12 — Stripe Infrastructure (+stripe_customer_id, +stripe_event_at, upsert RPC)
 --   Revision 4: Phase 8 — workflow_observations table added
 --   Revision 3: Phase 7 — clinic_subscriptions table added
@@ -1014,4 +1015,159 @@ DO $$ BEGIN
       )
     );
 EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+
+-- ============================================================
+-- Phase 14 — Trial Infrastructure (P1.1 Wave A)
+-- ============================================================
+--
+-- PURPOSE: Server-side lifecycle functions for the 14-day clinic trial.
+-- This phase adds no billing, checkout, or payment collection.
+--
+-- WHAT THIS ADDS:
+--   A1. start_clinic_trial(p_clinic_id, p_trial_days)
+--       Idempotent RPC to create a trialing subscription row for a clinic.
+--       Called from service role (Edge Function, admin RPC, or Studio SQL editor).
+--
+--   A2. expire_trialing_subscriptions()
+--       Expires all trialing rows whose trial_ends_at has passed.
+--       Called daily by pg_cron. Safe to run repeatedly.
+--
+--   A2. pg_cron job: expire-trialing-subscriptions
+--       Runs expire_trialing_subscriptions() daily at 02:00 UTC.
+--       Requires pg_cron extension (enable via Supabase Dashboard → Extensions).
+--
+-- SECURITY MODEL:
+--   - start_clinic_trial() is NOT callable by authenticated clients.
+--     clinic_subscriptions has no client-facing write policies (Phase 12).
+--     Must be invoked from service role or via Supabase Studio.
+--   - expire_trialing_subscriptions() runs as the pg_cron database role.
+--     Not accessible to authenticated clients.
+--
+-- IDEMPOTENCY:
+--   - start_clinic_trial(): ON CONFLICT DO UPDATE WHERE prevents overwriting
+--     active or in-progress trials. Calling for the same clinic twice is a no-op.
+--   - expire_trialing_subscriptions(): UPDATE with WHERE is idempotent —
+--     already-expired rows (status already 'canceled') are not touched.
+--   - pg_cron schedule: DO block unschedules + re-schedules for safe re-application.
+--
+-- WHAT IS INTENTIONALLY DEFERRED (Wave B+):
+--   - canCreatePatient() / canCreatePlan() access gates
+--   - Trial status UI (sidebar, expiry banners)
+--   - Founding Program enrollment UX
+--   - Stripe checkout and payment collection
+--
+-- NOTE: patients.schema_ver NOT bumped — no change to the patients table.
+-- ============================================================
+
+
+-- ============================================================
+-- A1: start_clinic_trial()
+-- ============================================================
+--
+-- Creates a trialing subscription row for a clinic.
+-- If a row already exists, the update fires only when:
+--   - status = 'trialing'  → no-op (idempotent; does NOT reset trial_ends_at)
+--   - status = 'active'    → no-op (do not downgrade a paid subscription)
+--   - status = 'canceled' | 'past_due' | 'incomplete' | NULL
+--     → updates to trialing (allows admin to extend a lapsed clinic's trial)
+--
+-- Parameters:
+--   p_clinic_id  — UUID of the clinic. Must exist in the clinics table.
+--   p_trial_days — Number of days for the trial window (default: 14).
+--
+-- Called from service role only. Examples:
+--   SELECT start_clinic_trial('uuid-here');
+--   SELECT start_clinic_trial('uuid-here', 30);  -- extended trial
+
+CREATE OR REPLACE FUNCTION start_clinic_trial(
+  p_clinic_id  uuid,
+  p_trial_days integer DEFAULT 14
+) RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  INSERT INTO clinic_subscriptions (
+    clinic_id,
+    status,
+    trial_ends_at,
+    created_at,
+    updated_at
+  )
+  VALUES (
+    p_clinic_id,
+    'trialing',
+    now() + (p_trial_days || ' days')::interval,
+    now(),
+    now()
+  )
+  ON CONFLICT (clinic_id) DO UPDATE
+    SET
+      status        = 'trialing',
+      trial_ends_at = now() + (p_trial_days || ' days')::interval,
+      updated_at    = now()
+    WHERE
+      -- Do not overwrite an active paid subscription.
+      -- Do not reset trial_ends_at if trial is already in progress (idempotent).
+      -- Allow re-activation for lapsed (canceled/past_due/incomplete/null) rows.
+      clinic_subscriptions.status IS NULL
+      OR clinic_subscriptions.status NOT IN ('active', 'trialing');
+END;
+$$;
+
+
+-- ============================================================
+-- A2: expire_trialing_subscriptions()
+-- ============================================================
+--
+-- Expires all clinic_subscriptions rows where:
+--   status = 'trialing' AND trial_ends_at IS NOT NULL AND trial_ends_at < now()
+--
+-- Sets status → 'canceled'. Does not touch rows already 'canceled' or 'active'.
+-- Returns the count of rows updated (useful for observability in pg_cron logs).
+-- Safe to call repeatedly — idempotent by virtue of the WHERE clause.
+
+CREATE OR REPLACE FUNCTION expire_trialing_subscriptions()
+RETURNS integer LANGUAGE plpgsql AS $$
+DECLARE
+  expired_count integer;
+BEGIN
+  UPDATE clinic_subscriptions
+    SET status     = 'canceled',
+        updated_at = now()
+  WHERE status          = 'trialing'
+    AND trial_ends_at IS NOT NULL
+    AND trial_ends_at   < now();
+
+  GET DIAGNOSTICS expired_count = ROW_COUNT;
+  RETURN expired_count;
+END;
+$$;
+
+
+-- ============================================================
+-- A2: pg_cron schedule for trial expiry
+-- ============================================================
+--
+-- PREREQUISITE: Enable pg_cron in Supabase Dashboard → Database → Extensions.
+--               Without the extension this block will fail — comment it out
+--               if pg_cron is not available in your Supabase project tier.
+--
+-- Schedule: daily at 02:00 UTC.
+-- The DO block is idempotent: unschedules the existing job (if any) before
+-- re-creating it, so re-applying this migration is always safe.
+
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
+DO $$
+BEGIN
+  -- Remove any existing schedule before re-creating (idempotent re-apply).
+  IF EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'expire-trialing-subscriptions') THEN
+    PERFORM cron.unschedule('expire-trialing-subscriptions');
+  END IF;
+
+  PERFORM cron.schedule(
+    'expire-trialing-subscriptions',   -- job name
+    '0 2 * * *',                       -- daily at 02:00 UTC
+    'SELECT expire_trialing_subscriptions()'
+  );
 END $$;

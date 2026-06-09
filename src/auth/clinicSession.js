@@ -1,6 +1,7 @@
 // src/auth/clinicSession.js
 // Phase 3.4 — Lightweight Membership Model
 // Phase 13 — Subscription state loading for entitlement checks
+// Phase 14 — Trial infrastructure: trial_ends_at propagation (P1.1 Wave A)
 //
 // Clinic session context. Loaded once after auth settle via authModule.js.
 // Exposes the current user's clinic context (id, role, name, member roster).
@@ -37,6 +38,7 @@ window.denaiClinicSession = (function () {
   var _initialized         = false;  // prevents redundant re-queries on token refresh
   var _subscriptionStatus  = null;   // Phase 13: loaded from clinic_subscriptions
   var _planId              = null;   // Phase 13: Stripe price ID of active plan
+  var _trialEndsAt         = null;   // Phase 14: ISO 8601 trial end timestamp, or null
 
   // ── Public accessors ──────────────────────────────────────────────────────
 
@@ -47,6 +49,7 @@ window.denaiClinicSession = (function () {
   function getMembers()             { return _members.slice(); }  // defensive copy
   function getSubscriptionStatus()  { return _subscriptionStatus; }
   function getPlanId()              { return _planId; }
+  function getTrialEndsAt()         { return _trialEndsAt; }  // Phase 14: ISO 8601 or null
 
   // ── Init: load clinic membership after auth settle ───────────────────────
 
@@ -126,7 +129,7 @@ window.denaiClinicSession = (function () {
     try {
       var res = await client
         .from('clinic_subscriptions')
-        .select('status, plan_id')
+        .select('status, plan_id, trial_ends_at')
         .eq('clinic_id', _clinicId)
         .maybeSingle();
 
@@ -135,11 +138,12 @@ window.denaiClinicSession = (function () {
         return;  // entitlements.js will fall back to localStorage cache
       }
 
-      _subscriptionStatus = res.data ? res.data.status   : 'none';
-      _planId             = res.data ? res.data.plan_id   : null;
+      _subscriptionStatus = res.data ? res.data.status        : 'none';
+      _planId             = res.data ? res.data.plan_id        : null;
+      _trialEndsAt        = res.data ? res.data.trial_ends_at  : null;
 
       if (typeof denaiEntitlements !== 'undefined') {
-        denaiEntitlements.init(_subscriptionStatus, _planId, _clinicId);
+        denaiEntitlements.init(_subscriptionStatus, _planId, _clinicId, _trialEndsAt);
       }
     } catch (e) {
       console.warn('[denaiClinicSession] subscription load exception:', e.message);
@@ -203,6 +207,7 @@ window.denaiClinicSession = (function () {
     _initialized        = false;  // allows clean re-init on next sign-in
     _subscriptionStatus = null;
     _planId             = null;
+    _trialEndsAt        = null;
     // Phase 13: reset live entitlement state (cache preserved for offline grace).
     try { if (typeof denaiEntitlements !== 'undefined') denaiEntitlements.clear(); } catch (e) {}
   }
@@ -224,6 +229,7 @@ window.denaiClinicSession = (function () {
     getMembers:            getMembers,
     getSubscriptionStatus: getSubscriptionStatus,
     getPlanId:             getPlanId,
+    getTrialEndsAt:        getTrialEndsAt,
     createClinic:          createClinic,
     clear:                 clear,
   });

@@ -1,5 +1,6 @@
 // src/auth/entitlements.js
 // Phase 13 — Feature Gating
+// Phase 14 — Trial infrastructure: trial_ends_at propagation (P1.1 Wave A)
 //
 // Lightweight entitlement helper. Exposes canUse(featureKey) for plan-aware
 // feature access checks. Backed by subscription state loaded by clinicSession.
@@ -34,9 +35,10 @@ window.denaiEntitlements = (function () {
     'collab.advanced': 'pro',  // future: advanced multi-clinician workflows
   };
 
-  var _status   = null;  // null = not yet initialized; 'none' = confirmed no subscription
-  var _planId   = null;
-  var _clinicId = null;
+  var _status      = null;  // null = not yet initialized; 'none' = confirmed no subscription
+  var _planId      = null;
+  var _clinicId    = null;
+  var _trialEndsAt = null;  // Phase 14: ISO 8601 timestamp when trial ends, or null
 
   // ── init: called by clinicSession after subscription DB query ────────────
   //
@@ -50,11 +52,13 @@ window.denaiEntitlements = (function () {
    * @param {string|null} status
    * @param {string|null} planId
    * @param {string|null} clinicId
+   * @param {string|null} trialEndsAt  ISO 8601 timestamp when trial ends, or null
    */
-  function init(status, planId, clinicId) {
-    _status   = (typeof status   === 'string') ? status   : 'none';
-    _planId   = (typeof planId   === 'string') ? planId   : null;
-    _clinicId = (typeof clinicId === 'string') ? clinicId : null;
+  function init(status, planId, clinicId, trialEndsAt) {
+    _status      = (typeof status      === 'string') ? status      : 'none';
+    _planId      = (typeof planId      === 'string') ? planId      : null;
+    _clinicId    = (typeof clinicId    === 'string') ? clinicId    : null;
+    _trialEndsAt = (typeof trialEndsAt === 'string') ? trialEndsAt : null;
     _saveCache();
   }
 
@@ -74,6 +78,16 @@ window.denaiEntitlements = (function () {
   /** @returns {SubscriptionStatus} */
   function getStatus() {
     return _resolveStatus();
+  }
+
+  // Returns the trial end timestamp as an ISO 8601 string, or null.
+  // Populated for 'trialing' subscriptions. Null for active/canceled/none.
+  // Falls back to localStorage cache when live state is not yet loaded.
+  /** @returns {string|null} */
+  function getTrialEndsAt() {
+    if (_trialEndsAt !== null) return _trialEndsAt;
+    var c = _readCache();
+    return (c && typeof c.trialEndsAt === 'string') ? c.trialEndsAt : null;
   }
 
   // Returns true if the feature is available under the current plan.
@@ -106,9 +120,10 @@ window.denaiEntitlements = (function () {
   // subscription state remains readable for the grace period.
 
   function clear() {
-    _status   = null;
-    _planId   = null;
-    _clinicId = null;
+    _status      = null;
+    _planId      = null;
+    _clinicId    = null;
+    _trialEndsAt = null;
   }
 
   // ── Private ───────────────────────────────────────────────────────────────
@@ -123,10 +138,11 @@ window.denaiEntitlements = (function () {
   function _saveCache() {
     try {
       localStorage.setItem(CACHE_KEY, JSON.stringify({
-        status:   _status,
-        planId:   _planId,
-        clinicId: _clinicId,
-        cachedAt: new Date().toISOString(),
+        status:      _status,
+        planId:      _planId,
+        clinicId:    _clinicId,
+        trialEndsAt: _trialEndsAt,
+        cachedAt:    new Date().toISOString(),
       }));
     } catch (e) {}
   }
@@ -140,12 +156,13 @@ window.denaiEntitlements = (function () {
   }
 
   return Object.freeze({
-    init:         init,
-    canUse:       canUse,
-    isPro:        isPro,
-    getStatus:    getStatus,
-    isCacheFresh: isCacheFresh,
-    clear:        clear,
+    init:           init,
+    canUse:         canUse,
+    isPro:          isPro,
+    getStatus:      getStatus,
+    getTrialEndsAt: getTrialEndsAt,
+    isCacheFresh:   isCacheFresh,
+    clear:          clear,
   });
 
 })();

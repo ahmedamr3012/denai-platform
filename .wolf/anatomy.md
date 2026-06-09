@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-29T15:01:00.180Z
-> Files: 6 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T11:03:47.919Z
+> Files: 5 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~112673 tok)
+- `index.html` — denai — Clinical Insight (~112698 tok)
 
 ## .claude/
 
@@ -24,16 +24,18 @@
 
 ## src/ai/
 
-- `calcAI.js` — isPosteriorTooth: isMaxilla, isAdjacent, getAdjacentTeeth, calcAIMulti, calcAI (~8295 tok)
 
 ## src/auth/
 
+- `clinicSession.js` — src/auth/clinicSession.js (~2918 tok)
+- `entitlements.js` — src/auth/entitlements.js (~1890 tok)
 
 ## src/constants/
 
 
 ## src/db/
 
+- `schema.sql` — Database schema (~12846 tok)
 
 ## src/observe/
 
@@ -43,16 +45,12 @@
 
 ## src/react/
 
-- `RiskPanel.js` — src/react/RiskPanel.js (~2708 tok)
 
 ## src/render/
 
-- `aiCardPanel.js` — src/render/aiCardPanel.js (~6737 tok)
-- `comparisonPanel.js` — ================================================================ (~6717 tok)
 
 ## src/reports/
 
-- `reportTemplates.js` — ── Shared report shell (header + CSS + footer wrapper) ───────── (~2591 tok)
 
 ## src/styles/
 
@@ -71,6 +69,7 @@
 
 ## src/types/
 
+- `globals.d.ts` — ================================================================ (~852 tok)
 
 ## src/utils/
 
