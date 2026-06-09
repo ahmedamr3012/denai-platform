@@ -2470,6 +2470,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-09T11:02:41.896Z"
+    },
+    {
+      "id": "bug-145",
+      "timestamp": "2026-06-09T12:33:57.608Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/auth/authModule.js",
+      "root_cause": "Had 'https://dwvtbumwojzohclzxson.supabase.co'",
+      "fix": "Changed to 'https://dwvtbumwojohclzxson.supabase.co'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T12:33:57.608Z"
     }
   ]
 }

@@ -9,7 +9,7 @@
 
 window.denaiAuth = (function () {
 
-  var SUPABASE_URL  = 'https://dwvtbumwojzohclzxson.supabase.co';
+  var SUPABASE_URL  = 'https://dwvtbumwojohclzxson.supabase.co';
   var SUPABASE_ANON = 'sb_publishable_uXDrSO7eWF5Yy4YW-L7XBw_ZPpWORNv';
 
   var _client  = null;
