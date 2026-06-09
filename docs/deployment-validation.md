@@ -44,7 +44,7 @@ not localhost.
 | `src/render/comparisonPanel.js?v=2.0.0` | `200` | `404` |
 | `src/render/patientPanel.js?v=2.0.0` | `200` | `404` |
 | `src/render/riskPanel.js?v=2.0.0` | `200` | `404` |
-| `src/auth/authModule.js?v=2.0.0` | `200` | `404` |
+| `src/auth/authModule.js?v=2.0.1` | `200` | `404` — note: bumped to v2.0.1 in bug-146 remediation (2026-06-10) |
 | `src/sync/serializer.js?v=2.0.0` | `200` | `404` |
 | `src/sync/syncQueue.js?v=2.0.0` | `200` | `404` |
 | `src/sync/cloudSync.js?v=2.0.0` | `200` | `404` |

@@ -2,7 +2,18 @@
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-06-09
+> Last updated: 2026-06-10
+
+## Key Learnings — Deployment Forensics: Stale Supabase URL in Production (2026-06-10)
+
+- **Netlify production deploys the repo default branch `main` — netlify.toml carries NO branch setting (branch is Netlify-UI config).** A fix committed to a feature branch (e.g., `beta-hardening`) does NOT reach production until merged into `main` and pushed. The "Fix Supabase URL typo" commit 9170bba sat on `beta-hardening` while production kept executing the typo'd URL from `main:src/auth/authModule.js:12`.
+- **`SUPABASE_URL` has exactly one runtime source: the closure-local `var` at `src/auth/authModule.js:12`.** No window override, no JSON config, no env injection is possible — `netlify.toml` has `command = ""` (no build step), so Netlify environment variables cannot reach the browser runtime. CSP allows `https://*.supabase.co` (wildcard), so it cannot block a wrong project URL.
+- **Three-layer cache trap for any `/src/**` fix:** (1) `/src/**` is served `Cache-Control: max-age=31536000, immutable` — browsers re-fetch ONLY if the `?v=` query string in index.html changes; (2) the inline SW (`CACHE = 'denai-v2.1'`, index.html ~line 6084) serves scripts/styles/fonts AND the `./` shell cache-first; (3) index.html itself is no-store, but the SW-cached shell bypasses that. A fix to a src/ module without a `?v=` bump is invisible to returning browsers for up to a year.
+
+## Do-Not-Repeat (2026-06-10 — Deployment Forensics)
+
+- **DO NOT consider a production bug fixed when the commit lands on a feature branch.** Production = `main` on Netlify. Fix is live only after: merge to `main` → push → Netlify deploy shows the fixing commit hash → live-file verification (`curl https://<prod>/src/auth/authModule.js` shows new content). (bug-146, 2026-06-10)
+- **DO NOT edit any `/src/**` file without bumping its `?v=` version in `index.html` in the SAME commit.** `/src/**` is immutable-cached for 1 year; the `?v=` string is the only cache key the browser respects. bug-145's fix changed authModule.js but left `?v=2.0.0` untouched — returning users would have kept the broken module even after a correct deploy. Also bump SW `CACHE` name when the shell changes (see bug-107). (2026-06-10)
 
 ## Key Learnings — Phase 14 Trial Infrastructure (P1.1 Wave A, 2026-06-09)
 
@@ -760,7 +771,7 @@
 - **RGB tokens added (Phase 1 Final Cleanup, 2026-05-17):** `--c-brand-rgb: 31, 122, 79` and `--c-brand-rgb-2: 42, 156, 103` added to `brand-tokens.css` `:root`. All hardcoded `rgba(31,122,79,...)` and `rgba(42,156,103,...)` across `index.html`, `cards.css`, `shadow-tokens.css`, `focus-tokens.css`, `costGraphPanel.js` replaced with `rgba(var(--c-brand-rgb),alpha)` / `rgba(var(--c-brand-rgb-2),alpha)`. Token values use COMMA-separated channels (e.g. `31, 122, 79`) so the `rgba(var(...),.alpha)` legacy-comma CSS syntax works — space-separated would require the slash syntax `rgba(var(...) / alpha)` instead.
 - **`'unsafe-eval'` was unnecessary and has been removed (Wave 6C.1A):** Full grep of all JS files and inline script confirmed zero `eval()`, `new Function()`, or string-based `setTimeout`/`setInterval`. Do not re-add without a confirmed runtime requirement.
 - **`blob:` URLs used in 4 features — CSP gap closed (2026-05-16):** (1) report popup `window.open(blobUrl)`, (2) JSON export download link, (3) PWA manifest built dynamically in JS, (4) SW registration. Fixed by: `default-src 'self' blob:` (covers popup/download/manifest) + new `worker-src 'self' blob:` directive (covers SW — required because `worker-src` falls back to `script-src`, not `default-src`, and `script-src` was set without blob:).
-- **Service Worker cache name currently `denai-v2.1` (bumped 2026-05-23, was v2.0):** SW code at `index.html` line 5945 defines `CACHE = 'denai-v2.1'`. SHELL = ['./'] caches the main HTML on install. The activate handler deletes all caches != current CACHE name. CRITICAL: every significant deploy that changes index.html MUST bump this version (e.g. denai-v2.2) — otherwise a stale/truncated cached version is served permanently, manifesting as "Unexpected end of input" SyntaxError + raw JS visible in the UI. The JS code itself is not broken; the browser serves the old cached file. See bug-107.
+- **Service Worker cache name currently `denai-v2.2` (bumped 2026-06-10 for bug-146; was v2.1 from 2026-05-23, v2.0 before that):** SW code at `index.html` ~line 6084 defines `CACHE = 'denai-v2.2'`. SHELL = ['./'] caches the main HTML on install. The activate handler deletes all caches != current CACHE name. CRITICAL: every significant deploy that changes index.html MUST bump this version (e.g. denai-v2.2) — otherwise a stale/truncated cached version is served permanently, manifesting as "Unexpected end of input" SyntaxError + raw JS visible in the UI. The JS code itself is not broken; the browser serves the old cached file. See bug-107.
 
 - **Wave 7C cloud schema: `state` JSONB excludes `notes` and `activeSite`:** The Wave 7D serializer must strip both before upload. `notes` = PHI (deferred to Wave 7G encryption). `activeSite` = device-local navigation state (meaningless on another device). Omitting from JSONB causes `{ ...DEFAULT_STATE, ...stateFromCloud }` to restore `activeSite = 1` correctly.
 - **Patient IDs are the cloud PK — format is frozen:** `p_<timestamp>_<random>` maps to `text PRIMARY KEY` in the `patients` table. Changing this format after Wave 7D would break all existing cloud rows.

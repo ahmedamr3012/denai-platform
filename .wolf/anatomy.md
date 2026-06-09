@@ -1,7 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T12:33:57.596Z
-> Files: 6 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T23:55:48.854Z
+> Files: 8 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../../.claude/projects/c--Users-Dr-Ahmed-Desktop-denai/memory/
+
+- `denai-project-overview.md` (~462 tok)
 
 ## ./
 
@@ -18,6 +22,7 @@
 
 ## docs/
 
+- `deployment-validation.md` — denai — Deployment Validation Playbook (~2706 tok)
 
 ## notes/
 
