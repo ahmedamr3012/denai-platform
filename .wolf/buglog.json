@@ -2492,8 +2492,8 @@
       "timestamp": "2026-06-10T02:55:00.000Z",
       "error_message": "Production still sends requests to old Supabase URL https://dwvtbumwojzohclzxson.supabase.co after bug-145 fix was committed",
       "file": "deployment pipeline (no source file defective)",
-      "root_cause": "Fix commit 9170bba exists only on beta-hardening (local + origin). Netlify production deploys the repo default branch main, which still contains the typo at src/auth/authModule.js:12. Secondary trap: the fix did not bump ?v=2.0.0 on the authModule.js script tag in index.html while netlify.toml serves /src/** with max-age=31536000 immutable, so returning browsers would keep the old module even after a correct deploy. Tertiary: inline SW cache denai-v2.1 serves shell+scripts cache-first (see bug-107).",
-      "fix": "APPLIED 2026-06-10: bumped authModule.js asset version ?v=2.0.0 -> ?v=2.0.1 in index.html:107; bumped SW CACHE denai-v2.1 -> denai-v2.2 in index.html:6084; updated docs/deployment-validation.md playbook row; merged beta-hardening -> main (fast-forward) and pushed origin/main so Netlify production deploys the corrected src/auth/authModule.js.",
+      "root_cause": "TWO-LAYER: (1) Fix commit 9170bba was unmerged to main. (2) DEEPER (discovered during remediation): the Netlify site denai.netlify.app is NOT connected to the GitHub repo at all — production is updated by MANUAL deploys from the local Windows folder. Proof: live index.html has CRLF line endings (Windows checkout; GitHub/Netlify CI checkout would be LF), contains Phase-13 markers plus href=/privacy markup never committed to any branch, and no deploy fired in 15+ min after pushing main (3bc7f54). Pushing to GitHub has never deployed this site.",
+      "fix": "Repo side APPLIED 2026-06-10 (commit 3bc7f54, merged+pushed to origin/main): authModule ?v=2.0.0->2.0.1, SW CACHE denai-v2.1->denai-v2.2, playbook updated. PRODUCTION side BLOCKED on Netlify access: user must either (a) Netlify dashboard -> link GitHub repo ahmedamr3012/denai-platform, production branch main, then trigger deploy, or (b) manual deploy of the corrected folder (netlify deploy --prod or drag-drop). Verify live authModule contains dwvtbumwojohclzxson afterward.",
       "tags": [
         "deployment",
         "netlify",
@@ -2508,7 +2508,7 @@
         "bug-107"
       ],
       "occurrences": 1,
-      "last_seen": "2026-06-10T03:05:00.000Z"
+      "last_seen": "2026-06-10T03:12:00.000Z"
     },
     {
       "id": "bug-147",
