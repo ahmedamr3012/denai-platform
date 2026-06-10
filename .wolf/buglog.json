@@ -2592,6 +2592,90 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-10T00:54:44.607Z"
+    },
+    {
+      "id": "bug-152",
+      "timestamp": "2026-06-10T01:24:46.581Z",
+      "error_message": "Missing error handling in _logEvent",
+      "file": "src/auth/authModule.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T01:24:46.581Z"
+    },
+    {
+      "id": "bug-153",
+      "timestamp": "2026-06-10T01:25:20.198Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/auth/authModule.js",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 30→47 lines (6 removed) | Also: if (!client) return { error: { message: 'Auth serv; if (!client) return { error: { message: 'Auth serv",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-10T01:25:45.997Z"
+    },
+    {
+      "id": "bug-154",
+      "timestamp": "2026-06-10T01:26:08.609Z",
+      "error_message": "Missing error handling in _resolveUploadPermission",
+      "file": "src/sync/cloudSync.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T01:26:08.609Z"
+    },
+    {
+      "id": "bug-155",
+      "timestamp": "2026-06-10T01:26:54.683Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"src/auth/authModule.js?v=2.0.2\"",
+      "fix": "Changed to \"src/auth/authModule.js?v=2.0.3\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-10T01:26:56.633Z"
+    },
+    {
+      "id": "bug-156",
+      "timestamp": "2026-06-10T04:30:00.000Z",
+      "error_message": "Wave B1 audit finding: signing in with a different account on a shared device auto-uploads the previous account's local patient cases into the new account's cloud workspace (cross-tenant data leak; no crash, silent)",
+      "file": "src/sync/cloudSync.js",
+      "root_cause": "denaiPatients_v2 localStorage is device-global, not per-account, and no record existed of WHICH account the local data belongs to. cloudSync._handleFirstLogin (cloud empty) and merge Pass 2 (local-only patients) enqueue ALL local cases for upload under whatever uid is currently signed in. Phase 5 abandonQueue() protected pending queue ops on sign-out but not the hydration upload passes.",
+      "fix": "Wave B1: added local-data ownership guard. denaiLocalDataOwner_v1 localStorage key records the owning uid (claimed on first sync or when no meaningful local cases exist). _resolveUploadPermission(uid) suppresses _handleFirstLogin and Pass 2 uploads when owner !== current uid, with a one-time console warning, observe event (identity_switch_upload_suppressed), and user toast. Cloud download and save-time enqueue for cases created while signed in are unaffected.",
+      "tags": [
+        "wave-b1",
+        "auth",
+        "identity",
+        "cross-account-leak",
+        "cloud-sync",
+        "shared-device",
+        "audit-finding"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T04:30:00.000Z"
     }
   ]
 }

@@ -4,6 +4,19 @@
 > Do not edit manually unless correcting an error.
 > Last updated: 2026-06-10
 
+## Key Learnings — Wave B1 Auth Hardening (2026-06-10)
+
+- **Local patient data (`denaiPatients_v2`) is device-global, NOT per-account.** Auth identity and local data ownership are independent dimensions. Any future feature that moves local data to the cloud must check `denaiLocalDataOwner_v1` (Wave B1 ownership key) before uploading under the current uid. Ownership is claimed on first sync, transfers automatically only when no meaningful local cases exist, and a mismatch suppresses `_handleFirstLogin` + merge Pass 2 in `cloudSync.js`.
+- **`denaiAuth.getAuthTrail()` is the production diagnosis entry point for auth issues.** In-memory ring (30 entries) of status transitions, auth events, sign-in/up results, task failures, restore timeouts. First question for any production auth report: "open the console and paste `denaiAuth.getAuthTrail()`".
+- **Post-auth settle tasks (queue flush, hydrates, clinic init, observe flush) run through `_runTask` isolation in authModule.** Each task's sync throws and async rejections are contained and logged. When adding a new settle task, add it via `_runTask('name', fn)` — never as a bare call.
+- **`getSession()` is raced against a 10s timeout in `_restoreSession`.** A hung getSession (supabase-js auth lock contention) previously could strand the app in 'reconnecting' forever. On timeout: warn + trail event + degrade to 'local'.
+- **Route protection model is intentional: clinical workflows are unauthenticated by design (local-first invariant); only cloud operations require auth.** All cloud paths verified guarded (Wave B1 audit): syncQueue.flush, cloudSync.hydrate, prefsSync push/pull (user_id-scoped), clinicSession via _getClient, frictionLog.flush (null-client safe). Server-side RLS is the real enforcement layer.
+
+## Do-Not-Repeat (2026-06-10 — Wave B1)
+
+- **DO NOT add any new local→cloud upload path without consulting `denaiLocalDataOwner_v1`.** Uploading local data under whichever uid happens to be signed in re-opens the shared-device cross-account leak (bug-156). (Wave B1, 2026-06-10)
+- **DO NOT surface developer-facing text in auth error messages.** The old no-client message said "check credentials in authModule.js" — end users saw a source-file reference. Auth user messaging must be operational: what happened + what to do. (Wave B1, 2026-06-10)
+
 ## Key Learnings — Deployment Forensics: Stale Supabase URL in Production (2026-06-10)
 
 - **CORRECTED 2026-06-10: the Netlify site `denai.netlify.app` is NOT connected to GitHub — production is updated ONLY by manual deploys from the local Windows folder.** Proof: live index.html bytes have CRLF endings (local Windows checkout; a GitHub→Netlify pipeline checkout would be LF), contain Phase-13-era markers plus `href='/privacy'` markup never committed to any branch, and pushing 3bc7f54 to origin/main produced no deploy in 15+ minutes. Pushing to GitHub does NOT deploy this site. Until the repo is linked in the Netlify dashboard (Site configuration → Build & deploy → Link repository, production branch `main`), every fix must be manually deployed (`netlify deploy --prod` or drag-and-drop). A fix on a feature branch (e.g., `beta-hardening`) additionally does not reach `main` until merged.

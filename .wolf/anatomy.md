@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-10T00:54:44.602Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-10T01:26:58.309Z
 > Files: 3 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/projects/c--Users-Dr-Ahmed-Desktop-denai/memory/
@@ -21,7 +21,6 @@
 
 ## docs/
 
-- `deployment-validation.md` — denai — Deployment Validation Playbook (~2708 tok)
 
 ## notes/
 
@@ -31,7 +30,7 @@
 
 ## src/auth/
 
-- `authModule.js` — src/auth/authModule.js (~2993 tok)
+- `authModule.js` — src/auth/authModule.js (~4047 tok)
 
 ## src/constants/
 
@@ -68,6 +67,7 @@
 
 ## src/sync/
 
+- `cloudSync.js` — src/sync/cloudSync.js (~5471 tok)
 
 ## src/types/
 

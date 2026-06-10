@@ -35,6 +35,42 @@ window.denaiCloudSync = (function () {
   var _syncing        = false;
   var _lastHydratedAt = null; // ISO string — set after each successful hydrate
 
+  // ── Wave B1: local-data ownership guard ───────────────────────────────────
+  // denaiPatients_v2 is device-global, not per-account. Without this guard,
+  // signing in with a DIFFERENT account on a shared device auto-uploads the
+  // previous account's local cases into the new account's cloud workspace
+  // (via _handleFirstLogin or merge Pass 2). OWNER_KEY records which uid the
+  // device's local data belongs to; uploads are suppressed on a mismatch.
+  // Cloud→local download is unaffected. Cases created while signed in sync
+  // via their own enqueue at save time, not through these passes.
+  var OWNER_KEY      = 'denaiLocalDataOwner_v1';
+  var _switchWarned  = false; // warn/toast once per page load, not per hydrate
+
+  // Rules: owner unset → first sync: claim ownership, allow upload.
+  //        owner === uid → same account returning: allow upload.
+  //        owner !== uid → account switch: suppress auto-upload, warn once.
+  //        Ownership transfers automatically when the device holds no
+  //        meaningful local cases (nothing left to leak).
+  function _resolveUploadPermission(uid) {
+    if (!uid) return false;
+    var owner = null;
+    try { owner = localStorage.getItem(OWNER_KEY); } catch (e) {}
+    if (owner === uid) return true;
+    var list = _loadLocalPatients() || [];
+    var meaningful = list.filter(function (p) { return p && !_isPlaceholder(p); });
+    if (!owner || meaningful.length === 0) {
+      try { localStorage.setItem(OWNER_KEY, uid); } catch (e) {}
+      return true;
+    }
+    if (!_switchWarned) {
+      _switchWarned = true;
+      console.warn('[denaiCloudSync] different account detected on this device — local cases from the previous account will not auto-upload to this account');
+      try { if (typeof denaiObserve !== 'undefined') denaiObserve.record('identity_switch_upload_suppressed'); } catch (e) {}
+      try { if (typeof showToast === 'function') showToast('Different account detected — existing local cases will not upload to this account', 'warning', 6000); } catch (e) {}
+    }
+    return false;
+  }
+
   // ── Public: hydrate ───────────────────────────────────────────────────────
   // Entry point. Called from authModule after session restore / sign-in.
   // Guards: signed in + online + not already running.
@@ -47,9 +83,14 @@ window.denaiCloudSync = (function () {
     var client = denaiAuth.getClient();
     if (!client) return;
 
+    // Wave B1: decide upload permission once per hydrate, from the live session.
+    var session = denaiAuth.getSession();
+    var uid = (session && session.user) ? session.user.id : null;
+    var uploadAllowed = _resolveUploadPermission(uid);
+
     _syncing = true;
     try {
-      await _fetchAndMerge(client);
+      await _fetchAndMerge(client, uploadAllowed);
     } catch (e) {
       console.warn('[denaiCloudSync] hydrate failed:', e.message);
       try { if (typeof denaiObserve !== 'undefined') denaiObserve.record('hydrate_failed'); } catch (_e) {}
@@ -60,7 +101,7 @@ window.denaiCloudSync = (function () {
 
   // ── Fetch and dispatch ────────────────────────────────────────────────────
 
-  async function _fetchAndMerge(client) {
+  async function _fetchAndMerge(client, uploadAllowed) {
     // Wave 7G: include notes_enc — separate top-level column, decrypted before merge.
     var res = await client
       .from('patients')
@@ -76,7 +117,9 @@ window.denaiCloudSync = (function () {
     var cloudRows = res.data || [];
 
     if (cloudRows.length === 0) {
-      _handleFirstLogin();
+      // Wave B1: suppressed on account switch — never bulk-upload another
+      // account's local cases into an empty cloud workspace.
+      if (uploadAllowed) _handleFirstLogin();
       _lastHydratedAt = new Date().toISOString();
       return;
     }
@@ -113,7 +156,7 @@ window.denaiCloudSync = (function () {
       tombstones = await _fetchTombstones(client, missingIds);
     }
 
-    _mergeCloudIntoLocal(cloudRows, tombstones, localList, decryptedNotesMap);
+    _mergeCloudIntoLocal(cloudRows, tombstones, localList, decryptedNotesMap, uploadAllowed);
     _lastHydratedAt = new Date().toISOString();
   }
 
@@ -176,7 +219,7 @@ window.denaiCloudSync = (function () {
   // tombstones:        array of { id, deleted_at } for local patients deleted on cloud.
   // localList:         pre-loaded list (passed from _fetchAndMerge to avoid double read).
   // decryptedNotesMap: { patientId → decryptedNotesText } from Wave 7G decrypt pass.
-  function _mergeCloudIntoLocal(cloudRows, tombstones, localList, decryptedNotesMap) {
+  function _mergeCloudIntoLocal(cloudRows, tombstones, localList, decryptedNotesMap, uploadAllowed) {
     localList         = localList || (_loadLocalPatients() || []);
     tombstones        = tombstones || [];
     decryptedNotesMap = decryptedNotesMap || {};
@@ -222,20 +265,24 @@ window.denaiCloudSync = (function () {
 
     // ── Pass 2: local-only patients → enqueue for cloud upload ───────────
     // These were created offline or on this device. Skip placeholder seeds.
-    localList.forEach(function (p) {
-      if (!p.id || cloudById[p.id]) return; // already in cloud
-      if (_isPlaceholder(p)) return;
-      try {
-        if (typeof denaiSyncQueue !== 'undefined') {
-          denaiSyncQueue.enqueue({
-            type:      'upsert',
-            patientId: p.id,
-            payload:   p,
-            history:   _loadHistory(p.id),
-          });
-        }
-      } catch (e) {}
-    });
+    // Wave B1: suppressed on account switch — local-only cases may belong to
+    // the previous account on this device and must not leak to a new account.
+    if (uploadAllowed) {
+      localList.forEach(function (p) {
+        if (!p.id || cloudById[p.id]) return; // already in cloud
+        if (_isPlaceholder(p)) return;
+        try {
+          if (typeof denaiSyncQueue !== 'undefined') {
+            denaiSyncQueue.enqueue({
+              type:      'upsert',
+              patientId: p.id,
+              payload:   p,
+              history:   _loadHistory(p.id),
+            });
+          }
+        } catch (e) {}
+      });
+    }
 
     // ── Pass 3: tombstone cleanup ─────────────────────────────────────────────
     // Remove local patients that were soft-deleted on cloud, unless we have

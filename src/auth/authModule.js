@@ -5,17 +5,46 @@
 // denaiAuth.init() is called AFTER render(S) completes. Auth failures NEVER
 // break the app — they silently degrade to local mode.
 //
-// TODO: Pin Supabase CDN to a specific version before production deployment.
+// NOTE: Supabase CDN is pinned to @2.39.7 in index.html (resolved Wave B1).
 
 window.denaiAuth = (function () {
 
   var SUPABASE_URL  = 'https://dwwtbumwojzohclzxson.supabase.co';
   var SUPABASE_ANON = 'sb_publishable_uXDrSO7eWF5Yy4YW-L7XBw_ZPpWORNv';
 
-  var _client  = null;
-  var _session = null;
-  var _status  = 'local'; // 'local' | 'signed-in' | 'reconnecting' | 'error'
-  var _email   = null;
+  var _client    = null;
+  var _session   = null;
+  var _status    = 'local'; // 'local' | 'signed-in' | 'reconnecting' | 'error'
+  var _email     = null;
+  var _cdnWarned = false;
+
+  // ── Wave B1: auth event trail (in-memory ring, max 30 entries) ────────────
+  // Production diagnosis aid: denaiAuth.getAuthTrail() in the console shows
+  // the full auth lifecycle for this page load. No network, no persistence.
+  var _trail = [];
+  function _logEvent(evt, detail) {
+    _trail.push({ t: new Date().toISOString(), e: evt, d: detail });
+    if (_trail.length > 30) _trail.shift();
+  }
+
+  // ── Wave B1: post-auth task isolation ─────────────────────────────────────
+  // Each settle task (queue flush, hydrate, clinic init, …) is isolated so one
+  // failing task — sync throw or async rejection — cannot prevent the
+  // remaining tasks from running and cannot become an unhandled rejection.
+  function _runTask(name, fn) {
+    try {
+      var r = fn();
+      if (r && typeof r.catch === 'function') {
+        r.catch(function (e) {
+          _logEvent('task-failed:' + name, e && e.message);
+          console.warn('[denaiAuth] post-auth task failed (' + name + '):', e && e.message);
+        });
+      }
+    } catch (e) {
+      _logEvent('task-failed:' + name, e && e.message);
+      console.warn('[denaiAuth] post-auth task failed (' + name + '):', e && e.message);
+    }
+  }
 
   // ── DOM helpers ───────────────────────────────────────────────────────────
   function _el(id) { return document.getElementById(id); }
@@ -24,6 +53,7 @@ window.denaiAuth = (function () {
   // Updates the 8px dot in the sidebar-user footer and the user name/plan text.
   // Safe to call before DOM is ready — element checks guard all writes.
   function _setStatus(status, email) {
+    if (status !== _status) _logEvent('status:' + status);
     _status = status;
     _email  = email || null;
     _renderIndicator();
@@ -69,6 +99,12 @@ window.denaiAuth = (function () {
     if (_client) return _client;
     try {
       if (typeof window.supabase === 'undefined' || typeof window.supabase.createClient !== 'function') {
+        // Wave B1: warn once — a blocked/down CDN must be diagnosable, not silent.
+        if (!_cdnWarned) {
+          _cdnWarned = true;
+          _logEvent('client:cdn-missing');
+          console.warn('[denaiAuth] Supabase library not loaded — running local-only (CDN blocked or offline)');
+        }
         return null;
       }
       _client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
@@ -88,23 +124,39 @@ window.denaiAuth = (function () {
     }
     _setStatus('reconnecting');
     try {
-      var result = await client.auth.getSession();
+      // Wave B1: getSession() is raced against a 10s timeout. Without this,
+      // a hung getSession (e.g. auth lock contention in supabase-js) would
+      // strand the app in 'reconnecting' forever — a ghost state with no exit.
+      var result = await Promise.race([
+        client.auth.getSession(),
+        new Promise(function (resolve) {
+          setTimeout(function () { resolve({ __timeout: true }); }, 10000);
+        })
+      ]);
+      if (result && result.__timeout) {
+        console.warn('[denaiAuth] getSession() timed out after 10s — degrading to local mode');
+        _logEvent('restore:timeout');
+        _session = null;
+        _setStatus('local');
+        return;
+      }
       if (result.error) throw result.error;
       if (result.data && result.data.session) {
         _session = result.data.session;
         _setStatus('signed-in', result.data.session.user.email);
         // Wave 7D: flush pending queue on session restore (existing session on app load).
         // onAuthStateChange does not fire for getSession() — must trigger manually.
+        // Wave B1: each task isolated via _runTask — one failure cannot skip the rest.
         setTimeout(function () {
-          if (typeof denaiSyncQueue      !== 'undefined') denaiSyncQueue.flush();
+          if (typeof denaiSyncQueue      !== 'undefined') _runTask('queue-flush',   function () { return denaiSyncQueue.flush(); });
           // Wave 7E: hydrate patient data from cloud after session restore.
-          if (typeof denaiCloudSync      !== 'undefined') denaiCloudSync.hydrate();
+          if (typeof denaiCloudSync      !== 'undefined') _runTask('cloud-hydrate', function () { return denaiCloudSync.hydrate(); });
           // Wave 7F: hydrate preferences from cloud after session restore.
-          if (typeof denaiPrefs          !== 'undefined') denaiPrefs.hydrate();
+          if (typeof denaiPrefs          !== 'undefined') _runTask('prefs-hydrate', function () { return denaiPrefs.hydrate(); });
           // Phase 3.4: load clinic session context after auth settle.
-          if (typeof denaiClinicSession  !== 'undefined') denaiClinicSession.init(client).catch(function () {});
+          if (typeof denaiClinicSession  !== 'undefined') _runTask('clinic-init',   function () { return denaiClinicSession.init(client); });
           // Phase 8: upload buffered friction observations now that we have a client.
-          try { if (typeof denaiObserve !== 'undefined') denaiObserve.flush(_getClient()); } catch (e) {}
+          if (typeof denaiObserve        !== 'undefined') _runTask('observe-flush', function () { return denaiObserve.flush(_getClient()); });
         }, 0);
       } else {
         _session = null;
@@ -112,6 +164,7 @@ window.denaiAuth = (function () {
       }
     } catch (e) {
       console.warn('[denaiAuth] session restore failed:', e.message);
+      _logEvent('restore:failed', e && e.message);
       _session = null;
       _setStatus('local'); // Always degrade gracefully — never block app
     }
@@ -122,6 +175,7 @@ window.denaiAuth = (function () {
     var client = _getClient();
     if (!client) return;
     client.auth.onAuthStateChange(function (event, session) {
+      _logEvent('auth-event:' + event);
       _session = session;
       if (session) {
         _setStatus('signed-in', session.user.email);
@@ -131,15 +185,16 @@ window.denaiAuth = (function () {
         if (event === 'INITIAL_SESSION') return;
         // Wave 7D: flush any queued writes now that the session is confirmed.
         // Wave 7E: hydrate patient data from cloud on sign-in / token refresh.
+        // Wave B1: each task isolated via _runTask — one failure cannot skip the rest.
         setTimeout(function () {
-          if (typeof denaiSyncQueue      !== 'undefined') denaiSyncQueue.flush();
-          if (typeof denaiCloudSync      !== 'undefined') denaiCloudSync.hydrate();
+          if (typeof denaiSyncQueue      !== 'undefined') _runTask('queue-flush',   function () { return denaiSyncQueue.flush(); });
+          if (typeof denaiCloudSync      !== 'undefined') _runTask('cloud-hydrate', function () { return denaiCloudSync.hydrate(); });
           // Wave 7F: hydrate preferences from cloud on sign-in.
-          if (typeof denaiPrefs          !== 'undefined') denaiPrefs.hydrate();
+          if (typeof denaiPrefs          !== 'undefined') _runTask('prefs-hydrate', function () { return denaiPrefs.hydrate(); });
           // Phase 3.4: load clinic session context (idempotent — skips on token refresh).
-          if (typeof denaiClinicSession  !== 'undefined') denaiClinicSession.init(_getClient()).catch(function () {});
+          if (typeof denaiClinicSession  !== 'undefined') _runTask('clinic-init',   function () { return denaiClinicSession.init(_getClient()); });
           // Phase 8: upload buffered friction observations on sign-in / token refresh.
-          try { if (typeof denaiObserve !== 'undefined') denaiObserve.flush(_getClient()); } catch (e) {}
+          if (typeof denaiObserve        !== 'undefined') _runTask('observe-flush', function () { return denaiObserve.flush(_getClient()); });
         }, 0);
       } else {
         _setStatus('local');
@@ -169,31 +224,38 @@ window.denaiAuth = (function () {
 
   async function signIn(email, password) {
     var client = _getClient();
-    if (!client) return { error: { message: 'Auth service unavailable — check credentials in authModule.js' } };
+    // Wave B1: operational message — the old copy referenced a source file.
+    if (!client) return { error: { message: 'Cloud service unavailable — working in local mode. Check your connection and reload to try again.' } };
     try {
       var result = await client.auth.signInWithPassword({ email: email, password: password });
+      _logEvent(result.error ? 'signin:error' : 'signin:ok', result.error && result.error.message);
       if (!result.error && result.data && result.data.session) {
         _session = result.data.session;
         _setStatus('signed-in', result.data.session.user.email);
       }
       return result;
     } catch (e) {
+      _logEvent('signin:exception', e && e.message);
       return { error: { message: e.message || 'Sign in failed' } };
     }
   }
 
   async function signUp(email, password) {
     var client = _getClient();
-    if (!client) return { error: { message: 'Auth service unavailable — check credentials in authModule.js' } };
+    if (!client) return { error: { message: 'Cloud service unavailable — working in local mode. Check your connection and reload to try again.' } };
     try {
-      return await client.auth.signUp({ email: email, password: password });
+      var result = await client.auth.signUp({ email: email, password: password });
+      _logEvent(result.error ? 'signup:error' : 'signup:ok', result.error && result.error.message);
+      return result;
     } catch (e) {
+      _logEvent('signup:exception', e && e.message);
       return { error: { message: e.message || 'Sign up failed' } };
     }
   }
 
   // IMPORTANT: Logout clears auth tokens ONLY. Local patient data is never touched.
   async function signOut() {
+    _logEvent('signout');
     var client = _getClient();
     if (client) {
       try { await client.auth.signOut(); } catch (e) { /* ignore */ }
@@ -219,6 +281,8 @@ window.denaiAuth = (function () {
   // Wave 7D: expose the Supabase client for database operations (syncQueue).
   // Returns null if client init has failed (placeholder credentials, CDN unavailable).
   function getClient()   { return _getClient(); }
+  // Wave B1: read-only copy of the auth event trail for production diagnosis.
+  function getAuthTrail() { return _trail.slice(); }
 
   return Object.freeze({
     init: init,
@@ -229,6 +293,7 @@ window.denaiAuth = (function () {
     getStatus: getStatus,
     isSignedIn: isSignedIn,
     getClient: getClient,
+    getAuthTrail: getAuthTrail,
   });
 
 })();
