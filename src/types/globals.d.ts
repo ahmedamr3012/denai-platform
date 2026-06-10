@@ -55,6 +55,31 @@ declare const denaiEntitlements: {
   clear(): void;
 };
 
+// ── denaiAccessPolicy (src/auth/accessPolicy.js, Wave B2A) ────
+declare const denaiAccessPolicy: {
+  getEffectiveSubscriptionStatus(): EffectiveSubscriptionStatus;
+  isEntitledClinic(): boolean;
+  canCreatePatient(): boolean;
+  canCreatePlan(): boolean;
+  canAccessHistoricalData(): boolean;
+  isFoundingPhase(): boolean;
+  deriveEffectiveStatus(status: string | null, trialEndsAt: string | null, nowMs: number): EffectiveSubscriptionStatus;
+  deriveEntitled(effectiveStatus: string, foundingPhase: boolean): boolean;
+};
+
+// ── denaiSubPresenter (src/auth/subscriptionPresenter.js, Wave B2C) ──
+declare const denaiSubPresenter: {
+  describe(
+    effectiveStatus: string,
+    trialEndsAt: string | null,
+    nowMs: number,
+    foundingPhase: boolean,
+  ): { key: string; tone: 'ok' | 'info' | 'warn' | 'restricted'; sidebar: string; title: string; detail: string } | null;
+  daysLeft(trialEndsAt: string | null, nowMs: number): number | null;
+  current(): { key: string; tone: string; sidebar: string; title: string; detail: string } | null;
+  sidebarLine(): string | null;
+};
+
 // ── denaiSerializer (src/sync/serializer.js) ──────────────────
 declare const denaiSerializer: {
   serializePatient(src: Partial<PatientState>): Partial<PatientState> | null;

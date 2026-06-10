@@ -1164,3 +1164,61 @@
 - **Critical correctness rule: the defensibility note must NOT fire when gap < 0** (runner-up scored higher). Those are override cases — restorative preservation bias (handled by `#recPreserveNote`) and multi-tooth cost-swap (handled by the "· Ideal:" label). Claiming "recommended as it scored slightly higher" when it actually scored lower would be false. The `gap >= 0` guard enforces this and also prevents double-messaging with the preserve note (which is gap<0 only) — the two are mutually exclusive by construction.
 - **Threshold 3.0 matches explainLayer.js's existing "closely scored" tradeoff band (gap 0–3.0).** Kept identical so the inline note and the (still-present) collapsed tradeoff block agree.
 - **Trust Hardening program is COMPLETE after this wave** (Wave 0 wording/bug fixes, Wave 1 suitability/closest-alt/preservation-transparency, Wave 2 near-tie defensibility note). This was the final trust-hardening implementation before the supervised pilot. No scoring/ranking/recommendation/confidence/threshold/bias logic was ever changed across any wave — all changes were presentation/wording only.
+
+## Key Learnings — Wave B2 Readiness Audit (2026-06-10, audit-only)
+
+- **`denaiEntitlements.isPro()/canUse()/getTrialEndsAt()` have ZERO call sites in the app.** Phase 13/14 built the supply side only; no enforcement or trial UI exists anywhere. B2 creates the first consumers.
+- **`isPro()` trusts the `'trialing'` status string and never compares `trial_ends_at` to the clock.** Client-side trial expiry does not exist; expiry depends entirely on pg_cron `expire_trialing_subscriptions()` (status unverified in the live project). B2 must derive an effective status: `trialing && trial_ends_at < now → expired`.
+- **`isCacheFresh()` is dead code** — entitlements.js comments claim clinicSession uses it to skip re-queries, but clinicSession never calls it. Subscription is loaded once per session (`_initialized` lock); mid-session status changes are invisible until reload/sign-in.
+- **Patient creation has exactly ONE funnel: `confirmNewPatient()` (index.html ~5299).** Modal entry points: addPatientBtn (sidebar), dashboard New Patient (1925), cases empty state (2909), createCaseBtn→createCase() (1555/5187). Non-modal creation paths that must stay EXEMPT from gating: first-run demo seed in initPatients() (~2336), backup import _applyImport() (~4878), cloud hydrate merge.
+- **Plan-creation moments are `approvePlan()` (~2631) and `sendToLab()` (~2640); all other transitions (markLabReceived, markDelivered, reopen*) complete or revert existing work.** No keyboard shortcut reaches any creation function (ctrl+1/2/3 only select tx on an existing case).
+- **`'none'` status (no subscription row) fails isPro() — and today every clinic is `'none'` because no trial has ever been provisioned.** Shipping creation gates keyed on isPro() before provisioning/grandfathering would lock out every existing user. Enforcement must ship behind a founding-phase allowance for 'none' or after trial provisioning.
+- **Stripe checkout Edge Function (Phase 12.5) does not exist in the repo** — only stripe-webhook. Trial→paid conversion has no self-serve path; founding clinics run on Studio-SQL-provisioned trials.
+
+## Key Learnings — Wave B2A Entitlement Decision Engine (2026-06-10)
+
+- **`denaiAccessPolicy` (src/auth/accessPolicy.js) is the ONLY place entitlement decisions are made.** B2B+ gates must call `canCreatePatient()` / `canCreatePlan()`; historical/view/export/delivery/reopen/edit surfaces consult `canAccessHistoricalData()` (always true, by policy). No workflow may re-derive policy from `denaiEntitlements.getStatus()` directly.
+- **`FOUNDING_PHASE_ENABLED` (top of accessPolicy.js) is the single founding-phase policy value.** While true, status `'none'` is fully entitled. Ending the founding phase = flip this one var (+ ?v= bump + deploy). No other code encodes the special case.
+- **Effective status adds one derived value: `'expired'` = trialing whose trial_ends_at < now (device clock).** Derived at call time, never stored in DB or cache. This removes the pg_cron dependency for client behavior; pg_cron remains authoritative server-side. Works offline because entitlements caches trialEndsAt.
+- **Policy decisions encoded (Decision Log):** `past_due` = entitled (Stripe dunning grace, active-with-warning — warning UI is B2C/B2D); `unknown` = entitled (fail-open, unresolved state only); unrecognized Stripe statuses (`unpaid`, `paused`, `incomplete_expired`) = NOT entitled (they are confirmed terminal states, not missing data); trial ending exactly at now = not yet expired (strict <).
+- **accessPolicy.js is Node-loadable: `global.window = global; require(...)`.** The pure core (`deriveEffectiveStatus`, `deriveEntitled`) is exported precisely so tests need no browser. Test suite: `npm run test:policy` (tests/entitlements/accessPolicy.test.js, plain Node, zero deps).
+
+## Do-Not-Repeat (2026-06-10 — Wave B2A)
+
+- **DO NOT implement entitlement logic in any workflow, render function, or module other than accessPolicy.js.** Re-deriving "is this clinic entitled" from raw status strings at a call site reintroduces the scattered-policy problem B2A exists to prevent. (Wave B2A, 2026-06-10)
+- **DO NOT treat unrecognized subscription status strings as fail-open.** Fail-open applies ONLY to 'unknown' (no confirmed state). The Stripe webhook writes statuses verbatim, so 'unpaid'/'paused'/'incomplete_expired' can reach the client — they are confirmed non-entitled states. (Wave B2A, 2026-06-10)
+
+## Key Learnings — Wave B2B Enforcement Wiring (2026-06-10)
+
+- **Creation enforcement lives at exactly four guards in index.html, all calling denaiAccessPolicy and nothing else:** `confirmNewPatient()` (hard gate, closes modal + toast), `openNewPatientModal()` (honest entry — message instead of a doomed form), `approvePlan()` and `sendToLab()` (plan-creation gates; sendToLab checks BEFORE its confirm() so users never confirm a blocked action). All guards use `typeof denaiAccessPolicy !== 'undefined' &&` so a missing module fails open (local-first).
+- **`applyCreationGateUI()` (index.html, PATIENT MANAGEMENT section) is the single UI-honesty function.** Disables (never hides) addPatientBtn, createCaseBtn, dashNewPatientBtn; the cases empty-state button renders its own disabled state inline in renderCases. Refresh points: initial call after listener wiring, end of renderPatientList(), and a 60s setInterval (UI-only tick — catches mid-session client-side trial expiry; NOT a DB re-query, that is B2D).
+- **User-facing gate messages are the module-level constants `MSG_CREATE_PATIENT_BLOCKED`, `MSG_CREATE_PLAN_BLOCKED`, `TIP_CREATE_BLOCKED` (top of PATIENT MANAGEMENT section).** Copy is operational and status-agnostic (covers expired trial AND canceled without branching). Edit copy there only — never inline at call sites.
+- **`markLabReceived`, `markDelivered`, `reopenPlanning`, `reopenDelivery` are deliberately ungated** — existing-work continuations under canAccessHistoricalData() policy. Do not add gates to them.
+- **`tests/ci/syntax-check.js` parses all inline index.html script blocks with new Function() — run it after ANY inline-script edit** (it would not catch bug-109's </body> quirk; the Playwright smoke test covers that). Verification stack for inline edits: syntax-check → smoke → auth/engine specs.
+
+## Do-Not-Repeat (2026-06-10 — Wave B2B)
+
+- **DO NOT add a new creation entry point (button, shortcut, workflow transition that commits new work) without (a) a denaiAccessPolicy guard at the function entry and (b) registering its button in applyCreationGateUI() or rendering its disabled state inline.** A surface with only the UI disable is bypassable; a surface with only the hard gate violates UI honesty (discover-on-click). Both layers, always. (Wave B2B, 2026-06-10)
+- **DO NOT put status-specific language ("trial", "canceled") in gate messages without branching on effective status.** Current copy is deliberately status-agnostic; "Your trial has ended" shown to a canceled subscriber is wrong. If status-specific copy is ever wanted, derive it from getEffectiveSubscriptionStatus() in ONE place. (Wave B2B, 2026-06-10)
+
+## Key Learnings — Wave B2C Subscription Visibility (2026-06-10)
+
+- **`denaiSubPresenter` (src/auth/subscriptionPresenter.js) is the ONLY source of subscription-facing copy.** Pure matrix: describe(effectiveStatus, trialEndsAt, nowMs, foundingPhase) → {key, tone, sidebar, title, detail} or null (= present nothing). Status input comes from denaiAccessPolicy.getEffectiveSubscriptionStatus() — the presenter never re-derives policy. Editing subscription copy means editing describe(), nowhere else.
+- **Two placements only, by design: sidebar plan line (#authUserPlan) and account-panel Subscription section (#authSubSection).** Dashboard/clinic-panel banners were deliberately rejected (duplication/clutter). The panel section hides entirely (display:none) when describe() returns null — founding-phase 'none' and 'unknown' present NO subscription chrome at all.
+- **Sidebar plan line has two writers that must stay string-identical: authModule._renderSidebarUser (auth transitions) and renderSubscriptionVisibility (entitlement refresh ticks).** Both call denaiSubPresenter.sidebarLine() and fall back to '☁ Cloud sync active'. If either fallback or source ever diverges, the line will flicker between renders.
+- **renderSubscriptionVisibility() piggybacks on applyCreationGateUI()'s triggers** (startup call, renderPatientList, 60s tick) plus _renderClinicSection() on panel open — so gate state and visible copy can never disagree for more than one tick. No new timers were added.
+- **Trial countdown is days-only (ceil, 4 hours → "1 day left"), no hours/minutes, no exclamation marks anywhere in subscription copy.** Presenter tests enforce these copy principles mechanically (Group 4) — including the verbatim historical-access sentence on every restricted state. Run: npm run test:presenter (56 assertions).
+
+## Do-Not-Repeat (2026-06-10 — Wave B2C)
+
+- **DO NOT write subscription copy inline at a render site or branch on raw status strings in UI code.** All copy goes through denaiSubPresenter.describe(); all status through getEffectiveSubscriptionStatus(). A second copy source will drift from the tested matrix. (Wave B2C, 2026-06-10)
+- **DO NOT present anything for 'unknown' or founding-phase 'none'.** Unresolved billing state must never alarm a clinician; founding clinics must not see subscription chrome. describe() returns null for both — preserve that contract. (Wave B2C, 2026-06-10)
+
+## Key Learnings — Wave B2E Founding Clinic Operations (2026-06-10)
+
+- **`docs/founding-clinic-operations.md` is the authoritative operator runbook** for trial provisioning, extension, inspection, recovery, pg_cron verification, and the founding-phase exit checklist. Point any operational question there first; update it whenever subscription SQL or policy semantics change.
+- **`start_clinic_trial()` on an already-trialing clinic is a SILENT no-op (returns void, no error) — it never extends.** Extension is a direct `UPDATE clinic_subscriptions SET trial_ends_at = ...` with `AND status = 'trialing'` + `RETURNING` for verification/rollback. This is the #1 operator trap (runbook §2).
+- **Safe-delete guard for wrong provisioning:** always `DELETE ... WHERE status='trialing' AND external_billing_id IS NULL` — the predicate makes deleting a paid/Stripe-linked row impossible (runbook F1).
+- **The standard inspection query derives `effective_status` in SQL with the same rule as accessPolicy.js** (`trialing` + `trial_ends_at < now()` → expired) so server-side ops sees what devices act on. Keep the two derivations in sync if the policy rule ever changes.
+- **pg_cron is hygiene, not a product gate, post-B2A:** client-side derivation protects access behavior; pg_cron only converges DB truth (and corrects bad device clocks via next load). Manual fallback `SELECT expire_trialing_subscriptions();` weekly is acceptable at founding scale.
+- **Client picks up subscription changes only on page reload / next sign-in** (clinicSession loads once per page load). Every runbook verification step therefore says "reload the app" — do not diagnose a mismatch without reloading first (runbook F6).

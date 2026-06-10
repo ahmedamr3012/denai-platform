@@ -84,7 +84,12 @@ window.denaiAuth = (function () {
     if (!nameEl || !planEl) return;
     if (_status === 'signed-in' && _email) {
       nameEl.textContent = _email.split('@')[0];
-      planEl.textContent = '☁ Cloud sync active';
+      // B2C: the subscription presenter owns the plan line when state is
+      // presentable (trial countdown, restricted notice). Presentation only —
+      // auth lifecycle is untouched; default copy when nothing to present.
+      var subLine = null;
+      try { if (typeof denaiSubPresenter !== 'undefined') subLine = denaiSubPresenter.sidebarLine(); } catch (e) {}
+      planEl.textContent = subLine || '☁ Cloud sync active';
     } else if (_status === 'reconnecting') {
       nameEl.textContent = 'Reconnecting…';
       planEl.textContent = '';

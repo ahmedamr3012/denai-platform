@@ -2676,6 +2676,167 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-10T04:30:00.000Z"
+    },
+    {
+      "id": "bug-157",
+      "timestamp": "2026-06-10T11:31:36.822Z",
+      "error_message": "Type error",
+      "file": "src/types/globals.d.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T11:31:36.822Z"
+    },
+    {
+      "id": "bug-158",
+      "timestamp": "2026-06-10T11:32:25.384Z",
+      "error_message": "Incorrect value in code",
+      "file": "package.json",
+      "root_cause": "Had \"test:engine\"",
+      "fix": "Changed to \"test:policy\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T11:32:25.384Z"
+    },
+    {
+      "id": "bug-159",
+      "timestamp": "2026-06-10T11:40:00.000Z",
+      "error_message": "SyntaxError risk: stray non-ASCII characters ('NOW и === undefined ? null : PAST') written into a test assertion while authoring tests/entitlements/accessPolicy.test.js",
+      "file": "tests/entitlements/accessPolicy.test.js",
+      "root_cause": "Authoring slip during file generation: an unintended Cyrillic token and ternary fragment landed inside the 'trial ending exactly now' assertion. Would have thrown SyntaxError on first node run.",
+      "fix": "Replaced the line with the intended deterministic form: deriveEffectiveStatus('trialing', PAST, Date.parse(PAST)) === 'trialing' (strict < boundary check). Caught by review before first run; suite then passed 43/43.",
+      "tags": [
+        "tests",
+        "syntax-error",
+        "wave-b2a",
+        "authoring-slip"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T11:40:00.000Z"
+    },
+    {
+      "id": "bug-160",
+      "timestamp": "2026-06-10T11:43:10.771Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"openNewPatientModal()\"",
+      "fix": "Changed to \"dashNewPatientBtn\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-10T11:43:14.483Z"
+    },
+    {
+      "id": "bug-161",
+      "timestamp": "2026-06-10T11:43:37.753Z",
+      "error_message": "Wrong condition in logic",
+      "file": "index.html",
+      "root_cause": "Condition was: if (!confirm('Send this case to lab? This will lock th)",
+      "fix": "Changed to: if (typeof denaiAccessPolicy !== 'undefined' && !denai)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T11:43:37.753Z"
+    },
+    {
+      "id": "bug-162",
+      "timestamp": "2026-06-10T11:43:47.349Z",
+      "error_message": "Missing guard clause",
+      "file": "index.html",
+      "root_cause": "No early return/throw for edge case: !b",
+      "fix": "Added guard clause: if (!b)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T11:43:47.349Z"
+    },
+    {
+      "id": "bug-163",
+      "timestamp": "2026-06-10T11:55:27.223Z",
+      "error_message": "Missing error handling in renderSubscriptionVisibility",
+      "file": "index.html",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: // B2C: refresh subscription visibility whenever the account; try { renderSubscriptionVisibility(); } catch (e) {}",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-10T11:55:28.971Z"
+    },
+    {
+      "id": "bug-164",
+      "timestamp": "2026-06-10T11:55:48.104Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/auth/authModule.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T11:55:48.104Z"
+    },
+    {
+      "id": "bug-165",
+      "timestamp": "2026-06-10T11:55:49.911Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"src/auth/authModule.js?v=2.0.3\"",
+      "fix": "Changed to \"src/auth/authModule.js?v=2.0.4\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T11:55:49.911Z"
+    },
+    {
+      "id": "bug-166",
+      "timestamp": "2026-06-10T11:55:53.019Z",
+      "error_message": "Type error",
+      "file": "src/types/globals.d.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T11:55:53.019Z"
     }
   ]
 }

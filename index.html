@@ -104,7 +104,7 @@
        all 7 scripts off the critical render path. DOMContentLoaded listener in the inline
        script calls denaiAuth.init() + denaiSyncQueue.init() after they execute. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
-  <script defer src="src/auth/authModule.js?v=2.0.3"></script>
+  <script defer src="src/auth/authModule.js?v=2.0.4"></script>
   <!-- Wave 7D: Cloud write path — serializer must precede syncQueue -->
   <script defer src="src/sync/serializer.js?v=2.0.0"></script>
   <script defer src="src/sync/syncQueue.js?v=2.0.0"></script>
@@ -120,6 +120,10 @@
   <!-- Phase 13: Entitlement helper — plan-aware canUse() checks, graceful offline degradation -->
   <!-- Phase 14: version bumped; now exposes getTrialEndsAt() (P1.1 Wave A) -->
   <script defer src="src/auth/entitlements.js?v=14.0.0"></script>
+  <!-- Wave B2A: Entitlement decision engine — effective-status derivation + creation predicates. Decisions only; enforcement is B2B. -->
+  <script defer src="src/auth/accessPolicy.js?v=1.0.0"></script>
+  <!-- Wave B2C: Subscription visibility presenter — pure status→copy mapping. Presentation only; no policy, no gating. -->
+  <script defer src="src/auth/subscriptionPresenter.js?v=1.0.0"></script>
   <style>
     /* ================================================================
        DESIGN TOKENS & VARIABLES
@@ -302,6 +306,9 @@ body.dark .topbar { background: rgba(26,29,33,.94); border-color: var(--c-n150);
 }
 .topbar-actions { display: flex; gap: 8px; align-items: center; }
 .btn { display: inline-flex; align-items: center; gap: 7px; padding: 8px 16px; border-radius: var(--r-md); font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--t-base); border: none; outline: none; font-family: 'DM Sans', sans-serif; position: relative; overflow: hidden; }
+/* B2B: creation-gate disabled affordance — dimmed in place, never hidden (no layout shift) */
+.btn[disabled], .btn-add-patient[disabled] { opacity: .45; cursor: not-allowed; }
+.btn[disabled]:hover, .btn-add-patient[disabled]:hover { transform: none; box-shadow: none; }
 .btn::after { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,.35); transform: translate(-50%,-50%); transition: width .55s ease, height .55s ease, opacity .55s ease; }
 .btn:active::after { width: 260px; height: 260px; opacity: 0; }
 .btn:focus-visible { outline: 2px solid var(--c-brand); outline-offset: 2px; box-shadow: var(--focus-ring); }
@@ -1473,6 +1480,19 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
           </div>
         </div>
 
+        <!-- B2C: Subscription visibility section — populated by renderSubscriptionVisibility().
+             Hidden entirely when there is nothing to present (founding phase, unresolved state). -->
+        <div id="authSubSection" style="display:none;margin-bottom:12px;">
+          <p style="font-size:11px;font-weight:600;color:var(--c-n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Subscription</p>
+          <div style="padding:8px 10px;background:var(--surface-card);border:1px solid var(--c-n200);border-radius:8px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span id="authSubDot" style="width:7px;height:7px;border-radius:50%;background:#d1d5db;flex-shrink:0;"></span>
+              <span id="authSubTitle" style="font-size:13px;font-weight:600;color:var(--c-n900);flex:1;">—</span>
+            </div>
+            <p id="authSubDetail" style="display:none;font-size:11px;color:var(--c-n500);margin:6px 0 0 15px;line-height:1.5;"></p>
+          </div>
+        </div>
+
         <!-- Data management -->
         <div style="margin-bottom:12px;">
           <p style="font-size:11px;font-weight:600;color:var(--c-n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Data</p>
@@ -1922,7 +1942,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       </div>
     </div>
     <div class="dash-action-row">
-      <button class="btn btn-pri" type="button" onclick="openNewPatientModal()"><i class="fa-solid fa-plus" aria-hidden="true"></i> New Patient</button>
+      <button class="btn btn-pri" type="button" id="dashNewPatientBtn" onclick="openNewPatientModal()"><i class="fa-solid fa-plus" aria-hidden="true"></i> New Patient</button>
       <button class="btn btn-sec" type="button" onclick="navigateTo('cases')"><i class="fa-solid fa-folder-open" aria-hidden="true"></i> View All Cases</button>
       <button class="btn btn-sec" type="button" onclick="navigateTo('insight')"><i class="fa-solid fa-brain" aria-hidden="true"></i> AI Insight</button>
     </div>
@@ -2629,6 +2649,12 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   }
 
   function approvePlan() {
+    // B2B: plan-creation gate. Decision comes from denaiAccessPolicy only;
+    // fail-open if the module is unavailable (local-first invariant).
+    if (typeof denaiAccessPolicy !== 'undefined' && !denaiAccessPolicy.canCreatePlan()) {
+      showToast(MSG_CREATE_PLAN_BLOCKED, 'error');
+      return;
+    }
     S.planApproved = true;
     _emitWfEvent('plan_approved');
     saveState(); renderWorkflowBar();
@@ -2638,6 +2664,12 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
   }
 
   function sendToLab() {
+    // B2B: plan-creation gate — a lab send commits new work. Checked before the
+    // confirm() dialog so the user is never asked to confirm a blocked action.
+    if (typeof denaiAccessPolicy !== 'undefined' && !denaiAccessPolicy.canCreatePlan()) {
+      showToast(MSG_CREATE_PLAN_BLOCKED, 'error');
+      return;
+    }
     if (!confirm('Send this case to lab? This will lock the treatment plan.')) return;
     // Flush any unsaved textarea content into S before capturing snapshot.
     if (_flushPendingNotes()) { /* notes flushed — no save needed; snapshot captures S.labNotes below */ }
@@ -2906,7 +2938,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       const hasStage = _casesStageFilter !== 'all';
       const h = noTotal ? 'No cases yet' : hasStage ? 'No cases in this stage' : 'No results';
       const p = noTotal ? 'Add your first patient to begin.' : hasStage ? 'Try selecting a different filter or clear the search.' : 'No patients match that search.';
-      container.innerHTML = `<div class="cases-empty"><div class="cases-empty-icon"><i class="fa-solid fa-folder-open" aria-hidden="true"></i></div><h3>${h}</h3><p>${p}</p>${noTotal ? '<button class="btn btn-pri" type="button" onclick="openNewPatientModal()" style="margin-top:4px;"><i class="fa-solid fa-plus"></i> New Patient</button>' : ''}</div>`;
+      // B2B: render the create button disabled (never hidden) when creation is gated.
+      const _npAllowed = typeof denaiAccessPolicy === 'undefined' || denaiAccessPolicy.canCreatePatient();
+      container.innerHTML = `<div class="cases-empty"><div class="cases-empty-icon"><i class="fa-solid fa-folder-open" aria-hidden="true"></i></div><h3>${h}</h3><p>${p}</p>${noTotal ? `<button class="btn btn-pri" type="button" onclick="openNewPatientModal()" style="margin-top:4px;"${_npAllowed ? '' : ' disabled title="' + TIP_CREATE_BLOCKED + '"'}><i class="fa-solid fa-plus"></i> New Patient</button>` : ''}</div>`;
       return;
     }
 
@@ -5191,6 +5225,61 @@ openNewPatientModal();
 // ================================================================
 // PATIENT MANAGEMENT
 // ================================================================
+// ── B2B: Creation gate (enforcement wiring) ────────────────────
+// Every decision comes from denaiAccessPolicy — no policy logic here.
+// Messages are operational: no billing-provider, status, or developer terms.
+const MSG_CREATE_PATIENT_BLOCKED = 'Creating new patients requires an active Denai subscription. Existing patients, plans, and reports remain fully available.';
+const MSG_CREATE_PLAN_BLOCKED    = 'Starting a new plan requires an active Denai subscription. Existing cases, reports, and lab workflows remain fully available.';
+const TIP_CREATE_BLOCKED         = 'Available with an active Denai subscription';
+
+// UI honesty layer: disables (never hides) the static creation entry points.
+// The empty-state button is covered at render time in renderCases.
+function applyCreationGateUI() {
+const allowed = typeof denaiAccessPolicy === 'undefined' || denaiAccessPolicy.canCreatePatient();
+['addPatientBtn', 'createCaseBtn', 'dashNewPatientBtn'].forEach(id => {
+const b = $(id);
+if (!b) return;
+b.disabled = !allowed;
+if (!allowed) { b.title = TIP_CREATE_BLOCKED; b.setAttribute('aria-disabled', 'true'); }
+else { b.removeAttribute('title'); b.removeAttribute('aria-disabled'); }
+});
+// B2C: subscription visibility shares the gate's refresh triggers
+// (startup, list renders, 60s tick) so state and copy never diverge.
+try { renderSubscriptionVisibility(); } catch (e) {}
+}
+// UI refresh only — no DB query, no policy logic. Catches mid-session trial
+// expiry (client-side derivation can flip while the app stays open).
+setInterval(applyCreationGateUI, 60000);
+
+// ── B2C: Subscription visibility (trust layer) ─────────────────
+// Presentation only — copy comes from denaiSubPresenter, status (already
+// effective-derived) from denaiAccessPolicy. No policy logic here.
+const SUB_TONE_COLORS = { ok: '#22c55e', info: '#60a5fa', warn: '#f59e0b', restricted: '#9ca3af' };
+
+function renderSubscriptionVisibility() {
+const d = (typeof denaiSubPresenter !== 'undefined') ? denaiSubPresenter.current() : null;
+// Sidebar plan line — owned only while signed in; authModule renders the
+// default copy for local/reconnecting states. Same string source as
+// authModule's signed-in branch, so the two writers can never disagree.
+const planEl = $('authUserPlan');
+if (planEl && typeof denaiAuth !== 'undefined' && denaiAuth.isSignedIn()) {
+planEl.textContent = (d && d.sidebar) ? d.sidebar : '☁ Cloud sync active';
+}
+// Account panel section — hidden entirely when there is nothing to present
+// (founding phase 'none', unresolved 'unknown', signed-out).
+const box = $('authSubSection');
+if (!box) return;
+if (!d) { box.style.display = 'none'; return; }
+box.style.display = '';
+const dot = $('authSubDot'), titleEl = $('authSubTitle'), detailEl = $('authSubDetail');
+if (dot) dot.style.background = SUB_TONE_COLORS[d.tone] || '#d1d5db';
+if (titleEl) titleEl.textContent = d.title;
+if (detailEl) {
+detailEl.textContent = d.detail || '';
+detailEl.style.display = d.detail ? '' : 'none';
+}
+}
+
 let _pendingDeleteId = null;
 
 function renderPatientList() {
@@ -5209,6 +5298,7 @@ const stageDot = _getPatientStageBadge(p);
 const demoLabel = !p.caseNum ? ' · <span style="color:var(--c-n300);font-style:italic;">demo</span>' : '';
 return `<div class="patient-item${isActive ? ' active-patient' : ''}" role="listitem" tabindex="0" data-pid="${p.id}" onclick="switchPatient('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPatient('${p.id}')}" aria-label="${escapeHtml(p.name||'')}, ${escapeHtml(p.caseNum||'')}${isActive?' (current)':''}"> <div class="patient-avatar">${initials}</div> <div class="patient-info"> <div class="patient-item-name">${escapeHtml(p.name||'Unknown')}</div> <div class="patient-item-meta">${p.caseNum ? escapeHtml(p.caseNum) + ' · ' : ''}${score}${demoLabel}</div> </div> <span class="patient-stage-dot ${stageDot.cls}" aria-hidden="true"></span> <button class="patient-delete-btn" type="button" onclick="event.stopPropagation();openDeletePatient('${p.id}','${escapeHtml(p.name||'this patient')}')" aria-label="Delete ${escapeHtml(p.name||'patient')}" title="Delete patient" ${list.length <= 1 ? 'disabled style="display:none"' : ''}> <i class="fa-solid fa-xmark"></i> </button> </div>`;
 }).join('');
+applyCreationGateUI(); // B2B: re-evaluate creation entry points on every list render
 }
 
 function switchPatient(id) {
@@ -5251,6 +5341,13 @@ if (caseNumEl) caseNumEl.textContent = S.caseNum || '—';
 
 // ── New Patient Modal ──────────────────────────────────────
 function openNewPatientModal() {
+// B2B: honest entry — show the message instead of a form that cannot submit.
+// (Covers any stale-rendered button; the hard gate below still backs this up.)
+if (typeof denaiAccessPolicy !== 'undefined' && !denaiAccessPolicy.canCreatePatient()) {
+showToast(MSG_CREATE_PATIENT_BLOCKED, 'error');
+applyCreationGateUI();
+return;
+}
 _modalTrigger = document.activeElement;
 // Populate tooth select
 const sel = $('npTooth');
@@ -5297,6 +5394,14 @@ if (_modalTrigger) { _modalTrigger.focus(); _modalTrigger = null; }
 }
 
 function confirmNewPatient() {
+// B2B: hard enforcement at the single authoritative creation funnel.
+// Abort before any state read or mutation; no patient is created.
+if (typeof denaiAccessPolicy !== 'undefined' && !denaiAccessPolicy.canCreatePatient()) {
+closeNewPatientModal();
+showToast(MSG_CREATE_PATIENT_BLOCKED, 'error');
+applyCreationGateUI();
+return;
+}
 const name = ($('npName')?.value.trim()) || 'New Patient';
 const rawAge = parseInt($('npAge')?.value, 10);
 const age = (!isNaN(rawAge) && rawAge >= 1 && rawAge <= 120) ? rawAge : 35;
@@ -5655,6 +5760,8 @@ $('authModal').setAttribute('aria-labelledby', tab === 'signup' ? 'authSignUpHea
 // Phase 3.4: Render clinic section inside the signed-in account panel.
 // Shows clinic name + role when a clinic is loaded; shows create form otherwise.
 function _renderClinicSection() {
+  // B2C: refresh subscription visibility whenever the account panel renders.
+  try { renderSubscriptionVisibility(); } catch (e) {}
   const infoEl   = $('authClinicInfo');
   const createEl = $('authClinicCreate');
   if (!infoEl || !createEl) return;
@@ -6081,7 +6188,7 @@ const link = document.getElementById('pwaManifest');
 if (link) link.href = url;
 // Service Worker (inline — app shell cache strategy)
 if ('serviceWorker' in navigator) {
-const swCode = `const CACHE = 'denai-v2.3'; const SHELL = ['./']; const _c = d => d === 'style' || d === 'script' || d === 'font'; self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)))); self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => { if (r) return r; return fetch(e.request).then(res => { if (res.ok && _c(e.request.destination)) try { caches.open(CACHE).then(c => c.put(e.request, res.clone())); } catch {} return res; }).catch(() => new Response('Offline', {status:503})); }))); self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));`;
+const swCode = `const CACHE = 'denai-v2.4'; const SHELL = ['./']; const _c = d => d === 'style' || d === 'script' || d === 'font'; self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)))); self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => { if (r) return r; return fetch(e.request).then(res => { if (res.ok && _c(e.request.destination)) try { caches.open(CACHE).then(c => c.put(e.request, res.clone())); } catch {} return res; }).catch(() => new Response('Offline', {status:503})); }))); self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));`;
 const swBlob = new Blob([swCode], { type: 'application/javascript' });
 const swUrl  = URL.createObjectURL(swBlob);
 navigator.serviceWorker.register(swUrl).catch(() => {});
@@ -6178,6 +6285,7 @@ $('addPatientBtn')?.addEventListener('click', openNewPatientModal);
 $('closeNewPatientBtn')?.addEventListener('click', closeNewPatientModal);
 $('cancelNewPatientBtn')?.addEventListener('click', closeNewPatientModal);
 $('confirmNewPatientBtn')?.addEventListener('click', confirmNewPatient);
+applyCreationGateUI(); // B2B: initial creation-gate state (cache-resolved; refreshed by renders + 60s tick)
 // Delete Patient Modal
 $('deletePatientModal')?.addEventListener('click', closeDeletePatient);
 $('deletePatientModalBox')?.addEventListener('click', e => e.stopPropagation());

@@ -4,6 +4,8 @@
   "private": true,
   "description": "denai — Clinical Insight Interface",
   "scripts": {
+    "test:policy": "node tests/entitlements/accessPolicy.test.js",
+    "test:presenter": "node tests/entitlements/subscriptionPresenter.test.js",
     "test:engine": "playwright test tests/ci/engine.spec.js",
     "test:smoke": "playwright test tests/ci/smoke.spec.js",
     "test:ci": "playwright test tests/ci/ tests/e2e/"

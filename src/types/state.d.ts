@@ -38,6 +38,11 @@ type SubscriptionStatus =
   | 'none'
   | 'unknown';
 
+// ── Effective status (accessPolicy.js, Wave B2A) ──────────────
+// 'expired' is derived on the client (trialing past trial_ends_at);
+// it is never stored in the DB or the entitlements cache.
+type EffectiveSubscriptionStatus = SubscriptionStatus | 'expired';
+
 // ── Full patient state — the runtime S object ─────────────────
 // Persisted to localStorage; subset synced to Supabase via serializer.
 // PHI fields (id, name, gender, notes) are excluded from AI calls.
