@@ -1,11 +1,10 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T23:55:48.854Z
-> Files: 8 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-10T00:54:44.602Z
+> Files: 3 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/projects/c--Users-Dr-Ahmed-Desktop-denai/memory/
 
-- `denai-project-overview.md` (~462 tok)
 
 ## ./
 
@@ -22,7 +21,7 @@
 
 ## docs/
 
-- `deployment-validation.md` — denai — Deployment Validation Playbook (~2706 tok)
+- `deployment-validation.md` — denai — Deployment Validation Playbook (~2708 tok)
 
 ## notes/
 
@@ -33,15 +32,12 @@
 ## src/auth/
 
 - `authModule.js` — src/auth/authModule.js (~2993 tok)
-- `clinicSession.js` — src/auth/clinicSession.js (~2918 tok)
-- `entitlements.js` — src/auth/entitlements.js (~1890 tok)
 
 ## src/constants/
 
 
 ## src/db/
 
-- `schema.sql` — Database schema (~12846 tok)
 
 ## src/observe/
 
@@ -75,7 +71,6 @@
 
 ## src/types/
 
-- `globals.d.ts` — ================================================================ (~852 tok)
 
 ## src/utils/
 

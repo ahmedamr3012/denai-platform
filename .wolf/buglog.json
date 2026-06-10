@@ -2476,24 +2476,27 @@
       "timestamp": "2026-06-09T12:33:57.608Z",
       "error_message": "Incorrect value in code",
       "file": "src/auth/authModule.js",
-      "root_cause": "Had 'https://dwvtbumwojzohclzxson.supabase.co'",
-      "fix": "Changed to 'https://dwvtbumwojohclzxson.supabase.co'",
+      "root_cause": "MISDIAGNOSED on 2026-06-09. Original value https://dwvtbumwojzohclzxson.supabase.co was ONE character off the real project: position 2 should be w not v (real: dwwtbumwojzohclzxson). The 2026-06-09 fix instead deleted the z (jzoh->joh), changing a character that was never wrong, and produced a 19-char ref pointing at a nonexistent project. Auth kept failing (DNS NXDOMAIN) before AND after that fix.",
+      "fix": "Superseded 2026-06-10: corrected to https://dwwtbumwojzohclzxson.supabase.co (verified active: DNS resolves, GoTrue answers, and the repo publishable key sb_publishable_uXDr... is accepted by this project while bogus keys are rejected). See bug-146.",
       "tags": [
         "auto-detected",
         "wrong-value",
-        "js"
+        "js",
+        "misdiagnosed-fix",
+        "wrong-character",
+        "dns-nxdomain"
       ],
       "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-06-09T12:33:57.608Z"
+      "occurrences": 2,
+      "last_seen": "2026-06-10T03:40:00.000Z"
     },
     {
       "id": "bug-146",
       "timestamp": "2026-06-10T02:55:00.000Z",
       "error_message": "Production still sends requests to old Supabase URL https://dwvtbumwojzohclzxson.supabase.co after bug-145 fix was committed",
       "file": "deployment pipeline (no source file defective)",
-      "root_cause": "TWO-LAYER: (1) Fix commit 9170bba was unmerged to main. (2) DEEPER (discovered during remediation): the Netlify site denai.netlify.app is NOT connected to the GitHub repo at all — production is updated by MANUAL deploys from the local Windows folder. Proof: live index.html has CRLF line endings (Windows checkout; GitHub/Netlify CI checkout would be LF), contains Phase-13 markers plus href=/privacy markup never committed to any branch, and no deploy fired in 15+ min after pushing main (3bc7f54). Pushing to GitHub has never deployed this site.",
-      "fix": "Repo side APPLIED 2026-06-10 (commit 3bc7f54, merged+pushed to origin/main): authModule ?v=2.0.0->2.0.1, SW CACHE denai-v2.1->denai-v2.2, playbook updated. PRODUCTION side BLOCKED on Netlify access: user must either (a) Netlify dashboard -> link GitHub repo ahmedamr3012/denai-platform, production branch main, then trigger deploy, or (b) manual deploy of the corrected folder (netlify deploy --prod or drag-drop). Verify live authModule contains dwvtbumwojohclzxson afterward.",
+      "root_cause": "TWO-LAYER: (1) Fix commit 9170bba was unmerged to main. (2) DEEPER (discovered during remediation): the Netlify site denai.netlify.app is NOT connected to the GitHub repo at all — production is updated by MANUAL deploys from the local Windows folder. Proof: live index.html has CRLF line endings (Windows checkout; GitHub/Netlify CI checkout would be LF), contains Phase-13 markers plus href=/privacy markup never committed to any branch, and no deploy fired in 15+ min after pushing main (3bc7f54). Pushing to GitHub has never deployed this site. (3) FINAL LAYER (2026-06-10 runtime trace): the bug-145 fix itself targeted the WRONG CHARACTER — real project is dwwtbumwojzohclzxson (w at position 2, z retained); both pre-fix and post-fix values were NXDOMAIN. Verified via DNS + key-binding test (repo publishable key accepted by dwwt... project, rejected controls).",
+      "fix": "Repo side APPLIED 2026-06-10 (commit 3bc7f54, merged+pushed to origin/main): authModule ?v=2.0.0->2.0.1, SW CACHE denai-v2.1->denai-v2.2, playbook updated. PRODUCTION side BLOCKED on Netlify access: user must either (a) Netlify dashboard -> link GitHub repo ahmedamr3012/denai-platform, production branch main, then trigger deploy, or (b) manual deploy of the corrected folder (netlify deploy --prod or drag-drop). Verify live authModule contains dwvtbumwojohclzxson afterward. FINAL CORRECTION 2026-06-10: src/auth/authModule.js:12 set to https://dwwtbumwojzohclzxson.supabase.co; index.html authModule ?v=2.0.1 -> 2.0.2; playbook row updated. Production deploy still requires the manual Netlify step (site not GitHub-linked).",
       "tags": [
         "deployment",
         "netlify",
@@ -2508,7 +2511,7 @@
         "bug-107"
       ],
       "occurrences": 1,
-      "last_seen": "2026-06-10T03:12:00.000Z"
+      "last_seen": "2026-06-10T03:40:00.000Z"
     },
     {
       "id": "bug-147",
@@ -2541,6 +2544,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-09T23:55:48.870Z"
+    },
+    {
+      "id": "bug-149",
+      "timestamp": "2026-06-10T00:54:31.657Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/auth/authModule.js",
+      "root_cause": "Had 'https://dwvtbumwojohclzxson.supabase.co'",
+      "fix": "Changed to 'https://dwwtbumwojzohclzxson.supabase.co'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T00:54:31.657Z"
+    },
+    {
+      "id": "bug-150",
+      "timestamp": "2026-06-10T00:54:32.885Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"src/auth/authModule.js?v=2.0.1\"",
+      "fix": "Changed to \"src/auth/authModule.js?v=2.0.2\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T00:54:32.885Z"
+    },
+    {
+      "id": "bug-151",
+      "timestamp": "2026-06-10T00:54:44.607Z",
+      "error_message": "Incorrect value in code",
+      "file": "docs/deployment-validation.md",
+      "root_cause": "Had `src/auth/authModule.js?v=2.0.1`",
+      "fix": "Changed to `src/auth/authModule.js?v=2.0.2`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-10T00:54:44.607Z"
     }
   ]
 }
