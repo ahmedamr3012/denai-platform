@@ -3322,6 +3322,14 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       }
     }
 
+    // bug-168: AI Recommendation card (recLabel/recIcon/conf) stays on ai.rec.
+    // Operational artifacts (pathway, timeline, material) follow the clinician's
+    // selection S.tx via planAi; selLabel + selDivergent surface the decision.
+    const _sel = S.tx;
+    const selDivergent = !!(ai && _planSelValid(ai, _sel) && _sel !== ai.rec);
+    const selLabel = ai ? _planTxLabel(ai, _sel) : '—';
+    const planAi = _planEffectiveAi(ai, _sel);
+
     const riskItems = [];
     const boneMap = { Good:{ cls:'dot-low', lbl:'Adequate' }, Fair:{ cls:'dot-med', lbl:'Moderate' }, Poor:{ cls:'dot-high', lbl:'Low' } };
     const hygMap  = { Good:{ cls:'dot-low', lbl:'Good' },     Fair:{ cls:'dot-med', lbl:'Fair' },     Poor:{ cls:'dot-high', lbl:'Poor' } };
@@ -3332,9 +3340,9 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     if (S.diabetes && S.diabetes !== 'None' && S.diabetes !== 'No')
       riskItems.push({ label:'Diabetes', cls: S.diabetes === 'Uncontrolled' ? 'dot-high' : 'dot-med', lbl: S.diabetes });
 
-    const timelines    = _getPlanTimeline(ai);
-    const material     = _getPlanMaterialSummary(ai);
-    const pathRows     = _buildTreatmentPathRows(ai);
+    const timelines    = _getPlanTimeline(planAi);
+    const material     = _getPlanMaterialSummary(planAi);
+    const pathRows     = _buildTreatmentPathRows(planAi, selDivergent ? 'Selected' : 'Recommended');
 
     container.innerHTML = `<div class="plan-layout">
       <div>
@@ -3354,6 +3362,10 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
             </div>
             <div class="plan-conf-bar"><div class="plan-conf-fill" style="width:${confPct}%;background:${confColor};"></div></div>
             ${ai?.caseCount ? `<div style="font-size:11.5px;color:var(--c-n400);margin-top:8px;"><i class="fa-solid fa-chart-bar" style="margin-right:4px" aria-hidden="true"></i>${escapeHtml(ai.caseCount)}</div>` : ''}
+            ${ai ? `<div class="plan-row" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--c-n100);">
+              <div class="plan-row-lbl">Selected Treatment</div>
+              <div class="plan-row-val" style="color:${selDivergent ? '#d97706' : 'var(--c-brand)'};">${escapeHtml(selLabel)}</div>
+            </div>${selDivergent ? `<div style="font-size:11px;color:#b45309;margin-top:6px;display:flex;align-items:flex-start;gap:6px;line-height:1.4;"><i class="fa-solid fa-circle-info" style="margin-top:2px;flex-shrink:0;" aria-hidden="true"></i><span>Clinician override — pathway, timeline &amp; materials follow your selection. AI recommended <strong>${escapeHtml(recLabel)}</strong>.</span></div>` : ''}` : ''}
           </div>
         </div>
 
@@ -3480,14 +3492,11 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     ];
     const stepActive = labStatus === null ? 0 : labStatus === 'pending' ? 1 : 2;
 
-    const recForLab = ai
-      ? ai.treatmentMode === 'restorative'
-        ? (ai.recDisplay || 'Crown')
-        : ai.isMultiTooth
-          ? ({ implant2:'2 Implants', bridge4:'4-Unit Bridge', cantilever:'Implant + Cantilever' })[ai.rec] || ai.rec
-          : ({ implant:'Implant', bridge:'Bridge', crown:'Crown' })[ai.rec] || ai.rec
-      : '—';
-    const material = _getPlanMaterialSummary(ai);
+    // bug-168: Lab header follows the clinician's selected treatment (S.tx), consistent
+    // with the lab sheet/snapshot which already freeze S.tx. Keeps Lab view, lab sheet,
+    // and Treatment Plan in agreement when the clinician overrides the AI recommendation.
+    const recForLab = ai ? _planTxLabel(ai, S.tx) : '—';
+    const material = _getPlanMaterialSummary(_planEffectiveAi(ai, S.tx));
 
     const checks = [
       { label: 'Treatment plan approved', ready: S.planApproved },

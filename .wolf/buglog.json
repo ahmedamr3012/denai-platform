@@ -2837,6 +2837,130 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-10T11:55:53.019Z"
+    },
+    {
+      "id": "bug-167",
+      "timestamp": "2026-06-12T00:00:00.000Z",
+      "error_message": "Production (deploy 46d7a9a, project dwwtbumwojzohclzxson): PGRST205 'Could not find the table public.clinic_members' (+clinics, clinic_subscriptions, workflow_observations); 42703 'column profiles.user_id does not exist' and 'column patients.clinic_id does not exist'; 42501/403 'permission denied for table patients/profiles'",
+      "file": "production Supabase project dwwtbumwojzohclzxson (no source file defective for the table errors; src/sync/prefsSync.js defective for profiles.user_id)",
+      "root_cause": "FORENSICALLY VERIFIED 2026-06-12 via read-only REST probes. THREE independent causes: (1) PRIMARY — src/db/schema.sql (revision 7) was never applied to dwwtbumwojzohclzxson beyond revision-1 content: only profiles(id,created_at,updated_at,preferences) and patients(rev-1 columns incl. notes_enc, schema_ver, NO clinic_id) exist; clinics, clinic_members, clinic_subscriptions, workflow_observations tables and start_clinic_trial/upsert_clinic_subscription RPCs are absent (PGRST205/PGRST202). All Phase 3.1-14 SQL was only ever applied (if anywhere) to the original project ref dwvtbumwojzohclzxson which is NXDOMAIN (confirmed dead 2026-06-12) — bug-146 switched the app to dwwt but nobody migrated the schema. (2) GRANTS — profiles and patients on dwwt return 42501 permission denied even before RLS evaluation (PostgREST hint: 'GRANT SELECT ON public.profiles TO anon'); client roles (anon, and per production console also authenticated) have no table-level privileges, so even rev-1 tables are unusable. 403 != RLS denial (RLS SELECT denial returns empty 200). (3) CODE DEFECT — prefsSync.js has queried profiles.user_id since its first commit (8c3b61c, Wave 7F) but NO revision of schema.sql or docs/cloud-schema.md ever defined profiles.user_id; profiles is keyed by id (PK = auth.users.id). prefsSync upsert({user_id...}, onConflict:'user_id') and .eq('user_id',...) fail with 42703 on ANY correctly-migrated database. Settings cloud-sync has therefore never worked anywhere.",
+      "fix": "NOT FIXED — read-only forensic audit (Wave B2 production investigation). Remediation plan delivered in-session: Phase 1 verify with information_schema queries; Phase 2 apply full schema.sql rev 7 to dwwt in Studio (idempotent); Phase 3 GRANT usage/table privileges to authenticated (+anon as designed) and verify RLS policies exist; Phase 4 fix prefsSync.js profiles.user_id -> id (or add column, NOT recommended); Phase 5 re-run production validation. See drift matrix in session output.",
+      "tags": [
+        "production",
+        "supabase",
+        "schema-drift",
+        "missing-migration",
+        "grants",
+        "rls",
+        "prefsSync",
+        "profiles.user_id",
+        "clinic_members",
+        "patients.clinic_id",
+        "forensic-audit"
+      ],
+      "related_bugs": [
+        "bug-145",
+        "bug-146"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T00:00:00.000Z"
+    },
+    {
+      "id": "bug-168",
+      "timestamp": "2026-06-12T00:00:00.000Z",
+      "error_message": "Treatment Plan page renders the AI-recommended treatment (e.g. Implant) for the primary card, timeline, and material even after the clinician selects and saves a different treatment (e.g. Bridge). AI Insight correctly shows Recommended=Implant / Selected=Bridge; selection persists across refresh; but Treatment Plan ignores the selection.",
+      "file": "index.html (renderPlanView ~3290, _getPlanTimeline ~3194, _getPlanMaterialSummary ~3275), src/render/planFragments.js (_buildTreatmentPathRows, _getAiForPlan)",
+      "root_cause": "RENDERER SOURCE-OF-TRUTH INCONSISTENCY (propagation defect, not approval-workflow defect). The clinician's selected treatment is stored in S.tx (set by selectTx() index.html:4985 via setState, persisted by saveState, hydrated on reload — works correctly). There is NO separate approvedTreatment field; approvePlan() (index.html:2651) only flips the boolean S.planApproved=true and snapshots nothing. The Treatment Plan view derives EVERYTHING from ai.rec, never S.tx: renderPlanView() calls _getAiForPlan(S) -> ClinicalEngine.process(S), which computes ai.rec purely from clinical inputs (bone/hygiene/occlusion) and never reads S.tx (clinicalEngine.js:392). The recommendation card (recLabel from ai.rec, index.html:3315-3322), the timeline (_getPlanTimeline(ai) keyed on ai.rec, 3194-3273), the material (_getPlanMaterialSummary(ai) keyed on ai.rec, 3275-3288), and the path rows (_buildTreatmentPathRows(ai) keyed on ai.rec, planFragments.js:12) all key off ai.rec. By contrast, every surface that represents the CHOSEN treatment reads S.tx: Lab snapshot/document (generateLabDocument index.html:4403 TX_LABEL[S.tx]; sendToLab snapshot 2692; _deriveLabMaterial 4348/4355/4361 use state.tx) and the Reports clinician-decision banner (_p3SelLabel from S.tx, index.html:4748). Net: Lab & Mfg use the SELECTED treatment, Treatment Plan uses the RECOMMENDED treatment — a renderer inconsistency. So an approved Bridge case shows an Implant timeline (osseointegration etc.) and Implant material on the Treatment Plan page, while the lab sheet correctly says Bridge.",
+      "fix": "FIXED 2026-06-12 (minimal, philosophy-preserving). src/render/planFragments.js: added pure helpers _planSelValid(ai,sel), _planTxLabel(ai,key), _planEffectiveAi(ai,sel); _planEffectiveAi returns ai unchanged unless sel is a valid DIVERGENT selection, else a shallow clone { ...ai, rec: sel } (+ restorative recDisplay remapped via SLOT_MAP {implant:slot1,bridge:slot2,crown:slot3}). _buildTreatmentPathRows gained an optional primaryLabel param (defaults 'Recommended'). index.html renderPlanView: computes planAi = _planEffectiveAi(ai, S.tx), selDivergent, selLabel; timeline/material/pathRows now fed planAi (pathRows primary row labeled 'Selected' when divergent); the 'AI Recommendation' card still shows ai.rec; added a 'Selected Treatment' row + clinician-override note so recommendation AND decision are both visible. index.html renderLabView (approved scope extension — same root cause, 2nd renderer): recForLab = _planTxLabel(ai,S.tx) and material = _getPlanMaterialSummary(_planEffectiveAi(ai,S.tx)) so the Lab status card agrees with the lab sheet/snapshot (which already used S.tx). NO change to ClinicalEngine, scoring, confidence, recommendation calc, or any S.tx persistence. When S.tx===ai.rec the helpers return ai by reference, so non-override cases are byte-identical to pre-fix. Verified: syntax-check (2 inline blocks), 18 functional assertions across single/multi/restorative, 43 policy + 56 presenter assertions — all pass.",
+      "tags": [
+        "treatment-plan",
+        "renderer-inconsistency",
+        "source-of-truth",
+        "propagation-defect",
+        "S.tx",
+        "ai.rec",
+        "renderPlanView",
+        "timeline",
+        "lab-vs-plan",
+        "forensic-audit"
+      ],
+      "related_bugs": [
+        "bug-153"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T00:00:00.000Z"
+    },
+    {
+      "id": "bug-169",
+      "timestamp": "2026-06-12T09:18:44.122Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/render/planFragments.js",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T09:18:44.122Z"
+    },
+    {
+      "id": "bug-170",
+      "timestamp": "2026-06-12T09:18:49.664Z",
+      "error_message": "Wrong reference: Recommended should be PRIMARY",
+      "file": "src/render/planFragments.js",
+      "root_cause": "Used \"Recommended\" instead of \"PRIMARY\"",
+      "fix": "Changed Recommended → PRIMARY",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T09:18:49.664Z"
+    },
+    {
+      "id": "bug-171",
+      "timestamp": "2026-06-12T09:19:05.649Z",
+      "error_message": "Significant refactor of ",
+      "file": "index.html",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 3→3 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T09:19:05.649Z"
+    },
+    {
+      "id": "bug-172",
+      "timestamp": "2026-06-12T09:30:00.000Z",
+      "error_message": "PRE-EXISTING (discovered during bug-168 validation, NOT fixed): in restorative mode the Treatment Plan timeline and material map the wrong slot to surgery. _getPlanTimeline restorative branch uses isSurgical = ai.rec === 'implant' and _getPlanMaterialSummary uses ai.rec === 'implant' -> 'Titanium + Zirconia (implant)'. But in restorative mode the slot keys are inverted: slot 'implant'(slot1) is the CONSERVATIVE option (onlay / endocrown / crown_core) while the surgical extract+implant lives in slot 'crown'(slot3). So a conservative onlay yields an Extraction & Implant / Osseointegration timeline + implant material, and an extract+implant escalation yields a tooth-prep crown timeline.",
+      "file": "index.html (_getPlanTimeline ~3201-3220, _getPlanMaterialSummary ~3277)",
+      "root_cause": "Restorative slot keys (clinicalEngine.js generateTreatments) reuse the single-tooth card keys implant|bridge|crown for slot1|slot2|slot3, but slot1='implant' is conservative and slot3='crown' carries extract_impl. The plan timeline/material were written as if 'implant' meant a surgical implant (true for single-tooth MISSING mode, false for restorative mode). Independent of bug-168 (which was rec-vs-selection); this inversion exists for the recommendation alone.",
+      "fix": "NOT FIXED — out of scope for bug-168 (no unrelated fixes per directive). bug-168's selection-propagation does not create this inversion but does widen its visibility: a clinician selecting restorative slot1 now also triggers the surgical timeline (previously only when the AI recommended slot1). Recommended separate fix: branch restorative timeline/material on the ACTUAL treatment id (ai.restorativeLabels[slot].id / scored[].id: onlay|endocrown|crown_core|crown|splinted|extract_impl|crown_adv) instead of the slot key, so only extract_impl maps to the surgical pathway. Confidence: HIGH that this is a real defect.",
+      "tags": [
+        "treatment-plan",
+        "restorative",
+        "timeline",
+        "material",
+        "slot-key-inversion",
+        "pre-existing",
+        "not-fixed",
+        "discovered-during-bug-168",
+        "candidate-followup"
+      ],
+      "related_bugs": [
+        "bug-168"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T09:30:00.000Z"
     }
   ]
 }
