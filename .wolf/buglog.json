@@ -2961,6 +2961,31 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-06-12T09:30:00.000Z"
+    },
+    {
+      "id": "bug-173",
+      "timestamp": "2026-06-12T10:30:00.000Z",
+      "error_message": "User report (highest priority): Clinic Name changes do not persist. Production previously showed schema errors for patients.clinic_id, clinic_members, clinic_subscriptions. Localhost and deployed behavior differ.",
+      "file": "src/auth/clinicSession.js (createClinic 158-198, _load 70-101), index.html (authClinicNameInput 1476, authClinicCreateBtn handler 6394-6409, _renderClinicSection 5771-5789); production Supabase project dwwtbumwojzohclzxson",
+      "root_cause": "READ-ONLY FORENSIC AUDIT (NOT FIXED). Clinic name is stored ONLY in the cloud `clinics.name` column — there is NO localStorage / denaiPrefs / cache fallback (Wave C5 settings modal has no clinic-name field; clinicSession holds only a transient in-memory _clinicName). TWO compounding causes: (1) PRIMARY schema drift — production project dwwtbumwojzohclzxson is missing the `clinics`/`clinic_members`/`clinic_subscriptions` tables (verified bug-167, PGRST205 + 42501). So createClinic's INSERT clinics (clinicSession.js:175) fails -> {error} returned BEFORE _clinicName is set (192), and hydration _load's SELECT clinic_members JOIN clinics(name) (74-77) fails -> _clinicName stays null -> UI reverts to the Create form every session. With zero local fallback, a missing/ungranted table = total silent loss. Same code against a conformant DB on localhost works -> explains the localhost-vs-deployed divergence. (2) SECONDARY capability gap — there is NO clinic rename/update flow anywhere: createClinic hard-blocks when a clinic already exists (clinicSession.js:159 'Already associated with a clinic'), no client code calls .from('clinics').update(), and clinicSession.js:29 + schema.sql:597 explicitly defer 'clinic rename flow' to Phase 3.5+. So changing an existing clinic's name is unimplemented. NOT a UI/render/hydration-logic/source-of-truth-conflict bug — the code paths are correct against a migrated DB.",
+      "fix": "NOT FIXED — investigation only. Recommended (do not implement without authorization): (1) PRIMARY/operational — apply schema.sql rev-7 to production dwwt + GRANT table privileges to authenticated (= bug-167 remediation). This unblocks the existing create+hydrate flow with ZERO app code changes and resolves 'create doesn't persist'. (2) Only if rename is required — implement deferred Phase 3.5 updateClinicName(name) on clinicSession calling client.from('clinics').update({name}).eq('id',_clinicId) guarded by isOwner() (RLS clinics_update_owner already exists, schema.sql:471) + an edit affordance in authClinicInfo. (3) Do NOT add a localStorage clinic-name shadow — clinic identity is intentionally cloud-authoritative (owner-controlled, multi-member); a local shadow would fork the source of truth and break the ownership model. Confidence: 70% schema drift (production), 25% missing rename capability (all envs), 4% not-signed-in, 1% code logic.",
+      "tags": [
+        "clinic-name",
+        "clinicSession",
+        "schema-drift",
+        "missing-migration",
+        "cloud-only-no-local-fallback",
+        "missing-rename-flow",
+        "production",
+        "dwwtbumwojzohclzxson",
+        "forensic-audit",
+        "not-fixed"
+      ],
+      "related_bugs": [
+        "bug-167"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-12T10:30:00.000Z"
     }
   ]
 }

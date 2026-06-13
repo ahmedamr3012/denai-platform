@@ -1,14 +1,13 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T09:19:25.684Z
-> Files: 2 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-12T23:46:39.111Z
+> Files: 3 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../.claude/projects/c--Users-Dr-Ahmed-Desktop-denai/memory/
 
 
 ## ./
 
-- `index.html` — denai — Clinical Insight (~114822 tok)
 
 ## .claude/
 
@@ -21,6 +20,12 @@
 
 ## docs/
 
+
+## docs/recovery/
+
+- `bug-167-execution-runbook.md` — bug-167 — Production Schema Recovery Runbook (~2076 tok)
+- `bug-167-recovery.sql` — ============================================================================ (~4740 tok)
+- `bug-167-verification.sql` — ============================================================================ (~2179 tok)
 
 ## notes/
 
@@ -48,7 +53,6 @@
 
 ## src/render/
 
-- `planFragments.js` — _getAiForPlan: _planSelValid, _planTxLabel, _planEffectiveAi, _buildTreatmentPathRows (~1317 tok)
 
 ## src/reports/
 
