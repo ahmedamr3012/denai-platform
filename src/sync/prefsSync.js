@@ -117,7 +117,7 @@ window.denaiPrefs = (function () {
       if (!session || !session.user) return;
 
       await client.from('profiles').upsert({
-        user_id:     session.user.id,
+        id:          session.user.id,
         preferences: {
           darkMode:     _prefs.darkMode,
           notesKeySalt: _prefs.notesKeySalt,
@@ -126,7 +126,7 @@ window.denaiPrefs = (function () {
           pricing:      _prefs.pricing,       // Wave C1
           schema_ver:   PREFS_SCHEMA_VER,
         },
-      }, { onConflict: 'user_id' });
+      }, { onConflict: 'id' });
     } catch (e) {
       console.warn('[denaiPrefs] push failed:', e.message);
     }
@@ -160,7 +160,7 @@ window.denaiPrefs = (function () {
       var res = await client
         .from('profiles')
         .select('preferences, updated_at')
-        .eq('user_id', session.user.id)
+        .eq('id', session.user.id)
         .single();
 
       // PGRST116 = no row found (new account, no preferences stored yet)
