@@ -27,6 +27,28 @@ window.denaiAuth = (function () {
     if (_trail.length > 30) _trail.shift();
   }
 
+  // ── bug-169: status-change subscribers ────────────────────────────────────
+  // Lets UI surfaces outside the sidebar (e.g. the dashboard footer) react to
+  // async auth transitions instead of relying solely on their own render
+  // timing, which can run before _restoreSession() resolves and never run
+  // again afterward.
+  var _statusSubscribers = [];
+  function onStatusChange(callback) {
+    if (typeof callback !== 'function') return function () {};
+    _statusSubscribers.push(callback);
+    return function unsubscribe() {
+      var i = _statusSubscribers.indexOf(callback);
+      if (i !== -1) _statusSubscribers.splice(i, 1);
+    };
+  }
+  function _notifyStatusSubscribers() {
+    _statusSubscribers.forEach(function (cb) {
+      try { cb(_status, _email); } catch (e) {
+        console.warn('[denaiAuth] status subscriber failed:', e && e.message);
+      }
+    });
+  }
+
   // ── Wave B1: post-auth task isolation ─────────────────────────────────────
   // Each settle task (queue flush, hydrate, clinic init, …) is isolated so one
   // failing task — sync throw or async rejection — cannot prevent the
@@ -58,6 +80,7 @@ window.denaiAuth = (function () {
     _email  = email || null;
     _renderIndicator();
     _renderSidebarUser();
+    _notifyStatusSubscribers();
   }
 
   function _renderIndicator() {
@@ -299,6 +322,7 @@ window.denaiAuth = (function () {
     isSignedIn: isSignedIn,
     getClient: getClient,
     getAuthTrail: getAuthTrail,
+    onStatusChange: onStatusChange,
   });
 
 })();
