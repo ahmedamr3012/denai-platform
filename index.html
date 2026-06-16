@@ -3004,6 +3004,25 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     patSubEl.innerHTML = `<svg class="heartbeat-svg" viewBox="0 0 30 12" aria-hidden="true" focusable="false"><polyline points="0,6 4,6 6,2 8,10 10,6 30,6" class="heartbeat-path"/></svg> ${escapeHtml(S.name + agePart)}`;
   }
 
+  // bug-169: extracted so it can run both from renderDashboardView() (on
+  // navigation/render) and from the denaiAuth.onStatusChange() subscriber
+  // (on async auth transitions) — keeps the footer from going stale between
+  // dashboard renders, e.g. when the dashboard is restored from sessionStorage
+  // before denaiAuth.init() has resolved.
+  function _updateDashSyncIndicator() {
+    const dot   = document.getElementById('dashSyncDot');
+    const label = document.getElementById('dashSyncLabel');
+    if (typeof denaiAuth !== 'undefined' && denaiAuth.isSignedIn()) {
+      if (dot)   { dot.classList.remove('local'); dot.classList.add('synced'); }
+      const session = denaiAuth.getSession();
+      const email = session && session.user ? session.user.email : 'Cloud';
+      if (label) label.textContent = 'Synced — signed in as ' + email;
+    } else {
+      if (dot)   { dot.classList.remove('synced'); dot.classList.add('local'); }
+      if (label) label.textContent = 'Local-only · Data stays on this device';
+    }
+  }
+
   // ================================================================
   // DASHBOARD VIEW RENDERER
   // ================================================================
@@ -3108,17 +3127,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     }
 
     // Sync status row
-    const dot   = document.getElementById('dashSyncDot');
-    const label = document.getElementById('dashSyncLabel');
-    if (typeof denaiAuth !== 'undefined' && denaiAuth.isSignedIn()) {
-      if (dot)   { dot.classList.remove('local'); dot.classList.add('synced'); }
-      const session = denaiAuth.getSession();
-      const email = session && session.user ? session.user.email : 'Cloud';
-      if (label) label.textContent = 'Synced — signed in as ' + email;
-    } else {
-      if (dot)   { dot.classList.remove('synced'); dot.classList.add('local'); }
-      if (label) label.textContent = 'Local-only · Data stays on this device';
-    }
+    _updateDashSyncIndicator();
   }
 
   function deleteReportHistory(id) {
@@ -6546,6 +6555,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   // Wave 7B: Auth init — silently degrades to local mode on any failure.
   if (typeof denaiAuth !== 'undefined') {
+    // bug-169: keep the dashboard sync indicator current across async auth
+    // transitions (sign-in completion, token refresh, sign-out) instead of
+    // relying solely on dashboard navigation/render timing.
+    if (typeof denaiAuth.onStatusChange === 'function') {
+      denaiAuth.onStatusChange(_updateDashSyncIndicator);
+    }
     denaiAuth.init().catch(function () {});
   }
   // Wave 7D: Sync queue must init after denaiAuth.init() so flush() can check isSignedIn().
