@@ -341,6 +341,7 @@
       // Human-readable label for the recommended option (used in AI card typewriter)
       const SLOT_MAP = { implant: 'slot1', bridge: 'slot2', crown: 'slot3' };
       const recDisplay = restorativeLabels[SLOT_MAP[recResult.rec]]?.label || 'Crown';
+      const recTreatmentId = bySlot[recResult.rec]?.id || null;
 
       return {
         // ── Backward-compatible fields ─────────────────────────────
@@ -365,6 +366,7 @@
         explanation: expl,
         restorativeLabels,
         recDisplay,           // correct display name for the rec (not "Implant")
+        recTreatmentId,       // treatment ID for the rec slot ('onlay'|'endocrown'|'crown_core'|'crown'|'splinted'|'extract_impl'|null)
         // ── Restorative cost basis (used by renderCost override) ───
         restorativeCosts: {
           slot1: Math.round((bySlot['implant']?.id === 'onlay'

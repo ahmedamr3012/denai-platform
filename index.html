@@ -3208,7 +3208,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
     const boneRisk = S.bone === 'Poor' ? '5–6 months' : '3–4 months';
 
     if (ai.treatmentMode === 'restorative') {
-      const isSurgical = ai.rec === 'implant';
+      const isSurgical = ai.recTreatmentId === 'extract_impl';
       if (isSurgical) {
         return [
           { label: 'Assessment & Diagnosis',      dur: 'Completed',                        state: 'done' },
@@ -3283,7 +3283,7 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
 
   function _getPlanMaterialSummary(ai) {
     if (!ai || !S.condition) return null;
-    if (ai.treatmentMode === 'restorative' && ai.rec === 'implant')
+    if (ai.treatmentMode === 'restorative' && ai.recTreatmentId === 'extract_impl')
       return { primary: 'Titanium + Zirconia', reason: 'Best biocompatibility & load bearing', rate: '95%+' };
     const highOcc = S.occlusion === 'High occlusion load' || S.parafunction === 'Bruxism';
     const weakTooth = S.endodonticStatus === 'Needs RCT' || S.remainingStructure === 'Poor';
@@ -4375,6 +4375,13 @@ body.dark .preset-btn.crown { background: #1e1b4b; border-color: #4338ca; color:
       return isZirconia
         ? { label: 'Zirconia Bridge',           note: 'High occlusal demand — maximum fracture resistance' }
         : { label: 'e.max Bridge',              note: 'Aesthetic zone — superior translucency and natural appearance' };
+    }
+    const isExtractImplSlot = isRestor &&
+      ai?.restorativeLabels?.slot3?.id === 'extract_impl' && state.tx === 'crown';
+    if (isExtractImplSlot) {
+      return matSel === 'alt'
+        ? { label: 'All-Zirconia Implant',        note: 'Metal-free all-zirconia fixture — clinician-selected alternative' }
+        : { label: 'Titanium + Zirconia Implant', note: 'Standard biocompatible titanium fixture with zirconia crown' };
     }
     if (state.tx === 'crown' || isRestor) {
       const cm = getCrownMaterial(state);

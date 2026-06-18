@@ -152,13 +152,13 @@ window.denaiExplain = (function () {
     var sys = ai.clinical.systemic     || {};
     var ct  = ai.caseClass && ai.caseClass.type;
 
-    if (p.poorBone && (ai.rec === 'implant' || ct === 'RESTORATIVE_HOPELESS')) {
+    if (p.poorBone && (ai.recTreatmentId === 'extract_impl' || ct === 'RESTORATIVE_HOPELESS')) {
       signals.push('Bone grafting consult recommended — D3/D4 bone requires augmentation assessment before implant placement.');
     }
     if (sys.uncontrolledDM) {
       signals.push('Glycemic optimization recommended before any surgical intervention — HbA1c ≥7.5% elevates procedural risk.');
     }
-    if (o.bruxism && (ai.rec === 'implant' || ct === 'RESTORATIVE_HOPELESS')) {
+    if (o.bruxism && (ai.recTreatmentId === 'extract_impl' || ct === 'RESTORATIVE_HOPELESS')) {
       signals.push('Occlusal assessment before final restoration — active bruxism management is a prerequisite.');
     }
     if (ct === 'RESTORATIVE_COMPROMISED' && p.poorBone) {

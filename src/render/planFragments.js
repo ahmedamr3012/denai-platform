@@ -38,7 +38,8 @@ function _planEffectiveAi(ai, sel) {
   if (!_planSelValid(ai, sel) || sel === ai.rec) return ai;
   if (ai.treatmentMode === 'restorative') {
     const SLOT = { implant: 'slot1', bridge: 'slot2', crown: 'slot3' };
-    return { ...ai, rec: sel, recDisplay: ai.restorativeLabels?.[SLOT[sel]]?.label || ai.recDisplay };
+    const selTreatmentId = ai.scored?.find(t => t.slot === sel)?.id || null;
+    return { ...ai, rec: sel, recDisplay: ai.restorativeLabels?.[SLOT[sel]]?.label || ai.recDisplay, recTreatmentId: selTreatmentId };
   }
   return { ...ai, rec: sel };
 }
