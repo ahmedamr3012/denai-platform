@@ -2941,10 +2941,10 @@
     {
       "id": "bug-172",
       "timestamp": "2026-06-12T09:30:00.000Z",
-      "error_message": "PRE-EXISTING (discovered during bug-168 validation, NOT fixed): in restorative mode the Treatment Plan timeline and material map the wrong slot to surgery. _getPlanTimeline restorative branch uses isSurgical = ai.rec === 'implant' and _getPlanMaterialSummary uses ai.rec === 'implant' -> 'Titanium + Zirconia (implant)'. But in restorative mode the slot keys are inverted: slot 'implant'(slot1) is the CONSERVATIVE option (onlay / endocrown / crown_core) while the surgical extract+implant lives in slot 'crown'(slot3). So a conservative onlay yields an Extraction & Implant / Osseointegration timeline + implant material, and an extract+implant escalation yields a tooth-prep crown timeline.",
+      "error_message": "PRE-EXISTING (discovered during bug-168 validation, deferred): in restorative mode the Treatment Plan timeline and material map the wrong slot to surgery. _getPlanTimeline restorative branch uses isSurgical = ai.rec === 'implant' and _getPlanMaterialSummary uses ai.rec === 'implant' -> 'Titanium + Zirconia (implant)'. But in restorative mode the slot keys are inverted: slot 'implant'(slot1) is the CONSERVATIVE option (onlay / endocrown / crown_core) while the surgical extract+implant lives in slot 'crown'(slot3). So a conservative onlay yields an Extraction & Implant / Osseointegration timeline + implant material, and an extract+implant escalation yields a tooth-prep crown timeline.",
       "file": "index.html (_getPlanTimeline ~3201-3220, _getPlanMaterialSummary ~3277)",
       "root_cause": "Restorative slot keys (clinicalEngine.js generateTreatments) reuse the single-tooth card keys implant|bridge|crown for slot1|slot2|slot3, but slot1='implant' is conservative and slot3='crown' carries extract_impl. The plan timeline/material were written as if 'implant' meant a surgical implant (true for single-tooth MISSING mode, false for restorative mode). Independent of bug-168 (which was rec-vs-selection); this inversion exists for the recommendation alone.",
-      "fix": "NOT FIXED — out of scope for bug-168 (no unrelated fixes per directive). bug-168's selection-propagation does not create this inversion but does widen its visibility: a clinician selecting restorative slot1 now also triggers the surgical timeline (previously only when the AI recommended slot1). Recommended separate fix: branch restorative timeline/material on the ACTUAL treatment id (ai.restorativeLabels[slot].id / scored[].id: onlay|endocrown|crown_core|crown|splinted|extract_impl|crown_adv) instead of the slot key, so only extract_impl maps to the surgical pathway. Confidence: HIGH that this is a real defect.",
+      "fix": "DEFERRED at discovery — out of scope for bug-168 (no unrelated fixes per directive). Subsequently fixed in commit 533c54e on 2026-06-18. See second bug-172 entry for full fix details (recTreatmentId approach, 6-site fix across clinicalEngine.js, planFragments.js, index.html ×3, explainLayer.js).",
       "tags": [
         "treatment-plan",
         "restorative",
@@ -2952,15 +2952,15 @@
         "material",
         "slot-key-inversion",
         "pre-existing",
-        "not-fixed",
-        "discovered-during-bug-168",
-        "candidate-followup"
+        "deferred",
+        "fixed-in-533c54e",
+        "discovered-during-bug-168"
       ],
       "related_bugs": [
         "bug-168"
       ],
       "occurrences": 1,
-      "last_seen": "2026-06-12T09:30:00.000Z"
+      "last_seen": "2026-06-18T00:00:00Z"
     },
     {
       "id": "bug-173",
@@ -3034,6 +3034,112 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-16T11:28:15.835Z"
+    },
+    {
+      "id": "bug-177",
+      "timestamp": "2026-06-16T23:23:04.220Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "tests/ci/_bug170_release_gate.spec.js",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "js"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-16T23:23:04.220Z"
+    },
+    {
+      "id": "bug-178",
+      "timestamp": "2026-06-18T11:51:09.678Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had \"src/sync/prefsSync.js?v=2.0.0\"",
+      "fix": "Changed to \"src/sync/prefsSync.js?v=2.0.1\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T11:51:09.678Z"
+    },
+    {
+      "id": "bug-179",
+      "timestamp": "2026-06-18T00:00:00Z",
+      "error_message": "Production serves pre-fix prefsSync.js (with user_id) despite bug-170 fix in Git (commit 5fe2515)",
+      "file": "index.html",
+      "root_cause": "Netlify serves /src/** with Cache-Control: public, max-age=31536000, immutable. Bug-170 fix commit 5fe2515 changed src/sync/prefsSync.js but did not bump the ?v= query string in index.html. Browsers with prefsSync.js?v=2.0.0 cached as immutable never revalidate — they execute the stale pre-fix file for up to 365 days.",
+      "fix": "Bumped src/sync/prefsSync.js?v=2.0.0 to ?v=2.0.1 in index.html (line 114). Committed as dcc05c7. Pushed to main and beta-hardening.",
+      "tags": [
+        "cache-invalidation",
+        "immutable-cache",
+        "netlify",
+        "deployment",
+        "version-string",
+        "bug-170"
+      ],
+      "related_bugs": [
+        "bug-170"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T00:00:00Z"
+    },
+    {
+      "id": "bug-180",
+      "timestamp": "2026-06-18T12:40:03.156Z",
+      "error_message": "Incorrect value in code",
+      "file": "index.html",
+      "root_cause": "Had 'implant'",
+      "fix": "Changed to 'extract_impl'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-18T12:40:10.572Z"
+    },
+    {
+      "id": "bug-181",
+      "timestamp": "2026-06-18T12:40:26.423Z",
+      "error_message": "Null/undefined access in ",
+      "file": "index.html",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "html"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T12:40:26.423Z"
+    },
+    {
+      "id": "bug-172",
+      "timestamp": "2026-06-18T00:00:00Z",
+      "error_message": "Treatment Plan panel displays incorrect procedural steps and material summary for restorative cases — slot-key inversion causes conservative cases to show surgical timeline and Titanium+Zirconia material; extract_impl cases show conservative steps",
+      "file": "index.html, src/ai/clinicalEngine.js, src/render/planFragments.js, src/ai/explainLayer.js",
+      "root_cause": "clinicalEngine.js buildRestorativeResult() uses slot keys ('implant'/'bridge'/'crown') as rec values for backward-compat with S.tx. In restorative mode, 'implant' means slot1/conservative — NOT a titanium implant. Four rendering consumers checked ai.rec === 'implant' as a proxy for 'is this a surgical implant case', which is the wrong discriminator. The correct discriminator is the treatment ID (e.g. 'extract_impl'). recTreatmentId was absent from the ai object, leaving consumers no way to distinguish slot-key from treatment semantics.",
+      "fix": "1. Added recTreatmentId = bySlot[recResult.rec]?.id || null to buildRestorativeResult() return in clinicalEngine.js. 2. Propagated recTreatmentId in _planEffectiveAi() in planFragments.js (selTreatmentId lookup from ai.scored). 3. Fixed _getPlanTimeline() in index.html: isSurgical = ai.recTreatmentId === 'extract_impl'. 4. Fixed _getPlanMaterialSummary() in index.html: ai.recTreatmentId === 'extract_impl'. 5. Fixed _deriveLabMaterial() in index.html: added isExtractImplSlot guard using restorativeLabels.slot3.id before the crown-catch-all. 6. Fixed _buildReferralSignals() in explainLayer.js: both ai.rec === 'implant' predicates replaced with ai.recTreatmentId === 'extract_impl'.",
+      "tags": [
+        "treatment-plan",
+        "restorative",
+        "timeline",
+        "material",
+        "slot-key-inversion",
+        "recTreatmentId",
+        "explainLayer",
+        "clinical-rendering"
+      ],
+      "related_bugs": ["bug-168"],
+      "occurrences": 1,
+      "last_seen": "2026-06-18T00:00:00Z"
     }
   ]
 }
